@@ -1,0 +1,20 @@
+bin/
+lib/
+obj/
+
+# Visual Studio 2015 cache/options directory
+.vs/
+
+# Visual C++ cache files
+ipch/
+*.aps
+*.ncb
+*.opensdf
+*.sdf
+*.cachefile
+
+# Visual Studio project files
+*.sln
+*.vcxproj
+*.user
+*.filters
