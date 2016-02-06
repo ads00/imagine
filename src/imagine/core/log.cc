@@ -22,7 +22,9 @@
 */
 
 #include "imagine/core/log.h"
+
 #include <iostream>
+#include <algorithm>
 
 namespace ig
 {
@@ -45,14 +47,15 @@ log& log::get()
   return l;
 }
 
-void log::add_sink(std::shared_ptr<log_sink> sink)
+void log::add_sink(std::shared_ptr<log_sink>& sink)
 { 
   sinks_.push_back(sink); 
 }
 
-void log::remove_sink(std::shared_ptr<log_sink> sink)
+void log::remove_sink(std::shared_ptr<log_sink>& sink)
 { 
-  sinks_.erase(std::find(sinks_.begin(), sinks_.end(), sink)); 
+  sinks_.erase(std::remove(sinks_.begin(), sinks_.end(), sink), 
+               sinks_.end()); 
 }
 
 void log::push(const log_context& c)

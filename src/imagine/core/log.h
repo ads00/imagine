@@ -27,9 +27,10 @@
 #include "imagine.h"
 
 #include <sstream>
-#include <mutex>
-#include <vector>
 #include <functional>
+#include <mutex>
+#include <memory>
+#include <vector>
 
 namespace ig
 {
@@ -53,8 +54,8 @@ public:
   friend log_context;
   using formatter_t = std::function<std::string (const log_context&)>;
 
-  static void add_sink(std::shared_ptr<log_sink> sink);
-  static void remove_sink(std::shared_ptr<log_sink> sink);
+  static void add_sink(std::shared_ptr<log_sink>& sink);
+  static void remove_sink(std::shared_ptr<log_sink>& sink);
 
   log(const log&) = delete;
   log& operator=(const log&) = delete;

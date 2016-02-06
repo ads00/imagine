@@ -43,7 +43,7 @@ public:
   constexpr signal() = default;
 
   auto connect(func_t&& func);
-  void disconnect(std::shared_ptr<slot> slot);
+  void disconnect(std::shared_ptr<slot>& slot);
 
   void emit(TArgs&&... args) const;
   void operator()(TArgs&&... args) const;
@@ -57,8 +57,7 @@ private:
     slot(signal& sig) 
       : sig{sig} {}
 
-    signal& sig;
-    func_t func;
+    signal& sig; func_t func;
   };
 
   std::vector< std::shared_ptr<slot> > slots_;
@@ -75,9 +74,10 @@ auto signal<TArgs...>::connect(func_t&& func)
 }
 
 template <typename... TArgs>
-void signal<TArgs...>::disconnect(std::shared_ptr<slot> slot)
+void signal<TArgs...>::disconnect(std::shared_ptr<slot>& slot)
 {
-  slots_.erase(std::find(slots_.begin(), slots_.end(), slot));
+  slots_.erase(std::remove(slots_.begin(), slots_.end(), slot), 
+               slots_.end());
 }
 
 template <typename... TArgs>
