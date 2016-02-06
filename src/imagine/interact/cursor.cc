@@ -55,6 +55,6 @@ cursor& cursor::operator=(const cursor& o)
 
 // void cursor::refresh() const;
 // std::pair<int, int> cursor::position(const window* ref);
-// void cursor::set_position(int x, int y, const window* ref);
+// void cursor::move(int x, int y, const window* ref);
 
 } // namespace ig

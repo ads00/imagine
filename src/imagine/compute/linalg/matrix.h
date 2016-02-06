@@ -106,13 +106,13 @@ public:
   const T& operator[](std::size_t n) const;
   T& operator[](std::size_t n);
 
-  auto set_eye() -> matrix&;
+  auto make_eye() -> matrix&;
 
   template < typename = std::enable_if_t<statics> >
-  static matrix eye()              { matrix eye{}; return eye.set_eye(); }
+  static matrix eye()              { matrix eye{}; return eye.make_eye(); }
 
   template < typename = std::enable_if_t<hybrids> >
-  static matrix eye(std::size_t n) { matrix eye{n}; return eye.set_eye(); }
+  static matrix eye(std::size_t n) { matrix eye{n}; return eye.make_eye(); }
 
 protected:
   std::size_t rows_, cols_;
@@ -158,7 +158,7 @@ auto matrix<T, M, N>::operator[](std::size_t n) -> T&
 
 // eye (identity)
 template <typename T, int M, int N>
-auto matrix<T, M, N>::set_eye() -> matrix&
+auto matrix<T, M, N>::make_eye() -> matrix&
 {
   std::size_t i = 0, stride = diagsize() + 1;
   std::generate(begin(), end(), [&i, &stride, this]() { return !(i++ % stride); });

@@ -35,10 +35,10 @@ const LPSTR CursorTbl[] =
   IDC_HAND,        // cursor::hand
   IDC_HAND,        // cursor::pointer
   IDC_HELP,        // cursor::help
-  IDC_SIZEALL,     // cursor::move
   IDC_APPSTARTING, // cursor::progress
   IDC_WAIT,        // cursor::wait
   IDC_IBEAM,       // cursor::text
+  IDC_SIZEALL,     // cursor::sizeall
   IDC_SIZENS,      // cursor::resize_n
   IDC_SIZENS,      // cursor::resize_s
   IDC_SIZEWE,      // cursor::resize_e
@@ -77,7 +77,7 @@ std::pair<int, int> cursor::position(const window* ref)
   return {point.x, point.y};
 }
 
-void cursor::set_position(int x, int y, const window* ref)
+void cursor::move(int x, int y, const window* ref)
 {
   POINT point{x, y};
   if (ref) ClientToScreen(ref->native_->handle_, &point);
