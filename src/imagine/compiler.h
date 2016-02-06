@@ -78,7 +78,7 @@ CLANG    - C++ front-end for the LLVM compiler
 # ifdef IG_WIN
 #  define IG_EXPORT __declspec(dllexport)
 #  define IG_IMPORT __declspec(dllimport)
-# elif IG_ANDROID
+# elif defined(IG_UNIX)
 #  define IG_EXPORT __attribute__((visibility("default")))
 #  define IG_IMPORT __attribute__((visibility("default")))
 # endif

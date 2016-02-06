@@ -25,6 +25,7 @@
 #define COMPUTE_ALG_H
 
 #include "imagine/compute/math.h"
+#include <numeric>
 #include <vector>
 #include <array>
 

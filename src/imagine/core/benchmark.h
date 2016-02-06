@@ -27,8 +27,10 @@
 #include "imagine.h"
 
 #include <chrono>
-#include <unordered_map>
 #include <functional>
+#include <unordered_map>
+#include <vector>
+#include <algorithm>
 
 namespace ig
 {
