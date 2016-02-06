@@ -25,6 +25,7 @@
 #define CORE_THREADPOOL_H
 
 #include "imagine.h"
+
 #include <future>
 #include <queue>
 
@@ -41,7 +42,7 @@ public:
   auto work(TFn&& f, TArgs&&... args)
   {
     using return_t = decltype(f(args...));
-    auto task = std::make_shared<
+    const auto task = std::make_shared<
       std::packaged_task<return_t()> >
       (std::bind(std::forward<TFn>(f), std::forward<TArgs>(args)...));
 

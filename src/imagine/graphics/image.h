@@ -43,7 +43,7 @@ public:
   const uint8_t* pixels() const { return pixels_.data(); }
   uint8_t* pixels()             { return pixels_.data(); }
 
-  const std::vector<unsigned int>& dimensions() const { return dimensions_; }
+  const auto& dimensions() const { return dimensions_; }
 
   unsigned int width() const  { return dimensions_[0]; }
   unsigned int height() const { return dimensions_[1]; }
