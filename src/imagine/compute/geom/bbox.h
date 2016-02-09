@@ -32,7 +32,7 @@ namespace ig
 class IG_API bbox
 {
 public:
-  bbox() = default;
+  constexpr bbox() = default;
   constexpr bbox(const vec3& min, const vec3& max);
 
   void expand(const vec3& point);

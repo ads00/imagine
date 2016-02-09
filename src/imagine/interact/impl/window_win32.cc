@@ -25,7 +25,6 @@
 #include "imagine/interact/impl/keyboard_native.h"
 #include "imagine/interact/impl/mouse_native.h"
 #include "imagine/interact/impl/cursor_native.h"
-#include "imagine/core/log.h"
 
 #ifdef IG_WIN64
 # define GCL_HCURSOR GCLP_HCURSOR

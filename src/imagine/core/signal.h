@@ -54,9 +54,7 @@ public:
 private:
   struct slot
   {
-    slot(signal& sig) 
-      : sig{sig} {}
-
+    slot(signal& sig) : sig{sig} {}
     signal& sig; func_t func;
   };
 

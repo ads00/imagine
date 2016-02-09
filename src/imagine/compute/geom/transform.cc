@@ -23,7 +23,6 @@
 
 #include "imagine/compute/geom/transform.h"
 #include "imagine/compute/linalg/geometric.h"
-#include "imagine/core/log.h"
 
 namespace ig
 {
