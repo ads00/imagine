@@ -42,14 +42,14 @@ template <typename TLhs, typename TRhs, typename TOp>
 class binary_expr : public alg< binary_expr<TLhs, TRhs, TOp> >
 {
 public:
-  binary_expr(const TLhs& lhs, const TRhs& rhs, const TOp& op)
+  constexpr binary_expr(const TLhs& lhs, const TRhs& rhs, const TOp& op)
     : lhs_{lhs}, rhs_{rhs}, op_{op} {}
 
   constexpr std::size_t rows() const { return lhs_.rows(); }
   constexpr std::size_t cols() const { return lhs_.cols(); }
 
-  U operator()(std::size_t row, std::size_t col) const { return op_(lhs_(row, col), rhs_(row, col)); }
-  U operator[](std::size_t n) const                    { return op_(lhs_[n], rhs_[n]); }
+  auto operator()(std::size_t row, std::size_t col) const { return op_(lhs_(row, col), rhs_(row, col)); }
+  auto operator[](std::size_t n) const                    { return op_(lhs_[n], rhs_[n]); }
 
 private:
   const TLhs lhs_;

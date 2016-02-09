@@ -41,17 +41,17 @@ template <typename TXpr>
 class alg_diag : public alg< alg_diag<TXpr> >
 {
 public:
-  alg_diag(TXpr& xpr)
+  constexpr alg_diag(TXpr& xpr)
     : xpr_{xpr} {}
 
   constexpr std::size_t rows() const { return xpr_.diagsize(); }
   constexpr std::size_t cols() const { return 1; }
 
-  U operator()(std::size_t row, std::size_t) const { return xpr_(row, row); }
-  T& operator()(std::size_t row, std::size_t)      { return xpr_(row, row); }
+  auto operator()(std::size_t row, std::size_t) const { return xpr_(row, row); }
+  auto& operator()(std::size_t row, std::size_t)      { return xpr_(row, row); }
 
-  U operator[](std::size_t n) const { return xpr_(n, n); }
-  T& operator[](std::size_t n)      { return xpr_(n, n); }
+  auto operator[](std::size_t n) const { return xpr_(n, n); }
+  auto& operator[](std::size_t n)      { return xpr_(n, n); }
 
   alg_diag& operator=(const alg_diag& o)
   {

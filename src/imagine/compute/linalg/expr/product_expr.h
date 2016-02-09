@@ -26,7 +26,6 @@
 
 #include "imagine/compute/linalg/base/alg.h"
 #include "imagine/compute/linalg/operation.h"
-#include "imagine/core/log.h"
 
 namespace ig
 {
@@ -43,22 +42,25 @@ template <typename TLhs, typename TRhs>
 class product_expr : public alg< product_expr<TLhs, TRhs> >
 {
 public:
-  product_expr(const TLhs& lhs, const TRhs& rhs) 
+  constexpr product_expr(const TLhs& lhs, const TRhs& rhs) 
     : lhs_{lhs}, rhs_{rhs} {}
 
   constexpr std::size_t rows() const { return lhs_.rows(); }
   constexpr std::size_t cols() const { return rhs_.cols(); }
 
-  T row_col_multiply(std::size_t row, std::size_t col) const
+  auto row_col_multiply(std::size_t row, std::size_t col) const
   {
+    using T = typename alg_t< 
+      std::remove_pointer_t<decltype(this)> >;
+
     T val = T(0);
     for (std::size_t i = 0; i < lhs_.cols(); ++i)
       val += lhs_(row, i) * rhs_(i, col);
     return val;
   }
 
-  U operator()(std::size_t row, std::size_t col) const { return row_col_multiply(row, col); }
-  U operator[](std::size_t n) const                    { return row_col_multiply(n % rows(), n / rows()); }
+  auto operator()(std::size_t row, std::size_t col) const { return row_col_multiply(row, col); }
+  auto operator[](std::size_t n) const = delete;
 
 private:
   const TLhs lhs_;

@@ -47,11 +47,11 @@ public:
   constexpr std::size_t rows() const { return xpr_.rows(); }
   constexpr std::size_t cols() const { return 1; }
 
-  U operator()(std::size_t row, std::size_t) const { return xpr_(row, col_); }
-  T& operator()(std::size_t row, std::size_t)      { return xpr_(row, col_); }
+  auto operator()(std::size_t row, std::size_t) const { return xpr_(row, col_); }
+  auto& operator()(std::size_t row, std::size_t)      { return xpr_(row, col_); }
 
-  U operator[](std::size_t n) const { return xpr_(n, col_); }
-  T& operator[](std::size_t n)      { return xpr_(n, col_); }
+  auto operator[](std::size_t n) const { return xpr_(n, col_); }
+  auto& operator[](std::size_t n)      { return xpr_(n, col_); }
 
   alg_col& operator=(const alg_col& o)
   {

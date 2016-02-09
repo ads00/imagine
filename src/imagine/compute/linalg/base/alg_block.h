@@ -52,11 +52,11 @@ public:
   constexpr std::size_t rows() const { return nr_; }
   constexpr std::size_t cols() const { return nc_; }
 
-  U operator()(std::size_t row, std::size_t col) const { return xpr_(row_ + row, col_ + col); }
-  T& operator()(std::size_t row, std::size_t col)      { return xpr_(row_ + row, col_ + col); }
+  auto operator()(std::size_t row, std::size_t col) const { return xpr_(row_ + row, col_ + col); }
+  auto& operator()(std::size_t row, std::size_t col)      { return xpr_(row_ + row, col_ + col); }
 
-  U operator[](std::size_t n) const { return xpr_[(col_ + n/nr_)*xpr_.rows() + (row_ + (n%nr_))]; }
-  T& operator[](std::size_t n)      { return xpr_[(col_ + n/nr_)*xpr_.rows() + (row_ + (n%nr_))]; }
+  auto operator[](std::size_t n) const = delete;
+  auto& operator[](std::size_t n)      = delete;
 
   alg_block& operator=(const alg_block& o)
   {

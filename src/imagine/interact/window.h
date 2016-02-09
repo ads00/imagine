@@ -44,14 +44,14 @@ public:
     closable  = 0x01,
     resizable = 0x02,
     titlebar  = 0x04,
-    default   = closable | resizable | titlebar
+    default_  = closable | resizable | titlebar
   };
 
   friend class cursor;
   using style_ft = flags<style_t>;
 
   constexpr window();
-  constexpr window(const std::string& caption, unsigned int width, unsigned int height, style_ft style = style_t::default);
+  constexpr window(const std::string& caption, unsigned int width, unsigned int height, style_ft style = style_t::default_);
   virtual ~window();
 
   void close();

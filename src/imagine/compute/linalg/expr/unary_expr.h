@@ -42,14 +42,14 @@ template <typename TAlg, typename TOp>
 class unary_expr : public alg< unary_expr<TAlg, TOp> >
 {
 public:
-  unary_expr(const TAlg& alg, const TOp& op)
+  constexpr unary_expr(const TAlg& alg, const TOp& op)
     : alg_{alg}, op_{op} {}
 
   constexpr std::size_t rows() const { return alg_.rows(); }
   constexpr std::size_t cols() const { return alg_.cols(); }
 
-  U operator()(std::size_t row, std::size_t col) const { return op_(alg_(row, col)); }
-  U operator[](std::size_t n) const                    { return op_(alg_[n]); }
+  auto operator()(std::size_t row, std::size_t col) const { return op_(alg_(row, col)); }
+  auto operator[](std::size_t n) const                    { return op_(alg_[n]); }
 
 private:
   const TAlg alg_;

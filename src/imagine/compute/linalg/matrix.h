@@ -67,17 +67,17 @@ public:
   constexpr matrix() : rows_{M}, cols_{N}, data_{} {}
 
   template < typename = std::enable_if_t<statics> >
-  constexpr matrix(std::initializer_list<T> args) 
+  constexpr matrix(std::initializer_list<T> args)
     : rows_{M}, cols_{N}, data_{}
   {
     [&args, this]()
     {
-      std::size_t n = 0;
-      for (auto it = args.begin(); it != args.end(); ++it, ++n)
-        data_[(n * rows_) % size() + (n / cols_)] = *(it);
+      auto it = args.begin();
+      for (std::size_t r = 0; r < rows_; ++r)
+        for (std::size_t c = 0; c < cols_; ++c) data_[c*rows_ + r] = *(it)++;
 
-      if (n != size()) std::uninitialized_fill(data_.begin() + n, data_.end(),
-                                               *(args.begin()));
+      if (args.size() != size()) std::uninitialized_fill(data_.begin() + args.size(), data_.end(),
+                                                        *(args.begin()));
     }();
   }
 
@@ -131,28 +131,28 @@ constexpr matrix<T, M, N>::matrix(const alg<TAlg>& o)
 template <typename T, int M, int N>
 auto matrix<T, M, N>::operator()(std::size_t row, std::size_t col) const -> const T&
 {
-  assert(row < rows() && col < cols() && "Invalid matrix subscript");
-  return data_[col*rows() + row];
+  assert(row < rows_ && col < cols_ && "Invalid matrix subscript");
+  return data_[col*rows_ + row];
 }
 
 template <typename T, int M, int N>
 auto matrix<T, M, N>::operator()(std::size_t row, std::size_t col) -> T&
 {
-  assert(row < rows() && col < cols() && "Invalid matrix subscript");
-  return data_[col*rows() + row];
+  assert(row < rows_ && col < cols_ && "Invalid matrix subscript");
+  return data_[col*rows_ + row];
 }
 
 template <typename T, int M, int N>
 auto matrix<T, M, N>::operator[](std::size_t n) const -> const T&
 {
-  assert(n < rows() * cols() && "Invalid matrix subscript");
+  assert(n < rows_ * cols_ && "Invalid matrix subscript");
   return data_[n];
 }
 
 template <typename T, int M, int N>
 auto matrix<T, M, N>::operator[](std::size_t n) -> T&
 {
-  assert(n < rows() * cols() && "Invalid matrix subscript");
+  assert(n < rows_ * cols_ && "Invalid matrix subscript");
   return data_[n];
 }
 

@@ -42,14 +42,14 @@ template <typename TAlg, typename TOp>
 class scalar_expr : public alg< scalar_expr<TAlg, TOp> >
 {
 public:
-  scalar_expr(const TAlg& alg, const T scalar, const TOp& op)
+  constexpr scalar_expr(const TAlg& alg, const T scalar, const TOp& op)
     : alg_{alg}, scalar_{scalar}, op_{op} {}
 
   constexpr std::size_t rows() const { return alg_.rows(); }
   constexpr std::size_t cols() const { return alg_.cols(); }
 
-  U operator()(std::size_t row, std::size_t col) const { return op_(alg_(row, col), scalar_); }
-  U operator[](std::size_t n) const                    { return op_(alg_[n], scalar_); }
+  auto operator()(std::size_t row, std::size_t col) const { return op_(alg_(row, col), scalar_); }
+  auto operator[](std::size_t n) const                    { return op_(alg_[n], scalar_); }
 
 private:
   const TAlg alg_;
