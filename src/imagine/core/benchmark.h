@@ -35,55 +35,45 @@
 namespace ig
 {
 
+struct IG_API benchmark_report
+{
+  constexpr benchmark_report(const std::string& n, const std::vector<double>& s);
+
+  std::string name;
+  std::vector<double> samples;
+};
+
 class IG_API benchmark
 {
 public:
-  template <typename T> struct single_report;
-
   static void run(std::function<void ()> func, const std::string& name, std::size_t runs = 1);
-  static void limit(std::size_t limit) { limit_ = limit; }
 
   template <typename T = std::chrono::microseconds> 
-  static auto report()
+  static auto process()
   {
-    std::vector< single_report<T> > reporter;
+    std::vector<benchmark_report> rep; rep.reserve(benchs_.size());
     for (auto& bench : benchs_)
     {
-      const uint64_t total = 
-        std::accumulate(bench.second.begin(), bench.second.end(), uint64_t(0),
-                        [](const uint64_t& t, const auto& b) { return t + std::chrono::duration_cast<T>(b).count(); });
+      std::vector<double> samples; samples.reserve(bench.second.size());
+      std::for_each(bench.second.begin(), bench.second.end(), [&samples](auto& s)
+      {
+        samples.emplace_back(static_cast<double>(
+          std::chrono::duration_cast<T>(s).count()));
+      });
 
-      const auto minmax = std::minmax_element(bench.second.begin(), bench.second.end());
-      const auto min = std::chrono::duration_cast<T>(*(minmax.first));
-      const auto max = std::chrono::duration_cast<T>(*(minmax.second));
-      const auto avg = static_cast<double>(total / bench.second.size());
-      
-      reporter.emplace_back(bench.first, total, min.count(), max.count(),
-                            avg, bench.second.size());
+      rep.emplace_back(bench.first, samples);
     }
 
-    return reporter;
+    return rep;
   }
 
   benchmark(const benchmark&) = delete;
   benchmark& operator=(const benchmark&) = delete;
 
 private:
-  template <typename T>
-  struct single_report
-  {
-    single_report(const std::string& n, uint64_t t, uint64_t mi, uint64_t ma, double a, std::size_t r)
-      : name{n}, total{t}, min{mi}, max{ma}, avg{a}, runs{r} {}
-    
-    std::string name;
-    uint64_t total, min, max;
-    double avg; std::size_t runs;
-  };
-
   constexpr benchmark() = default;
 
   static std::unordered_map< std::string, std::vector<std::chrono::microseconds> > benchs_;
-  static std::size_t limit_;
 };
 
 } // namespace ig

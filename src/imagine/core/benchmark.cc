@@ -27,6 +27,13 @@
 namespace ig
 {
 
+// benchmark_report
+constexpr benchmark_report::benchmark_report(const std::string& n, const std::vector<double>& s)
+  : name{n}, samples{s}
+{
+}
+
+// benchmark
 void benchmark::run(std::function<void ()> func, const std::string& name, std::size_t runs)
 {
   std::vector<std::chrono::microseconds> runner(runs);
@@ -39,16 +46,14 @@ void benchmark::run(std::function<void ()> func, const std::string& name, std::s
   }
 
   const auto it = benchs_.find(name);
-  if (it == benchs_.end())
-    benchs_.emplace(name, runner);
+  if (it == benchs_.end()) benchs_.emplace(name, runner);
   else
   {
     auto& v = it->second;
-    if (v.size() < limit_) v.insert(v.end(), runner.begin(), runner.end());
+    v.insert(v.end(), runner.begin(), runner.end());
   }
 }
 
 std::unordered_map< std::string, std::vector<std::chrono::microseconds> > benchmark::benchs_;
-std::size_t benchmark::limit_ = 100000;
 
 } // namespace ig

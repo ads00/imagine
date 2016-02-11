@@ -38,7 +38,11 @@ class signal
 {
 public:
   using func_t = std::function<void (TArgs...)>;
-  struct slot;
+  struct slot
+  {
+    slot(signal& sig) : sig{sig} {}
+    signal& sig; func_t func;
+  };
 
   constexpr signal() = default;
 
@@ -52,12 +56,6 @@ public:
   signal& operator=(const signal&) = delete;
 
 private:
-  struct slot
-  {
-    slot(signal& sig) : sig{sig} {}
-    signal& sig; func_t func;
-  };
-
   std::vector< std::shared_ptr<slot> > slots_;
 };
 
