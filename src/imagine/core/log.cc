@@ -31,7 +31,7 @@ namespace ig
 
 // log_context
 constexpr log_context::log_context(log_t type, const char* func, const char* file, int line)
-  : type_{type}, func_{func}, file_{file}, line_{line}
+  : type{type}, func{func}, file{file}, line{line}
 {
 }
 
@@ -67,7 +67,7 @@ void log::push(const log_context& c)
 log::formatter_t log::default_format = [](const log_context& c)
 {
   std::stringstream ss;
-  switch (c.type_)
+  switch (c.type)
   {
   case log_t::info:  ss << "[Info]  "; break;
   case log_t::dbg:   ss << "[Debug] "; break;
@@ -75,7 +75,7 @@ log::formatter_t log::default_format = [](const log_context& c)
   case log_t::fatal: ss << "[Fatal] "; break;
   }
 
-  ss << '[' << c.func_ << '@' << c.line_ << "] " << c.stream_.str() << std::endl;
+  ss << '[' << c.func << '@' << c.line << "] " << c.stream.str() << std::endl;
   return ss.str();
 };
 

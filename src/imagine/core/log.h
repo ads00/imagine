@@ -36,15 +36,14 @@ namespace ig
 {
 
 enum log_t { info, dbg, warn, fatal };
-
 struct IG_API log_context
 {
   constexpr log_context(log_t type, const char* func, const char* file, int line);
   ~log_context();
 
-  log_t type_;
-  std::ostringstream stream_;
-  const char* func_, * file_; int line_;
+  log_t type;
+  std::stringstream stream;
+  const char* func, *file; int line;
 };
 
 class log_sink;
@@ -53,7 +52,7 @@ class IG_API log
 public:
   friend log_context;
   using formatter_t = std::function<std::string (const log_context&)>;
-
+  
   static void add_sink(std::shared_ptr<log_sink>& sink);
   static void remove_sink(std::shared_ptr<log_sink>& sink);
 
@@ -76,18 +75,20 @@ protected:
 class log_sink
 {
 public:
+  friend log;
   log_sink(std::ostream& s, log::formatter_t format = log::default_format)
     : stream_{s}, formatter_{format} {}
 
+private:
   void consume(const log_context& c) { stream_ << formatter_(c); }
 
-private:
   std::ostream& stream_;
   log::formatter_t formatter_;
 };
 
 } // namespace ig
 
-#define IG_LOG(log_t) ig::log_context(log_t, IG_FUNC, __FILE__, __LINE__).stream_
+#define IG_LOG(log_t) ig::log_context(log_t, IG_FUNC, __FILE__, __LINE__).stream
+
 
 #endif // CORE_LOG_H
