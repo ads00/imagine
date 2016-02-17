@@ -37,10 +37,10 @@ namespace ig
 
 struct IG_API benchmark_report
 {
-  constexpr benchmark_report(const std::string& n, const std::vector<double>& s);
+  constexpr benchmark_report(const std::string& n, const std::vector<uint64_t>& s);
 
   std::string name;
-  std::vector<double> samples;
+  std::vector<uint64_t> samples;
 };
 
 class IG_API benchmark
@@ -48,17 +48,17 @@ class IG_API benchmark
 public:
   static void run(std::function<void ()> func, const std::string& name, std::size_t runs = 1);
 
-  template <typename T = std::chrono::microseconds> 
-  static auto process()
+  template <typename T = std::chrono::microseconds>
+  static auto reports()
   {
     std::vector<benchmark_report> rep; rep.reserve(benchs_.size());
     for (auto& bench : benchs_)
     {
-      std::vector<double> samples; samples.reserve(bench.second.size());
+      std::vector<uint64_t> samples; samples.reserve(bench.second.size());
       std::for_each(bench.second.begin(), bench.second.end(), [&samples](auto& s)
       {
-        samples.emplace_back(static_cast<double>(
-          std::chrono::duration_cast<T>(s).count()));
+        samples.emplace_back(
+          std::chrono::duration_cast<T>(s).count());
       });
 
       rep.emplace_back(bench.first, samples);

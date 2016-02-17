@@ -25,12 +25,9 @@
 #include "imagine/core/log.h"
 #include <memory>
 
-extern "C"
-{
 #include "jpeg/jpeglib.h"
 #include "jpeg/jerror.h"
-#include <setjmp.h>
-}
+#include <csetjmp>
 
 namespace ig     {
 namespace detail {

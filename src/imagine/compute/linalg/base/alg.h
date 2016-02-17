@@ -87,6 +87,8 @@ public:
     bool operator==(const iterator& o) { return pos_ == o.pos_; }
     bool operator!=(const iterator& o) { return pos_ != o.pos_; }
 
+    bool operator<(const iterator& o) { return pos_ < o.pos_; }
+
     TIt operator*() const { return derived_[pos_]; }
 
   private:

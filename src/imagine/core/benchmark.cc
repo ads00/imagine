@@ -28,7 +28,7 @@ namespace ig
 {
 
 // benchmark_report
-constexpr benchmark_report::benchmark_report(const std::string& n, const std::vector<double>& s)
+constexpr benchmark_report::benchmark_report(const std::string& n, const std::vector<uint64_t>& s)
   : name{n}, samples{s}
 {
 }
