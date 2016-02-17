@@ -26,7 +26,7 @@
 
 #include "imagine/interact/keyboard.h"
 
-#ifdef IG_WIN
+#if defined(IG_WIN)
 #include <windows.h>
 #endif
 
@@ -34,7 +34,7 @@ namespace ig       {
 namespace impl     {
 namespace keyboard {
 
-#ifdef IG_WIN
+#if defined(IG_WIN)
 modifier_ft modifiers();
 key_t key(WPARAM wparam);
 #endif

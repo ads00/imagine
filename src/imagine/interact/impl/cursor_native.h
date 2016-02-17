@@ -39,7 +39,7 @@ public:
   cursor::shape_t shape_;
   int hotspotx_, hotspoty_;
 
-  #ifdef IG_WIN
+  #if defined(IG_WIN)
   HCURSOR handle_;
   #endif
 };

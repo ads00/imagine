@@ -50,7 +50,7 @@ CLANG    - C++ front-end for the LLVM compiler
 #elif defined(__ARMCC__) || defined(__CC_ARM)
 # define IG_RVCT
 # define IG_DEPRECATED __attribute__((__deprecated__))
-# ifdef IG_LINUX
+# if defined(IG_LINUX)
 #  define IG_EXPORT __attribute__((visibility("default")))
 #  define IG_IMPORT __attribute__((visibility("default")))
 # else
@@ -65,7 +65,7 @@ CLANG    - C++ front-end for the LLVM compiler
 # endif
 # if defined(__INTEL_COMPILER)
 #  define IG_INTEL (__INTEL_COMPILER)
-#   ifdef (__clang__)
+#   if defined(__clang__)
 #    define IG_CLANG 305
 #   endif
 # elif defined(__clang__)
@@ -75,7 +75,7 @@ CLANG    - C++ front-end for the LLVM compiler
 #   define IG_DEPRECATED_X(text) __attribute__((__deprecated__(text)))
 #  endif
 # endif
-# ifdef IG_WIN
+# if defined(IG_WIN)
 #  define IG_EXPORT __declspec(dllexport)
 #  define IG_IMPORT __declspec(dllimport)
 # elif defined(IG_UNIX)
@@ -92,10 +92,10 @@ CLANG    - C++ front-end for the LLVM compiler
 #endif
 
 #if defined(IG_SHARED) || !defined(IG_STATIC)
-# ifdef IG_STATIC
+# if defined(IG_STATIC)
 #  error "Both IG_SHARED and IG_STATIC defined, ambigous compilation"
 # endif
-# ifndef IG_SHARED
+# if !defined(IG_SHARED)
 #  define IG_SHARED
 # endif
 # if defined(IG_BUILD)

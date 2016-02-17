@@ -26,7 +26,7 @@
 
 #include "imagine/interact/mouse.h"
 
-#ifdef IG_WIN
+#if defined(IG_WIN)
 #include <windows.h>
 #include <windowsx.h>
 #endif
@@ -35,7 +35,7 @@ namespace ig    {
 namespace impl  {
 namespace mouse {
 
-#ifdef IG_WIN
+#if defined(IG_WIN)
 button_ft buttons();
 int x(LPARAM lparam);
 int y(LPARAM lparam);

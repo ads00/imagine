@@ -44,7 +44,7 @@ ANDROID  - Android platform
 # define IG_DARWIN
 # define IG_BSD4
 
-# ifdef _LP64_
+# if defined(_LP64_)
 #  define IG_DARWIN64
 # else
 #  define IG_DARWIN32

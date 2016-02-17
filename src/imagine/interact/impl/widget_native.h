@@ -26,7 +26,7 @@
 
 #include "imagine.h"
 
-#ifdef IG_WIN
+#if defined(IG_WIN)
  #define ISOLATION_AWARE_ENABLED 1
  #include <windows.h>
  #include <commctrl.h>

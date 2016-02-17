@@ -26,7 +26,7 @@
 #include "imagine/interact/impl/mouse_native.h"
 #include "imagine/interact/impl/cursor_native.h"
 
-#ifdef IG_WIN64
+#if defined(IG_WIN64)
 # define GCL_HCURSOR GCLP_HCURSOR
 # define GWL_USERDATA GWLP_USERDATA
 #endif

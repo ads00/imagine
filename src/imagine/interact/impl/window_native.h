@@ -54,7 +54,7 @@ public:
   cursor cursor_;
   std::shared_ptr<events> events_;
 
-  #ifdef IG_WIN
+  #if defined(IG_WIN)
   LRESULT internal(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
   static LRESULT CALLBACK proc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
   static bool reg();
