@@ -21,35 +21,69 @@
  SOFTWARE.
 */
 
-#include "imagine/interact/impl/dispatcher_native.h"
-#include "imagine/interact/dispatcher.h"
-#include "imagine/interact/events.h"
-#include <windows.h>
+#include "imagine/interact/impl/library_native.h"
+#include "imagine/interact/library.h"
 
 namespace ig   {
 namespace impl {
 
-dispatcher_native::dispatcher_native()
-  : return_code_{-1}, running_{false}
+library_native::library_native()
+  : path_{}, handle_{nullptr}
+{
+}
+
+library_native::library_native(const std::string& path)
+  : path_{path}, handle_{nullptr}
 {
 }
 
 } // namespace impl
 
-bool dispatcher::process_events()
+auto library::resolve(const char* symbol) -> func_ptr
 {
-  MSG msg;
-  while (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
+  if (!native_->handle_) return nullptr;
+  else
   {
-    if (msg.message == WM_QUIT)
-      return false;
+    func_ptr ptr = reinterpret_cast<func_ptr>(
+      GetProcAddress(native_->handle_, symbol));
 
-    TranslateMessage(&msg);
-    DispatchMessage(&msg);
+    if (!ptr)
+    {
+      throw std::runtime_error
+        ("Failed to resolve symbol from " + native_->path_);
+    }
+
+    return ptr;
+  }
+}
+
+bool library::open(const std::string& path)
+{
+  if (native_->handle_)
+  {
+    if (native_->path_ != path) close();
+    else return true;
   }
 
-  handle();
+  native_->handle_ = LoadLibraryA(path.c_str());
+  if (!native_->handle_)
+  {
+    throw std::runtime_error
+      ("Failed to open dynamic library");
+  }
+
+  native_->path_ = path;
   return true;
+}
+
+void library::close()
+{
+  if (!native_->handle_) return;
+  else
+  {
+    FreeLibrary(native_->handle_);
+    native_->handle_ = nullptr;
+  }
 }
 
 } // namespace ig

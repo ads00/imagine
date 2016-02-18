@@ -21,35 +21,42 @@
  SOFTWARE.
 */
 
-#include "imagine/interact/impl/dispatcher_native.h"
-#include "imagine/interact/dispatcher.h"
-#include "imagine/interact/events.h"
-#include <windows.h>
+#ifndef INTERACT_LIBRARY_H
+#define INTERACT_LIBRARY_H
 
-namespace ig   {
-namespace impl {
+#include "imagine.h"
+#include <memory>
 
-dispatcher_native::dispatcher_native()
-  : return_code_{-1}, running_{false}
+namespace ig
 {
-}
 
-} // namespace impl
+namespace impl { struct library_native; }
 
-bool dispatcher::process_events()
+class IG_API library
 {
-  MSG msg;
-  while (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
-  {
-    if (msg.message == WM_QUIT)
-      return false;
+public:
+  typedef void (*func_ptr)();
 
-    TranslateMessage(&msg);
-    DispatchMessage(&msg);
-  }
+  constexpr library();
+  library(const std::string& path);
+  ~library();
 
-  handle();
-  return true;
-}
+  auto resolve(const char* symbol) -> func_ptr;
+  
+  bool open(const std::string& path);
+  void close();
+
+  bool loaded() const;
+
+  static auto resolve(const std::string& path, const char* symbol) -> func_ptr;
+
+  library(const library&) = delete;
+  library& operator=(const library&) = delete;
+
+private:
+  std::unique_ptr<impl::library_native> native_;
+};
 
 } // namespace ig
+
+#endif // INTERACT_LIBRARY_H

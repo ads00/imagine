@@ -21,35 +21,44 @@
  SOFTWARE.
 */
 
-#include "imagine/interact/impl/dispatcher_native.h"
-#include "imagine/interact/dispatcher.h"
-#include "imagine/interact/events.h"
-#include <windows.h>
+#include "imagine/interact/library.h"
+#include "imagine/interact/impl/library_native.h"
 
-namespace ig   {
-namespace impl {
+namespace ig
+{
 
-dispatcher_native::dispatcher_native()
-  : return_code_{-1}, running_{false}
+constexpr library::library()
+  : native_{std::make_unique<impl::library_native>()}
 {
 }
 
-} // namespace impl
-
-bool dispatcher::process_events()
+library::library(const std::string& path)
+  : native_{std::make_unique<impl::library_native>(path)}
 {
-  MSG msg;
-  while (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
-  {
-    if (msg.message == WM_QUIT)
-      return false;
-
-    TranslateMessage(&msg);
-    DispatchMessage(&msg);
-  }
-
-  handle();
-  return true;
+  open(path);
 }
+
+library::~library()
+{
+  close();
+}
+
+bool library::loaded() const
+{
+  return native_->handle_ != nullptr;
+}
+
+auto library::resolve(const std::string& path, const char* symbol) -> func_ptr
+{
+  library l{path};
+  return l.resolve(symbol);
+}
+
+// Native implementations
+//
+
+// auto library::resolve(const char* symbol) -> func_ptr;
+// bool library::open(const std::string& path);
+// void library::close();
 
 } // namespace ig

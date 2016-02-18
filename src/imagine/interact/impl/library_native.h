@@ -21,35 +21,33 @@
  SOFTWARE.
 */
 
-#include "imagine/interact/impl/dispatcher_native.h"
-#include "imagine/interact/dispatcher.h"
-#include "imagine/interact/events.h"
+#ifndef INTERACT_LIBRARY_NATIVE_H
+#define INTERACT_LIBRARY_NATIVE_H
+
+#include "imagine.h"
+
+#if defined(IG_WIN)
 #include <windows.h>
+#endif
 
 namespace ig   {
 namespace impl {
 
-dispatcher_native::dispatcher_native()
-  : return_code_{-1}, running_{false}
+struct library_native
 {
-}
+public:
+  library_native();
+  library_native(const std::string& path);
+  ~library_native() = default;
+
+  std::string path_;
+
+  #if defined(IG_WIN)
+  HMODULE handle_;
+  #endif
+};
 
 } // namespace impl
-
-bool dispatcher::process_events()
-{
-  MSG msg;
-  while (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
-  {
-    if (msg.message == WM_QUIT)
-      return false;
-
-    TranslateMessage(&msg);
-    DispatchMessage(&msg);
-  }
-
-  handle();
-  return true;
-}
-
 } // namespace ig
+
+#endif // INTERACT_LIBRARY_NATIVE_H
