@@ -161,8 +161,8 @@ eigen<TAlg, true>::eigen(const matrix_t& alg)
       if (m == l) break;
       if (it == sweeps)
       {
-        std::logic_error exc("Eigendecomposition failed (No convergence)");
-        std::throw_with_nested(exc);
+        throw std::logic_error
+          ("Eigendecomposition failed (No convergence)");
       }
 
       // Compute implicit shift

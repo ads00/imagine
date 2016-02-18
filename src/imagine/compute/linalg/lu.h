@@ -93,8 +93,8 @@ lu<TAlg>::lu(const matrix_t& alg)
 
     if (piv == T(0))
     {
-      std::logic_error exc("LU decomposition failed (Singular matrix)");
-      std::throw_with_nested(exc);
+      throw std::logic_error
+        ("LU decomposition failed (Singular matrix)");
     }
 
     // Partial row pivoting

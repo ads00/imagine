@@ -257,8 +257,8 @@ svd<TAlg>::svd(const matrix_t& alg)
       // No convergence after x sweeps
       if (it == sweeps)
       {
-        std::logic_error exc("Singular value decomposition failed (No convergence)");
-        std::throw_with_nested(exc);
+        throw std::logic_error
+          ("Singular value decomposition failed (No convergence)");
       }
 
       // Shift from bottom 2x2 minor

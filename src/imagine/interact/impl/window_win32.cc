@@ -43,8 +43,8 @@ window_native::window_native(const window* ref)
 {
   if (!reg())
   {
-    std::runtime_error exc("Failed to register wndclass");
-    std::throw_with_nested(exc);
+    throw std::runtime_error
+      ("Failed to register wndclass instance");
   }
 
   handle_ = CreateWindowEx(0, ig_window_class.data(), "", 0,
@@ -59,8 +59,8 @@ window_native::window_native(const window* ref, const std::string& caption, unsi
 {
   if (!reg())
   {
-    std::runtime_error exc("Failed to register wndclass");
-    std::throw_with_nested(exc);
+    throw std::runtime_error
+      ("Failed to register wndclass instance");
   }
 
   wstyle_ = WS_VISIBLE;
