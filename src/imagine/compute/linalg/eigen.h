@@ -43,14 +43,14 @@ namespace ig
  D is stored in a computed matrix and contains the eigenvalues on its diagonal
 */
 
-template <typename TAlg, bool Sym = false> class eigen;
+template <typename Alg, bool Sym = false> class eigen;
 
 // Symmetric eigendecomposition
-template <typename TAlg>
-class eigen<TAlg, true>
+template <typename Alg>
+class eigen<Alg, true>
 {
 public:
-  using T = typename TAlg::T;
+  using T = alg_t<Alg>;
   using matrix_t = matrix<T>;
   using vector_t = vector<T>;
 
@@ -69,8 +69,8 @@ private:
   vector_t D_;
 };
 
-template <typename TAlg>
-eigen<TAlg, true>::eigen(const matrix_t& alg)
+template <typename Alg>
+eigen<Alg, true>::eigen(const matrix_t& alg)
   : N_{alg.diagsize()}, V_{alg}, D_{N_}
 {
   vector_t work{N_};
@@ -213,11 +213,11 @@ eigen<TAlg, true>::eigen(const matrix_t& alg)
 namespace linalg
 {
 
-template <typename TAlg>
-eigen<TAlg, true> eig_sym_run(const alg<TAlg>& alg)
+template <typename Alg>
+eigen<Alg, true> eig_sym_run(const alg<Alg>& alg)
 {
   assert(alg.square() && "Eigendecomposition requires a square matrix");
-  return eigen<TAlg, true>(alg);
+  return eigen<Alg, true>(alg);
 }
 
 } // namespace linalg

@@ -30,19 +30,19 @@
 namespace ig
 {
 
-template <typename TLhs, typename TRhs, typename TOp>
-struct alg_traits< binary_expr<TLhs, TRhs, TOp> >
+template <typename Lhs, typename Rhs, typename Op>
+struct alg_traits< binary_expr<Lhs, Rhs, Op> >
 {
-  using T = std::common_type_t< alg_t<TLhs>, alg_t<TRhs> >;
-  static constexpr int M = TLhs::M;
-  static constexpr int N = TLhs::N;
+  using T = std::common_type_t< alg_t<Lhs>, alg_t<Rhs> >;
+  static constexpr int M = Lhs::M;
+  static constexpr int N = Lhs::N;
 };
 
-template <typename TLhs, typename TRhs, typename TOp>
-class binary_expr : public alg< binary_expr<TLhs, TRhs, TOp> >
+template <typename Lhs, typename Rhs, typename Op>
+class binary_expr : public alg< binary_expr<Lhs, Rhs, Op> >
 {
 public:
-  constexpr binary_expr(const TLhs& lhs, const TRhs& rhs, const TOp& op)
+  constexpr binary_expr(const Lhs& lhs, const Rhs& rhs, const Op& op)
     : lhs_{lhs}, rhs_{rhs}, op_{op} {}
 
   constexpr std::size_t rows() const { return lhs_.rows(); }
@@ -52,37 +52,37 @@ public:
   auto operator[](std::size_t n) const                    { return op_(lhs_[n], rhs_[n]); }
 
 private:
-  const TLhs lhs_;
-  const TRhs rhs_;
-  const TOp op_;
+  const Lhs lhs_;
+  const Rhs rhs_;
+  const Op op_;
 };
 
-template <typename TLhs, typename TRhs>
-constexpr auto operator+(const alg<TLhs>& lhs, const alg<TRhs>& rhs)
+template <typename Lhs, typename Rhs>
+constexpr auto operator+(const alg<Lhs>& lhs, const alg<Rhs>& rhs)
 {
   assert(lhs.size() == rhs.size() && "Incoherent matrix-matrix addition");
-  return binary_expr< TLhs, TRhs, std::plus<> >{lhs.derived(), rhs.derived(), std::plus<>{}};
+  return binary_expr< Lhs, Rhs, std::plus<> >{lhs.derived(), rhs.derived(), std::plus<>{}};
 }
 
-template <typename TLhs, typename TRhs>
-constexpr auto operator-(const alg<TLhs>& lhs, const alg<TRhs>& rhs)
+template <typename Lhs, typename Rhs>
+constexpr auto operator-(const alg<Lhs>& lhs, const alg<Rhs>& rhs)
 {
   assert(lhs.size() == rhs.size() && "Incoherent matrix-matrix subtraction");
-  return binary_expr< TLhs, TRhs, std::minus<> >{lhs.derived(), rhs.derived(), std::minus<>{}};
+  return binary_expr< Lhs, Rhs, std::minus<> >{lhs.derived(), rhs.derived(), std::minus<>{}};
 }
 
-template <typename TLhs, typename TRhs>
-constexpr auto operator/(const alg<TLhs>& lhs, const alg<TRhs>& rhs)
+template <typename Lhs, typename Rhs>
+constexpr auto operator/(const alg<Lhs>& lhs, const alg<Rhs>& rhs)
 {
   assert(lhs.size() == rhs.size() && "Incoherent matrix-matrix division");
-  return binary_expr< TLhs, TRhs, std::divides<> >{lhs.derived(), rhs.derived(), std::divides<>{}};
+  return binary_expr< Lhs, Rhs, std::divides<> >{lhs.derived(), rhs.derived(), std::divides<>{}};
 }
 
-template <typename TLhs, typename TRhs>
-constexpr auto operator%(const alg<TLhs>& lhs, const alg<TRhs>& rhs)
+template <typename Lhs, typename Rhs>
+constexpr auto operator%(const alg<Lhs>& lhs, const alg<Rhs>& rhs)
 {
   assert(lhs.size() == rhs.size() && "Incoherent matrix cwise multiplication");
-  return binary_expr< TLhs, TRhs, std::multiplies<> >{lhs.derived(), rhs.derived(), std::multiplies<>{}};
+  return binary_expr< Lhs, Rhs, std::multiplies<> >{lhs.derived(), rhs.derived(), std::multiplies<>{}};
 }
 
 } // namespace ig

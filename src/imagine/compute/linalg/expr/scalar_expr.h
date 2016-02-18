@@ -30,19 +30,19 @@
 namespace ig
 {
 
-template <typename TAlg, typename TOp>
-struct alg_traits< scalar_expr<TAlg, TOp> >
+template <typename Alg, typename Op>
+struct alg_traits< scalar_expr<Alg, Op> >
 {
-  using T = alg_t<TAlg>;
-  static constexpr int M = TAlg::M;
-  static constexpr int N = TAlg::N;
+  using T = alg_t<Alg>;
+  static constexpr int M = Alg::M;
+  static constexpr int N = Alg::N;
 };
 
-template <typename TAlg, typename TOp>
-class scalar_expr : public alg< scalar_expr<TAlg, TOp> >
+template <typename Alg, typename Op>
+class scalar_expr : public alg< scalar_expr<Alg, Op> >
 {
 public:
-  constexpr scalar_expr(const TAlg& alg, const T scalar, const TOp& op)
+  constexpr scalar_expr(const Alg& alg, const T scalar, const Op& op)
     : alg_{alg}, scalar_{scalar}, op_{op} {}
 
   constexpr std::size_t rows() const { return alg_.rows(); }
@@ -52,45 +52,45 @@ public:
   auto operator[](std::size_t n) const                    { return op_(alg_[n], scalar_); }
 
 private:
-  const TAlg alg_;
+  const Alg alg_;
   const T scalar_;
-  const TOp op_;
+  const Op op_;
 };
 
-template <typename TAlg>
-constexpr auto operator+(const alg<TAlg>& alg, alg_t<TAlg> scalar)
+template <typename Alg>
+constexpr auto operator+(const alg<Alg>& alg, alg_t<Alg> scalar)
 {
-  return scalar_expr< TAlg, std::plus<> >{alg.derived(), scalar, std::plus<>{}};
+  return scalar_expr< Alg, std::plus<> >{alg.derived(), scalar, std::plus<>{}};
 }
 
-template <typename TAlg>
-constexpr auto operator-(const alg<TAlg>& alg, alg_t<TAlg> scalar)
+template <typename Alg>
+constexpr auto operator-(const alg<Alg>& alg, alg_t<Alg> scalar)
 {
-  return scalar_expr< TAlg, std::minus<> >{alg.derived(), scalar, std::minus<>{}};
+  return scalar_expr< Alg, std::minus<> >{alg.derived(), scalar, std::minus<>{}};
 }
 
-template <typename TAlg>
-constexpr auto operator/(const alg<TAlg>& alg, alg_t<TAlg> scalar)
+template <typename Alg>
+constexpr auto operator/(const alg<Alg>& alg, alg_t<Alg> scalar)
 {
-  return scalar_expr< TAlg, std::divides<> >{alg.derived(), scalar, std::divides<>{}};
+  return scalar_expr< Alg, std::divides<> >{alg.derived(), scalar, std::divides<>{}};
 }
 
-template <typename TAlg>
-constexpr auto operator/(alg_t<TAlg> scalar, const alg<TAlg>& alg)
+template <typename Alg>
+constexpr auto operator/(alg_t<Alg> scalar, const alg<Alg>& alg)
 {
-  return scalar_expr< TAlg, std::divides<> >{alg.derived(), scalar, std::divides<>{}};
+  return scalar_expr< Alg, std::divides<> >{alg.derived(), scalar, std::divides<>{}};
 }
 
-template <typename TAlg>
-constexpr auto operator*(const alg<TAlg>& alg, alg_t<TAlg> scalar)
+template <typename Alg>
+constexpr auto operator*(const alg<Alg>& alg, alg_t<Alg> scalar)
 {
-  return scalar_expr< TAlg, std::multiplies<> >{alg.derived(), scalar, std::multiplies<>{}};
+  return scalar_expr< Alg, std::multiplies<> >{alg.derived(), scalar, std::multiplies<>{}};
 }
 
-template <typename TAlg>
-constexpr auto operator*(alg_t<TAlg> scalar, const alg<TAlg>& alg)
+template <typename Alg>
+constexpr auto operator*(alg_t<Alg> scalar, const alg<Alg>& alg)
 {
-  return scalar_expr< TAlg, std::multiplies<> >{alg.derived(), scalar, std::multiplies<>{}};
+  return scalar_expr< Alg, std::multiplies<> >{alg.derived(), scalar, std::multiplies<>{}};
 }
 
 } // namespace ig

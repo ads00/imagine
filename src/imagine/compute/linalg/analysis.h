@@ -31,20 +31,20 @@
 namespace ig     {
 namespace linalg {
 
-template <typename TAlg>
-constexpr auto norm(const alg<TAlg>& alg)
+template <typename Alg>
+constexpr auto norm(const alg<Alg>& alg)
 {
   return std::sqrt(dot(alg, alg));
 }
 
-template <typename TAlg>
-constexpr auto normalise(const alg<TAlg>& alg)
+template <typename Alg>
+constexpr auto normalise(const alg<Alg>& alg)
 {
   return alg / norm(alg);
 }
 
-template <typename TAlg>
-constexpr auto trace(const alg<TAlg>& alg)
+template <typename Alg>
+constexpr auto trace(const alg<Alg>& alg)
 {
   return alg.diag().sum();
 }
@@ -52,19 +52,19 @@ constexpr auto trace(const alg<TAlg>& alg)
 namespace detail
 {
 
-template <typename TAlg, std::size_t size = TAlg::N>
+template <typename Alg, std::size_t size = Alg::N>
 struct determinant
 {
-  static constexpr auto run(const alg<TAlg>& alg)
+  static constexpr auto run(const alg<Alg>& alg)
   {
     return lu_run(alg).det();
   }
 };
 
-template <typename TAlg>
-struct determinant<TAlg, 4>
+template <typename Alg>
+struct determinant<Alg, 4>
 {
-  static auto run(const alg<TAlg>& alg)
+  static auto run(const alg<Alg>& alg)
   {
     const auto det_helper = [&alg](std::size_t a, std::size_t b, std::size_t c, std::size_t d)
     {
@@ -81,10 +81,10 @@ struct determinant<TAlg, 4>
   }
 };
 
-template <typename TAlg>
-struct determinant<TAlg, 3>
+template <typename Alg>
+struct determinant<Alg, 3>
 {
-  static auto run(const alg<TAlg>& alg)
+  static auto run(const alg<Alg>& alg)
   {
     const auto det_helper = [&alg](std::size_t a, std::size_t b, std::size_t c)
     {
@@ -97,28 +97,28 @@ struct determinant<TAlg, 3>
   }
 };
 
-template <typename TAlg>
-struct determinant<TAlg, 2>
+template <typename Alg>
+struct determinant<Alg, 2>
 {
-  static auto run(const alg<TAlg>& alg)
+  static auto run(const alg<Alg>& alg)
   {
     return alg(0, 0)*alg(1, 1) - alg(1, 0)*alg(0, 1);
   }
 };
 
-template <typename TAlg, std::size_t size = TAlg::M>
+template <typename Alg, std::size_t size = Alg::M>
 struct inverse
 {
-  static constexpr typename TAlg::plain_t run(const alg<TAlg>& alg)
+  static constexpr typename Alg::plain_t run(const alg<Alg>& alg)
   {
     return lu_run(alg).inv();
   }
 };
 
-template <typename TAlg>
-struct inverse<TAlg, 4>
+template <typename Alg>
+struct inverse<Alg, 4>
 {
-  static auto run(const alg<TAlg>& alg)
+  static auto run(const alg<Alg>& alg)
   {
     const auto cofactor = [&alg](std::size_t a, std::size_t b)
     {
@@ -136,9 +136,9 @@ struct inverse<TAlg, 4>
              det3_helper(a3, a1, a2, b1, b2, b3);
     };
 
-    using T = TAlg::T;
+    using T = Alg::T;
 
-    TAlg::plain_t inv;
+    Alg::plain_t inv;
     const T invdet = T(1) / det(alg);
 
     inv(0, 0) = cofactor(0, 0) * invdet; inv(1, 0) = -cofactor(0, 1) * invdet;
@@ -157,10 +157,10 @@ struct inverse<TAlg, 4>
   }
 };
 
-template <typename TAlg>
-struct inverse<TAlg, 3>
+template <typename Alg>
+struct inverse<Alg, 3>
 {
-  static auto run(const alg<TAlg>& alg)
+  static auto run(const alg<Alg>& alg)
   {
     const auto cofactor = [&alg](std::size_t a, std::size_t b)
     {
@@ -170,9 +170,9 @@ struct inverse<TAlg, 3>
       return alg(a1, b1)*alg(a2, b2) - alg(a1, b2)*alg(a2, b1);
     };
 
-    using T = TAlg::T;
+    using T = Alg::T;
 
-    TAlg::plain_t inv;
+    Alg::plain_t inv;
     const T invdet = T(1) / det(alg);
 
     inv(0, 0) = cofactor(0, 0) * invdet; inv(1, 0) = cofactor(0, 1) * invdet; inv(2, 0) = cofactor(0, 2) * invdet;
@@ -183,14 +183,14 @@ struct inverse<TAlg, 3>
   }
 };
 
-template <typename TAlg>
-struct inverse<TAlg, 2>
+template <typename Alg>
+struct inverse<Alg, 2>
 {
-  static auto run(const alg<TAlg>& alg)
+  static auto run(const alg<Alg>& alg)
   {
-    using T = TAlg::T;
+    using T = Alg::T;
 
-    TAlg::plain_t inv;
+    Alg::plain_t inv;
     const T invdet = T(1) / det(alg);
 
     inv(0, 0) = alg(1, 1) * invdet; inv(1, 0) = -alg(1, 0) * invdet;
@@ -201,18 +201,18 @@ struct inverse<TAlg, 2>
 
 } // namespace detail
 
-template <typename TAlg>
-constexpr auto det(const alg<TAlg>& alg)
+template <typename Alg>
+constexpr auto det(const alg<Alg>& alg)
 {
   assert(alg.square() && "Determinant exists only with square matrices");
-  return detail::determinant<TAlg>::run(alg);
+  return detail::determinant<Alg>::run(alg);
 }
 
-template <typename TAlg>
-constexpr auto inv(const alg<TAlg>& alg)
+template <typename Alg>
+constexpr auto inv(const alg<Alg>& alg)
 {
   assert(alg.square() && "Inverse exists only with square matrices");
-  return detail::inverse<TAlg>::run(alg);
+  return detail::inverse<Alg>::run(alg);
 }
 
 } // namespace linalg

@@ -89,8 +89,8 @@ public:
   constexpr matrix(std::size_t m, std::size_t n) 
     : rows_{m}, cols_{n}, data_(rows_ * cols_) {}
 
-  template <typename TAlg>
-  constexpr matrix(const alg<TAlg>& o);
+  template <typename Alg>
+  constexpr matrix(const alg<Alg>& o);
 
   matrix(const base& o) { *this = o.derived(); }
 
@@ -120,8 +120,8 @@ protected:
 };
 
 template <typename T, int M, int N>
-template <typename TAlg>
-constexpr matrix<T, M, N>::matrix(const alg<TAlg>& o)
+template <typename Alg>
+constexpr matrix<T, M, N>::matrix(const alg<Alg>& o)
   : rows_{statics ? M : (dynamics_rows ? o.rows() : M)},
     cols_{statics ? N : (dynamics_cols ? o.cols() : N)}
 {

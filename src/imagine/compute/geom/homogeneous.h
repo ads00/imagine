@@ -45,8 +45,8 @@ public:
   constexpr mat4(std::initializer_list<float> args)
     : base{args} {}
 
-  template <typename TAlg>
-  constexpr mat4(const alg<TAlg>& o) : base{o} {}
+  template <typename Alg>
+  constexpr mat4(const alg<Alg>& o) : base{o} {}
 
   vec3 transform(const vec3& v, bool unit = false) const;
 

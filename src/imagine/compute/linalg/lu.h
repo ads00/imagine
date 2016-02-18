@@ -49,11 +49,11 @@ namespace ig
  U is stored in the diagonal and upper triangular part of the computed matrix
 */
 
-template <typename TAlg>
+template <typename Alg>
 class lu
 {
 public:
-  using T = typename TAlg::T;
+  using T = alg_t<Alg>;
   using matrix_t = matrix<T>;
   using vector_t = vector<T>;
 
@@ -77,8 +77,8 @@ private:
   matrix_t P_;
 };
 
-template <typename TAlg>
-lu<TAlg>::lu(const matrix_t& alg)
+template <typename Alg>
+lu<Alg>::lu(const matrix_t& alg)
   : permutations_{0}, N_{alg.diagsize()}, LU_{alg}, P_{matrix_t::eye(N_)}
 {
   for (std::size_t i = 0; i < N_; ++i)
@@ -115,15 +115,15 @@ lu<TAlg>::lu(const matrix_t& alg)
   }
 }
 
-template <typename TAlg>
-auto lu<TAlg>::det() const -> T
+template <typename Alg>
+auto lu<Alg>::det() const -> T
 {
   int detsign = (permutations_ % 2) ? -1 : 1;
   return detsign * LU_.diag().prod();
 }
 
-template <typename TAlg>
-auto lu<TAlg>::inv() const -> matrix_t
+template <typename Alg>
+auto lu<Alg>::inv() const -> matrix_t
 {
   matrix_t inverse{P_};
   for (std::size_t i = 0; i < N_; ++i)
@@ -137,8 +137,8 @@ auto lu<TAlg>::inv() const -> matrix_t
   return inverse;
 }
 
-template <typename TAlg>
-auto lu<TAlg>::solve(const vector_t& b) const -> vector_t
+template <typename Alg>
+auto lu<Alg>::solve(const vector_t& b) const -> vector_t
 {
   vector_t x{P_ * b};
 
@@ -151,11 +151,11 @@ auto lu<TAlg>::solve(const vector_t& b) const -> vector_t
 namespace linalg
 {
 
-template <typename TAlg>
-lu<TAlg> lu_run(const alg<TAlg>& alg)
+template <typename Alg>
+lu<Alg> lu_run(const alg<Alg>& alg)
 {
   assert(alg.square() && "LU decomposition requires a square matrix");
-  return lu<TAlg>(alg);
+  return lu<Alg>(alg);
 }
 
 } // namespace linalg

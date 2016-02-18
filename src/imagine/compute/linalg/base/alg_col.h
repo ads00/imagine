@@ -29,19 +29,19 @@
 namespace ig
 {
 
-template <typename TXpr>
-struct alg_traits< alg_col<TXpr> > : alg_traits<TXpr>
+template <typename Xpr>
+struct alg_traits< alg_col<Xpr> > : alg_traits<Xpr>
 {
-  using T = alg_t<TXpr>;
-  static constexpr int M = TXpr::M;
+  using T = alg_t<Xpr>;
+  static constexpr int M = Xpr::M;
   static constexpr int N = 1;
 };
 
-template <typename TXpr>
-class alg_col : public alg< alg_col<TXpr> >
+template <typename Xpr>
+class alg_col : public alg< alg_col<Xpr> >
 {
 public:
-  constexpr alg_col(TXpr& xpr, std::size_t col)
+  constexpr alg_col(Xpr& xpr, std::size_t col)
     : xpr_{xpr}, col_{col} {}
 
   constexpr std::size_t rows() const { return xpr_.rows(); }
@@ -59,15 +59,15 @@ public:
     return *this;
   }
 
-  template <typename TAlg>
-  alg_col& operator=(const alg<TAlg>& o)
+  template <typename Alg>
+  alg_col& operator=(const alg<Alg>& o)
   {
     eval(*this, o);
     return *this;
   }
 
 private:
-  TXpr& xpr_;
+  Xpr& xpr_;
   std::size_t col_;
 };
 

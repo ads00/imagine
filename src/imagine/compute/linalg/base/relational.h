@@ -29,28 +29,28 @@
 namespace ig
 {
 
-template <typename TLhs, typename TRhs>
-bool operator<(const alg<TLhs>& lhs, const alg<TRhs>& rhs)
+template <typename Lhs, typename Rhs>
+bool operator<(const alg<Lhs>& lhs, const alg<Rhs>& rhs)
 {
   assert(lhs.size() == rhs.size() && "Incoherent matrix comparison");
   auto mis = std::mismatch(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
   return *(mis.first) < *(mis.second);
 }
 
-template <typename TLhs, typename TRhs>
-constexpr bool operator>(const alg<TLhs>& lhs, const alg<TRhs>& rhs)
+template <typename Lhs, typename Rhs>
+constexpr bool operator>(const alg<Lhs>& lhs, const alg<Rhs>& rhs)
 {
   return rhs < lhs;
 }
 
-template <typename TLhs, typename TRhs>
-constexpr bool operator<=(const alg<TLhs>& lhs, const alg<TRhs>& rhs)
+template <typename Lhs, typename Rhs>
+constexpr bool operator<=(const alg<Lhs>& lhs, const alg<Rhs>& rhs)
 {
   return !(lhs > rhs);
 }
 
-template <typename TLhs, typename TRhs>
-constexpr bool operator>=(const alg<TLhs>& lhs, const alg<TRhs>& rhs)
+template <typename Lhs, typename Rhs>
+constexpr bool operator>=(const alg<Lhs>& lhs, const alg<Rhs>& rhs)
 {
   return !(lhs < rhs);
 }

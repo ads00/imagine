@@ -30,19 +30,19 @@
 namespace ig
 {
 
-template <typename TLhs, typename TRhs>
-struct alg_traits< product_expr<TLhs, TRhs> >
+template <typename Lhs, typename Rhs>
+struct alg_traits< product_expr<Lhs, Rhs> >
 {
-  using T = std::common_type_t< alg_t<TLhs>, alg_t<TRhs> >;
-  static constexpr int M = TLhs::M;
-  static constexpr int N = TRhs::N;
+  using T = std::common_type_t< alg_t<Lhs>, alg_t<Rhs> >;
+  static constexpr int M = Lhs::M;
+  static constexpr int N = Rhs::N;
 };
 
-template <typename TLhs, typename TRhs>
-class product_expr : public alg< product_expr<TLhs, TRhs> >
+template <typename Lhs, typename Rhs>
+class product_expr : public alg< product_expr<Lhs, Rhs> >
 {
 public:
-  constexpr product_expr(const TLhs& lhs, const TRhs& rhs) 
+  constexpr product_expr(const Lhs& lhs, const Rhs& rhs) 
     : lhs_{lhs}, rhs_{rhs} {}
 
   constexpr std::size_t rows() const { return lhs_.rows(); }
@@ -63,15 +63,15 @@ public:
   auto operator[](std::size_t n) const = delete;
 
 private:
-  const TLhs lhs_;
-  const TRhs rhs_;
+  const Lhs lhs_;
+  const Rhs rhs_;
 };
 
-template <typename TLhs, typename TRhs>
-constexpr auto operator*(const alg<TLhs>& lhs, const alg<TRhs>& rhs)
+template <typename Lhs, typename Rhs>
+constexpr auto operator*(const alg<Lhs>& lhs, const alg<Rhs>& rhs)
 {
   assert(lhs.cols() == rhs.rows() && "Incoherent matrix-matrix multiplication");
-  return product_expr<TLhs, TRhs>{lhs.derived(), rhs.derived()};
+  return product_expr<Lhs, Rhs>{lhs.derived(), rhs.derived()};
 }
 
 } // namespace ig

@@ -44,11 +44,11 @@ namespace ig
  R is stored in the diagonal and upper triangular part of the computed matrix
 */
 
-template <typename TAlg>
+template <typename Alg>
 class qr
 {
 public:
-  using T = typename TAlg::T;
+  using T = alg_t<Alg>;
   using matrix_t = matrix<T>;
   using vector_t = vector<T>;
 
@@ -70,8 +70,8 @@ private:
   vector_t tau_;
 };
 
-template <typename TAlg>
-qr<TAlg>::qr(const matrix_t& alg)
+template <typename Alg>
+qr<Alg>::qr(const matrix_t& alg)
   : M_{alg.rows()}, N_{alg.cols()}, QR_{alg}, tau_{N_}
 {
   for (std::size_t i = 0; i < N_; ++i)
@@ -99,8 +99,8 @@ qr<TAlg>::qr(const matrix_t& alg)
   }
 }
 
-template <typename TAlg>
-auto qr<TAlg>::solve(const vector_t& b) -> vector_t
+template <typename Alg>
+auto qr<Alg>::solve(const vector_t& b) -> vector_t
 {
   // Compute y = Q^Tb
   vector_t y{b};
@@ -127,12 +127,12 @@ auto qr<TAlg>::solve(const vector_t& b) -> vector_t
 namespace linalg
 {
 
-template <typename TAlg>
-constexpr qr<TAlg> qr_run(const alg<TAlg>& alg)
+template <typename Alg>
+constexpr qr<Alg> qr_run(const alg<Alg>& alg)
 {
   assert(alg.rows() >= alg.cols() && "QR decomposition requires a square or rectangular matrix"
                                      " where m >= n");
-  return qr<TAlg>(alg);
+  return qr<Alg>(alg);
 }
 
 } // namespace linalg

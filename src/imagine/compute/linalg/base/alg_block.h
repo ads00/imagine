@@ -29,22 +29,22 @@
 namespace ig
 {
 
-template <typename TXpr>
-struct alg_traits< alg_block<TXpr> > : alg_traits<TXpr>
+template <typename Xpr>
+struct alg_traits< alg_block<Xpr> > : alg_traits<Xpr>
 {
-  using T = alg_t<TXpr>;
-  static constexpr int M = TXpr::M;
-  static constexpr int N = TXpr::N;
+  using T = alg_t<Xpr>;
+  static constexpr int M = Xpr::M;
+  static constexpr int N = Xpr::N;
 };
 
-template <typename TXpr>
-class alg_block : public alg< alg_block<TXpr> >
+template <typename Xpr>
+class alg_block : public alg< alg_block<Xpr> >
 {
 public:
-  constexpr alg_block(TXpr& xpr, std::size_t row, std::size_t col, std::size_t nr, std::size_t nc)
+  constexpr alg_block(Xpr& xpr, std::size_t row, std::size_t col, std::size_t nr, std::size_t nc)
     : xpr_{xpr}, colvec_{false}, rowvec_{false}, row_{row}, col_{col}, nr_{nr}, nc_{nc} {}
 
-  constexpr alg_block(TXpr& xpr, std::size_t start, std::size_t n)
+  constexpr alg_block(Xpr& xpr, std::size_t start, std::size_t n)
     : xpr_{xpr}, colvec_{xpr_.cols() == 1}, rowvec_{xpr_.rows() == 1},
       row_{colvec_ ? start : 0}, col_{rowvec_ ? start : 0},
       nr_{colvec_ ? n : 1},      nc_{rowvec_ ? n : 1} {}
@@ -64,15 +64,15 @@ public:
     return *this;
   }
 
-  template <typename TAlg>
-  alg_block& operator=(const alg<TAlg>& o)
+  template <typename Alg>
+  alg_block& operator=(const alg<Alg>& o)
   {
     eval(*this, o);
     return *this;
   }
 
 private:
-  TXpr& xpr_;
+  Xpr& xpr_;
   bool colvec_, rowvec_;
   std::size_t row_, col_, nr_, nc_;
 };

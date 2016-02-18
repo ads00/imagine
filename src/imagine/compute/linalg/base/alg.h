@@ -37,24 +37,24 @@ template <typename T, int M, int N> class matrix;
 template <typename T, int N = dynamic_sized> using vector = matrix<T, N, 1>;
 template <typename T, int N = dynamic_sized> using row    = matrix<T, 1, N>;
 
-template <typename TXpr> class alg_block;
-template <typename TXpr> class alg_col;
-template <typename TXpr> class alg_row;
-template <typename TXpr> class alg_diag;
-template <typename TAlg> class alg_trans;
-template <typename TAlg> class alg_triang;
+template <typename Xpr> class alg_block;
+template <typename Xpr> class alg_col;
+template <typename Xpr> class alg_row;
+template <typename Xpr> class alg_diag;
+template <typename Alg> class alg_trans;
+template <typename Alg> class alg_triang;
 
-template <typename TAlg, typename TOp> class unary_expr;
-template <typename TAlg, typename TOp> class scalar_expr;
-template <typename TLhs, typename TRhs> class product_expr;
-template <typename TLhs, typename TRhs, typename TOp> class binary_expr;
+template <typename Alg, typename Op> class unary_expr;
+template <typename Alg, typename Op> class scalar_expr;
+template <typename Lhs, typename Rhs> class product_expr;
+template <typename Lhs, typename Rhs, typename Op> class binary_expr;
 
 // meta
-template <typename TXpr> struct alg_traits;
-template <typename TXpr> struct alg_traits<const TXpr> : alg_traits<TXpr>{};
+template <typename Xpr> struct alg_traits;
+template <typename Xpr> struct alg_traits<const Xpr> : alg_traits<Xpr>{};
 
-template <typename TAlg> 
-using alg_t = typename TAlg::T;
+template <typename Alg> 
+using alg_t = typename Alg::T;
 
 template <typename Derived>
 class alg
@@ -70,7 +70,7 @@ public:
   const Derived& derived() const { return static_cast<const Derived&>(*this); }
   Derived& derived()             { return static_cast<Derived&>(*this); }
 
-  template <typename TIt, typename TDer>
+  template <typename It, typename Der>
   class iterator : public std::iterator<std::random_access_iterator_tag, T>
   {
   public:
@@ -89,14 +89,14 @@ public:
 
     bool operator<(const iterator& o) { return pos_ < o.pos_; }
 
-    TIt operator*() const { return derived_[pos_]; }
+    It operator*() const { return derived_[pos_]; }
 
   private:
-    constexpr iterator(TDer& derived, std::size_t pos)
+    constexpr iterator(Der& derived, std::size_t pos)
       : derived_{derived}, pos_{pos} {}
 
     std::size_t pos_;
-    TDer& derived_;
+    Der& derived_;
   };
 
   const auto begin() const { return iterator<U, const Derived>{derived(), 0}; }
@@ -145,20 +145,20 @@ public:
   Derived& operator/=(T scalar) { return derived() = std::move(*this) / scalar; }
   Derived& operator*=(T scalar) { return derived() = std::move(*this) * scalar; }
 
-  template <typename TAlg> 
-  Derived& operator+=(const alg<TAlg>& alg) { return derived() = std::move(*this) + alg; }
+  template <typename Alg> 
+  Derived& operator+=(const alg<Alg>& alg) { return derived() = std::move(*this) + alg; }
 
-  template <typename TAlg> 
-  Derived& operator-=(const alg<TAlg>& alg) { return derived() = std::move(*this) - alg; }
+  template <typename Alg> 
+  Derived& operator-=(const alg<Alg>& alg) { return derived() = std::move(*this) - alg; }
 
-  template <typename TAlg> 
-  Derived& operator/=(const alg<TAlg>& alg) { return derived() = std::move(*this) / alg; }
+  template <typename Alg> 
+  Derived& operator/=(const alg<Alg>& alg) { return derived() = std::move(*this) / alg; }
 
-  template <typename TAlg>
-  Derived& operator%=(const alg<TAlg>& alg) { return derived() = std::move(*this) % alg; }
+  template <typename Alg>
+  Derived& operator%=(const alg<Alg>& alg) { return derived() = std::move(*this) % alg; }
 
-  template <typename TAlg> 
-  Derived& operator*=(const alg<TAlg>& alg)
+  template <typename Alg> 
+  Derived& operator*=(const alg<Alg>& alg)
   {
     assert(Derived::hybrids && "Cannot multiply in place a static matrix");
     return derived() = std::move(*this) * alg;
@@ -193,8 +193,8 @@ public:
   }
 };
 
-template <typename TEval, typename TAlg>
-void eval_helper(alg<TEval>& ev, const alg<TAlg>& alg)
+template <typename Eval, typename Alg>
+void eval_helper(alg<Eval>& ev, const alg<Alg>& alg)
 {
   assert(ev.rows() == alg.rows() && ev.cols() == alg.cols()
          && "Incoherent algebraic evaluation");
@@ -206,20 +206,20 @@ void eval_helper(alg<TEval>& ev, const alg<TAlg>& alg)
     for (std::size_t j = 0; j < evr; ++j) ev(j, i) = alg(j, i);
 }
 
-template <typename TEval, typename TAlg>
-constexpr void eval(alg<TEval>& ev, const alg<TAlg>& alg)
+template <typename Eval, typename Alg>
+constexpr void eval(alg<Eval>& ev, const alg<Alg>& alg)
 {
   eval_helper(ev, alg);
 }
 
-template <typename TEval, typename TAlg, typename TO>
-constexpr void eval(alg<TEval>& ev, const alg<TAlg>& alg, const TO& i)
+template <typename Eval, typename Alg, typename O>
+constexpr void eval(alg<Eval>& ev, const alg<Alg>& alg, const O& i)
 {
   eval_helper(ev, alg);
 }
 
-template <typename TEval, typename TAlg>
-constexpr void eval(alg<TEval>& ev, const alg<TAlg>& alg, std::vector< alg_t<TEval> >& i)
+template <typename Eval, typename Alg>
+constexpr void eval(alg<Eval>& ev, const alg<Alg>& alg, std::vector< alg_t<Eval> >& i)
 {
   i.resize(ev.size());
   eval_helper(ev, alg);
@@ -245,8 +245,8 @@ auto alg<Derived>::mean() const -> T
   return sum() / size();
 }
 
-template <typename TAlg>
-inline std::ostream& operator<<(std::ostream& stream, const alg<TAlg>& alg)
+template <typename Alg>
+inline std::ostream& operator<<(std::ostream& stream, const alg<Alg>& alg)
 {
   std::size_t width = 0;
   std::stringstream w; w.precision(3);

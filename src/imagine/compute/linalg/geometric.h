@@ -67,9 +67,9 @@ auto normalise(const quaternion<T>& q) -> quaternion<T>
   return { q.s / nrm, { q.v[0] / nrm, q.v[1] / nrm, q.v[2] / nrm } };
 }
 
-template <typename T, typename TAlg>
-auto rotate(const quaternion<T>& q, const alg<TAlg>& v)
--> vector<std::common_type_t< T, alg_t<TAlg> >, 3>
+template <typename T, typename Alg>
+auto rotate(const quaternion<T>& q, const alg<Alg>& v)
+-> vector<std::common_type_t< T, alg_t<Alg> >, 3>
 {
   assert(v.vector() && v.vecsize() == 3
          && "Quaternion can only rotate vectors in three-dimensional space");

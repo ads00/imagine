@@ -29,11 +29,11 @@
 namespace ig
 {
 
-template <typename TEnum>
+template <typename Enum>
 class flags
 {
 public:
-  using enum_t       = TEnum;
+  using enum_t       = Enum;
   using underlying_t = typename std::make_unsigned<
                        typename std::underlying_type< enum_t>::type >::type;
 
@@ -65,13 +65,13 @@ public:
 private:
   constexpr flags(underlying_t flags) : flags_{flags} {}
 
-  friend flags operator|(TEnum f1, flags f2) { return f2 | f1; }
-  friend flags operator&(TEnum f1, flags f2) { return f2 & f1; }
-  friend flags operator^(TEnum f1, flags f2) { return f2 ^ f1; }
+  friend flags operator|(Enum f1, flags f2) { return f2 | f1; }
+  friend flags operator&(Enum f1, flags f2) { return f2 & f1; }
+  friend flags operator^(Enum f1, flags f2) { return f2 ^ f1; }
 
-  friend flags operator|(TEnum f1, TEnum f2) { return flags(f1) | f2; }
-  friend flags operator&(TEnum f1, TEnum f2) { return flags(f1) & f2; }
-  friend flags operator^(TEnum f1, TEnum f2) { return flags(f1) ^ f2; }
+  friend flags operator|(Enum f1, Enum f2) { return flags(f1) | f2; }
+  friend flags operator&(Enum f1, Enum f2) { return flags(f1) & f2; }
+  friend flags operator^(Enum f1, Enum f2) { return flags(f1) ^ f2; }
 
   underlying_t  flags_;
 };

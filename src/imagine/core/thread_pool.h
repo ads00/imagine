@@ -38,13 +38,13 @@ public:
   thread_pool(std::size_t workers = std::thread::hardware_concurrency());
   ~thread_pool();
 
-  template<class TFn, class... TArgs>
-  auto work(TFn&& f, TArgs&&... args)
+  template<class Fn, class... Args>
+  auto work(Fn&& f, Args&&... args)
   {
     using return_t = decltype(f(args...));
     const auto task = std::make_shared<
       std::packaged_task<return_t()> >
-      (std::bind(std::forward<TFn>(f), std::forward<TArgs>(args)...));
+      (std::bind(std::forward<Fn>(f), std::forward<Args>(args)...));
 
     std::future<return_t> ret = task->get_future();
     {

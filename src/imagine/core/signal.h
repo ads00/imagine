@@ -33,11 +33,11 @@
 namespace ig
 {
 
-template <typename... TArgs>
+template <typename... Args>
 class signal
 {
 public:
-  using func_t = std::function<void (TArgs...)>;
+  using func_t = std::function<void (Args...)>;
   struct slot
   {
     slot(signal& sig) : sig{sig} {}
@@ -59,8 +59,8 @@ private:
   std::vector< std::shared_ptr<slot> > slots_;
 };
 
-template <typename... TArgs>
-auto signal<TArgs...>::connect(func_t&& func)
+template <typename... Args>
+auto signal<Args...>::connect(func_t&& func)
 {
   auto backslot = std::make_shared<slot>(*this);
   backslot->func = std::forward<func_t>(func);
@@ -69,24 +69,24 @@ auto signal<TArgs...>::connect(func_t&& func)
   return slots_.back();
 }
 
-template <typename... TArgs>
-void signal<TArgs...>::disconnect(std::shared_ptr<slot>& slot)
+template <typename... Args>
+void signal<Args...>::disconnect(std::shared_ptr<slot>& slot)
 {
   slots_.erase(std::remove(slots_.begin(), slots_.end(), slot), 
                slots_.end());
 }
 
-template <typename... TArgs>
-void signal<TArgs...>::emit(TArgs&&... args) const
+template <typename... Args>
+void signal<Args...>::emit(Args&&... args) const
 {
   for (auto slot : slots_)
-    slot->func(std::forward<TArgs>(args)...);
+    slot->func(std::forward<Args>(args)...);
 }
 
-template <typename... TArgs>
-void signal<TArgs...>::operator()(TArgs&&... args) const
+template <typename... Args>
+void signal<Args...>::operator()(Args&&... args) const
 {
-  emit(std::forward<TArgs>(args)...);
+  emit(std::forward<Args>(args)...);
 }
 
 } // namespace ig

@@ -30,19 +30,19 @@
 namespace ig
 {
 
-template <typename TAlg, typename TOp>
-struct alg_traits< unary_expr<TAlg, TOp> >
+template <typename Alg, typename Op>
+struct alg_traits< unary_expr<Alg, Op> >
 {
-  using T = alg_t<TAlg>;
-  static constexpr int M = TAlg::M;
-  static constexpr int N = TAlg::N;
+  using T = alg_t<Alg>;
+  static constexpr int M = Alg::M;
+  static constexpr int N = Alg::N;
 };
 
-template <typename TAlg, typename TOp>
-class unary_expr : public alg< unary_expr<TAlg, TOp> >
+template <typename Alg, typename Op>
+class unary_expr : public alg< unary_expr<Alg, Op> >
 {
 public:
-  constexpr unary_expr(const TAlg& alg, const TOp& op)
+  constexpr unary_expr(const Alg& alg, const Op& op)
     : alg_{alg}, op_{op} {}
 
   constexpr std::size_t rows() const { return alg_.rows(); }
@@ -52,14 +52,14 @@ public:
   auto operator[](std::size_t n) const                    { return op_(alg_[n]); }
 
 private:
-  const TAlg alg_;
-  const TOp op_;
+  const Alg alg_;
+  const Op op_;
 };
 
-template <typename TAlg>
-constexpr auto operator-(const alg<TAlg>& alg)
+template <typename Alg>
+constexpr auto operator-(const alg<Alg>& alg)
 {
-  return unary_expr< TAlg, std::negate<> >{alg.derived(), std::negate<>{}};
+  return unary_expr< Alg, std::negate<> >{alg.derived(), std::negate<>{}};
 }
 
 namespace linalg
@@ -72,10 +72,10 @@ struct conj_op
   { return std::conj(std::forward<T>(val)); }
 };
 
-template <typename TAlg>
-constexpr auto conj(const alg<TAlg>& alg)
+template <typename Alg>
+constexpr auto conj(const alg<Alg>& alg)
 {
-  return unary_expr< TAlg, conj_op >{alg.derived(), conj_op{}};
+  return unary_expr< Alg, conj_op >{alg.derived(), conj_op{}};
 }
 
 } // namespace linalg

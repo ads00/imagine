@@ -47,11 +47,11 @@ namespace ig
  V is stored in a computed matrix and contains the right singular vectors
 */
 
-template <typename TAlg>
+template <typename Alg>
 class svd
 {
 public:
-  using T = typename TAlg::T;
+  using T = alg_t<Alg>;
   using matrix_t = matrix<T>;
   using vector_t = vector<T>;
 
@@ -79,8 +79,8 @@ private:
   vector_t S_;
 };
 
-template <typename TAlg>
-svd<TAlg>::svd(const matrix_t& alg)
+template <typename Alg>
+svd<Alg>::svd(const matrix_t& alg)
   : M_{alg.rows()}, N_{alg.cols()}, threshold_{T(0)}, U_ {alg}, V_{N_, N_}, S_{N_}
 {
   vector_t work{N_};
@@ -331,8 +331,8 @@ svd<TAlg>::svd(const matrix_t& alg)
   }
 }
 
-template <typename TAlg>
-auto svd<TAlg>::rank() const -> std::size_t
+template <typename Alg>
+std::size_t svd<Alg>::rank() const
 {
   // Lookup for singular values > threshold 
   std::size_t r = T(0);
@@ -342,8 +342,8 @@ auto svd<TAlg>::rank() const -> std::size_t
   return r;
 }
 
-template <typename TAlg>
-auto svd<TAlg>::pinv() const -> matrix_t
+template <typename Alg>
+auto svd<Alg>::pinv() const -> matrix_t
 {
   // Compute w = VS+
   matrix_t W{N_, N_};
@@ -356,8 +356,8 @@ auto svd<TAlg>::pinv() const -> matrix_t
   return W * U_.t();
 }
 
-template <typename TAlg>
-auto svd<TAlg>::solve(const vector_t& b) -> vector_t
+template <typename Alg>
+auto svd<Alg>::solve(const vector_t& b) -> vector_t
 {
   // Compute w = U^Tb
   vector_t w = U_.t() * b;
@@ -377,10 +377,10 @@ auto svd<TAlg>::solve(const vector_t& b) -> vector_t
 namespace linalg
 {
 
-template <typename TAlg>
-constexpr svd<TAlg> svd_run(const alg<TAlg>& alg)
+template <typename Alg>
+constexpr svd<Alg> svd_run(const alg<Alg>& alg)
 {
-  return svd<TAlg>(alg);
+  return svd<Alg>(alg);
 }
 
 } // namespace linalg

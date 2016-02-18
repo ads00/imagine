@@ -29,15 +29,15 @@
 namespace ig     {
 namespace linalg {
 
-template <typename TLhs, typename TRhs>
-constexpr auto dot(const alg<TLhs>& lhs, const alg<TRhs>& rhs)
+template <typename Lhs, typename Rhs>
+constexpr auto dot(const alg<Lhs>& lhs, const alg<Rhs>& rhs)
 {
   return (lhs % rhs).sum();
 }
 
-template <typename TLhs, typename TRhs>
-constexpr auto cross(const alg<TLhs>& lhs, const alg<TRhs>& rhs) 
--> vector<std::common_type_t< alg_t<TLhs>, alg_t<TRhs> >, 3>
+template <typename Lhs, typename Rhs>
+constexpr auto cross(const alg<Lhs>& lhs, const alg<Rhs>& rhs) 
+-> vector<std::common_type_t< alg_t<Lhs>, alg_t<Rhs> >, 3>
 {
   assert(lhs.vector() && lhs.vecsize() == 3
          && "Cross exists only in three-dimensional space");

@@ -29,8 +29,8 @@
 namespace ig     {
 namespace linalg {
 
-template <typename TAlg, typename TVec>
-void forward_solve(const alg<TAlg>& lhs, alg<TVec>& rhs, bool unit = false)
+template <typename Alg, typename Vec>
+void forward_solve(const alg<Alg>& lhs, alg<Vec>& rhs, bool unit = false)
 {
   assert(lhs.square() && "Forward solver requires a square matrix");
   assert(rhs.vector() && rhs.rows() == lhs.rows()
@@ -48,8 +48,8 @@ void forward_solve(const alg<TAlg>& lhs, alg<TVec>& rhs, bool unit = false)
   }
 }
 
-template <typename TAlg, typename TVec>
-void backward_solve(const alg<TAlg>& lhs, alg<TVec>& rhs, bool unit = false)
+template <typename Alg, typename Vec>
+void backward_solve(const alg<Alg>& lhs, alg<Vec>& rhs, bool unit = false)
 {
   assert(lhs.square() && "Backward solver requires a square matrix");
   assert(rhs.vector() && rhs.rows() == lhs.rows()

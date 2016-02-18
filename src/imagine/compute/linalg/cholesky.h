@@ -44,11 +44,11 @@ namespace ig
  The diagonal elements are commons to both matrix
 */
 
-template <typename TAlg>
+template <typename Alg>
 class cholesky
 {
 public:
-  using T = typename TAlg::T;
+  using T = alg_t<Alg>;
   using matrix_t = matrix<T>;
   using vector_t = vector<T>;
 
@@ -68,8 +68,8 @@ private:
   matrix_t LLT_;
 };
 
-template <typename TAlg>
-cholesky<TAlg>::cholesky(const matrix_t& alg)
+template <typename Alg>
+cholesky<Alg>::cholesky(const matrix_t& alg)
   : N_{alg.diagsize()}, LLT_{alg}
 {
   for (std::size_t i = 0; i < N_; ++i)
@@ -99,14 +99,14 @@ cholesky<TAlg>::cholesky(const matrix_t& alg)
   }
 }
 
-template <typename TAlg>
-auto cholesky<TAlg>::det() const -> T
+template <typename Alg>
+auto cholesky<Alg>::det() const -> T
 {
   return std::pow(LLT_.diag().prod(), 2);
 }
 
-template <typename TAlg>
-auto cholesky<TAlg>::inv() const -> matrix_t
+template <typename Alg>
+auto cholesky<Alg>::inv() const -> matrix_t
 {
   // Forward L-1
   matrix_t inverse{matrix_t::eye(N_)};
@@ -120,8 +120,8 @@ auto cholesky<TAlg>::inv() const -> matrix_t
   return inverse.t() * inverse;
 }
 
-template <typename TAlg>
-auto cholesky<TAlg>::solve(const vector_t& b) const -> vector_t
+template <typename Alg>
+auto cholesky<Alg>::solve(const vector_t& b) const -> vector_t
 {
   vector_t x{b};
 
@@ -134,11 +134,11 @@ auto cholesky<TAlg>::solve(const vector_t& b) const -> vector_t
 namespace linalg
 {
 
-template <typename TAlg>
-constexpr cholesky<TAlg> chol_run(const alg<TAlg>& alg)
+template <typename Alg>
+constexpr cholesky<Alg> chol_run(const alg<Alg>& alg)
 {
   assert(alg.square() && "Cholesky decomposition requires a square matrix");
-  return cholesky<TAlg>(alg);
+  return cholesky<Alg>(alg);
 }
 
 } // namespace linalg

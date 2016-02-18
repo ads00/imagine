@@ -29,19 +29,19 @@
 namespace ig
 {
 
-template <typename TXpr>
-struct alg_traits< alg_trans<TXpr> >
+template <typename Xpr>
+struct alg_traits< alg_trans<Xpr> >
 {
-  using T = alg_t<TXpr>;
-  static constexpr int M = TXpr::N;
-  static constexpr int N = TXpr::M;
+  using T = alg_t<Xpr>;
+  static constexpr int M = Xpr::N;
+  static constexpr int N = Xpr::M;
 };
 
-template <typename TXpr>
-class alg_trans : public alg< alg_trans<TXpr> >
+template <typename Xpr>
+class alg_trans : public alg< alg_trans<Xpr> >
 {
 public:
-  constexpr alg_trans(TXpr& xpr)
+  constexpr alg_trans(Xpr& xpr)
     : xpr_{xpr} {}
 
   constexpr std::size_t rows() const { return xpr_.cols(); }
@@ -54,7 +54,7 @@ public:
   auto& operator[](std::size_t n)      = delete;
 
 private:
-  TXpr& xpr_;
+  Xpr& xpr_;
 };
 
 } // namespace ig
