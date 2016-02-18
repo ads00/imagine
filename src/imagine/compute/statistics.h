@@ -32,9 +32,11 @@ template <typename T>
 class moments
 {
 public:
-  constexpr moments() : size_{0}, m1_{0}, m2_{0}, m3_{0}, m4_{0}
-  {
-  }
+  static_assert(std::is_arithmetic<T>::value,
+                "Moments calculation requires arithmetic values");
+
+  constexpr moments() 
+    : size_{0}, m1_{0}, m2_{0}, m3_{0}, m4_{0} {}
 
   template <typename InputIt>
   moments(InputIt first, InputIt last) : moments{}
