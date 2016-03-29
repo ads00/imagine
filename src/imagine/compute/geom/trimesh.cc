@@ -21,18 +21,18 @@
  SOFTWARE.
 */
 
-#include "imagine/compute/geom/tri_mesh.h"
+#include "imagine/compute/geom/trimesh.h"
 
 namespace ig
 {
 
-constexpr tri_mesh::tri_mesh(const std::vector<face>& faces, const std::vector<vec3>& vertices,
-                             const std::vector<vec3>& normals, const std::vector<vec2>& coords)
+constexpr trimesh::trimesh(const std::vector<face>& faces, const std::vector<vec3>& vertices,
+                           const std::vector<vec3>& normals, const std::vector<vec2>& coords)
   : faces_{faces}, vertices_{vertices}, normals_{normals}, coords_{coords} 
 {
 }
 
-tri_mesh tri_mesh::make_box(unsigned int tess)
+trimesh trimesh::make_box(uint32_t tess)
 {
   assert(tess > 0 && "Tesselation value must be at least 1");
 
@@ -82,7 +82,7 @@ tri_mesh tri_mesh::make_box(unsigned int tess)
   return {f, v, n, c};
 }
 
-tri_mesh tri_mesh::make_plane(unsigned int tess)
+trimesh trimesh::make_plane(uint32_t tess)
 {
   assert(tess > 0 && "Tesselation value must be at least 1");
 
@@ -115,7 +115,7 @@ tri_mesh tri_mesh::make_plane(unsigned int tess)
   return {f, v, {nv, vec3{0.f, 0.f, 1.f}}, c};
 }
 
-tri_mesh tri_mesh::make_sphere(unsigned int tess)
+trimesh trimesh::make_sphere(uint32_t tess)
 {
   assert(tess > 3 && "Tesselation value must be at least 4");
 
@@ -133,9 +133,9 @@ tri_mesh tri_mesh::make_sphere(unsigned int tess)
       const float sh = 1.f - s*(1.f / (tess_s - 1.f));
 
       v.emplace_back(vec3{
-        std::sin(two_pi<float>() * sh) * std::sin(pi<float>() * rh),
-        std::sin(pi<float>() * (rh - 0.5f)),
-        std::cos(two_pi<float>() * sh) * std::sin(pi<float>() * rh)});
+        std::sin(two_pi<float> * sh) * std::sin(pi<float> * rh),
+        std::sin(pi<float> * (rh - 0.5f)),
+        std::cos(two_pi<float> * sh) * std::sin(pi<float> * rh)});
 
       c.emplace_back(vec2{sh, rh});
     }

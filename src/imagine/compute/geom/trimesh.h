@@ -21,27 +21,27 @@
  SOFTWARE.
 */
 
-#ifndef COMPUTE_TRI_MESH_H
-#define COMPUTE_TRI_MESH_H
+#ifndef COMPUTE_TRIMESH_H
+#define COMPUTE_TRIMESH_H
 
 #include "imagine/compute/geom/homogeneous.h"
 
 namespace ig
 {
 
-class IG_API tri_mesh 
+class IG_API trimesh 
 {
 public:
   friend struct intersect;
   using face = std::array<std::size_t, 3>;
 
-  tri_mesh() = default;
-  constexpr tri_mesh(const std::vector<face>& faces, const std::vector<vec3>& vertices,
-                     const std::vector<vec3>& normals = {}, const std::vector<vec2>& coords = {});
+  trimesh() = default;
+  constexpr trimesh(const std::vector<face>& faces, const std::vector<vec3>& vertices,
+                    const std::vector<vec3>& normals = {}, const std::vector<vec2>& coords = {});
 
-  static tri_mesh make_box(unsigned int tess);
-  static tri_mesh make_plane(unsigned int tess);
-  static tri_mesh make_sphere(unsigned int tess);
+  static trimesh make_box(uint32_t tess);
+  static trimesh make_plane(uint32_t tess);
+  static trimesh make_sphere(uint32_t tess);
 
 private:
   std::vector<face> faces_;
@@ -52,4 +52,4 @@ private:
 
 } // namespace ig
 
-#endif // COMPUTE_TRI_MESH_H
+#endif // COMPUTE_TRIMESH_H

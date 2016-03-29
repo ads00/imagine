@@ -21,51 +21,44 @@
  SOFTWARE.
 */
 
-#ifndef CORE_THREADPOOL_H
-#define CORE_THREADPOOL_H
-
-#include "imagine.h"
-
-#include <future>
-#include <queue>
+#include "imagine/core/threadpool.h"
 
 namespace ig
 {
 
-class IG_API thread_pool 
+threadpool::threadpool(std::size_t workers)
+  : running_{true}
 {
-public:
-  thread_pool(std::size_t workers = std::thread::hardware_concurrency());
-  ~thread_pool();
-
-  template<class Fn, class... Args>
-  auto work(Fn&& f, Args&&... args)
+  const auto thread_work = [this]
   {
-    using return_t = decltype(f(args...));
-    const auto task = std::make_shared<
-      std::packaged_task<return_t()> >
-      (std::bind(std::forward<Fn>(f), std::forward<Args>(args)...));
-
-    std::future<return_t> ret = task->get_future();
+    for (;;)
     {
-      std::lock_guard<decltype(mutex_)> lock(mutex_);
-      tasks_.emplace([task]() { (*task)(); });
+      std::function<void()> task;
+      {
+        std::unique_lock<decltype(mutex_)> lock(mutex_);
+        cv_.wait(lock, [this] { return !running_ || !tasks_.empty(); });
+
+        if (!running_ && tasks_.empty())
+          return;
+
+        task = std::move(tasks_.front());
+        tasks_.pop();
+      }
+
+      task();
     }
+  };
 
-    cv_.notify_one();
-    return ret;
-  }
-  
-private:
-  std::vector<std::thread> workers_;
-  std::queue< std::function<void ()> > tasks_;
+  for (std::size_t i = 0; i < workers; ++i)
+    workers_.emplace_back(thread_work);
+}
 
-  std::mutex mutex_;
-  std::condition_variable cv_;
+threadpool::~threadpool()
+{
+  running_ = false;
 
-  std::atomic_bool running_;
-};
+  cv_.notify_all();
+  for (auto& worker : workers_) worker.join();
+}
 
 } // namespace ig
-
-#endif // CORE_THREADPOOL_H
