@@ -21,8 +21,8 @@
  SOFTWARE.
 */
 
-#include "imagine/interact/cursor.h"
 #include "imagine/interact/impl/cursor_native.h"
+#include "imagine/interact/cursor.h"
 
 namespace ig
 {

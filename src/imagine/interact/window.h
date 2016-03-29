@@ -33,7 +33,7 @@ namespace ig
 
 namespace impl { struct window_native; }
 
-class IG_API window
+class IG_API window : public events
 {
 public:
   enum visibility_t { hidden, windowed, fullscreen };
@@ -67,7 +67,6 @@ public:
   bool maximized() const;
   bool visible() const;
 
-  events& events() const;
   cursor& cursor() const;
 
   int x() const;
@@ -84,7 +83,7 @@ public:
   window(const window&) = delete;
   window& operator=(const window&) = delete;
 
-private:
+protected:
   std::unique_ptr<impl::window_native> native_;
 };
 

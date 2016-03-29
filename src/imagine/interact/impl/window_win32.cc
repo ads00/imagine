@@ -38,8 +38,7 @@ static std::string ig_window_class = "ig_winclass";
 
 window_native::window_native(const window* ref)
   : ref_{ref}, style_{window::style_t::none}, visibility_{window::visibility_t::hidden},
-    mouse_tracked_{false}, cursor_{cursor::shape_t::none}, events_{std::make_shared<events>()}, 
-    handle_ {nullptr}, wstyle_{0}
+    mouse_tracked_{false}, cursor_{cursor::shape_t::none}, handle_ {nullptr}, wstyle_{0}
 {
   if (!reg())
   {
@@ -54,8 +53,7 @@ window_native::window_native(const window* ref)
 
 window_native::window_native(const window* ref, const std::string& caption, unsigned int width, unsigned int height, window::style_ft style)
   : ref_{ref}, caption_{caption}, style_{style}, visibility_{window::visibility_t::windowed},
-    mouse_tracked_{false}, cursor_{cursor::shape_t::arrow}, events_{std::make_shared<events>()}, 
-    handle_{nullptr}, wstyle_{0}
+    mouse_tracked_{false}, cursor_{cursor::shape_t::arrow}, handle_{nullptr}, wstyle_{0}
 {
   if (!reg())
   {
@@ -73,8 +71,7 @@ window_native::window_native(const window* ref, const std::string& caption, unsi
     if (style_ & window::style_t::resizable)
       wstyle_ |= WS_MAXIMIZEBOX | WS_SIZEBOX;
   }
-  else
-    wstyle_ |= WS_POPUP;
+  else wstyle_ |= WS_POPUP;
 
   RECT rect{0, 0, static_cast<LONG>(width), static_cast<LONG>(height)};
   AdjustWindowRect(&rect, wstyle_, false);
@@ -132,7 +129,7 @@ LRESULT window_native::internal(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
   case WM_SYSKEYDOWN:
   {
     const auto ev = keyboard_ev(arg_keyboard::type_t::key_press);
-    events_->process(ev);
+    ref_->process(ev);
     break;
   }
 
@@ -140,7 +137,7 @@ LRESULT window_native::internal(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
   case WM_SYSKEYUP:
   {
     const auto ev = keyboard_ev(arg_keyboard::type_t::key_release);
-    events_->process(ev);
+    ref_->process(ev);
     break;
   }
 
@@ -149,7 +146,7 @@ LRESULT window_native::internal(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
     auto ev = mouse_ev(arg_mouse::type_t::mouse_down);
     ev.click.button = button_t::left;
 
-    events_->process(ev);
+    ref_->process(ev);
     break;
   }
 
@@ -158,7 +155,7 @@ LRESULT window_native::internal(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
     auto ev = mouse_ev(arg_mouse::type_t::mouse_down);
     ev.click.button = button_t::middle;
 
-    events_->process(ev);
+    ref_->process(ev);
     break;
   }
 
@@ -167,7 +164,7 @@ LRESULT window_native::internal(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
     auto ev = mouse_ev(arg_mouse::type_t::mouse_down);
     ev.click.button = button_t::right;
 
-    events_->process(ev);
+    ref_->process(ev);
     break;
   }
 
@@ -176,7 +173,7 @@ LRESULT window_native::internal(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
     auto ev = mouse_ev(arg_mouse::type_t::mouse_up);
     ev.click.button = button_t::left;
 
-    events_->process(ev);
+    ref_->process(ev);
     break;
   }
 
@@ -185,7 +182,7 @@ LRESULT window_native::internal(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
     auto ev = mouse_ev(arg_mouse::type_t::mouse_up);
     ev.click.button = button_t::middle;
 
-    events_->process(ev);
+    ref_->process(ev);
     break;
   }
 
@@ -194,7 +191,7 @@ LRESULT window_native::internal(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
     auto ev = mouse_ev(arg_mouse::type_t::mouse_up);
     ev.click.button = button_t::right;
 
-    events_->process(ev);
+    ref_->process(ev);
     break;
   }
 
@@ -203,10 +200,10 @@ LRESULT window_native::internal(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
     auto ev = mouse_ev(arg_mouse::type_t::mouse_down);
     ev.click.button = button_t::left;
 
-    events_->process(ev);
+    ref_->process(ev);
 
     ev.type = arg_mouse::type_t::mouse_dbl_click;
-    events_->process(ev);
+    ref_->process(ev);
     break;
   }
 
@@ -215,10 +212,10 @@ LRESULT window_native::internal(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
     auto ev = mouse_ev(arg_mouse::type_t::mouse_down);
     ev.click.button = button_t::middle;
 
-    events_->process(ev);
+    ref_->process(ev);
 
     ev.type = arg_mouse::type_t::mouse_dbl_click;
-    events_->process(ev);
+    ref_->process(ev);
     break;
   }
 
@@ -227,10 +224,10 @@ LRESULT window_native::internal(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
     auto ev = mouse_ev(arg_mouse::type_t::mouse_down);
     ev.click.button = button_t::right;
 
-    events_->process(ev);
+    ref_->process(ev);
 
     ev.type = arg_mouse::type_t::mouse_dbl_click;
-    events_->process(ev);
+    ref_->process(ev);
     break;
   }
 
@@ -242,11 +239,11 @@ LRESULT window_native::internal(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
       mouse_tracked_ = true;
 
       auto ev = mouse_ev(arg_mouse::type_t::mouse_enter);
-      events_->process(ev);
+      ref_->process(ev);
     }
 
     auto ev = mouse_ev(arg_mouse::type_t::mouse_move);
-    events_->process(ev);
+    ref_->process(ev);
     break;
   }
 
@@ -255,7 +252,7 @@ LRESULT window_native::internal(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
     mouse_tracked_ = false;
 
     auto ev = mouse_ev(arg_mouse::type_t::mouse_leave);
-    events_->process(ev);
+    ref_->process(ev);
     break;
   }
 
@@ -264,7 +261,7 @@ LRESULT window_native::internal(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
     auto ev = mouse_ev(arg_mouse::type_t::mouse_wheel);
     ev.wheel.delta = mouse::wheel_delta(wparam);
 
-    events_->process(ev);
+    ref_->process(ev);
     break;
   }
 
@@ -282,7 +279,7 @@ LRESULT window_native::internal(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
       arg_status ev;
       ev.type = arg_status::type_t::move;
 
-      events_->process(ev);
+      ref_->process(ev);
     }
 
     const unsigned int cwidth  = client.right - client.left;
@@ -295,7 +292,7 @@ LRESULT window_native::internal(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
       arg_status ev;
       ev.type = arg_status::type_t::resize;
 
-      events_->process(ev);
+      ref_->process(ev);
     }
     break;
   }
@@ -305,7 +302,7 @@ LRESULT window_native::internal(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
     arg_status ev;
     ev.type = arg_status::type_t::close;
 
-    events_->process(ev);
+    ref_->process(ev);
     break;
   }
 

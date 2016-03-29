@@ -21,8 +21,8 @@
  SOFTWARE.
 */
 
-#include "imagine/interact/library.h"
 #include "imagine/interact/impl/library_native.h"
+#include "imagine/interact/library.h"
 
 namespace ig
 {

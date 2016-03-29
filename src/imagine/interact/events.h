@@ -79,7 +79,7 @@ struct arg_status
   } type;
 };
 
-class events
+class IG_API events
 {
 public:
   template <typename T>

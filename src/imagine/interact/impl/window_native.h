@@ -52,7 +52,6 @@ public:
   bool mouse_tracked_;
 
   cursor cursor_;
-  std::shared_ptr<events> events_;
 
   #if defined(IG_WIN)
   LRESULT internal(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);

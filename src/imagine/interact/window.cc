@@ -21,8 +21,8 @@
  SOFTWARE.
 */
 
-#include "imagine/interact/window.h"
 #include "imagine/interact/impl/window_native.h"
+#include "imagine/interact/window.h"
 
 namespace ig
 {
@@ -45,11 +45,6 @@ window::~window()
 cursor& window::cursor() const
 {
   return native_->cursor_;
-}
-
-events& window::events() const
-{
-  return *(native_->events_);
 }
 
 int window::x() const

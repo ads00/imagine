@@ -21,8 +21,8 @@
  SOFTWARE.
 */
 
-#include "imagine/interact/dispatcher.h"
 #include "imagine/interact/impl/dispatcher_native.h"
+#include "imagine/interact/dispatcher.h"
 
 namespace ig
 {
