@@ -95,7 +95,7 @@ svd<Alg>::svd(const matrix_t& alg)
     T s1 = T(0);
     for (std::size_t j = i; j < M_; ++j) s1 += U_(j, i) * U_(j, i);
 
-    if (s1 > eps<T>())
+    if (s1 > eps<T>)
     {
       T f = U_(i, i);
       g = -sign(f) * std::sqrt(s1);
@@ -121,7 +121,7 @@ svd<Alg>::svd(const matrix_t& alg)
     T s2 = T(0);
     for (std::size_t j = l; j < N_; ++j) s2 += U_(i, j) * U_(i, j);
 
-    if (s2 > eps<T>())
+    if (s2 > eps<T>)
     {
       const T f = U_(i, l);
       g = -sign(f) * std::sqrt(s2);
@@ -191,7 +191,7 @@ svd<Alg>::svd(const matrix_t& alg)
   }
 
   std::size_t sweeps = 75;
-  threshold_ = eps<T>() * std::max(M_, N_) * std::abs(S_[0]);
+  threshold_ = eps<T> * std::max(M_, N_) * std::abs(S_[0]);
 
   // Diagonalization of the bidiagonal form
   for (std::size_t i = N_; i--> 0; )

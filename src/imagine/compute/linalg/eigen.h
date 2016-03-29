@@ -153,7 +153,7 @@ eigen<Alg, true>::eigen(const matrix_t& alg)
       for (m = l; m < N_ - 1; ++m)
       {
         const T ab = std::abs(D_[m]) + std::abs(D_[m + 1]);
-        if (std::abs(work[m]) <= eps<T>() * ab)
+        if (std::abs(work[m]) <= eps<T> * ab)
           break;
       }
 

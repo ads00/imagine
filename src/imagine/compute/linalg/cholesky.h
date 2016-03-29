@@ -82,7 +82,7 @@ cholesky<Alg>::cholesky(const matrix_t& alg)
       if (i == j)
       {
         // Diagonal square root
-        if (s <= eps<T>())
+        if (s <= eps<T>)
         {
           throw std::logic_error
             ("Cholesky decomposition failed (Not positive-definite)");
