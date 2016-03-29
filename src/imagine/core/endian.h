@@ -21,8 +21,8 @@
  SOFTWARE.
 */
 
-#ifndef CORE_ENDIANNESS_H
-#define CORE_ENDIANNESS_H
+#ifndef CORE_ENDIAN_H
+#define CORE_ENDIAN_H
 
 #include "imagine.h"
 
@@ -83,4 +83,4 @@ template <> constexpr int16_t swap<int16_t>(int16_t src) { return swap<uint16_t>
 } // namespace endian
 } // namespace ig
 
-#endif // CORE_ENDIANNESS_H
+#endif // CORE_ENDIAN_H
