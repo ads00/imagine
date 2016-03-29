@@ -49,7 +49,7 @@ template <typename Alg, typename Op> class scalar_expr;
 template <typename Lhs, typename Rhs> class product_expr;
 template <typename Lhs, typename Rhs, typename Op> class binary_expr;
 
-// meta
+// Meta
 template <typename Xpr> struct alg_traits;
 template <typename Xpr> struct alg_traits<const Xpr> : alg_traits<Xpr>{};
 
@@ -225,7 +225,7 @@ constexpr void eval(alg<Eval>& ev, const alg<Alg>& alg, std::vector< alg_t<Eval>
   eval_helper(ev, alg);
 }
 
-// cwise
+// Cwise
 template <typename Derived>
 auto alg<Derived>::sum() const -> T
 {

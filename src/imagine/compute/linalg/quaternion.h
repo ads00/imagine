@@ -128,18 +128,18 @@ inline std::ostream& operator<<(std::ostream& stream, const quaternion<T>& quat)
 {
   std::size_t width = 0;
   std::stringstream w; w.precision(3);
-  for (unsigned int i = 0; i < 3; ++i)
+  for (auto& vi : quat.v)
   {
-    w.str(std::string{}); w.clear(); w << std::fixed << quat.v[i];
+    w.str(std::string{}); w.clear(); w << std::fixed << vi;
     width = std::max<std::size_t>(width, std::size_t(w.tellp()));
   }
 
   stream.precision(3);
   stream.setf(std::ios::fixed);
-  for (unsigned int i = 0; i < 3; ++i)
+  for (auto& vi : quat.v)
   {
     stream << std::endl;
-    stream.width(width); stream << quat.v[i];
+    stream.width(width); stream << vi;
   }
 
   stream << ' ';

@@ -49,7 +49,7 @@ public:
   {
     for (std::size_t i = size_; first != last; ++first, ++i)
     {
-      const T d = *(first) - m1_;
+      const T d = (*first) - m1_;
       const T dn = d / ++size_;
       const T ds = dn * dn;
       const T t = d * dn * i;

@@ -74,10 +74,10 @@ public:
     {
       auto it = args.begin();
       for (std::size_t r = 0; r < rows_; ++r)
-        for (std::size_t c = 0; c < cols_; ++c) data_[c*rows_ + r] = *(it)++;
+        for (std::size_t c = 0; c < cols_; ++c) data_[c*rows_ + r] = (*it++);
 
       if (args.size() != size()) std::uninitialized_fill(data_.begin() + args.size(), data_.end(),
-                                                        *(args.begin()));
+                                                        (*args.begin()));
     }();
   }
 
@@ -156,7 +156,7 @@ auto matrix<T, M, N>::operator[](std::size_t n) -> T&
   return data_[n];
 }
 
-// eye (identity)
+// Eye (Identity)
 template <typename T, int M, int N>
 auto matrix<T, M, N>::make_eye() -> matrix&
 {

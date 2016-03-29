@@ -34,7 +34,8 @@ bool operator<(const alg<Lhs>& lhs, const alg<Rhs>& rhs)
 {
   assert(lhs.size() == rhs.size() && "Incoherent matrix comparison");
   auto mis = std::mismatch(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
-  return *(mis.first) < *(mis.second);
+
+  return (mis.first == lhs.end() || ((*mis.first) < (*mis.second)));
 }
 
 template <typename Lhs, typename Rhs>

@@ -60,8 +60,8 @@ boolean writeproc(j_compress_ptr jpeg_ptr);
 void message(j_common_ptr jpeg_ptr);
 void exit(j_common_ptr jpeg_ptr);
 
-constexpr unsigned int buffer_in  = 4096;
-constexpr unsigned int buffer_out = 4096;
+constexpr uint32_t buffer_in  = 4096;
+constexpr uint32_t buffer_out = 4096;
 
 std::unique_ptr<image> jpeg_read(std::istream& stream)
 {

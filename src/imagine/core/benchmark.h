@@ -46,6 +46,7 @@ struct IG_API benchmark_report
 class IG_API benchmark
 {
 public:
+  constexpr benchmark() = delete;
   static void run(std::function<void ()> func, const std::string& name, std::size_t runs = 1);
 
   template <typename T = std::chrono::microseconds>
@@ -71,8 +72,6 @@ public:
   benchmark& operator=(const benchmark&) = delete;
 
 private:
-  constexpr benchmark() = default;
-
   static std::unordered_map< std::string, std::vector<std::chrono::microseconds> > benchs_;
 };
 

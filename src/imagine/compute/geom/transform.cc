@@ -151,14 +151,14 @@ void transform::link(transform* parent)
   if (parent_) parent_->children_.push_back(*this);
 }
 
-const mat4& transform::world_transform()
+const mat4& transform::wt()
 {
   if (!umat_)
   {
     matrix_ = mat4::translating(pos_) * mat4::rotating(ori_) * mat4::scaling(sca_);
     umat_ = true;
 
-    if (parent_) matrix_ = parent_->world_transform() * matrix_;
+    if (parent_) matrix_ = parent_->wt() * matrix_;
   }
 
   return matrix_;
@@ -166,7 +166,7 @@ const mat4& transform::world_transform()
 
 const mat4 transform::inv_wt()
 {
-  return linalg::inv(world_transform());
+  return linalg::inv(wt());
 }
 
 void transform::needs_update()

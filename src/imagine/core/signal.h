@@ -49,8 +49,8 @@ public:
   auto connect(func_t&& func);
   void disconnect(std::shared_ptr<slot>& slot);
 
-  void emit(TArgs&&... args) const;
-  void operator()(TArgs&&... args) const;
+  void emit(Args&&... args) const;
+  void operator()(Args&&... args) const;
 
   signal(const signal&) = delete;
   signal& operator=(const signal&) = delete;

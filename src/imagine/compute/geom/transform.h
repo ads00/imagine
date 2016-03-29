@@ -47,7 +47,7 @@ public:
 
   void link(transform* parent);
 
-  const mat4& world_transform();
+  const mat4& wt();
   const mat4  inv_wt();
 
 private:

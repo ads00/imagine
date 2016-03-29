@@ -44,7 +44,7 @@ image::image(access_t dimensions, unsigned int channels, unsigned int bit_depth)
 {
   pitch_ = dimensions_.front() * bit_depth_ / 8;
   for (auto it = dimensions_.begin() + 1; it != dimensions_.end(); ++it)
-    size_ *= *(it);
+    size_ *= (*it);
 
   size_ *= pitch_;
   pixels_.resize(size_ * channels_);
@@ -55,10 +55,10 @@ const uint8_t& image::operator[](access_t coords) const
   std::size_t acc = 0;
   auto it = coords.end();
   for (auto i = dimensions_.size(); i--> 1; )
-    acc += *(--it) * std::accumulate(dimensions_.begin(), dimensions_.begin() + i,
+    acc += (*--it) * std::accumulate(dimensions_.begin(), dimensions_.begin() + i,
                                      1, std::multiplies<>{});
 
-  const auto id = (*(--it) + acc) * (pitch_ / dimensions_.front());
+  const auto id = ((*--it) + acc) * (pitch_ / dimensions_.front());
   return pixels_[id];
 }
 
@@ -67,10 +67,10 @@ uint8_t& image::operator[](access_t coords)
   std::size_t acc = 0;
   auto it = coords.end();
   for (auto i = dimensions_.size(); i--> 1; )
-    acc += *(--it) * std::accumulate(dimensions_.begin(), dimensions_.begin() + i,
+    acc += (*--it) * std::accumulate(dimensions_.begin(), dimensions_.begin() + i,
                                      1, std::multiplies<>{});
 
-  const auto id = (*(--it) + acc) * (pitch_ / dimensions_.front());
+  const auto id = ((*--it) + acc) * (pitch_ / dimensions_.front());
   return pixels_[id];
 }
 
