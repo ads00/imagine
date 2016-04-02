@@ -39,6 +39,7 @@ public:
 
   constexpr flags() = default;
   constexpr flags(enum_t e) : flags_{underlying_t(e)} {}
+  constexpr flags(underlying_t flags) : flags_{flags} {}
 
   flags operator~() const { return flags(~flags_); }
   flags operator&(flags f) const { return flags(flags_ & f.flags_); }
@@ -63,8 +64,6 @@ public:
   constexpr bool operator!() const { return !flags_; }
 
 private:
-  constexpr flags(underlying_t flags) : flags_{flags} {}
-
   friend flags operator|(Enum f1, flags f2) { return f2 | f1; }
   friend flags operator&(Enum f1, flags f2) { return f2 & f1; }
   friend flags operator^(Enum f1, flags f2) { return f2 ^ f1; }

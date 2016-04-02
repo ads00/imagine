@@ -35,9 +35,7 @@ struct window_native
 {
 public:
   window_native(const window* ref);
-  window_native(const window* ref, const std::string& caption, unsigned int width, unsigned int height,
-                window::style_ft style);
-
+  window_native(const window* ref, const std::string& caption, unsigned int width, unsigned int height, window::style_ft style);
   ~window_native() = default;
 
   const window* ref_;

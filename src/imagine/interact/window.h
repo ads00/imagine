@@ -40,18 +40,18 @@ public:
 
   enum style_t
   {
-    none      = 0x00,
-    closable  = 0x01,
-    resizable = 0x02,
-    titlebar  = 0x04,
-    default_  = closable | resizable | titlebar
+    none        = 0x00,
+    closable    = 0x01,
+    resizable   = 0x02,
+    titlebar    = 0x04,
+    interactive = closable | resizable | titlebar
   };
 
   friend class cursor;
   using style_ft = flags<style_t>;
 
   constexpr window();
-  constexpr window(const std::string& caption, unsigned int width, unsigned int height, style_ft style = style_t::default_);
+  constexpr window(const std::string& caption, unsigned int width, unsigned int height, style_ft style);
   virtual ~window();
 
   void close();
