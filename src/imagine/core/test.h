@@ -21,39 +21,17 @@
  SOFTWARE.
 */
 
-#include "imagine/core/benchmark.h"
-#include <vector>
+#ifndef IG_CORE_TEST_H
+#define IG_CORE_TEST_H
 
-namespace ig
-{
+#include "imagine.h"
 
-// benchmark_report
-constexpr benchmark_report::benchmark_report(const std::string& n, const std::vector<uint64_t>& s)
-  : name{n}, samples{s}
-{
-}
+namespace ig   {
+namespace test {
 
-// benchmark
-void benchmark::run(std::function<void ()> func, const std::string& name, std::size_t runs)
-{
-  std::vector<std::chrono::microseconds> runner(runs);
-  for (std::size_t run = 0; run < runs; ++run)
-  {
-    const auto chrono_run = std::chrono::high_resolution_clock::now();
-    func();
-    runner[run] = std::chrono::duration_cast<std::chrono::microseconds>(
-      std::chrono::high_resolution_clock::now() - chrono_run);
-  }
+void IG_API backtrace(std::exception_ptr exception);
 
-  const auto it = benchs_.find(name);
-  if (it == benchs_.end()) benchs_.emplace(name, runner);
-  else
-  {
-    auto& v = it->second;
-    v.insert(v.end(), runner.begin(), runner.end());
-  }
-}
-
-std::unordered_map< std::string, std::vector<std::chrono::microseconds> > benchmark::benchs_;
-
+} // namespace test
 } // namespace ig
+
+#endif // IG_CORE_TEST_H

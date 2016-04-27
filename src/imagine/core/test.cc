@@ -21,53 +21,27 @@
  SOFTWARE.
 */
 
-#ifndef IG_CORE_THREADPOOL_H
-#define IG_CORE_THREADPOOL_H
+#include "imagine/core/test.h"
+#include "imagine/core/log.h"
 
-#include "imagine.h"
+namespace ig   {
+namespace test {
 
-#include <future>
-#include <queue>
-
-namespace ig {
-
-class IG_API threadpool {
-public:
-  threadpool(size_t workers = std::thread::hardware_concurrency());
-  ~threadpool();
-
-  template <typename Fn, typename... Args>
-  auto work(Fn&& fn, Args&&... args) {
-    using return_t = decltype(f(args...));
-    const auto task = std::make_shared<
-      std::packaged_task<return_t()> >
-      (std::bind(std::forward<Fn>(fn), std::forward<Args>(args)...));
-
-    const auto retval = task->get_future();
-    {
-      std::lock_guard<decltype(mutex_)> lock(mutex_);
-      tasks_.emplace([task]() { (*task)(); });
-    }
-
-    cv_.notify_one();
-    return retval;
+void backtrace(std::exception_ptr exception) {
+  try { 
+    std::rethrow_exception(exception); 
+  } catch (const std::exception& e) {
+    IG_LOG(info) << "Backtrace [rethrow_exception]: " << e.what(); 
+  } catch (...) { 
+    IG_LOG(info) << "Backtrace [rethrow_exception]: Unknown exception";
   }
 
-  threadpool(const threadpool&) = delete;
-  threadpool& operator=(const threadpool&) = delete;
+  try { 
+    std::rethrow_exception(exception); 
+  } catch (const std::nested_exception& e) {
+    backtrace(e.nested_ptr()); 
+  } catch (...) {}
+}
 
-protected:
-  virtual void thread_work_internal();
-
-private:
-  std::vector<std::thread> workers_;
-  std::queue< std::function<void ()> > tasks_;
-
-  std::mutex mutex_;
-  std::condition_variable cv_;
-  std::atomic_bool running_;
-};
-
+} // namespace test
 } // namespace ig
-
-#endif // IG_CORE_THREADPOOL_H

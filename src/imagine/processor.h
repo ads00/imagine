@@ -21,8 +21,8 @@
  SOFTWARE.
 */
 
-#ifndef PROCESSOR_H
-#define PROCESSOR_H
+#ifndef IG_PROCESSOR_H
+#define IG_PROCESSOR_H
 
 #if defined(__ORDER_BIG_ENDIAN__)
 # define IG_BIG_ENDIAN __ORDER_BIG_ENDIAN__
@@ -158,4 +158,4 @@
 # endif
 #endif
 
-#endif // PROCESSOR_H
+#endif // IG_PROCESSOR_H

@@ -21,8 +21,8 @@
  SOFTWARE.
 */
 
-#ifndef CORE_BENCHMARK_H
-#define CORE_BENCHMARK_H
+#ifndef IG_CORE_BENCHMARK_H
+#define IG_CORE_BENCHMARK_H
 
 #include "imagine.h"
 
@@ -32,49 +32,58 @@
 #include <vector>
 #include <algorithm>
 
-namespace ig
-{
+namespace ig {
 
-struct IG_API benchmark_report
-{
-  constexpr benchmark_report(const std::string& n, const std::vector<uint64_t>& s);
-
-  std::string name;
-  std::vector<uint64_t> samples;
-};
-
-class IG_API benchmark
-{
+class benchmark_report;
+class benchmark {
 public:
-  constexpr benchmark() = delete;
-  static void run(std::function<void ()> func, const std::string& name, std::size_t runs = 1);
+  benchmark() = default;
 
-  template <typename T = std::chrono::microseconds>
-  static auto reports()
-  {
-    std::vector<benchmark_report> rep; rep.reserve(benchs_.size());
-    for (auto& bench : benchs_)
-    {
-      std::vector<uint64_t> samples; samples.reserve(bench.second.size());
-      std::for_each(bench.second.begin(), bench.second.end(), [&samples](auto& s)
-      {
-        samples.emplace_back(
-          std::chrono::duration_cast<T>(s).count());
-      });
-
-      rep.emplace_back(bench.first, samples);
+  template <typename Fn, typename... Args>
+  void measure(const std::string& name, size_t runs , Fn&& fn, Args&&... args) {
+    auto runner = std::vector<std::chrono::microseconds>(runs);
+    for (size_t run = 0; run < runs; ++run) {
+      auto begin = std::chrono::high_resolution_clock::now();
+      fn(std::forward<Args>(args)...);
+      runner[run] = std::chrono::duration_cast<std::chrono::microseconds>(
+          std::chrono::high_resolution_clock::now() - begin);
     }
 
-    return rep;
+    auto it = benchs_.find(name);
+    if (it != benchs_.end()) {
+      it->second.insert(it->second.end(), runner.begin(), runner.end());
+    } else {
+      benchs_.emplace(name, runner);
+    }
+  }
+
+  template <typename T = std::chrono::microseconds>
+  auto generate_reports() {
+    auto reports = std::vector<benchmark_report>{benchs_.size()};
+    std::transform(benchs_.begin(), benchs_.end(), reports.begin(), [](const auto& bench) {
+      auto report = benchmark_report{bench.first};
+
+      std::for_each(bench.second.begin(), bench.second.end(), [&report](const auto& sample) {
+        report.samples.emplace_back(std::chrono::duration_cast<T>(sample).count());
+      });
+      return std::move(report);
+    });
+    return reports;
   }
 
   benchmark(const benchmark&) = delete;
   benchmark& operator=(const benchmark&) = delete;
 
 private:
-  static std::unordered_map< std::string, std::vector<std::chrono::microseconds> > benchs_;
+  std::unordered_map< std::string, std::vector<std::chrono::microseconds> > benchs_;
+};
+
+class benchmark_report {
+public:
+  std::string name;
+  std::vector<uint64_t> samples;
 };
 
 } // namespace ig
 
-#endif // CORE_BENCHMARK_H
+#endif // IG_CORE_BENCHMARK_H

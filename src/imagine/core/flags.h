@@ -21,60 +21,58 @@
  SOFTWARE.
 */
 
-#ifndef CORE_FLAGS_H
-#define CORE_FLAGS_H
+#ifndef IG_CORE_FLAGS_H
+#define IG_CORE_FLAGS_H
 
 #include "imagine.h"
 
-namespace ig
-{
+namespace ig {
 
 template <typename Enum>
-class flags
-{
+class flags {
 public:
   using enum_t       = Enum;
   using underlying_t = typename std::make_unsigned<
-                       typename std::underlying_type< enum_t>::type >::type;
+                       typename std::underlying_type_t<enum_t> >::type;
 
   constexpr flags() = default;
   constexpr flags(enum_t e) : flags_{underlying_t(e)} {}
   constexpr flags(underlying_t flags) : flags_{flags} {}
 
-  flags operator~() const { return flags(~flags_); }
-  flags operator&(flags f) const { return flags(flags_ & f.flags_); }
-  flags operator|(flags f) const { return flags(flags_ | f.flags_); }
-  flags operator^(flags f) const { return flags(flags_ ^ f.flags_); }
+  auto operator~() const { return flags{~flags_}; }
+  auto operator&(flags f) const { return flags{flags_ & f.flags_}; }
+  auto operator|(flags f) const { return flags{flags_ | f.flags_}; }
+  auto operator^(flags f) const { return flags{flags_ ^ f.flags_}; }
 
-  flags operator&(enum_t e) const { return operator&(flags(e)); }
-  flags operator|(enum_t e) const { return operator|(flags(e)); }
-  flags operator^(enum_t e) const { return operator^(flags(e)); }
+  auto operator&(enum_t e) const { return operator&(flags{e}); }
+  auto operator|(enum_t e) const { return operator|(flags{e}); }
+  auto operator^(enum_t e) const { return operator^(flags{e}); }
 
-  flags& operator&=(flags f) { flags_ &= f.flags_; return *this; }
-  flags& operator|=(flags f) { flags_ |= f.flags_; return *this; }
-  flags& operator^=(flags f) { flags_ ^= f.flags_; return *this; }
+  auto& operator&=(flags f) { flags_ &= f.flags_; return *this; }
+  auto& operator|=(flags f) { flags_ |= f.flags_; return *this; }
+  auto& operator^=(flags f) { flags_ ^= f.flags_; return *this; }
 
-  flags& operator&=(enum_t e) { return operator&=(flags(e)); }
-  flags& operator|=(enum_t e) { return operator|=(flags(e)); }
-  flags& operator^=(enum_t e) { return operator^=(flags(e)); }
+  auto& operator&=(enum_t e) { return operator&=(flags{e}); }
+  auto& operator|=(enum_t e) { return operator|=(flags{e}); }
+  auto& operator^=(enum_t e) { return operator^=(flags{e}); }
 
-  flags& operator=(flags f) { flags_ = f.flags_; return *this; }
+  auto& operator=(flags f) { flags_ = f.flags_; return *this; }
 
   constexpr operator bool() const  { return flags_ != 0; }
   constexpr bool operator!() const { return !flags_; }
 
 private:
-  friend flags operator|(Enum f1, flags f2) { return f2 | f1; }
-  friend flags operator&(Enum f1, flags f2) { return f2 & f1; }
-  friend flags operator^(Enum f1, flags f2) { return f2 ^ f1; }
+  friend auto operator|(Enum lhs, flags rhs) { return rhs | lhs; }
+  friend auto operator&(Enum lhs, flags rhs) { return rhs & lhs; }
+  friend auto operator^(Enum lhs, flags rhs) { return rhs ^ lhs; }
 
-  friend flags operator|(Enum f1, Enum f2) { return flags(f1) | f2; }
-  friend flags operator&(Enum f1, Enum f2) { return flags(f1) & f2; }
-  friend flags operator^(Enum f1, Enum f2) { return flags(f1) ^ f2; }
+  friend auto operator|(Enum lhs, Enum rhs) { return flags{lhs} | rhs; }
+  friend auto operator&(Enum lhs, Enum rhs) { return flags{lhs} & rhs; }
+  friend auto operator^(Enum lhs, Enum rhs) { return flags{lhs} ^ rhs; }
 
   underlying_t  flags_;
 };
 
 } // namespace ig
 
-#endif // CORE_FLAGS_H
+#endif // IG_CORE_FLAGS_H

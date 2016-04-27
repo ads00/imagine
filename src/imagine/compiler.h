@@ -21,8 +21,8 @@
  SOFTWARE.
 */
 
-#ifndef COMPILER_H
-#define COMPILER_H
+#ifndef IG_COMPILER_H
+#define IG_COMPILER_H
 
 /*
 MSVC     - Microsoft Visual C/C++, Intel C++ for Windows
@@ -107,4 +107,4 @@ CLANG    - C++ front-end for the LLVM compiler
 # define IG_API
 #endif
 
-#endif // COMPILER_H
+#endif // IG_COMPILER_H

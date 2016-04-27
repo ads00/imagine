@@ -21,8 +21,8 @@
  SOFTWARE.
 */
 
-#ifndef CORE_LOG_H
-#define CORE_LOG_H
+#ifndef IG_CORE_LOG_H
+#define IG_CORE_LOG_H
 
 #include "imagine.h"
 
@@ -32,29 +32,19 @@
 #include <memory>
 #include <vector>
 
-namespace ig
-{
+namespace ig {
 
 enum log_t { info, dbg, warn, fatal };
-struct IG_API log_context
-{
-  constexpr log_context(log_t type, const char* func, const char* file, int line);
-  ~log_context();
 
-  log_t type;
-  std::stringstream stream;
-  const char* func, *file; int line;
-};
-
+class log_context;
 class log_sink;
-class IG_API log
-{
+class IG_API log {
 public:
-  friend log_context;
   using formatter_t = std::function<std::string (const log_context&)>;
+  friend log_context;
   
-  static void add_sink(std::shared_ptr<log_sink>& sink);
-  static void remove_sink(std::shared_ptr<log_sink>& sink);
+  static void add_sink(const std::shared_ptr<log_sink>& sink);
+  static void remove_sink(const std::shared_ptr<log_sink>& sink);
 
   log(const log&) = delete;
   log& operator=(const log&) = delete;
@@ -72,8 +62,17 @@ protected:
   static std::vector< std::shared_ptr<log_sink> > sinks_;
 };
 
-class log_sink
-{
+class IG_API log_context {
+public:
+  constexpr log_context(log_t type, const char* func, const char* file, int line);
+  ~log_context();
+
+  log_t type;
+  std::stringstream stream;
+  const char* func, *file; int line;
+};
+
+class log_sink {
 public:
   friend log;
   log_sink(std::ostream& s, log::formatter_t format = log::default_format)
@@ -90,5 +89,4 @@ private:
 
 #define IG_LOG(log_t) ig::log_context(log_t, IG_FUNC, __FILE__, __LINE__).stream
 
-
-#endif // CORE_LOG_H
+#endif // IG_CORE_LOG_H

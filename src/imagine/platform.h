@@ -21,8 +21,8 @@
  SOFTWARE.
 */
 
-#ifndef PLATFORM_H
-#define PLATFORM_H
+#ifndef IG_PLATFORM_H
+#define IG_PLATFORM_H
 
 /*
 DARWIN   - Any Darwin system
@@ -118,4 +118,4 @@ ANDROID  - Android platform
 # define IG_UNIX
 #endif
 
-#endif // PLATFORM_H
+#endif // IG_PLATFORM_H

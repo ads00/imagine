@@ -26,49 +26,32 @@
 #include <iostream>
 #include <algorithm>
 
-namespace ig
-{
-
-// log_context
-constexpr log_context::log_context(log_t type, const char* func, const char* file, int line)
-  : type{type}, func{func}, file{file}, line{line}
-{
-}
-
-log_context::~log_context()
-{
-  log::get().push(*this);
-}
+namespace ig {
 
 // log
-log& log::get()
-{
-  static log l;
-  return l;
+log& log::get() {
+  static log l; return l;
 }
 
-void log::add_sink(std::shared_ptr<log_sink>& sink)
-{ 
+void log::add_sink(const std::shared_ptr<log_sink>& sink) {
   sinks_.push_back(sink); 
 }
 
-void log::remove_sink(std::shared_ptr<log_sink>& sink)
-{ 
+void log::remove_sink(const std::shared_ptr<log_sink>& sink) {
   sinks_.erase(std::remove(sinks_.begin(), sinks_.end(), sink), 
                sinks_.end()); 
 }
 
-void log::push(const log_context& c)
-{
+void log::push(const log_context& c) {
   std::lock_guard<decltype(mutex_)> lock{mutex_};
-  for (auto& sink : sinks_) sink->consume(c);
+  for (const auto& sink : sinks_) {
+    sink->consume(c);
+  }
 }
 
-log::formatter_t log::default_format = [](const log_context& c)
-{
-  std::stringstream ss;
-  switch (c.type)
-  {
+log::formatter_t log::default_format = [](const log_context& c) {
+  auto ss = std::stringstream{};
+  switch (c.type) {
   case log_t::info:  ss << "[Info]  "; break;
   case log_t::dbg:   ss << "[Debug] "; break;
   case log_t::warn:  ss << "[Warn]  "; break;
@@ -79,9 +62,17 @@ log::formatter_t log::default_format = [](const log_context& c)
   return ss.str();
 };
 
-decltype(log::default_sink) log::default_sink = std::make_shared<log_sink>(std::cout);
-decltype(log::sinks_)       log::sinks_ = {log::default_sink};
+// log_context
+constexpr log_context::log_context(log_t type, const char* func, const char* file, int line)
+  : type{type}, func{func}, file{file}, line{line} {
+}
 
-std::mutex log::mutex_;
+log_context::~log_context() {
+  log::get().push(*this);
+}
+
+decltype(log::default_sink) log::default_sink = std::make_shared<log_sink>(std::cout);
+decltype(log::sinks_)       log::sinks_       = {log::default_sink};
+decltype(log::mutex_)       log::mutex_;
 
 } // namespace ig

@@ -21,8 +21,8 @@
  SOFTWARE.
 */
 
-#ifndef CORE_SIGNAL_H
-#define CORE_SIGNAL_H
+#ifndef IG_CORE_SIGNAL_H
+#define IG_CORE_SIGNAL_H
 
 #include "imagine.h"
 
@@ -30,25 +30,20 @@
 #include <memory>
 #include <vector>
 
-namespace ig
-{
+namespace ig {
 
+template <typename... Args> class signal_slot;
 template <typename... Args>
-class signal
-{
+class signal {
 public:
-  using func_t = std::function<void (Args...)>;
-  struct slot
-  {
-    slot(signal& sig) : sig{sig} {}
-    signal& sig; func_t func;
-  };
+  using fn_t   = std::function<void(Args...)>;
+  using slot_t = signal_slot<Args...>;
+  friend slot_t;
 
   constexpr signal() = default;
 
-  auto connect(func_t&& func);
-  void disconnect(std::shared_ptr<slot>& slot);
-
+  auto connect(fn_t&& fn);
+  void disconnect(const std::shared_ptr<slot_t>& slot);
   void emit(Args&&... args) const;
   void operator()(Args&&... args) const;
 
@@ -56,39 +51,44 @@ public:
   signal& operator=(const signal&) = delete;
 
 private:
-  std::vector< std::shared_ptr<slot> > slots_;
+  struct ctor{};
+  std::vector< std::shared_ptr<slot_t> > slots_;
 };
 
 template <typename... Args>
-auto signal<Args...>::connect(func_t&& func)
-{
-  auto backslot = std::make_shared<slot>(*this);
-  backslot->func = std::forward<func_t>(func);
+class signal_slot {
+public:
+  using sig_t = signal<Args...>;
+  using fn_t  = typename sig_t::fn_t;
 
-  slots_.emplace_back(std::move(backslot));
+  constexpr signal_slot(typename sig_t::ctor, sig_t& signal, fn_t&& fn) : signal_{signal}, fn_{fn} {}
+  sig_t& signal_; fn_t fn_;
+};
+
+template <typename... Args>
+auto signal<Args...>::connect(fn_t&& fn) {
+  slots_.emplace_back(std::make_shared<slot_t>(ctor{}, *this, std::forward<fn_t>(fn)));
   return slots_.back();
 }
 
 template <typename... Args>
-void signal<Args...>::disconnect(std::shared_ptr<slot>& slot)
-{
+void signal<Args...>::disconnect(const std::shared_ptr<slot_t>& slot) {
   slots_.erase(std::remove(slots_.begin(), slots_.end(), slot), 
                slots_.end());
 }
 
 template <typename... Args>
-void signal<Args...>::emit(Args&&... args) const
-{
-  for (auto slot : slots_)
-    slot->func(std::forward<Args>(args)...);
+void signal<Args...>::emit(Args&&... args) const {
+  for (const auto& slot : slots_) {
+    slot->fn_(std::forward<Args>(args)...);
+  }
 }
 
 template <typename... Args>
-void signal<Args...>::operator()(Args&&... args) const
-{
+void signal<Args...>::operator()(Args&&... args) const {
   emit(std::forward<Args>(args)...);
 }
 
 } // namespace ig
 
-#endif // CORE_SIGNAL_H
+#endif // IG_CORE_SIGNAL_H
