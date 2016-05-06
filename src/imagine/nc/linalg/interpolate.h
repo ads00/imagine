@@ -21,17 +21,32 @@
  SOFTWARE.
 */
 
-#ifndef IG_CORE_TEST_H
-#define IG_CORE_TEST_H
+#ifndef IG_NC_INTERPOLATE_H
+#define IG_NC_INTERPOLATE_H
 
-#include "imagine/ig.h"
+#include "imagine/nc/linalg/matrix.h"
+#include "imagine/nc/linalg/quaternion.h"
 
-namespace ig   {
-namespace test {
+namespace ig     {
+namespace linalg {
 
-void IG_API backtrace(std::exception_ptr exception);
+template <typename T>
+constexpr auto lerp(const quaternion<T>& lhs, const quaternion<T>& rhs, T t) {
+  return normalise(lhs*(T(1) - t) + rhs*t);
+}
 
-} // namespace test
+template <typename T>
+auto slerp(const quaternion<T>& lhs, const quaternion<T>& rhs, T t) {
+  auto coshalf = dot(lhs, rhs);
+  if (std::abs(coshalf) >= T(1)) {
+    return lerp(lhs, rhs, t);
+  } else {
+    auto a = std::acos(coshalf);
+    return (lhs*std::sin((T(1) - t) * a) + rhs*std::sin(t * a)) / std::sin(a);
+  }
+}
+
+} // namespace linalg
 } // namespace ig
 
-#endif // IG_CORE_TEST_H
+#endif // IG_NC_INTERPOLATE_H

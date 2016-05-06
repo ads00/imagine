@@ -21,36 +21,33 @@
  SOFTWARE.
 */
 
-#ifndef GRAPHICS_CAMERA_H
-#define GRAPHICS_CAMERA_H
+#ifndef IG_GRAPHICS_CAMERA_H
+#define IG_GRAPHICS_CAMERA_H
 
-#include "imagine/compute/geom/homogeneous.h"
-#include "imagine/compute/geom/ray.h"
+#include "imagine/nc/geom/homogeneous.h"
+#include "imagine/nc/geom/ray.h"
 
-namespace ig
-{
+namespace ig {
 
-class IG_API camera
-{
+class IG_API camera {
 public:
   enum type_t { orthographic, perspective };
 
-  camera(type_t type, std::size_t w, std::size_t h);
-  camera(type_t type, std::size_t w, std::size_t h, const vec3& p, const vec3& t, const vec3& u);
+  camera(type_t type, size_t w, size_t h);
+  camera(type_t type, size_t w, size_t h, const vec3& pos, const vec3& target, const vec3& up);
 
   void update();
 
   void make_orthographic();
   void make_perspective(float fovy);
-
   void clip(float zn, float zf);
 
-  ray cast_ray(std::size_t x, std::size_t y) const;
+  ray cast_ray(size_t x, size_t y) const;
 
 private:
   type_t type_;
 
-  std::size_t w_, h_;
+  size_t w_, h_;
   vec3 pos_, target_, up_;
 
   float zn_, zf_;
@@ -63,4 +60,4 @@ private:
 
 } // namespace ig
 
-#endif // GRAPHICS_CAMERA_H
+#endif // IG_GRAPHICS_CAMERA_H

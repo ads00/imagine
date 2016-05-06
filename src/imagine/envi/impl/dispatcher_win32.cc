@@ -21,17 +21,29 @@
  SOFTWARE.
 */
 
-#ifndef IG_CORE_TEST_H
-#define IG_CORE_TEST_H
+#include "imagine/envi/impl/dispatcher_native.h"
+#include "imagine/envi/dispatcher.h"
 
-#include "imagine/ig.h"
+#include <windows.h>
 
 namespace ig   {
-namespace test {
+namespace impl {
 
-void IG_API backtrace(std::exception_ptr exception);
+dispatcher_native::dispatcher_native()
+  : return_code_{-1}, running_{false} {
+}
 
-} // namespace test
+} // namespace impl
+
+bool dispatcher::process_events() {
+  auto msg = MSG{};
+  while (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE)) {
+    TranslateMessage(&msg);
+    DispatchMessage(&msg);
+  }
+
+  handle();
+  return true;
+}
+
 } // namespace ig
-
-#endif // IG_CORE_TEST_H

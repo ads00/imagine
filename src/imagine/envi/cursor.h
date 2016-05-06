@@ -21,17 +21,44 @@
  SOFTWARE.
 */
 
-#ifndef IG_CORE_TEST_H
-#define IG_CORE_TEST_H
+#ifndef IG_ENVI_CURSOR_H
+#define IG_ENVI_CURSOR_H
 
 #include "imagine/ig.h"
 
+#include <memory>
+
 namespace ig   {
-namespace test {
+namespace impl { class cursor_native; class window_native; }
 
-void IG_API backtrace(std::exception_ptr exception);
+class window;
+class IG_API cursor {
+public:
+  enum shape_t {
+    none, arrow, cross, hand, pointer,
+    help, progress, wait, text, sizeall,
+    resize_n, resize_s, resize_e, resize_w,
+    resize_nw, resize_se, resize_ne, resize_sw,
+    bitmap
+  };
+  friend impl::window_native;
 
-} // namespace test
+  constexpr cursor(shape_t shape);
+  ~cursor();
+
+  void refresh() const;
+  void reshape(shape_t shape);
+
+  auto shape() const -> shape_t;
+
+  static void clip(const window* ref);
+  static void move(int32_t x, int32_t y, const window* ref = nullptr);
+  static std::pair<int32_t, int32_t> position(const window* ref = nullptr);
+
+private:
+  std::unique_ptr<impl::cursor_native> native_;
+};
+
 } // namespace ig
 
-#endif // IG_CORE_TEST_H
+#endif // IG_ENVI_CURSOR_H

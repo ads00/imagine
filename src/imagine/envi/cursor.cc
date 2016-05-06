@@ -21,17 +21,32 @@
  SOFTWARE.
 */
 
-#ifndef IG_CORE_TEST_H
-#define IG_CORE_TEST_H
+#include "imagine/envi/impl/cursor_native.h"
+#include "imagine/envi/cursor.h"
 
-#include "imagine/ig.h"
+namespace ig {
 
-namespace ig   {
-namespace test {
+constexpr cursor::cursor(shape_t shape)
+  : native_{std::make_unique<impl::cursor_native>(shape)} {
+}
 
-void IG_API backtrace(std::exception_ptr exception);
+cursor::~cursor() = default;
 
-} // namespace test
+void cursor::reshape(shape_t shape) {
+  native_.reset(new impl::cursor_native(shape, native_->x_, native_->y_));
+  refresh();
+}
+
+auto cursor::shape() const -> shape_t {
+  return native_->shape_;
+}
+
+// Native implementations
+//
+
+// void cursor::refresh() const;
+// void cursor::clip(const window* ref);
+// void cursor::move(int32_t x, int32_t y, const window* ref);
+// std::pair<int32_t, int32_t> cursor::position(const window* ref);
+
 } // namespace ig
-
-#endif // IG_CORE_TEST_H

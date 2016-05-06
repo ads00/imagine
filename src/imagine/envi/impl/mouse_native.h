@@ -21,17 +21,31 @@
  SOFTWARE.
 */
 
-#ifndef IG_CORE_TEST_H
-#define IG_CORE_TEST_H
+#ifndef IG_ENVI_MOUSE_NATIVE_H
+#define IG_ENVI_MOUSE_NATIVE_H
 
-#include "imagine/ig.h"
+#include "imagine/envi/mouse.h"
 
-namespace ig   {
-namespace test {
+#if defined(IG_WIN)
+#include <windows.h>
+#include <windowsx.h>
+#endif
 
-void IG_API backtrace(std::exception_ptr exception);
+namespace ig    {
+namespace impl  {
+namespace mouse {
 
-} // namespace test
+#if defined(IG_WIN)
+button_ft buttons();
+int32_t x(LPARAM lparam);
+int32_t y(LPARAM lparam);
+float wheel_delta(WPARAM wparam);
+
+bool track(HWND window);
+#endif
+
+} // namespace mouse
+} // namespace impl
 } // namespace ig
 
-#endif // IG_CORE_TEST_H
+#endif // IG_ENVI_MOUSE_NATIVE_H

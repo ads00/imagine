@@ -21,17 +21,36 @@
  SOFTWARE.
 */
 
-#ifndef IG_CORE_TEST_H
-#define IG_CORE_TEST_H
+#ifndef IG_NC_RELATIONAL_H
+#define IG_NC_RELATIONAL_H
 
-#include "imagine/ig.h"
+#include "imagine/nc/linalg/base/alg.h"
 
-namespace ig   {
-namespace test {
+namespace ig {
 
-void IG_API backtrace(std::exception_ptr exception);
+template <typename Lhs, typename Rhs>
+auto operator<(const alg<Lhs>& lhs, const alg<Rhs>& rhs) {
+  assert(lhs.size() == rhs.size() && "Incoherent matrix comparison");
 
-} // namespace test
+  auto pair = std::mismatch(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
+  return (pair.first == lhs.end() || ((*pair.first) < (*pair.second)));
+}
+
+template <typename Lhs, typename Rhs>
+constexpr auto operator>(const alg<Lhs>& lhs, const alg<Rhs>& rhs) {
+  return rhs < lhs;
+}
+
+template <typename Lhs, typename Rhs>
+constexpr auto operator<=(const alg<Lhs>& lhs, const alg<Rhs>& rhs) {
+  return !(lhs > rhs);
+}
+
+template <typename Lhs, typename Rhs>
+constexpr auto operator>=(const alg<Lhs>& lhs, const alg<Rhs>& rhs) {
+  return !(lhs < rhs);
+}
+
 } // namespace ig
 
-#endif // IG_CORE_TEST_H
+#endif // IG_NC_RELATIONAL_H

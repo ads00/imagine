@@ -44,27 +44,27 @@ void log::remove_sink(const std::shared_ptr<log_sink>& sink) {
 
 void log::push(const log_context& c) {
   std::lock_guard<decltype(mutex_)> lock{mutex_};
-  for (const auto& sink : sinks_) {
+  for (auto&& sink : sinks_) {
     sink->consume(c);
   }
 }
 
 log::formatter_t log::default_format = [](const log_context& c) {
   auto ss = std::stringstream{};
-  switch (c.type) {
+  switch (c.type_) {
   case log_t::info:  ss << "[Info]  "; break;
   case log_t::dbg:   ss << "[Debug] "; break;
   case log_t::warn:  ss << "[Warn]  "; break;
   case log_t::fatal: ss << "[Fatal] "; break;
   }
 
-  ss << '[' << c.func << '@' << c.line << "] " << c.stream.str() << std::endl;
+  ss << '[' << c.func_ << '@' << c.line_ << "] " << c.stream_.str() << std::endl;
   return ss.str();
 };
 
 // log_context
-constexpr log_context::log_context(log_t type, const char* func, const char* file, int line)
-  : type{type}, func{func}, file{file}, line{line} {
+constexpr log_context::log_context(log_t type, const char* func, const char* file, int32_t line)
+  : type_{type}, func_{func}, file_{file}, line_{line} {
 }
 
 log_context::~log_context() {

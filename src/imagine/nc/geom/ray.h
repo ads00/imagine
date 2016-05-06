@@ -21,17 +21,24 @@
  SOFTWARE.
 */
 
-#ifndef IG_CORE_TEST_H
-#define IG_CORE_TEST_H
+#ifndef IG_NC_RAY_H
+#define IG_NC_RAY_H
 
-#include "imagine/ig.h"
+#include "imagine/nc/geom/homogeneous.h"
 
-namespace ig   {
-namespace test {
+namespace ig {
 
-void IG_API backtrace(std::exception_ptr exception);
+class ray {
+public:
+  constexpr ray() = default;
+  constexpr ray(const vec3& ori, const vec3& dir)
+    : ori_{ori}, dir_{dir} {}
 
-} // namespace test
+  vec3 operator()(float t) const { return ori_ + t*dir_; }
+
+  vec3 ori_, dir_;
+};
+
 } // namespace ig
 
-#endif // IG_CORE_TEST_H
+#endif // IG_NC_RAY_H

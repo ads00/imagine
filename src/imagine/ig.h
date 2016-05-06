@@ -21,17 +21,17 @@
  SOFTWARE.
 */
 
-#ifndef IG_CORE_TEST_H
-#define IG_CORE_TEST_H
+#ifndef IMAGINE_H
+#define IMAGINE_H
 
-#include "imagine/ig.h"
+#define IG_MAJOR 0
+#define IG_MINOR 1
 
-namespace ig   {
-namespace test {
+#include "imagine/platform.h"
+#include "imagine/support.h"
 
-void IG_API backtrace(std::exception_ptr exception);
+#include <exception>
+#include <stdexcept>
+#include <cassert>
 
-} // namespace test
-} // namespace ig
-
-#endif // IG_CORE_TEST_H
+#endif // IMAGINE_H

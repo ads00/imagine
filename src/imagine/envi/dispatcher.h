@@ -21,17 +21,41 @@
  SOFTWARE.
 */
 
-#ifndef IG_CORE_TEST_H
-#define IG_CORE_TEST_H
+#ifndef IG_ENVI_DISPATCHER_H
+#define IG_ENVI_DISPATCHER_H
 
 #include "imagine/ig.h"
 
+#include <functional>
+#include <memory>
+
 namespace ig   {
-namespace test {
+namespace impl { class dispatcher_native; }
 
-void IG_API backtrace(std::exception_ptr exception);
+class IG_API dispatcher {
+public:
+  dispatcher();
+  virtual ~dispatcher();
 
-} // namespace test
+  virtual int32_t run();
+  virtual void exit(int32_t return_code);
+
+  virtual bool process_events();
+  virtual void handle() const;
+  virtual void tick(std::function<void ()> func);
+
+  static dispatcher* get() { return self_; };
+
+  dispatcher(const dispatcher&) = delete;
+  dispatcher& operator=(const dispatcher&) = delete;
+
+private:
+  std::unique_ptr<impl::dispatcher_native> native_;
+  std::function<void ()> tick_ = [] {};
+
+  static dispatcher* self_;
+};
+
 } // namespace ig
 
-#endif // IG_CORE_TEST_H
+#endif // IG_ENVI_DISPATCHER_H

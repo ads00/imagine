@@ -34,7 +34,6 @@ void threadpool::thread_work_internal() {
 
       if (!running_ && tasks_.empty())
         return;
-
       task = std::move(tasks_.front());
       tasks_.pop();
     }
@@ -53,7 +52,7 @@ threadpool::~threadpool() {
   running_ = false;
   cv_.notify_all();
 
-  for (auto& worker : workers_) {
+  for (auto&& worker : workers_) {
     worker.join();
   }
 }

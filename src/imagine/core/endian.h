@@ -24,7 +24,7 @@
 #ifndef IG_CORE_ENDIAN_H
 #define IG_CORE_ENDIAN_H
 
-#include "imagine.h"
+#include "imagine/ig.h"
 
 namespace ig     {
 namespace endian {

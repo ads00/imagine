@@ -21,17 +21,21 @@
  SOFTWARE.
 */
 
-#ifndef IG_CORE_TEST_H
-#define IG_CORE_TEST_H
+#include "imagine/nc/geom/bbox.h"
 
-#include "imagine/ig.h"
+namespace ig {
 
-namespace ig   {
-namespace test {
+constexpr bbox::bbox(const vec3& min, const vec3& max)
+  : min_{min}, max_{max}, extent_{max - min} {
+}
 
-void IG_API backtrace(std::exception_ptr exception);
+void bbox::expand(const vec3& point) {
+  std::tie(min_, max_) = std::minmax({min_, max_, point});
+  extent_ = max_ - min_;
+}
 
-} // namespace test
+float bbox::surface_area() const {
+  return 2.f * (extent_[0]*extent_[2] + extent_[0]*extent_[1] + extent_[1]*extent_[2]);
+}
+
 } // namespace ig
-
-#endif // IG_CORE_TEST_H

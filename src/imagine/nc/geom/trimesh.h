@@ -21,17 +21,32 @@
  SOFTWARE.
 */
 
-#ifndef IG_CORE_TEST_H
-#define IG_CORE_TEST_H
+#ifndef IG_NC_TRIMESH_H
+#define IG_NC_TRIMESH_H
 
-#include "imagine/ig.h"
+#include "imagine/nc/geom/homogeneous.h"
 
-namespace ig   {
-namespace test {
+namespace ig {
 
-void IG_API backtrace(std::exception_ptr exception);
+class IG_API trimesh {
+public:
+  using face = std::array<std::size_t, 3>;
 
-} // namespace test
+  trimesh() = default;
+  constexpr trimesh(const std::vector<face>& faces, const std::vector<vec3>& vertices,
+                    const std::vector<vec3>& normals = {}, const std::vector<vec2>& coords = {});
+
+  static trimesh make_box(size_t tess);
+  static trimesh make_plane(size_t tess);
+  static trimesh make_sphere(size_t tess);
+
+private:
+  std::vector<face> faces_;
+
+  std::vector<vec3> vertices_, normals_;
+  std::vector<vec2> coords_;
+};
+
 } // namespace ig
 
-#endif // IG_CORE_TEST_H
+#endif // IG_NC_TRIMESH_H

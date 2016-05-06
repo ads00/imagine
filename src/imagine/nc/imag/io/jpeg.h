@@ -21,17 +21,19 @@
  SOFTWARE.
 */
 
-#ifndef IG_CORE_TEST_H
-#define IG_CORE_TEST_H
+#ifndef IG_NC_JPEG_H
+#define IG_NC_JPEG_H
 
-#include "imagine/ig.h"
+#include "imagine/nc/imag/image.h"
 
-namespace ig   {
-namespace test {
+namespace ig     {
+namespace detail {
 
-void IG_API backtrace(std::exception_ptr exception);
+std::unique_ptr<image> jpeg_read(std::istream& stream);
+bool jpeg_write(const image& image, std::ostream& stream);
+bool jpeg_validate(std::istream& stream);
 
-} // namespace test
+} // namespace detail
 } // namespace ig
 
-#endif // IG_CORE_TEST_H
+#endif // IG_NC_JPEG_H

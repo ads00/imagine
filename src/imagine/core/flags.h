@@ -24,7 +24,7 @@
 #ifndef IG_CORE_FLAGS_H
 #define IG_CORE_FLAGS_H
 
-#include "imagine.h"
+#include "imagine/ig.h"
 
 namespace ig {
 
@@ -32,8 +32,8 @@ template <typename Enum>
 class flags {
 public:
   using enum_t       = Enum;
-  using underlying_t = typename std::make_unsigned<
-                       typename std::underlying_type_t<enum_t> >::type;
+  using underlying_t = typename std::make_unsigned_t<
+                       typename std::underlying_type_t<enum_t> >;
 
   constexpr flags() = default;
   constexpr flags(enum_t e) : flags_{underlying_t(e)} {}
@@ -59,7 +59,7 @@ public:
   auto& operator=(flags f) { flags_ = f.flags_; return *this; }
 
   constexpr operator bool() const  { return flags_ != 0; }
-  constexpr bool operator!() const { return !flags_; }
+  constexpr auto operator!() const { return !flags_; }
 
 private:
   friend auto operator|(Enum lhs, flags rhs) { return rhs | lhs; }
@@ -70,7 +70,7 @@ private:
   friend auto operator&(Enum lhs, Enum rhs) { return flags{lhs} & rhs; }
   friend auto operator^(Enum lhs, Enum rhs) { return flags{lhs} ^ rhs; }
 
-  underlying_t  flags_;
+  underlying_t flags_;
 };
 
 } // namespace ig

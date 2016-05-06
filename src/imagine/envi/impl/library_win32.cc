@@ -21,17 +21,48 @@
  SOFTWARE.
 */
 
-#ifndef IG_CORE_TEST_H
-#define IG_CORE_TEST_H
-
-#include "imagine/ig.h"
+#include "imagine/envi/impl/library_native.h"
+#include "imagine/envi/library.h"
 
 namespace ig   {
-namespace test {
+namespace impl {
 
-void IG_API backtrace(std::exception_ptr exception);
+library_native::library_native()
+  : path_{}, handle_{nullptr} {
+}
 
-} // namespace test
+library_native::library_native(const std::string& path)
+  : path_{path}, handle_{nullptr} {
+}
+
+} // namespace impl
+
+auto library::resolve(const char* symbol) -> func_ptr {
+  if (native_->handle_) {
+    auto proc = GetProcAddress(native_->handle_, symbol);
+    return reinterpret_cast<func_ptr>(proc);
+  } return nullptr;
+}
+
+bool library::open(const std::string& path) {
+  if (native_->handle_) {
+    if (native_->path_ != path) {
+      close();
+    } else {
+      return true;
+    }
+  }
+
+  native_->handle_ = LoadLibraryA(path.c_str());
+  native_->path_ = path;
+  return native_->handle_ != nullptr;
+}
+
+void library::close() {
+  if (native_->handle_) {
+    FreeLibrary(native_->handle_);
+    native_->handle_ = nullptr;
+  }
+}
+
 } // namespace ig
-
-#endif // IG_CORE_TEST_H

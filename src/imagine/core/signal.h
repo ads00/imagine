@@ -24,7 +24,7 @@
 #ifndef IG_CORE_SIGNAL_H
 #define IG_CORE_SIGNAL_H
 
-#include "imagine.h"
+#include "imagine/ig.h"
 
 #include <functional>
 #include <memory>
@@ -36,7 +36,7 @@ template <typename... Args> class signal_slot;
 template <typename... Args>
 class signal {
 public:
-  using fn_t   = std::function<void(Args...)>;
+  using fn_t   = std::function<void (Args...)>;
   using slot_t = signal_slot<Args...>;
   friend slot_t;
 
@@ -44,6 +44,7 @@ public:
 
   auto connect(fn_t&& fn);
   void disconnect(const std::shared_ptr<slot_t>& slot);
+
   void emit(Args&&... args) const;
   void operator()(Args&&... args) const;
 
@@ -79,7 +80,7 @@ void signal<Args...>::disconnect(const std::shared_ptr<slot_t>& slot) {
 
 template <typename... Args>
 void signal<Args...>::emit(Args&&... args) const {
-  for (const auto& slot : slots_) {
+  for (auto&& slot : slots_) {
     slot->fn_(std::forward<Args>(args)...);
   }
 }

@@ -21,17 +21,49 @@
  SOFTWARE.
 */
 
-#ifndef IG_CORE_TEST_H
-#define IG_CORE_TEST_H
+#ifndef IG_NC_ALG_DIAG_H
+#define IG_NC_ALG_DIAG_H
 
-#include "imagine/ig.h"
+#include "imagine/nc/linalg/base/alg.h"
 
-namespace ig   {
-namespace test {
+namespace ig {
 
-void IG_API backtrace(std::exception_ptr exception);
+template <typename Xpr>
+struct alg_traits< alg_diag<Xpr> > : alg_traits<Xpr> {
 
-} // namespace test
+  using T = alg_t<Xpr>;
+  static constexpr auto M = Xpr::M;
+  static constexpr auto N = 1;
+};
+
+template <typename Xpr>
+class alg_diag : public alg< alg_diag<Xpr> > {
+public:
+  constexpr alg_diag(Xpr& xpr)
+    : xpr_{xpr} {}
+
+  constexpr auto rows() const { return xpr_.diagsize(); }
+  constexpr auto cols() const { return 1; }
+
+  auto operator()(size_t row, size_t) const { return xpr_(row, row); }
+  auto& operator()(size_t row, size_t)      { return xpr_(row, row); }
+
+  auto operator[](size_t n) const { return xpr_(n, n); }
+  auto& operator[](size_t n)      { return xpr_(n, n); }
+
+  auto operator=(const alg_diag& o) {
+    eval(*this, o); return *this;
+  }
+
+  template <typename Alg>
+  auto operator=(const alg<Alg>& o) {
+    eval(*this, o); return *this;
+  }
+
+private:
+  Xpr& xpr_;
+};
+
 } // namespace ig
 
-#endif // IG_CORE_TEST_H
+#endif // IG_NC_ALG_DIAG_H

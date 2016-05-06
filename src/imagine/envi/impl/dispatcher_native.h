@@ -21,17 +21,24 @@
  SOFTWARE.
 */
 
-#ifndef IG_CORE_TEST_H
-#define IG_CORE_TEST_H
+#ifndef IG_ENVI_DISPATCHER_NATIVE_H
+#define IG_ENVI_DISPATCHER_NATIVE_H
 
-#include "imagine/ig.h"
+#include <atomic>
 
 namespace ig   {
-namespace test {
+namespace impl {
 
-void IG_API backtrace(std::exception_ptr exception);
+class dispatcher_native {
+public:
+  dispatcher_native();
+  ~dispatcher_native() = default;
 
-} // namespace test
+  std::atomic_int return_code_;
+  std::atomic_bool running_;
+};
+
+} // namespace impl
 } // namespace ig
 
-#endif // IG_CORE_TEST_H
+#endif // IG_ENVI_DISPATCHER_NATIVE_H

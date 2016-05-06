@@ -21,17 +21,20 @@
  SOFTWARE.
 */
 
-#ifndef IG_CORE_TEST_H
-#define IG_CORE_TEST_H
+#ifndef IG_ENVI_MOUSE_H
+#define IG_ENVI_MOUSE_H
 
-#include "imagine/ig.h"
+#include "imagine/core/flags.h"
 
-namespace ig   {
-namespace test {
+namespace ig {
 
-void IG_API backtrace(std::exception_ptr exception);
+enum class button_t : uint32_t {
+  none   = 0x00,
+  left   = 0x01,
+  right  = 0x02,
+  middle = 0x04
+}; using button_ft = flags<button_t>;
 
-} // namespace test
 } // namespace ig
 
-#endif // IG_CORE_TEST_H
+#endif // IG_ENVI_MOUSE_H

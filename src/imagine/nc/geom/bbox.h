@@ -21,17 +21,25 @@
  SOFTWARE.
 */
 
-#ifndef IG_CORE_TEST_H
-#define IG_CORE_TEST_H
+#ifndef IG_NC_BBOX_H
+#define IG_NC_BBOX_H
 
-#include "imagine/ig.h"
+#include "imagine/nc/geom/homogeneous.h"
 
-namespace ig   {
-namespace test {
+namespace ig {
 
-void IG_API backtrace(std::exception_ptr exception);
+class IG_API bbox {
+public:
+  constexpr bbox() = default;
+  constexpr bbox(const vec3& min, const vec3& max);
 
-} // namespace test
+  void expand(const vec3& point);
+  float surface_area() const;
+
+private:
+  vec3 min_, max_, extent_;
+};
+
 } // namespace ig
 
-#endif // IG_CORE_TEST_H
+#endif // IG_NC_BBOX_H

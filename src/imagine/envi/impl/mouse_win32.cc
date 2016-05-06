@@ -21,17 +21,45 @@
  SOFTWARE.
 */
 
-#ifndef IG_CORE_TEST_H
-#define IG_CORE_TEST_H
+#include "imagine/envi/impl/mouse_native.h"
 
-#include "imagine/ig.h"
+namespace ig    {
+namespace impl  {
+namespace mouse {
 
-namespace ig   {
-namespace test {
+button_ft buttons() {
+  auto buttons = button_ft{button_t::none};
+  auto swapped = GetSystemMetrics(SM_SWAPBUTTON);
+  if (GetAsyncKeyState(VK_LBUTTON) < 0) {
+    buttons |= swapped ? button_t::right : button_t::left;
+  } if (GetAsyncKeyState(VK_RBUTTON) < 0) {
+    buttons |= swapped ? button_t::left : button_t::right;
+  } if (GetAsyncKeyState(VK_MBUTTON) < 0) {
+    buttons |= button_t::middle;
+  }
+  return buttons;
+}
 
-void IG_API backtrace(std::exception_ptr exception);
+int32_t x(LPARAM lparam) {
+  return GET_X_LPARAM(lparam);
+}
 
-} // namespace test
+int32_t y(LPARAM lparam) {
+  return GET_Y_LPARAM(lparam);
+}
+
+float wheel_delta(WPARAM wparam) {
+  return static_cast<float>(GET_WHEEL_DELTA_WPARAM(wparam)) / WHEEL_DELTA;
+}
+
+bool track(HWND window) {
+  TRACKMOUSEEVENT tme;
+  tme.cbSize = sizeof(TRACKMOUSEEVENT);
+  tme.dwFlags = TME_LEAVE;
+  tme.hwndTrack = window;
+  return TrackMouseEvent(&tme) == TRUE;
+}
+
+} // namespace mouse
+} // namespace impl
 } // namespace ig
-
-#endif // IG_CORE_TEST_H

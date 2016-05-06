@@ -21,17 +21,47 @@
  SOFTWARE.
 */
 
-#ifndef IG_CORE_TEST_H
-#define IG_CORE_TEST_H
+#include "imagine/envi/impl/dispatcher_native.h"
+#include "imagine/envi/dispatcher.h"
 
-#include "imagine/ig.h"
+namespace ig {
 
-namespace ig   {
-namespace test {
+dispatcher::dispatcher()
+  : native_{std::make_unique<impl::dispatcher_native>()} {
+  assert(self_ != this && "Dispatcher must be unique");
+  self_ = this;
+}
 
-void IG_API backtrace(std::exception_ptr exception);
+dispatcher::~dispatcher() = default;
 
-} // namespace test
+int32_t dispatcher::run() {
+  assert(!native_->running_ && "Dispatcher already running");
+  native_->running_ = true;
+
+  while (native_->running_) {
+    process_events();
+  }
+  return native_->return_code_;
+}
+
+void dispatcher::exit(int32_t return_code) {
+  native_->return_code_ = return_code;
+  native_->running_     = false;
+}
+
+void dispatcher::handle() const {
+  tick_();
+}
+
+void dispatcher::tick(std::function<void ()> func) {
+  tick_ = func;
+}
+
+dispatcher* dispatcher::self_ = nullptr;
+
+// Native implementations
+//
+
+// bool dispatcher::process_events();
+
 } // namespace ig
-
-#endif // IG_CORE_TEST_H

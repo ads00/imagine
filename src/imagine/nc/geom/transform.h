@@ -21,17 +21,45 @@
  SOFTWARE.
 */
 
-#ifndef IG_CORE_TEST_H
-#define IG_CORE_TEST_H
+#ifndef IG_NC_TRANSFORM_H
+#define IG_NC_TRANSFORM_H
 
-#include "imagine/ig.h"
+#include "imagine/nc/geom/homogeneous.h"
 
-namespace ig   {
-namespace test {
+namespace ig {
 
-void IG_API backtrace(std::exception_ptr exception);
+class IG_API transform {
+public:
+  enum space_t { local, world };
 
-} // namespace test
+  constexpr transform(const vec3& pos, const quat& ori, const vec3& sca);
+  virtual ~transform();
+
+  void positions(const vec3& pos, space_t space = space_t::local);
+  void directs(const quat& ori, space_t space = space_t::local);
+  void scales(const vec3& sca, space_t space = space_t::local);
+
+  transform& translate(const vec3& tra, space_t space = space_t::local);
+  transform& rotate(const quat& rot, space_t space = space_t::local);
+  transform& scale(const vec3& sca);
+
+  void link(transform* parent);
+
+  const mat4& wt();
+  const mat4  inv_wt();
+
+private:
+  void remove_child(const transform& tr);
+  void needs_update();
+
+  transform* parent_;
+  std::vector< std::reference_wrapper<transform> > children_;
+
+  bool umatrix_;
+  mat4 matrix_;
+  vec3 pos_; quat ori_; vec3 sca_;
+};
+
 } // namespace ig
 
-#endif // IG_CORE_TEST_H
+#endif // IG_NC_TRANSFORM_H

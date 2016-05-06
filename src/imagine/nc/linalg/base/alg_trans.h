@@ -21,17 +21,40 @@
  SOFTWARE.
 */
 
-#ifndef IG_CORE_TEST_H
-#define IG_CORE_TEST_H
+#ifndef IG_NC_ALG_TRANS_H
+#define IG_NC_ALG_TRANS_H
 
-#include "imagine/ig.h"
+#include "imagine/nc/linalg/base/alg.h"
 
-namespace ig   {
-namespace test {
+namespace ig {
 
-void IG_API backtrace(std::exception_ptr exception);
+template <typename Xpr>
+struct alg_traits< alg_trans<Xpr> > {
 
-} // namespace test
+  using T = alg_t<Xpr>;
+  static constexpr auto M = Xpr::N;
+  static constexpr auto N = Xpr::M;
+};
+
+template <typename Xpr>
+class alg_trans : public alg< alg_trans<Xpr> > {
+public:
+  constexpr alg_trans(Xpr& xpr)
+    : xpr_{xpr} {}
+
+  constexpr auto rows() const { return xpr_.cols(); }
+  constexpr auto cols() const { return xpr_.rows(); }
+
+  auto operator()(size_t row, size_t col) const { return xpr_(col, row); }
+  auto& operator()(size_t row, size_t col)      { return xpr_(col, row); }
+
+  auto operator[](size_t n) const = delete;
+  auto& operator[](size_t n)      = delete;
+
+private:
+  Xpr& xpr_;
+};
+
 } // namespace ig
 
-#endif // IG_CORE_TEST_H
+#endif // IG_NC_ALG_TRANS_H

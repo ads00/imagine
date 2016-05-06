@@ -21,17 +21,29 @@
  SOFTWARE.
 */
 
-#ifndef IG_CORE_TEST_H
-#define IG_CORE_TEST_H
+#ifndef IG_ENVI_CURSOR_NATIVE_H
+#define IG_ENVI_CURSOR_NATIVE_H
 
-#include "imagine/ig.h"
+#include "imagine/envi/cursor.h"
+#include "imagine/envi/impl/widget_native.h"
 
 namespace ig   {
-namespace test {
+namespace impl {
 
-void IG_API backtrace(std::exception_ptr exception);
+class cursor_native {
+public:
+  cursor_native(cursor::shape_t shape, int32_t x = 0, int32_t y = 0);
+  ~cursor_native();
 
-} // namespace test
+  cursor::shape_t shape_;
+  int32_t x_, y_;
+
+  #if defined(IG_WIN)
+  HCURSOR handle_;
+  #endif
+};
+
+} // namespace impl
 } // namespace ig
 
-#endif // IG_CORE_TEST_H
+#endif // IG_ENVI_CURSOR_NATIVE_H

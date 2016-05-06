@@ -24,7 +24,7 @@
 #ifndef IG_CORE_LOG_H
 #define IG_CORE_LOG_H
 
-#include "imagine.h"
+#include "imagine/ig.h"
 
 #include <sstream>
 #include <functional>
@@ -64,12 +64,12 @@ protected:
 
 class IG_API log_context {
 public:
-  constexpr log_context(log_t type, const char* func, const char* file, int line);
+  constexpr log_context(log_t type, const char* func, const char* file, int32_t line);
   ~log_context();
 
-  log_t type;
-  std::stringstream stream;
-  const char* func, *file; int line;
+  log_t type_;
+  std::stringstream stream_;
+  const char* func_, *file_; int32_t line_;
 };
 
 class log_sink {
@@ -87,6 +87,6 @@ private:
 
 } // namespace ig
 
-#define IG_LOG(log_t) ig::log_context(log_t, IG_FUNC, __FILE__, __LINE__).stream
+#define IG_LOG(log_t) ig::log_context(log_t, IG_FUNC, __FILE__, __LINE__).stream_
 
 #endif // IG_CORE_LOG_H

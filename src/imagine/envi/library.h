@@ -21,17 +21,37 @@
  SOFTWARE.
 */
 
-#ifndef IG_CORE_TEST_H
-#define IG_CORE_TEST_H
+#ifndef IG_ENVI_LIBRARY_H
+#define IG_ENVI_LIBRARY_H
 
 #include "imagine/ig.h"
 
+#include <memory>
+
 namespace ig   {
-namespace test {
+namespace impl { class library_native; }
 
-void IG_API backtrace(std::exception_ptr exception);
+class IG_API library {
+public:
+  typedef void (*func_ptr)();
 
-} // namespace test
+  constexpr library();
+  library(const std::string& path);
+  ~library();
+
+  auto resolve(const char* symbol) -> func_ptr;
+  bool open(const std::string& path);
+  void close();
+
+  bool loaded() const;
+
+  library(const library&) = delete;
+  library& operator=(const library&) = delete;
+
+private:
+  std::unique_ptr<impl::library_native> native_;
+};
+
 } // namespace ig
 
-#endif // IG_CORE_TEST_H
+#endif // IG_ENVI_LIBRARY_H

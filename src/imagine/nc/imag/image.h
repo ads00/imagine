@@ -21,17 +21,49 @@
  SOFTWARE.
 */
 
-#ifndef IG_CORE_TEST_H
-#define IG_CORE_TEST_H
+#ifndef IG_NC_IMAGE_H
+#define IG_NC_IMAGE_H
 
 #include "imagine/ig.h"
 
-namespace ig   {
-namespace test {
+#include <vector>
+#include <memory>
 
-void IG_API backtrace(std::exception_ptr exception);
+namespace ig {
 
-} // namespace test
+class IG_API image {
+public:
+  enum format_t { unknown, jpeg, png };
+  using access_t = std::initializer_list<unsigned int>;
+
+  constexpr image();
+  image(access_t dimensions, unsigned int channels, unsigned int bit_depth);
+
+  auto pixels() const { return pixels_.data(); }
+  auto pixels()             { return pixels_.data(); }
+
+  auto& dimensions() const { return dims_; }
+
+  auto width() const  { return dims_[0]; }
+  auto height() const { return dims_[1]; }
+  auto depth() const  { return dims_[2]; }
+
+  auto channels() const  { return channels_; }
+  auto bit_depth() const { return bit_depth_; }
+  auto pitch() const     { return pitch_; }
+  
+  const uint8_t& operator[](access_t coords) const;
+  uint8_t& operator[](access_t coords);
+
+  bool save(format_t format, const std::string& filename);
+  static std::unique_ptr<image> load(const std::string& filename);
+
+private:
+  std::vector<uint8_t> pixels_;
+  std::vector<unsigned int> dims_;
+  unsigned int channels_, size_, bit_depth_, pitch_;
+};
+
 } // namespace ig
 
-#endif // IG_CORE_TEST_H
+#endif // IG_NC_IMAGE_H

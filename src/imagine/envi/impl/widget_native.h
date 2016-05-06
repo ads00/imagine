@@ -21,17 +21,27 @@
  SOFTWARE.
 */
 
-#ifndef IG_CORE_TEST_H
-#define IG_CORE_TEST_H
+#ifndef IG_ENVI_WIDGET_NATIVE_H
+#define IG_ENVI_WIDGET_NATIVE_H
 
 #include "imagine/ig.h"
 
+#if defined(IG_WIN)
+ #define ISOLATION_AWARE_ENABLED 1
+ #include <windows.h>
+ #include <commctrl.h>
+
+ #pragma comment(lib, "comctl32.lib")
+ #pragma comment(linker,"\"/manifestdependency:type='win32' \
+ name='Microsoft.Windows.Common-Controls' version='6.0.0.0' \
+ processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
+#endif
+
 namespace ig   {
-namespace test {
+namespace impl {
 
-void IG_API backtrace(std::exception_ptr exception);
 
-} // namespace test
+} // namespace impl
 } // namespace ig
 
-#endif // IG_CORE_TEST_H
+#endif // IG_ENVI_WIDGET_NATIVE_H

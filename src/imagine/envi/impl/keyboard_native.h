@@ -21,17 +21,26 @@
  SOFTWARE.
 */
 
-#ifndef IG_CORE_TEST_H
-#define IG_CORE_TEST_H
+#ifndef IG_ENVI_KEYBOARD_NATIVE_H
+#define IG_ENVI_KEYBOARD_NATIVE_H
 
-#include "imagine/ig.h"
+#include "imagine/envi/keyboard.h"
 
-namespace ig   {
-namespace test {
+#if defined(IG_WIN)
+#include <windows.h>
+#endif
 
-void IG_API backtrace(std::exception_ptr exception);
+namespace ig       {
+namespace impl     {
+namespace keyboard {
 
-} // namespace test
+#if defined(IG_WIN)
+modifier_ft modifiers();
+key_t key(WPARAM wparam);
+#endif
+
+} // namespace keyboard
+} // namespace impl
 } // namespace ig
 
-#endif // IG_CORE_TEST_H
+#endif // IG_ENVI_KEYBOARD_NATIVE_H

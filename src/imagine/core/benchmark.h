@@ -24,7 +24,7 @@
 #ifndef IG_CORE_BENCHMARK_H
 #define IG_CORE_BENCHMARK_H
 
-#include "imagine.h"
+#include "imagine/ig.h"
 
 #include <chrono>
 #include <functional>
@@ -59,13 +59,12 @@ public:
 
   template <typename T = std::chrono::microseconds>
   auto generate_reports() {
-    auto reports = std::vector<benchmark_report>{benchs_.size()};
-    std::transform(benchs_.begin(), benchs_.end(), reports.begin(), [](const auto& bench) {
+    auto reports = std::vector<benchmark_report>(benchs_.size());
+    std::transform(benchs_.begin(), benchs_.end(), reports.begin(), [](auto&& bench) {
       auto report = benchmark_report{bench.first};
-
-      std::for_each(bench.second.begin(), bench.second.end(), [&report](const auto& sample) {
-        report.samples.emplace_back(std::chrono::duration_cast<T>(sample).count());
-      });
+      for (auto&& sample : bench.second) {
+        report.samples_.emplace_back(std::chrono::duration_cast<T>(sample).count());
+      }
       return std::move(report);
     });
     return reports;
@@ -80,8 +79,8 @@ private:
 
 class benchmark_report {
 public:
-  std::string name;
-  std::vector<uint64_t> samples;
+  std::string name_;
+  std::vector<uint64_t> samples_;
 };
 
 } // namespace ig

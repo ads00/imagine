@@ -24,7 +24,7 @@
 #ifndef IG_CORE_THREADPOOL_H
 #define IG_CORE_THREADPOOL_H
 
-#include "imagine.h"
+#include "imagine/ig.h"
 
 #include <future>
 #include <queue>
@@ -39,11 +39,11 @@ public:
   template <typename Fn, typename... Args>
   auto work(Fn&& fn, Args&&... args) {
     using return_t = decltype(f(args...));
-    const auto task = std::make_shared<
+    auto task = std::make_shared<
       std::packaged_task<return_t()> >
       (std::bind(std::forward<Fn>(fn), std::forward<Args>(args)...));
 
-    const auto retval = task->get_future();
+    auto retval = task->get_future();
     {
       std::lock_guard<decltype(mutex_)> lock(mutex_);
       tasks_.emplace([task]() { (*task)(); });

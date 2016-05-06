@@ -21,17 +21,32 @@
  SOFTWARE.
 */
 
-#ifndef IG_CORE_TEST_H
-#define IG_CORE_TEST_H
+#ifndef IG_ENVI_LIBRARY_NATIVE_H
+#define IG_ENVI_LIBRARY_NATIVE_H
 
 #include "imagine/ig.h"
 
+#if defined(IG_WIN)
+#include <windows.h>
+#endif
+
 namespace ig   {
-namespace test {
+namespace impl {
 
-void IG_API backtrace(std::exception_ptr exception);
+class library_native {
+public:
+  library_native();
+  library_native(const std::string& path);
+  ~library_native() = default;
 
-} // namespace test
+  std::string path_;
+
+  #if defined(IG_WIN)
+  HMODULE handle_;
+  #endif
+};
+
+} // namespace impl
 } // namespace ig
 
-#endif // IG_CORE_TEST_H
+#endif // IG_ENVI_LIBRARY_NATIVE_H
