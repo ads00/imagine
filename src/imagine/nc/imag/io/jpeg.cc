@@ -94,7 +94,6 @@ std::unique_ptr<image> jpeg_read(std::istream& stream) {
         bytes -= static_cast<long>(src->jpeg.bytes_in_buffer);
         readproc(jpeg_ptr);
       }
-
       src->jpeg.next_input_byte += bytes;
       src->jpeg.bytes_in_buffer -= bytes;
     }
@@ -163,8 +162,8 @@ bool jpeg_write(const image& imag, std::ostream& stream) {
       dst->stream->write(reinterpret_cast<char*>(dst->buffer), count);
   };
 
-  jpeg_ptr.image_width = imag.width();
-  jpeg_ptr.image_height = imag.height();
+  jpeg_ptr.image_width  = imag.dimensions()[0];
+  jpeg_ptr.image_height = imag.dimensions()[1];
 
   switch (imag.channels()) {
   case 1:

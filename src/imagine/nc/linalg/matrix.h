@@ -89,8 +89,8 @@ public:
   constexpr auto rows() const { return rows_; }
   constexpr auto cols() const { return cols_; }
 
-  auto ptr() const { return data_.data(); }
-  auto ptr()       { return data_.data(); }
+  auto data() const { return data_.data(); }
+  auto data()       { return data_.data(); }
 
   auto operator()(size_t row, size_t col) const -> const T&;
   auto operator()(size_t row, size_t col) -> T&;

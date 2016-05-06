@@ -177,6 +177,7 @@ svd<Alg>::svd(const matrix_t& alg)
   for (size_t i = N_; i--> 0; ) {
     auto l = size_t{0}, nm = size_t{0};
     for (size_t it = 0; it <= sweeps; ++it) {
+      
       // Test for splitting
       auto split = true;
       for (l = i + 1, nm = l - 1; l--> 0; ) {
@@ -192,6 +193,7 @@ svd<Alg>::svd(const matrix_t& alg)
         auto c = T(0), s = T(1);
         for (size_t j = l; j < i + 1; ++j) {
           auto f = s * work[j];
+
           if (std::abs(f) <= threshold_) 
             break;
 
@@ -204,7 +206,8 @@ svd<Alg>::svd(const matrix_t& alg)
 
           for (size_t k = 0; k < M_; ++k) {
             auto y = U_(k, nm), z = U_(k, j);
-            U_(k, nm) = y*c + z*s; U_(k, j)  = z*c - y*s;
+            U_(k, nm) = y*c + z*s; 
+            U_(k, j)  = z*c - y*s;
           }
         }
       }
@@ -238,30 +241,26 @@ svd<Alg>::svd(const matrix_t& alg)
 
       // Next QR transformation
       for (size_t j = l; j < i; ++j) {
-        auto k = j + 1;
+        auto j1 = j + 1;
 
-        auto g1 = c * work[k];
-        auto h1 = s * work[k];
-        auto y1 = S_[k];
-
+        auto g1 = c * work[j1], h1 = s * work[j1], y1 = S_[j1];
         auto z1 = std::hypot(f, h1);
+
         work[j] = z1;
         c = f / z1;
         s = h1 / z1;
         f = x*c + g1*s;
 
-        auto g2 = g1*c - x*s;
-        auto h2 = y1 * s;
-        auto y2 = y1 * c;
+        auto g2 = g1*c - x*s, h2 = y1 * s, y2 = y1 * c;
+        auto z2 = std::hypot(f, h2);
 
-        for (size_t jj = 0; jj < N_; ++jj) {
-          auto x = V_(jj, j), z = V_(jj, k);
-          V_(jj, j) = x*c + z*s; V_(jj, k) = z*c - x*s;
+        for (size_t k = 0; k < N_; ++k) {
+          auto x = V_(k, j), z = V_(k, j1);
+          V_(k, j)  = x*c + z*s; 
+          V_(k, j1) = z*c - x*s;
         }
 
-        auto z2 = std::hypot(f, h2);
         S_[j] = z2;
-
         if (z2 != T(0)) {
           c = f / z2;
           s = h2 / z2;
@@ -270,9 +269,10 @@ svd<Alg>::svd(const matrix_t& alg)
         f = c*g2 + s*y2;
         x = c*y2 - s*g2;
 
-        for (size_t jj = 0; jj < M_; ++jj) {
-          auto y = U_(jj, j), z = U_(jj, k);
-          U_(jj, j) = y*c + z*s; U_(jj, k) = z*c - y*s;
+        for (size_t k = 0; k < M_; ++k) {
+          auto y = U_(k, j), z = U_(k, j1);
+          U_(k, j)  = y*c + z*s; 
+          U_(k, j1) = z*c - y*s;
         }
       }
 
@@ -311,7 +311,7 @@ auto svd<Alg>::solve(const vector_t& b) -> vector_t {
   // Apply singularity
   for (size_t i = 0; i < N_; ++i) {
     auto sv = S_[i];
-    auto alpha = (std::abs(sv) > threshold_) ? T(1) / sv : sv;
+    auto alpha = std::abs(sv) > threshold_ ? T(1) / sv : sv;
     w[i] *= alpha;
   }
   // Compute x = Vw

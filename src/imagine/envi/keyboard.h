@@ -29,7 +29,7 @@
 namespace ig {
 
 enum class key_t : int32_t {
-  unknown   = -1,
+  unknown = -1,
 
   // misc
   escape, tab, ret, del, backtab, backspace,

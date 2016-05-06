@@ -30,7 +30,7 @@ namespace ig {
 
 class IG_API trimesh {
 public:
-  using face = std::array<std::size_t, 3>;
+  using face = std::array<size_t, 3>;
 
   trimesh() = default;
   constexpr trimesh(const std::vector<face>& faces, const std::vector<vec3>& vertices,

@@ -34,19 +34,15 @@ namespace ig {
 class IG_API image {
 public:
   enum format_t { unknown, jpeg, png };
-  using access_t = std::initializer_list<unsigned int>;
+  using access_t = std::initializer_list<uint32_t>;
 
   constexpr image();
-  image(access_t dimensions, unsigned int channels, unsigned int bit_depth);
+  image(access_t dimensions, uint32_t channels, uint32_t bit_depth);
 
   auto pixels() const { return pixels_.data(); }
-  auto pixels()             { return pixels_.data(); }
+  auto pixels()       { return pixels_.data(); }
 
   auto& dimensions() const { return dims_; }
-
-  auto width() const  { return dims_[0]; }
-  auto height() const { return dims_[1]; }
-  auto depth() const  { return dims_[2]; }
 
   auto channels() const  { return channels_; }
   auto bit_depth() const { return bit_depth_; }
@@ -60,8 +56,8 @@ public:
 
 private:
   std::vector<uint8_t> pixels_;
-  std::vector<unsigned int> dims_;
-  unsigned int channels_, size_, bit_depth_, pitch_;
+  std::vector<uint32_t> dims_;
+  uint32_t channels_, size_, bit_depth_, pitch_;
 };
 
 } // namespace ig

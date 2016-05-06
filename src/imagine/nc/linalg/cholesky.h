@@ -80,6 +80,7 @@ cholesky<Alg>::cholesky(const matrix_t& alg)
         if (s <= std::numeric_limits<T>::epsilon()/*eps<T>*/) {
           throw std::logic_error("Cholesky decomposition failed (Not positive-definite)");
         }
+
         LLT_(i, i) = std::sqrt(s);
       } else {
         LLT_(j, i) = s / LLT_(i, i);

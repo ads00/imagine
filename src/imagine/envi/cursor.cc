@@ -45,7 +45,6 @@ auto cursor::shape() const -> shape_t {
 //
 
 // void cursor::refresh() const;
-// void cursor::clip(const window* ref);
 // void cursor::move(int32_t x, int32_t y, const window* ref);
 // std::pair<int32_t, int32_t> cursor::position(const window* ref);
 

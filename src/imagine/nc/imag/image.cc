@@ -35,7 +35,7 @@ constexpr image::image()
   : dims_{}, channels_{0}, size_{0}, bit_depth_{0}, pitch_{0} {
 }
 
-image::image(access_t dimensions, unsigned int channels, unsigned int bit_depth)
+image::image(access_t dimensions, uint32_t channels, uint32_t bit_depth)
   : dims_{dimensions}, channels_{channels}, size_{1}, bit_depth_{bit_depth} {
   pitch_ = dims_.front() * bit_depth_ / 8;
   for (auto it = dims_.begin() + 1; it != dims_.end(); ++it)

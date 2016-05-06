@@ -135,8 +135,8 @@ eigen<Alg, true>::eigen(const matrix_t& alg)
     for (size_t it = 0; it <= sweeps; ++it) {
       // Find smallest subdiagonal element
       for (m = l; m < N_ - 1; ++m) {
-        auto subd = std::abs(D_[m]) + std::abs(D_[m + 1]);
-        if (std::abs(work[m]) <= std::numeric_limits<T>::epsilon()/*eps<T>*/ * subd)
+        auto s = std::abs(D_[m]) + std::abs(D_[m + 1]);
+        if (std::abs(work[m]) <= std::numeric_limits<T>::epsilon()/*eps<T>*/ * s)
           break;
       }
 
@@ -174,7 +174,8 @@ eigen<Alg, true>::eigen(const matrix_t& alg)
         // Accumulate transformation
         for (size_t k = 0; k < N_; ++k) {
           f = V_(k, i + 1);
-          V_(k, i + 1) = s*V_(k, i) + c*f; V_(k, i) = c*V_(k, i) - s*f;
+          V_(k, i + 1) = s*V_(k, i) + c*f; 
+          V_(k, i)     = c*V_(k, i) - s*f;
         }
       }
 

@@ -51,7 +51,6 @@ public:
 
   auto shape() const -> shape_t;
 
-  static void clip(const window* ref);
   static void move(int32_t x, int32_t y, const window* ref = nullptr);
   static std::pair<int32_t, int32_t> position(const window* ref = nullptr);
 

@@ -65,19 +65,6 @@ void cursor::refresh() const {
   SetCursor(native_->handle_);
 }
 
-void cursor::clip(const window* ref) {
-  if (ref) {
-    auto client = RECT{};
-    GetClientRect(ref->native_->handle_, &client);
-
-    ClientToScreen(ref->native_->handle_, reinterpret_cast<LPPOINT>(&client.left));
-    ClientToScreen(ref->native_->handle_, reinterpret_cast<LPPOINT>(&client.right));
-    ClipCursor(&client);
-  } else {
-    ClipCursor(nullptr);
-  }
-}
-
 void cursor::move(int32_t x, int32_t y, const window* ref) {
   auto point = POINT{x, y};
   auto res = ref ? ClientToScreen(ref->native_->handle_, &point) != 0 : true;
@@ -87,9 +74,7 @@ void cursor::move(int32_t x, int32_t y, const window* ref) {
 }
 
 std::pair<int, int> cursor::position(const window* ref) {
-  auto point = POINT{};
-  GetCursorPos(&point);
-
+  auto point = POINT{}; GetCursorPos(&point);
   auto res = ref ? ScreenToClient(ref->native_->handle_, &point) != 0 : true;
   if (res) {
     return {point.x, point.y};
