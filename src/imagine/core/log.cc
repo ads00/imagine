@@ -24,6 +24,7 @@
 #include "imagine/core/log.h"
 
 #include <iostream>
+#include <iomanip>
 #include <algorithm>
 
 namespace ig {
@@ -42,23 +43,28 @@ void log::remove_sink(const std::shared_ptr<log_sink>& sink) {
                sinks_.end()); 
 }
 
-void log::push(const log_context& c) {
+void log::push(const log_context& ctx) {
   std::lock_guard<decltype(mutex_)> lock{mutex_};
   for (auto&& sink : sinks_) {
-    sink->consume(c);
+    sink->consume(ctx);
   }
 }
 
 log::formatter_t log::default_format = [](const log_context& c) {
   auto ss = std::stringstream{};
+  
+  auto tt = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+  ss << std::put_time(std::localtime(&tt), "%c");
+
   switch (c.type_) {
-  case log_t::info:  ss << "[Info]  "; break;
-  case log_t::dbg:   ss << "[Debug] "; break;
-  case log_t::warn:  ss << "[Warn]  "; break;
-  case log_t::fatal: ss << "[Fatal] "; break;
+  case log_t::dbg:   ss << " - DEBUG [" << c.func_ << '@' << c.line_ << "] ";
+    break;
+  case log_t::info:  ss << " - INFO  "; break;
+  case log_t::warn:  ss << " - WARN  "; break;
+  case log_t::err:   ss << " - ERR   "; break;
   }
 
-  ss << '[' << c.func_ << '@' << c.line_ << "] " << c.stream_.str() << std::endl;
+  ss << c.stream_.str() << std::endl;
   return ss.str();
 };
 

@@ -34,7 +34,7 @@
 
 namespace ig {
 
-enum log_t { info, dbg, warn, fatal };
+enum log_t { dbg, info, warn, err };
 
 class log_context;
 class log_sink;
@@ -55,7 +55,7 @@ public:
 protected:
   constexpr log() = default;
 
-  void push(const log_context& c);
+  void push(const log_context& ctx);
   static log& get();
 
   static std::mutex mutex_;
@@ -75,11 +75,11 @@ public:
 class log_sink {
 public:
   friend log;
-  log_sink(std::ostream& s, log::formatter_t format = log::default_format)
-    : stream_{s}, formatter_{format} {}
+  log_sink(std::ostream& stream, log::formatter_t format = log::default_format)
+    : stream_{stream}, formatter_{format} {}
 
 private:
-  void consume(const log_context& c) { stream_ << formatter_(c); }
+  void consume(const log_context& ctx) { stream_ << formatter_(ctx); }
 
   std::ostream& stream_;
   log::formatter_t formatter_;
@@ -87,6 +87,7 @@ private:
 
 } // namespace ig
 
-#define IG_LOG(log_t) ig::log_context(log_t, IG_FUNC, __FILE__, __LINE__).stream_
+using ig::log_t;
+#define LOG(log_t) ig::log_context(log_t, IG_FUNC, __FILE__, __LINE__).stream_
 
 #endif // IG_CORE_LOG_H

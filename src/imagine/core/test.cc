@@ -31,9 +31,9 @@ void backtrace(std::exception_ptr exception) {
   try { 
     std::rethrow_exception(exception); 
   } catch (const std::exception& e) {
-    IG_LOG(info) << "Backtrace [rethrow_exception]: " << e.what(); 
+    LOG(info) << "Backtrace [rethrow_exception]: " << e.what(); 
   } catch (...) { 
-    IG_LOG(info) << "Backtrace [rethrow_exception]: Unknown exception";
+    LOG(info) << "Backtrace [rethrow_exception]: Unknown exception";
   }
 
   try { 

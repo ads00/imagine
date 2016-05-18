@@ -21,13 +21,14 @@
  SOFTWARE.
 */
 
-#include "imagine/nc/imag/io/png.h"
+#include "imagine/math/imag/io/png.h"
 #include "imagine/core/log.h"
 
 #include "png/png.h"
 #include "zlib/zlib.h"
 
 #include <memory>
+#include <vector>
 #include <csetjmp>
 
 namespace ig     {
@@ -37,7 +38,6 @@ struct png_src { std::istream* stream; };
 struct png_dst { std::ostream* stream; };
 
 void readproc(png_structp png_ptr, png_bytep data, png_size_t size);
-
 void writeproc(png_structp png_ptr, png_bytep data, png_size_t size);
 void flushproc(png_structp png_ptr);
 
@@ -54,9 +54,9 @@ std::unique_ptr<image> png_read(std::istream& stream) {
     return nullptr;
   }
 
-  auto src = new png_src;
-  src->stream = &stream;
-  png_set_read_fn(png_ptr, src, readproc);
+  auto src = png_src{};
+  src.stream = &stream;
+  png_set_read_fn(png_ptr, &src, readproc);
 
   if (setjmp(png_jmpbuf(png_ptr))) {
     png_destroy_read_struct(&png_ptr, &info_ptr, nullptr);
@@ -65,8 +65,8 @@ std::unique_ptr<image> png_read(std::istream& stream) {
 
   png_read_info(png_ptr, info_ptr);
 
-  png_uint_32 width, height;
-  int bitdepth, colortype;
+  auto width = png_uint_32{}, height = png_uint_32{};
+  auto bitdepth = int{}, colortype = int{};
 
   png_get_IHDR(png_ptr, info_ptr, &width, &height, &bitdepth, &colortype, nullptr, nullptr, nullptr);
   auto channels = png_get_channels(png_ptr, info_ptr);
@@ -104,18 +104,16 @@ std::unique_ptr<image> png_read(std::istream& stream) {
   auto dims = {width, height};
   auto imag = std::make_unique<image>(dims, channels, bitdepth);
 
-  auto rowptrs = new png_bytep[height * sizeof(png_bytepp)];
+  auto rowptrs = std::vector<png_bytep>(height * sizeof(png_bytepp));
   for (png_uint_32 j = 0; j < height; ++j) {
     rowptrs[height - 1 - j] = imag->pixels() + (imag->pitch() * imag->channels() * j);
   }
 
   png_set_benign_errors(png_ptr, 1);
-  png_read_image(png_ptr, rowptrs);
+  png_read_image(png_ptr, rowptrs.data());
   png_read_end(png_ptr, info_ptr);
 
   png_destroy_read_struct(&png_ptr, &info_ptr, nullptr);
-  delete rowptrs;
-  delete src;
   return imag;
 }
 
@@ -134,9 +132,9 @@ bool png_write(const image& imag, std::ostream& stream) {
     return false;
   }
 
-  auto dst = new png_dst;
-  dst->stream = &stream;
-  png_set_write_fn(png_ptr, dst, writeproc, flushproc);
+  auto dst = png_dst{};
+  dst.stream = &stream;
+  png_set_write_fn(png_ptr, &dst, writeproc, flushproc);
 
   int colortype;
   switch (imag.channels()) {
@@ -180,7 +178,6 @@ bool png_write(const image& imag, std::ostream& stream) {
 
   png_write_end(png_ptr, info_ptr);
   png_destroy_write_struct(&png_ptr, &info_ptr);
-  delete dst;
   return true;
 }
 
@@ -207,7 +204,7 @@ void flushproc(png_structp png_ptr) {
 }
 
 void message(png_structp png_ptr, const char* msg) {
-  IG_LOG(info) << "libpng message: " << msg;
+  LOG(info) << "(libpng): " << msg;
 }
 
 } // namespace detail

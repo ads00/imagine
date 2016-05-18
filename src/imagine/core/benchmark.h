@@ -46,7 +46,7 @@ public:
       auto begin = std::chrono::high_resolution_clock::now();
       fn(std::forward<Args>(args)...);
       runner[run] = std::chrono::duration_cast<std::chrono::microseconds>(
-          std::chrono::high_resolution_clock::now() - begin);
+        std::chrono::high_resolution_clock::now() - begin);
     }
 
     auto it = benchs_.find(name);
