@@ -21,43 +21,50 @@
  SOFTWARE.
 */
 
-#ifndef IG_GRAPHICS_CAMERA_H
-#define IG_GRAPHICS_CAMERA_H
+#ifndef IG_MATH_ALG_ROW_H
+#define IG_MATH_ALG_ROW_H
 
-#include "imagine/math/geom/homogeneous.h"
-#include "imagine/math/geom/ray.h"
+#include "imagine/math/linalg/base/alg.h"
 
 namespace ig {
 
-class IG_API camera {
+template <typename Xpr>
+struct alg_traits< alg_row<Xpr> > : alg_traits<Xpr> {
+
+  using T = alg_t<Xpr>;
+  static constexpr auto M = 1;
+  static constexpr auto N = Xpr::N;
+};
+
+template <typename Xpr>
+class alg_row : public alg< alg_row<Xpr> > {
 public:
-  enum type_t { orthographic, perspective };
+  constexpr alg_row(Xpr& xpr, size_t row)
+    : xpr_{xpr}, row_{row} {}
 
-  camera(type_t type, size_t w, size_t h);
-  camera(type_t type, size_t w, size_t h, const vec3& pos, const vec3& target, const vec3& up);
+  constexpr auto rows() const { return 1; }
+  constexpr auto cols() const { return xpr_.cols(); }
 
-  void update();
+  auto operator()(size_t, size_t col) const { return xpr_(row_, col); }
+  auto& operator()(size_t, size_t col)      { return xpr_(row_, col); }
 
-  void make_orthographic();
-  void make_perspective(float fovy);
-  void clip(float zn, float zf);
+  auto operator[](size_t n) const { return xpr_(row_, n); }
+  auto& operator[](size_t n)      { return xpr_(row_, n); }
 
-  ray cast_ray(size_t x, size_t y) const;
+  auto operator=(const alg_row& o) {
+    eval(*this, o); return *this;
+  }
+
+  template <typename Alg>
+  auto operator=(const alg<Alg>& o) {
+    eval(*this, o); return *this;
+  }
 
 private:
-  type_t type_;
-
-  size_t w_, h_;
-  vec3 pos_, target_, up_;
-
-  float zn_, zf_;
-  float fovy_;
-
-  bool uview_, uproj_;
-  mat4 view_, proj_,
-    iview_, iproj_;
+  Xpr& xpr_;
+  size_t row_;
 };
 
 } // namespace ig
 
-#endif // IG_GRAPHICS_CAMERA_H
+#endif // IG_MATH_ALG_ROW_H

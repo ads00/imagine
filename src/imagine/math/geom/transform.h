@@ -21,43 +21,45 @@
  SOFTWARE.
 */
 
-#ifndef IG_GRAPHICS_CAMERA_H
-#define IG_GRAPHICS_CAMERA_H
+#ifndef IG_MATH_TRANSFORM_H
+#define IG_MATH_TRANSFORM_H
 
 #include "imagine/math/geom/homogeneous.h"
-#include "imagine/math/geom/ray.h"
 
 namespace ig {
 
-class IG_API camera {
+class IG_API transform {
 public:
-  enum type_t { orthographic, perspective };
+  enum space_t { local, world };
 
-  camera(type_t type, size_t w, size_t h);
-  camera(type_t type, size_t w, size_t h, const vec3& pos, const vec3& target, const vec3& up);
+  constexpr transform(const vec3& pos, const quat& ori, const vec3& sca);
+  virtual ~transform();
 
-  void update();
+  void positions(const vec3& pos, space_t space = space_t::local);
+  void directs(const quat& ori, space_t space = space_t::local);
+  void scales(const vec3& sca, space_t space = space_t::local);
 
-  void make_orthographic();
-  void make_perspective(float fovy);
-  void clip(float zn, float zf);
+  transform& translate(const vec3& tra, space_t space = space_t::local);
+  transform& rotate(const quat& rot, space_t space = space_t::local);
+  transform& scale(const vec3& sca);
 
-  ray cast_ray(size_t x, size_t y) const;
+  void link(transform* parent);
+
+  const mat4& wt();
+  const mat4  inv_wt();
 
 private:
-  type_t type_;
+  void remove_child(const transform& tr);
+  void needs_update();
 
-  size_t w_, h_;
-  vec3 pos_, target_, up_;
+  transform* parent_;
+  std::vector< std::reference_wrapper<transform> > children_;
 
-  float zn_, zf_;
-  float fovy_;
-
-  bool uview_, uproj_;
-  mat4 view_, proj_,
-    iview_, iproj_;
+  bool umatrix_;
+  mat4 matrix_;
+  vec3 pos_; quat ori_; vec3 sca_;
 };
 
 } // namespace ig
 
-#endif // IG_GRAPHICS_CAMERA_H
+#endif // IG_MATH_TRANSFORM_H

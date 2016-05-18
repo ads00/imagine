@@ -21,43 +21,21 @@
  SOFTWARE.
 */
 
-#ifndef IG_GRAPHICS_CAMERA_H
-#define IG_GRAPHICS_CAMERA_H
-
-#include "imagine/math/geom/homogeneous.h"
-#include "imagine/math/geom/ray.h"
+#include "imagine/math/geom/bbox.h"
 
 namespace ig {
 
-class IG_API camera {
-public:
-  enum type_t { orthographic, perspective };
+constexpr bbox::bbox(const vec3& min, const vec3& max)
+  : min_{min}, max_{max}, extent_{max - min} {
+}
 
-  camera(type_t type, size_t w, size_t h);
-  camera(type_t type, size_t w, size_t h, const vec3& pos, const vec3& target, const vec3& up);
+void bbox::expand(const vec3& point) {
+  std::tie(min_, max_) = std::minmax({min_, max_, point});
+  extent_ = max_ - min_;
+}
 
-  void update();
-
-  void make_orthographic();
-  void make_perspective(float fovy);
-  void clip(float zn, float zf);
-
-  ray cast_ray(size_t x, size_t y) const;
-
-private:
-  type_t type_;
-
-  size_t w_, h_;
-  vec3 pos_, target_, up_;
-
-  float zn_, zf_;
-  float fovy_;
-
-  bool uview_, uproj_;
-  mat4 view_, proj_,
-    iview_, iproj_;
-};
+float bbox::surface_area() const {
+  return 2.f * (extent_[0]*extent_[2] + extent_[0]*extent_[1] + extent_[1]*extent_[2]);
+}
 
 } // namespace ig
-
-#endif // IG_GRAPHICS_CAMERA_H

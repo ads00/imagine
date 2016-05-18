@@ -21,43 +21,45 @@
  SOFTWARE.
 */
 
-#ifndef IG_GRAPHICS_CAMERA_H
-#define IG_GRAPHICS_CAMERA_H
+#ifndef IG_MATH_IMAGE_H
+#define IG_MATH_IMAGE_H
 
-#include "imagine/math/geom/homogeneous.h"
-#include "imagine/math/geom/ray.h"
+#include "imagine/ig.h"
+
+#include <vector>
+#include <memory>
 
 namespace ig {
 
-class IG_API camera {
+class IG_API image {
 public:
-  enum type_t { orthographic, perspective };
+  enum format_t { unknown, jpeg, png };
+  using access_t = std::initializer_list<uint32_t>;
 
-  camera(type_t type, size_t w, size_t h);
-  camera(type_t type, size_t w, size_t h, const vec3& pos, const vec3& target, const vec3& up);
+  constexpr image();
+  image(access_t dimensions, uint32_t channels, uint32_t bit_depth);
 
-  void update();
+  auto pixels() const { return pixels_.data(); }
+  auto pixels()       { return pixels_.data(); }
 
-  void make_orthographic();
-  void make_perspective(float fovy);
-  void clip(float zn, float zf);
+  auto& dimensions() const { return dims_; }
 
-  ray cast_ray(size_t x, size_t y) const;
+  auto channels() const  { return channels_; }
+  auto bit_depth() const { return bit_depth_; }
+  auto pitch() const     { return pitch_; }
+  
+  const uint8_t& operator[](access_t coords) const;
+  uint8_t& operator[](access_t coords);
+
+  bool save(format_t format, const std::string& filename);
+  static std::unique_ptr<image> load(const std::string& filename);
 
 private:
-  type_t type_;
-
-  size_t w_, h_;
-  vec3 pos_, target_, up_;
-
-  float zn_, zf_;
-  float fovy_;
-
-  bool uview_, uproj_;
-  mat4 view_, proj_,
-    iview_, iproj_;
+  std::vector<uint8_t> pixels_;
+  std::vector<uint32_t> dims_;
+  uint32_t channels_, size_, bit_depth_, pitch_;
 };
 
 } // namespace ig
 
-#endif // IG_GRAPHICS_CAMERA_H
+#endif // IG_MATH_IMAGE_H

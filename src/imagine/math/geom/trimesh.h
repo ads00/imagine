@@ -21,43 +21,32 @@
  SOFTWARE.
 */
 
-#ifndef IG_GRAPHICS_CAMERA_H
-#define IG_GRAPHICS_CAMERA_H
+#ifndef IG_MATH_TRIMESH_H
+#define IG_MATH_TRIMESH_H
 
 #include "imagine/math/geom/homogeneous.h"
-#include "imagine/math/geom/ray.h"
 
 namespace ig {
 
-class IG_API camera {
+class IG_API trimesh {
 public:
-  enum type_t { orthographic, perspective };
+  using face = std::array<size_t, 3>;
 
-  camera(type_t type, size_t w, size_t h);
-  camera(type_t type, size_t w, size_t h, const vec3& pos, const vec3& target, const vec3& up);
+  trimesh() = default;
+  constexpr trimesh(const std::vector<face>& faces, const std::vector<vec3>& vertices,
+                    const std::vector<vec3>& normals = {}, const std::vector<vec2>& coords = {});
 
-  void update();
-
-  void make_orthographic();
-  void make_perspective(float fovy);
-  void clip(float zn, float zf);
-
-  ray cast_ray(size_t x, size_t y) const;
+  static trimesh make_box(size_t tess);
+  static trimesh make_plane(size_t tess);
+  static trimesh make_sphere(size_t tess);
 
 private:
-  type_t type_;
+  std::vector<face> faces_;
 
-  size_t w_, h_;
-  vec3 pos_, target_, up_;
-
-  float zn_, zf_;
-  float fovy_;
-
-  bool uview_, uproj_;
-  mat4 view_, proj_,
-    iview_, iproj_;
+  std::vector<vec3> vertices_, normals_;
+  std::vector<vec2> coords_;
 };
 
 } // namespace ig
 
-#endif // IG_GRAPHICS_CAMERA_H
+#endif // IG_MATH_TRIMESH_H

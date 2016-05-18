@@ -21,43 +21,40 @@
  SOFTWARE.
 */
 
-#ifndef IG_GRAPHICS_CAMERA_H
-#define IG_GRAPHICS_CAMERA_H
+#ifndef IG_MATH_ALG_TRANS_H
+#define IG_MATH_ALG_TRANS_H
 
-#include "imagine/math/geom/homogeneous.h"
-#include "imagine/math/geom/ray.h"
+#include "imagine/math/linalg/base/alg.h"
 
 namespace ig {
 
-class IG_API camera {
+template <typename Xpr>
+struct alg_traits< alg_trans<Xpr> > {
+
+  using T = alg_t<Xpr>;
+  static constexpr auto M = Xpr::N;
+  static constexpr auto N = Xpr::M;
+};
+
+template <typename Xpr>
+class alg_trans : public alg< alg_trans<Xpr> > {
 public:
-  enum type_t { orthographic, perspective };
+  constexpr alg_trans(Xpr& xpr)
+    : xpr_{xpr} {}
 
-  camera(type_t type, size_t w, size_t h);
-  camera(type_t type, size_t w, size_t h, const vec3& pos, const vec3& target, const vec3& up);
+  constexpr auto rows() const { return xpr_.cols(); }
+  constexpr auto cols() const { return xpr_.rows(); }
 
-  void update();
+  auto operator()(size_t row, size_t col) const { return xpr_(col, row); }
+  auto& operator()(size_t row, size_t col)      { return xpr_(col, row); }
 
-  void make_orthographic();
-  void make_perspective(float fovy);
-  void clip(float zn, float zf);
-
-  ray cast_ray(size_t x, size_t y) const;
+  auto operator[](size_t n) const = delete;
+  auto& operator[](size_t n)      = delete;
 
 private:
-  type_t type_;
-
-  size_t w_, h_;
-  vec3 pos_, target_, up_;
-
-  float zn_, zf_;
-  float fovy_;
-
-  bool uview_, uproj_;
-  mat4 view_, proj_,
-    iview_, iproj_;
+  Xpr& xpr_;
 };
 
 } // namespace ig
 
-#endif // IG_GRAPHICS_CAMERA_H
+#endif // IG_MATH_ALG_TRANS_H

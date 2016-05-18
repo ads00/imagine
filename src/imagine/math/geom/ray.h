@@ -21,43 +21,24 @@
  SOFTWARE.
 */
 
-#ifndef IG_GRAPHICS_CAMERA_H
-#define IG_GRAPHICS_CAMERA_H
+#ifndef IG_MATH_RAY_H
+#define IG_MATH_RAY_H
 
 #include "imagine/math/geom/homogeneous.h"
-#include "imagine/math/geom/ray.h"
 
 namespace ig {
 
-class IG_API camera {
+class ray {
 public:
-  enum type_t { orthographic, perspective };
+  constexpr ray() = default;
+  constexpr ray(const vec3& ori, const vec3& dir)
+    : ori_{ori}, dir_{dir} {}
 
-  camera(type_t type, size_t w, size_t h);
-  camera(type_t type, size_t w, size_t h, const vec3& pos, const vec3& target, const vec3& up);
+  vec3 operator()(float t) const { return ori_ + t*dir_; }
 
-  void update();
-
-  void make_orthographic();
-  void make_perspective(float fovy);
-  void clip(float zn, float zf);
-
-  ray cast_ray(size_t x, size_t y) const;
-
-private:
-  type_t type_;
-
-  size_t w_, h_;
-  vec3 pos_, target_, up_;
-
-  float zn_, zf_;
-  float fovy_;
-
-  bool uview_, uproj_;
-  mat4 view_, proj_,
-    iview_, iproj_;
+  vec3 ori_, dir_;
 };
 
 } // namespace ig
 
-#endif // IG_GRAPHICS_CAMERA_H
+#endif // IG_MATH_RAY_H
