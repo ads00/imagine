@@ -21,10 +21,10 @@
  SOFTWARE.
 */
 
-#ifndef IG_NC_JPEG_H
-#define IG_NC_JPEG_H
+#ifndef IG_MATH_JPEG_H
+#define IG_MATH_JPEG_H
 
-#include "imagine/nc/imag/image.h"
+#include "imagine/math/imag/image.h"
 
 namespace ig     {
 namespace detail {
@@ -36,4 +36,4 @@ bool jpeg_validate(std::istream& stream);
 } // namespace detail
 } // namespace ig
 
-#endif // IG_NC_JPEG_H
+#endif // IG_MATH_JPEG_H
