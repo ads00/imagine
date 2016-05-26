@@ -54,7 +54,7 @@ template <typename T, int M = dynamic_sized, int N = M>
 class matrix : public alg< matrix<T, M, N> > {
 public:
   using base = alg< matrix<T, M, N> >;
-  struct order {};
+  struct order{};
 
   static constexpr auto dynamics_rows = (M < 0);
   static constexpr auto dynamics_cols = (N < 0);
@@ -68,8 +68,9 @@ public:
   template < typename = std::enable_if_t<statics>, typename... Args >
   constexpr matrix(T i, Args&&... args)
     : rows_{M}, cols_{N}, data_{{i, std::forward<Args>(args)...}} {
-    if (sizeof...(args) + 1 < size()) std::fill(data_.begin() + sizeof...(args) + 1, data_.end(),
-                                                data_[sizeof...(args)]);
+    [this](size_t s) {
+      std::fill(data_.begin() + s + 1, data_.end(), data_[s]);
+    }(sizeof...(args));
   }
 
   template < typename = std::enable_if_t<statics>, typename... Args >

@@ -113,8 +113,8 @@ transform& transform::scale(const vec3& sca) {
 }
 
 void transform::remove_child(const transform& tr) {
-  children_.erase(std::remove_if(children_.begin(), children_.end(), [this, &tr](auto&& c) {
-    return &c.get() == &tr;
+  children_.erase(std::remove_if(children_.begin(), children_.end(), [this, &tr](auto&& child) {
+    return &child.get() == &tr;
   }), children_.end());
 }
 

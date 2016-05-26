@@ -78,7 +78,7 @@ cholesky<Alg>::cholesky(const matrix_t& alg)
       if (i == j) {
         // Diagonal square root
         if (s <= std::numeric_limits<T>::epsilon()/*eps<T>*/) {
-          throw std::logic_error("Cholesky decomposition failed (Not positive-definite)");
+          throw std::logic_error{"Cholesky decomposition failed (Not positive-definite)"};
         }
 
         LLT_(i, i) = std::sqrt(s);

@@ -41,7 +41,7 @@ window_native::window_native(const window& ref)
     mouse_tracked_{false}, handle_{nullptr}, wstyle_{0} {
 
   if (!reg()) {
-    throw std::runtime_error("Failed to register wndclass instance");
+    throw std::runtime_error{"Failed to register wndclass instance"};
   }
 
   handle_ = CreateWindowEx(0, ig_window_class.data(), "", 0,
@@ -54,7 +54,7 @@ window_native::window_native(const window& ref, const std::string& caption, uint
     mouse_tracked_{false}, handle_{nullptr}, wstyle_{0} {
 
   if (!reg()) {
-    throw std::runtime_error("Failed to register wndclass instance");
+    throw std::runtime_error{"Failed to register wndclass instance"};
   }
 
   wstyle_ = WS_VISIBLE;

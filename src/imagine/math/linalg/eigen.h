@@ -56,8 +56,8 @@ public:
 
   eigen(const matrix_t& alg);
 
-  constexpr auto& eigenvectors() const { return V_; }
-  constexpr auto& eigenvalues()  const { return D_; }
+  constexpr auto& eigen_vectors() const { return V_; }
+  constexpr auto& eigen_values()  const { return D_; }
 
 private:
   const size_t N_;
@@ -144,7 +144,7 @@ eigen<Alg, true>::eigen(const matrix_t& alg)
       if (m == l) 
         break;
       if (it == sweeps) {
-        throw std::logic_error("Eigendecomposition failed (No convergence)");
+        throw std::logic_error{"Eigendecomposition failed (No convergence)"};
       }
 
       // Compute implicit shift

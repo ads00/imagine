@@ -86,7 +86,7 @@ lu<Alg>::lu(const matrix_t& alg)
     }
 
     if (pivot == T(0)) {
-      throw std::logic_error("LU decomposition failed (Singular matrix)");
+      throw std::logic_error{"LU decomposition failed (Singular matrix)"};
     }
 
     // Partial row pivoting
