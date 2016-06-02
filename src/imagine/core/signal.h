@@ -32,18 +32,23 @@
 
 namespace ig {
 
-template <typename... Args> class signal_slot;
-template <typename... Args>
-class signal {
+template <typename Signature> class signal_slot;
+template <typename Signature> class signal;
+
+template <typename R, typename... Args>
+class signal<R (Args...)> {
 public:
-  using fn_t   = std::function<void (Args...)>;
-  using slot_t = signal_slot<Args...>;
+  using fn_t   = std::function<R (Args...)>;
+  using slot_t = signal_slot  <R (Args...)>;
   friend slot_t;
 
   constexpr signal() = default;
 
   auto connect(fn_t&& fn);
   void disconnect(const std::shared_ptr<slot_t>& slot);
+
+  template <typename Collect>
+  auto collect(Args&&... args) const;
 
   void emit(Args&&... args) const;
   void operator()(Args&&... args) const;
@@ -56,37 +61,49 @@ private:
   std::vector< std::shared_ptr<slot_t> > slots_;
 };
 
-template <typename... Args>
+template <typename Signature>
 class signal_slot {
 public:
-  using sig_t = signal<Args...>;
+  using sig_t = signal<Signature>;
   using fn_t  = typename sig_t::fn_t;
 
-  constexpr signal_slot(typename sig_t::ctor, sig_t& signal, fn_t&& fn) : signal_{signal}, fn_{fn} {}
-  sig_t& signal_; fn_t fn_;
+  constexpr signal_slot(typename sig_t::ctor, sig_t& signal, fn_t&& fn) 
+    : signal_{signal}, fn_{fn} {}
+
+  sig_t& signal_; 
+  fn_t fn_;
 };
 
-template <typename... Args>
-auto signal<Args...>::connect(fn_t&& fn) {
+template <typename R, typename... Args>
+auto signal<R (Args...)>::connect(fn_t&& fn) {
   slots_.emplace_back(std::make_shared<slot_t>(ctor{}, *this, std::forward<fn_t>(fn)));
   return slots_.back();
 }
 
-template <typename... Args>
-void signal<Args...>::disconnect(const std::shared_ptr<slot_t>& slot) {
+template <typename R, typename... Args>
+void signal<R (Args...)>::disconnect(const std::shared_ptr<slot_t>& slot) {
   slots_.erase(std::remove(slots_.begin(), slots_.end(), slot), 
                slots_.end());
 }
 
-template <typename... Args>
-void signal<Args...>::emit(Args&&... args) const {
+template <typename R, typename... Args>
+template <typename Collect>
+auto signal<R (Args...)>::collect(Args&&... args) const {
+  auto collecter = Collect{};
+  for (auto&& slot : slots_) {
+    collecter.emplace_back(slot->fn_(std::forward<Args>(args)...));
+  } return collecter;
+}
+
+template <typename R, typename... Args>
+void signal<R (Args...)>::emit(Args&&... args) const {
   for (auto&& slot : slots_) {
     slot->fn_(std::forward<Args>(args)...);
   }
 }
 
-template <typename... Args>
-void signal<Args...>::operator()(Args&&... args) const {
+template <typename R, typename... Args>
+void signal<R (Args...)>::operator()(Args&&... args) const {
   emit(std::forward<Args>(args)...);
 }
 
