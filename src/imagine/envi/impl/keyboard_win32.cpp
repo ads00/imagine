@@ -24,8 +24,8 @@
 #include "imagine/envi/impl/keyboard_native.h"
 
 namespace ig       {
-namespace impl     {
 namespace keyboard {
+namespace impl     {
 
 static const key_t key_tbl[] =
 {                     // keyboard mapping table
@@ -290,22 +290,21 @@ static const key_t key_tbl[] =
   key_t::unknown
 };
 
-modifier_ft modifiers() {
-  auto mods = modifier_ft{modifier_t::none};
+auto modifiers() -> modifier_flags {
+  modifier_flags mods{modifier_t::none};
   if (GetAsyncKeyState(VK_SHIFT)     < 0) {
     mods |= modifier_t::shift;
   } if (GetAsyncKeyState(VK_CONTROL) < 0) {
     mods |= modifier_t::ctrl;
   } if (GetAsyncKeyState(VK_MENU)    < 0) {
     mods |= modifier_t::alt;
-  }
-  return mods;
+  } return mods;
 }
 
-key_t key(WPARAM wparam) {
+auto key(WPARAM wparam) -> key_t {
   return key_tbl[wparam];
 }
 
-} // namespace keyboard
 } // namespace impl
+} // namespace keyboard
 } // namespace ig

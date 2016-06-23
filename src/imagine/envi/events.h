@@ -24,65 +24,59 @@
 #ifndef IG_ENVI_EVENTS_H
 #define IG_ENVI_EVENTS_H
 
-#include "imagine/envi/keyboard.h"
-#include "imagine/envi/mouse.h"
+#include "imagine/envi/input_keyboard.h"
+#include "imagine/envi/input_mouse.h"
 
 #include <functional>
 
 namespace ig {
 
 // keyboard events
-struct arg_keyboard {
-
+struct event_keyboard {
   enum type_t {
     none,
-    key_press, key_release,
+    pressed, released,
   } type;
 
-  modifier_ft modifiers;
+  keyboard::modifier_flags modifiers;
+  keyboard::key_t key;
   uint32_t vk;
-  key_t key;
 };
 
 // mouse events
-struct arg_mouse {
-
+struct event_mouse {
   enum type_t {
     none,
-    mouse_down, mouse_up, mouse_dbl_click,
-    mouse_move, mouse_enter, mouse_leave, mouse_wheel,
+    pressed, released, dbl_clicked,
+    moved, entered, leaved, wheeled,
   } type;
 
-  struct arg_move  { int32_t dx, dy; };
-  struct arg_click { button_t button; };
-  struct arg_wheel { float delta; };
+  struct event_click { mouse::button_t button; };
+  struct event_move  { int32_t dx, dy; };
+  struct event_wheel { float delta; };
   
-
-  modifier_ft modifiers;
-  button_ft buttons;
+  keyboard::modifier_flags modifiers;
+  mouse::button_flags buttons;
   int32_t x, y;
 
   union {
-    arg_move  move;
-    arg_click click;
-    arg_wheel wheel;
+    event_click click;
+    event_move  move;
+    event_wheel wheel;
   };
 };
 
 // status events
-struct arg_status {
-
+struct event_status {
   enum type_t {
     none,
-    move, resize, close
+    moved, resized, closed
   } type;
 };
 
 class IG_API events {
 public:
-  template <typename T> 
-  using fn_t = std::function<void (const T&)>;
-
+  template <typename T> using fn_t = std::function<void (const T&)>;
   constexpr events() = default;
 
   template <typename T>
@@ -93,14 +87,14 @@ public:
     }
   }
 
-  void keyboard(fn_t<arg_keyboard> fn) { std::get<decltype(fn)>(fns_) = fn; }
-  void mouse(fn_t<arg_mouse> fn)       { std::get<decltype(fn)>(fns_) = fn; }
+  void keyboard(fn_t<event_keyboard> fn) { std::get<decltype(fn)>(fns_) = fn; }
+  void mouse(fn_t<event_mouse> fn)       { std::get<decltype(fn)>(fns_) = fn; }
 
-  void status(fn_t<arg_status> fn)     { std::get<decltype(fn)>(fns_) = fn; }
+  void status(fn_t<event_status> fn)     { std::get<decltype(fn)>(fns_) = fn; }
 
 protected:
-  std::tuple< fn_t<arg_keyboard>, fn_t<arg_mouse>,
-              fn_t<arg_status> > fns_;
+  std::tuple< fn_t<event_keyboard>, fn_t<event_mouse>,
+              fn_t<event_status> > fns_;
 };
 
 } // namespace ig

@@ -21,40 +21,29 @@
  SOFTWARE.
 */
 
-#include "imagine/core/threadpool.h"
+#include "imagine/envi/impl/cursor_native.h"
+#include "imagine/envi/cursor.h"
 
 namespace ig {
 
-void threadpool::thread_work_internal() {
-  for (;;) {
-    auto task = std::function<void() >{};
-    {
-      std::unique_lock<decltype(mutex_)> lock(mutex_);
-      cv_.wait(lock, [this] { return !running_ || !tasks_.empty(); });
-
-      if (!running_ && tasks_.empty())
-        return;
-      task = std::move(tasks_.front());
-      tasks_.pop();
-    }
-    task();
-  }
+constexpr cursor::cursor(shape_t shape)
+  : native_{std::make_unique<impl::cursor_native>(shape)} {
 }
 
-threadpool::threadpool(size_t workers)
-  : running_{true} {
-  for (size_t i = 0; i < workers; ++i) {
-    workers_.emplace_back(&threadpool::thread_work_internal, this);
-  }
+cursor::~cursor() = default;
+
+void cursor::reshape(shape_t shape) {
+  native_.reset(new impl::cursor_native(shape, native_->x_, native_->y_));
+  refresh();
 }
 
-threadpool::~threadpool() {
-  running_ = false;
-  cv_.notify_all();
-
-  for (auto&& worker : workers_) {
-    worker.join();
-  }
+auto cursor::shape() const -> shape_t {
+  return native_->shape_;
 }
+
+// Native implementations
+//
+
+// void cursor::refresh() const;
 
 } // namespace ig

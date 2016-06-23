@@ -30,8 +30,8 @@ namespace ig {
 
 class IG_API bbox {
 public:
-  constexpr bbox() = default;
-  constexpr bbox(const vec3& min, const vec3& max);
+  bbox() = default;
+  bbox(const vec3& min, const vec3& max);
 
   void expand(const vec3& point);
   float surface_area() const;

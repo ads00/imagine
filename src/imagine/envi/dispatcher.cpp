@@ -40,8 +40,7 @@ int32_t dispatcher::run() {
 
   while (native_->running_) {
     process_events();
-  }
-  return native_->return_code_;
+  } return native_->return_code_;
 }
 
 void dispatcher::exit(int32_t return_code) {

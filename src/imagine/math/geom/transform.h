@@ -30,7 +30,7 @@ namespace ig {
 
 class IG_API transform {
 public:
-  enum space_t { local, world };
+  enum class space_t { local, world };
 
   constexpr transform(const vec3& pos, const quat& ori, const vec3& sca);
   virtual ~transform();

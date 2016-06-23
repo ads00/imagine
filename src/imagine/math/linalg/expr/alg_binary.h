@@ -21,8 +21,8 @@
  SOFTWARE.
 */
 
-#ifndef IG_MATH_BINARY_EXPR_H
-#define IG_MATH_BINARY_EXPR_H
+#ifndef IG_MATH_BINARY_H
+#define IG_MATH_BINARY_H
 
 #include "imagine/math/linalg/base/alg.h"
 #include <functional>
@@ -31,10 +31,8 @@ namespace ig {
 
 template <typename Lhs, typename Rhs, typename Op>
 struct alg_traits< binary_expr<Lhs, Rhs, Op> > {
-
   using T = std::common_type_t< alg_t<Lhs>, alg_t<Rhs> >;
-  static constexpr auto M = Lhs::M;
-  static constexpr auto N = Lhs::N;
+  static constexpr auto M = Lhs::M, N = Lhs::N;
 };
 
 template <typename Lhs, typename Rhs, typename Op>
@@ -81,4 +79,4 @@ constexpr auto operator%(const alg<Lhs>& lhs, const alg<Rhs>& rhs) {
 
 } // namespace ig
 
-#endif // IG_MATH_BINARY_EXPR_H
+#endif // IG_MATH_BINARY_H

@@ -39,7 +39,6 @@ static std::string ig_window_class = "ig_winclass";
 window_native::window_native(const window& ref)
   : ref_{ref}, style_{window::style_t::none}, visibility_{window::visibility_t::hidden},
     mouse_tracked_{false}, handle_{nullptr}, wstyle_{0} {
-
   if (!reg()) {
     throw std::runtime_error{"Failed to register wndclass instance"};
   }
@@ -49,10 +48,9 @@ window_native::window_native(const window& ref)
                            nullptr, nullptr, GetModuleHandle(nullptr), this);
 }
 
-window_native::window_native(const window& ref, const std::string& caption, uint32_t width, uint32_t height, window::style_ft style)
+window_native::window_native(const window& ref, const std::string& caption, uint32_t width, uint32_t height, window::style_flags style)
   : ref_{ref}, caption_{caption}, style_{style}, visibility_{window::visibility_t::windowed},
     mouse_tracked_{false}, handle_{nullptr}, wstyle_{0} {
-
   if (!reg()) {
     throw std::runtime_error{"Failed to register wndclass instance"};
   }
@@ -70,9 +68,9 @@ window_native::window_native(const window& ref, const std::string& caption, uint
     wstyle_ |= WS_POPUP;
   }
 
-  auto rect = RECT{0, 0, static_cast<LONG>(width), static_cast<LONG>(height)};
+  RECT rect{0, 0, static_cast<LONG>(width), static_cast<LONG>(height)};
   AdjustWindowRect(&rect, wstyle_, false);
-  width  = rect.right - rect.left; height = rect.bottom - rect.top;
+  width = rect.right - rect.left; height = rect.bottom - rect.top;
 
   auto x = (GetSystemMetrics(SM_CXSCREEN) - width) / 2;
   auto y = (GetSystemMetrics(SM_CYSCREEN) - height) / 2;
@@ -80,117 +78,121 @@ window_native::window_native(const window& ref, const std::string& caption, uint
   handle_ = CreateWindowEx(0, ig_window_class.data(), caption.data(), wstyle_,
                            x, y, width, height, nullptr, nullptr, GetModuleHandle(nullptr), this);
 
-  auto client = RECT{}, window = RECT{};
-  GetClientRect(handle_, &client);
-  GetWindowRect(handle_, &window);
+  RECT client{}, window{};
+  GetClientRect(handle_, &client); GetWindowRect(handle_, &window);
 
   x_ = window.left; y_ = window.top;
   width_ = client.right - client.left; height_ = client.bottom - client.top;
 }
 
 LRESULT window_native::internal(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
-  auto keyboard_ev = [&wparam](arg_keyboard::type_t type) -> arg_keyboard {
-    return {type, keyboard::modifiers(), static_cast<uint32_t>(wparam), keyboard::key(wparam)};
+  auto keyboard_ev = [&wparam](event_keyboard::type_t type) -> event_keyboard {
+    return {type, keyboard::impl::modifiers(), keyboard::impl::key(wparam), static_cast<uint32_t>(wparam)};
   };
 
-  auto mouse_move_ev = [&lparam, this](arg_mouse::type_t type, bool enter) -> arg_mouse {
-    auto nx = mouse::x(lparam), ny = mouse::y(lparam);
-    auto ev = arg_mouse{type, keyboard::modifiers(), mouse::buttons(), nx, ny};
-    ev.move.dx = enter ? 0 : nx - ref_.cursor_.native_->x_;
-    ev.move.dy = enter ? 0 : ny - ref_.cursor_.native_->y_;
+  auto mouse_move_ev = [&lparam, this](event_mouse::type_t type, bool enter) -> event_mouse {
+    auto nx = mouse::impl::x(lparam), ny = mouse::impl::y(lparam);
+    event_mouse ev{type, keyboard::impl::modifiers(), mouse::impl::buttons(), nx, ny};
+    ev.move.dx = enter ? 
+      0 : 
+      nx - ref_.cursor_.native_->x_,
+    ev.move.dy = enter ? 
+      0 : 
+      ny - ref_.cursor_.native_->y_;
+
     ref_.cursor_.native_->x_ = nx; ref_.cursor_.native_->y_ = ny;
     return ev;
   };
-  auto mouse_ev = [&lparam](arg_mouse::type_t type) -> arg_mouse {
-    return {type, keyboard::modifiers(), mouse::buttons(), mouse::x(lparam), mouse::y(lparam)};
+  auto mouse_ev = [&lparam](event_mouse::type_t type) -> event_mouse {
+    return {type, keyboard::impl::modifiers(), 
+            mouse::impl::buttons(), mouse::impl::x(lparam), mouse::impl::y(lparam)};
   };
-  auto mouse_click_ev = [&lparam, &mouse_ev](arg_mouse::type_t type, button_t button) -> arg_mouse {
+  auto mouse_click_ev = [&lparam, &mouse_ev](event_mouse::type_t type, mouse::button_t button) -> event_mouse {
     auto ev = mouse_ev(type); ev.click.button = button;
     return ev;
   };
-  auto mouse_wheel_ev = [&lparam, &wparam, &mouse_ev](arg_mouse::type_t type) -> arg_mouse {
-    auto ev = mouse_ev(type); ev.wheel.delta = mouse::wheel_delta(wparam);
+  auto mouse_wheel_ev = [&lparam, &wparam, &mouse_ev](event_mouse::type_t type) -> event_mouse {
+    auto ev = mouse_ev(type); ev.wheel.delta = mouse::impl::wheel_delta(wparam);
     return ev;
   };
 
   switch (msg) {
   case WM_KEYDOWN:
   case WM_SYSKEYDOWN: 
-    ref_.process(keyboard_ev(arg_keyboard::type_t::key_press));
+    ref_.process(keyboard_ev(event_keyboard::pressed));
     break;
   case WM_KEYUP:
   case WM_SYSKEYUP: 
-    ref_.process(keyboard_ev(arg_keyboard::type_t::key_release));
+    ref_.process(keyboard_ev(event_keyboard::released));
     break;
   case WM_LBUTTONDOWN: 
-    ref_.process(mouse_click_ev(arg_mouse::type_t::mouse_down, button_t::left));
+    ref_.process(mouse_click_ev(event_mouse::pressed, mouse::button_t::left));
     break;
   case WM_MBUTTONDOWN: 
-    ref_.process(mouse_click_ev(arg_mouse::type_t::mouse_down, button_t::middle));
+    ref_.process(mouse_click_ev(event_mouse::pressed, mouse::button_t::middle));
     break;
   case WM_RBUTTONDOWN:
-    ref_.process(mouse_click_ev(arg_mouse::type_t::mouse_down, button_t::right));
+    ref_.process(mouse_click_ev(event_mouse::pressed, mouse::button_t::right));
     break;
   case WM_LBUTTONUP: 
-    ref_.process(mouse_click_ev(arg_mouse::type_t::mouse_up, button_t::left));
+    ref_.process(mouse_click_ev(event_mouse::released, mouse::button_t::left));
     break;
   case WM_MBUTTONUP: 
-    ref_.process(mouse_click_ev(arg_mouse::type_t::mouse_up, button_t::middle));
+    ref_.process(mouse_click_ev(event_mouse::released, mouse::button_t::middle));
     break;
   case WM_RBUTTONUP: 
-    ref_.process(mouse_click_ev(arg_mouse::type_t::mouse_up, button_t::right));
+    ref_.process(mouse_click_ev(event_mouse::released, mouse::button_t::right));
     break;
   case WM_LBUTTONDBLCLK: 
-    ref_.process(mouse_click_ev(arg_mouse::type_t::mouse_down, button_t::left));
-    ref_.process(mouse_click_ev(arg_mouse::type_t::mouse_dbl_click, button_t::left));
+    ref_.process(mouse_click_ev(event_mouse::pressed, mouse::button_t::left));
+    ref_.process(mouse_click_ev(event_mouse::dbl_clicked, mouse::button_t::left));
     break;
   case WM_MBUTTONDBLCLK:
-    ref_.process(mouse_click_ev(arg_mouse::type_t::mouse_down, button_t::middle));
-    ref_.process(mouse_click_ev(arg_mouse::type_t::mouse_dbl_click, button_t::middle));
+    ref_.process(mouse_click_ev(event_mouse::pressed, mouse::button_t::middle));
+    ref_.process(mouse_click_ev(event_mouse::dbl_clicked, mouse::button_t::middle));
     break;
   case WM_RBUTTONDBLCLK:
-    ref_.process(mouse_click_ev(arg_mouse::type_t::mouse_down, button_t::right));
-    ref_.process(mouse_click_ev(arg_mouse::type_t::mouse_dbl_click, button_t::right));
+    ref_.process(mouse_click_ev(event_mouse::pressed, mouse::button_t::right));
+    ref_.process(mouse_click_ev(event_mouse::dbl_clicked, mouse::button_t::right));
     break;
   case WM_MOUSEWHEEL: 
-    ref_.process(mouse_wheel_ev(arg_mouse::type_t::mouse_wheel));
+    ref_.process(mouse_wheel_ev(event_mouse::wheeled));
     break;
   case WM_MOUSELEAVE:
     mouse_tracked_ = false;
-    ref_.process(mouse_ev(arg_mouse::type_t::mouse_leave));
+    ref_.process(mouse_ev(event_mouse::leaved));
     break;
     case WM_MOUSEMOVE:
     if (!mouse_tracked_) {
-      mouse::track(handle_); 
+      mouse::impl::track(handle_); 
       mouse_tracked_ = true;
 
-      ref_.process(mouse_ev(arg_mouse::type_t::mouse_enter));
-      ref_.process(mouse_move_ev(arg_mouse::type_t::mouse_move, true));
+      ref_.process(mouse_ev(event_mouse::entered));
+      ref_.process(mouse_move_ev(event_mouse::moved, true));
     } else {
-      ref_.process(mouse_move_ev(arg_mouse::type_t::mouse_move, false));
+      ref_.process(mouse_move_ev(event_mouse::moved, false));
     }
     break;
   case WM_EXITSIZEMOVE: 
     {
-      auto client = RECT{}, window = RECT{};
-      GetClientRect(handle_, &client);
-      GetWindowRect(handle_, &window);
+      RECT client{}, window{};
+      GetClientRect(handle_, &client); GetWindowRect(handle_, &window);
 
       if (x_ != window.left || y_ != window.top) {
         x_ = window.left; y_ = window.top;
-        ref_.process(arg_status{arg_status::type_t::move});
+        ref_.process(event_status{event_status::moved});
       }
 
       auto cwidth = client.right - client.left;
       auto cheight = client.bottom - client.top;
       if (width_ != cwidth || height_ != cheight) {
         width_ = cwidth; height_ = cheight;
-        ref_.process(arg_status{arg_status::type_t::resize});
+        ref_.process(event_status{event_status::resized});
       }
     }
     break;
   case WM_CLOSE:
-    ref_.process(arg_status{arg_status::type_t::close});
+    ref_.process(event_status{event_status::closed});
     break;
   case WM_SETCURSOR:
     if (LOWORD(lparam) == HTCLIENT) {
@@ -206,7 +208,7 @@ LRESULT window_native::internal(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 LRESULT CALLBACK window_native::proc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
   window_native* callback = nullptr;
   if (msg == WM_NCCREATE) {
-    auto cs   = reinterpret_cast<CREATESTRUCT*>(lparam);
+    auto cs = reinterpret_cast<CREATESTRUCT*>(lparam);
     callback  = reinterpret_cast<window_native*>(cs->lpCreateParams);
     SetWindowLongPtr(hwnd, GWL_USERDATA, reinterpret_cast<LONG_PTR>(callback));
   } else {
@@ -219,24 +221,25 @@ LRESULT CALLBACK window_native::proc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
 }
 
 bool window_native::reg() {
-  auto inst = GetModuleHandle(nullptr);
-  auto wc   = WNDCLASSEX{};
-  if (GetClassInfoEx(inst, ig_window_class.data(), &wc))
+  WNDCLASSEX window_class{};
+  if (GetClassInfoEx(GetModuleHandle(nullptr), ig_window_class.c_str(), &window_class))
     return true;
 
-  wc.cbSize        = sizeof(WNDCLASSEX);
-  wc.style         = CS_DBLCLKS;
-  wc.hInstance     = inst;
-  wc.lpfnWndProc   = proc;
-  wc.lpszClassName = ig_window_class.data();
-  wc.lpszMenuName  = nullptr;
-  wc.hbrBackground = GetSysColorBrush(COLOR_WINDOW);
-  wc.hCursor       = nullptr;
-  wc.hIcon         = nullptr;
-  wc.hIconSm       = nullptr;
-  wc.cbClsExtra    = 0;
-  wc.cbWndExtra    = 0;
-  return RegisterClassEx(&wc) != 0;
+  window_class = {
+    sizeof(WNDCLASSEX),
+    CS_DBLCLKS,
+    proc,
+    0, 
+    0,
+    GetModuleHandle(nullptr),
+    nullptr,
+    nullptr,
+    GetSysColorBrush(COLOR_WINDOW),
+    nullptr,
+    ig_window_class.data(),
+    nullptr
+  };
+  return RegisterClassEx(&window_class) != 0;
 }
 
 } // namespace impl
@@ -263,9 +266,8 @@ void window::move(int32_t x, int32_t y) {
 }
 
 void window::resize(uint32_t width, uint32_t height) {
-  auto rect = RECT{0, 0, static_cast<LONG>(width), static_cast<LONG>(height)};
+  RECT rect{0, 0, static_cast<LONG>(width), static_cast<LONG>(height)};
   AdjustWindowRect(&rect, static_cast<DWORD>(GetWindowLongPtr(native_->handle_, GWL_STYLE)), false);
-
   SetWindowPos(native_->handle_, nullptr, 0, 0, rect.right - rect.left, rect.bottom - rect.top, SWP_NOMOVE | SWP_NOZORDER);
 }
 
@@ -285,9 +287,13 @@ bool window::visible() const {
   return IsWindowVisible(native_->handle_) == TRUE;
 }
 
+auto window::handle() const -> window_handle* {
+  return reinterpret_cast<window_handle*>(native_->handle_);
+}
+
 void window::set_fullscreen(bool fullscreen) {
   if (fullscreen) {
-    auto minfo = MONITORINFO{};
+    MONITORINFO minfo{};
     minfo.cbSize = sizeof(minfo);
     GetMonitorInfo(MonitorFromWindow(native_->handle_, MONITOR_DEFAULTTONEAREST), &minfo);
 
@@ -311,8 +317,12 @@ void window::set_caption(const std::string& caption) {
 }
 
 void window::set_parent(const window* parent) {
-  auto handle = (parent) ? parent->native_->handle_ : nullptr;
-  native_->wstyle_ &= (handle) ? ~WS_POPUP | WS_CHILD : ~WS_CHILD;
+  auto handle = parent ? 
+    parent->native_->handle_ : 
+    nullptr;
+  native_->wstyle_ &= handle ? 
+    ~WS_POPUP | WS_CHILD : 
+    ~WS_CHILD;
 
   SetWindowLong(native_->handle_, GWL_STYLE, native_->wstyle_);
   SetParent(native_->handle_, handle);

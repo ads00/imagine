@@ -33,13 +33,11 @@ namespace ig     {
 namespace detail {
 
 struct jpeg_src {
-
   jpeg_source_mgr jpeg;
   std::istream* stream; JOCTET* buffer;
 };
 
 struct jpeg_dst {
-
   jpeg_destination_mgr jpeg;
   std::ostream* stream; JOCTET* buffer;
 };
@@ -54,12 +52,12 @@ void jpeg_message(j_common_ptr jpeg_ptr);
 void jpeg_exit(j_common_ptr jpeg_ptr);
 
 std::unique_ptr<image> jpeg_read(std::istream& stream) {
-  auto jpeg_ptr = jpeg_decompress_struct{};
-  auto jerr     = jpeg_error_mgr{};
+  jpeg_decompress_struct jpeg_ptr{};
+  jpeg_error_mgr jerr{};
 
   jpeg_ptr.err = jpeg_std_error(&jerr);
+  jerr.error_exit = jpeg_exit;
   jerr.output_message = jpeg_message;
-  jerr.error_exit     = jpeg_exit;
 
   jpeg_create_decompress(&jpeg_ptr);
   
@@ -111,12 +109,12 @@ std::unique_ptr<image> jpeg_read(std::istream& stream) {
 }
 
 bool jpeg_write(const image& imag, std::ostream& stream) {
-  auto jpeg_ptr = jpeg_compress_struct{};
-  auto jerr     = jpeg_error_mgr{};
+  jpeg_compress_struct jpeg_ptr{};
+  jpeg_error_mgr jerr{};
 
   jpeg_ptr.err = jpeg_std_error(&jerr);
+  jerr.error_exit = jpeg_exit;
   jerr.output_message = jpeg_message;
-  jerr.error_exit     = jpeg_exit;
 
   jpeg_create_compress(&jpeg_ptr);
 
@@ -146,7 +144,7 @@ bool jpeg_write(const image& imag, std::ostream& stream) {
     }
   };
 
-  jpeg_ptr.image_width  = imag.dimensions()[0];
+  jpeg_ptr.image_width = imag.dimensions()[0];
   jpeg_ptr.image_height = imag.dimensions()[1];
 
   switch (imag.channels()) {

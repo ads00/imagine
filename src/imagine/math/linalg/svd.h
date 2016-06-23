@@ -79,7 +79,7 @@ template <typename Alg>
 svd<Alg>::svd(const matrix_t& alg)
   : M_{alg.rows()}, N_{alg.cols()}, threshold_{T(0)}, U_{alg}, V_{N_, N_}, S_{N_} {
 
-  auto work = vector_t{N_};
+  vector_t work{N_};
   auto g = T(0);
   // Householder's reduction to bidiagonal form
   for (size_t i = 0; i < N_; ++i) {
@@ -169,16 +169,16 @@ svd<Alg>::svd(const matrix_t& alg)
     U_(i, i)++;
   }
 
-  auto sweeps = 75;
+  size_t sweeps = 75;
   threshold_ = std::numeric_limits<T>::epsilon()/*eps<T>*/ * std::max(M_, N_) * std::abs(S_[0]);
 
   // Diagonalization of the bidiagonal form
   for (size_t i = N_; i--> 0; ) {
-    auto l = size_t{0}, nm = size_t{0};
+    size_t l = 0, nm = 0;
     for (size_t it = 0; it <= sweeps; ++it) {
 
       // Test for splitting
-      auto split = true;
+      bool split = true;
       for (l = i + 1, nm = l - 1; l--> 0; ) {
         if (l == 0 || std::abs(work[l]) <= threshold_) {
           split = false;
@@ -204,7 +204,7 @@ svd<Alg>::svd(const matrix_t& alg)
 
           for (size_t k = 0; k < M_; ++k) {
             auto y = U_(k, nm), z = U_(k, j);
-            U_(k, nm) = y*c + z*s, U_(k, j)  = z*c - y*s;
+            U_(k, nm) = y*c + z*s, U_(k, j) = z*c - y*s;
           }
         }
       }
@@ -251,7 +251,7 @@ svd<Alg>::svd(const matrix_t& alg)
 
         for (size_t k = 0; k < N_; ++k) {
           auto x = V_(k, j), z = V_(k, j1);
-          V_(k, j)  = x*c + z*s, V_(k, j1) = z*c - x*s;
+          V_(k, j) = x*c + z*s, V_(k, j1) = z*c - x*s;
         }
 
         S_[j] = z2;
@@ -264,7 +264,7 @@ svd<Alg>::svd(const matrix_t& alg)
 
         for (size_t k = 0; k < M_; ++k) {
           auto y = U_(k, j), z = U_(k, j1);
-          U_(k, j)  = y*c + z*s, U_(k, j1) = z*c - y*s;
+          U_(k, j) = y*c + z*s, U_(k, j1) = z*c - y*s;
         }
       }
 
@@ -277,7 +277,7 @@ svd<Alg>::svd(const matrix_t& alg)
 template <typename Alg>
 size_t svd<Alg>::rank() const {
   // Lookup for singular values > threshold 
-  auto r = size_t{0};
+  size_t r = 0;
   for (size_t i = 0; i < N_; ++i) {
     if (S_[i] > threshold_) r++;
   }
@@ -287,7 +287,7 @@ size_t svd<Alg>::rank() const {
 template <typename Alg>
 auto svd<Alg>::pinv() const -> matrix_t {
   // Compute w = VS+
-  auto w = matrix_t{N_, N_};
+  matrix_t w{N_, N_};
   for (size_t i = 0; i < N_; ++i)
     for (size_t j = 0; j < N_; ++j)
       if (std::abs(S_[j]) > threshold_) w(i, j) = V_(i, j) * (T(1) / S_[j]);
@@ -298,12 +298,14 @@ auto svd<Alg>::pinv() const -> matrix_t {
 template <typename Alg>
 auto svd<Alg>::solve(const vector_t& b) -> vector_t {
   // Compute w = U^Tb
-  auto w = vector_t{U_.t() * b};
+  vector_t w{U_.t() * b};
 
   // Apply singularity
   for (size_t i = 0; i < N_; ++i) {
     auto sv = S_[i];
-    auto alpha = std::abs(sv) > threshold_ ? T(1) / sv : sv;
+    auto alpha = (std::abs(sv) > threshold_) ? 
+      T(1) / sv : 
+      sv;
     w[i] *= alpha;
   }
   // Compute x = Vw

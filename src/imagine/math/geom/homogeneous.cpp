@@ -84,7 +84,7 @@ mat4 mat4::perspective(float fovy, float asp, float zn, float zf) {
 
   return { 1.f / ta, 0.f,         0.f,      0.f,
            0.f,      1.f / tanh,  0.f,      0.f,
-           0.f,      0.f,         zf / zr, -(zf * zn) / zr,
+           0.f,      0.f,        -zf / zr, -(zf * zn) / zr,
            0.f,      0.f,        -1.f,      0.f };
 }
 

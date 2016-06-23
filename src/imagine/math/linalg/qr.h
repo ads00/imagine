@@ -96,7 +96,7 @@ qr<Alg>::qr(const matrix_t& alg)
 template <typename Alg>
 auto qr<Alg>::solve(const vector_t& b) -> vector_t {
   // Compute y = Q^Tb
-  auto y = vector_t{b};
+  auto y = b;
   for (size_t i = 0; i < N_; ++i) {
     auto s = T(0);
     for (size_t j = i; j < M_; ++j) s += QR_(j, i) * y[j];
@@ -106,7 +106,7 @@ auto qr<Alg>::solve(const vector_t& b) -> vector_t {
   }
 
   // Backward Rx = y
-  auto x = vector_t{N_};
+  vector_t x{N_};
   for (size_t i = N_; i--> 0;) {
     x[i] = y[i] / tau_[i];
     for (size_t j = 0; j < i; ++j) y[j] -= x[i] * QR_(j, i);

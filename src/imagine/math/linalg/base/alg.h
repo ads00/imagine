@@ -55,20 +55,20 @@ template <typename Xpr> struct alg_traits<const Xpr> : alg_traits<Xpr>{};
 
 template <typename Alg> using alg_t = typename Alg::T;
 
-template <typename Derived>
+template <typename C>
 class alg {
 public:
-  using T = typename alg_traits<Derived>::T;
-  static constexpr int M = alg_traits<Derived>::M;
-  static constexpr int N = alg_traits<Derived>::N;
+  using T = typename alg_traits<C>::T;
+  static constexpr auto M = alg_traits<C>::M;
+  static constexpr auto N = alg_traits<C>::N;
 
   using plain_t = matrix<T, M, N>;
-  using U = std::conditional_t<std::is_same<Derived, plain_t>::value, const T&, T>;
+  using U = std::conditional_t<std::is_same<C, plain_t>::value, const T&, T>;
 
-  auto& derived() const { return static_cast<const Derived&>(*this); }
-  auto& derived()       { return static_cast<Derived&>(*this); }
+  auto& derived() const { return static_cast<const C&>(*this); }
+  auto& derived()       { return static_cast<C&>(*this); }
 
-  template <typename It, typename DIt>
+  template <typename It, typename CIt>
   class iterator : public std::iterator<std::random_access_iterator_tag, T> {
   public:
     friend alg;
@@ -87,17 +87,17 @@ public:
     It operator*() const { return derived_[pos_]; }
 
   private:
-    constexpr iterator(DIt& derived, size_t pos)
+    constexpr iterator(CIt& derived, size_t pos)
       : derived_{derived}, pos_{pos} {}
 
     size_t pos_;
-    DIt& derived_;
+    CIt& derived_;
   };
 
-  auto begin() const { return iterator<U, const Derived>{derived(), 0}; }
-  auto begin()       { return iterator<T&, Derived>{derived(), 0}; }
-  auto end() const   { return iterator<U, const Derived>{derived(), size()}; }
-  auto end()         { return iterator<T&, Derived>{derived(), size()}; }
+  auto begin() const { return iterator<U, const C>{derived(), 0}; }
+  auto begin()       { return iterator<T&, C>{derived(), 0}; }
+  auto end() const   { return iterator<U, const C>{derived(), size()}; }
+  auto end()         { return iterator<T&, C>{derived(), size()}; }
 
   auto sum() const -> T;
   auto prod() const -> T;
@@ -110,24 +110,24 @@ public:
   constexpr auto cols() const { return derived().cols(); }
   constexpr auto size() const { return rows() * cols(); }
 
-  constexpr auto diagsize() const { return std::min(rows(), cols()); }
-  constexpr auto vecsize() const  { return std::max(rows(), cols()); }
+  constexpr auto diagsize() const { return (std::min)(rows(), cols()); }
+  constexpr auto vecsize() const  { return (std::max)(rows(), cols()); }
 
-  auto head(size_t n) const { return alg_block<const Derived>{derived(), 0, n}; }
-  auto head(size_t n)       { return alg_block<Derived>{derived(), 0, n}; }
-  auto tail(size_t n) const { return alg_block<const Derived>{derived(), size() - n, n}; }
-  auto tail(size_t n)       { return alg_block<Derived>{derived(), size() - n, n}; }
+  auto head(size_t n) const { return alg_block<const C>{derived(), 0, n}; }
+  auto head(size_t n)       { return alg_block<C>{derived(), 0, n}; }
+  auto tail(size_t n) const { return alg_block<const C>{derived(), size() - n, n}; }
+  auto tail(size_t n)       { return alg_block<C>{derived(), size() - n, n}; }
 
-  auto row(size_t n) const { return alg_row<const Derived>{derived(), n}; }
-  auto row(size_t n)       { return alg_row<Derived>{derived(), n}; }
-  auto col(size_t n) const { return alg_col<const Derived>{derived(), n}; }
-  auto col(size_t n)       { return alg_col<Derived>{derived(), n}; }
+  auto row(size_t n) const { return alg_row<const C>{derived(), n}; }
+  auto row(size_t n)       { return alg_row<C>{derived(), n}; }
+  auto col(size_t n) const { return alg_col<const C>{derived(), n}; }
+  auto col(size_t n)       { return alg_col<C>{derived(), n}; }
 
-  auto diag() const { return alg_diag<const Derived>{derived()}; }
-  auto diag()       { return alg_diag<Derived>{derived()}; }
+  auto diag() const { return alg_diag<const C>{derived()}; }
+  auto diag()       { return alg_diag<C>{derived()}; }
 
-  auto t() const { return alg_trans<const Derived>{derived()}; }
-  auto t()       { return alg_trans<Derived>{derived()}; }
+  auto t() const { return alg_trans<const C>{derived()}; }
+  auto t()       { return alg_trans<C>{derived()}; }
 
   auto operator()(size_t row, size_t col) const { return derived()(row, col); }
   auto& operator()(size_t row, size_t col)      { return derived()(row, col); }
@@ -154,13 +154,13 @@ public:
 
   template <typename Alg> 
   auto& operator*=(const alg<Alg>& alg) {
-    assert(Derived::hybrids && "Cannot multiply in place a static matrix");
+    assert(C::hybrid && "Cannot multiply in place an immutable matrix");
     return derived() = std::move(*this) * alg;
   }
 
   class initializer {
   public:
-    initializer(Derived& alg)
+    initializer(C& alg)
       : alg_{alg}, row_{0}, col_{0}, curr_{0} {
     }
 
@@ -172,8 +172,8 @@ public:
     }
 
     template <typename... Args>
-    static void auto_construct(Derived& alg, T val, Args&&... args) {
-      auto init = initializer{alg};
+    static void auto_construct(C& alg, T val, Args&&... args) {
+      initializer init{alg};
       init.recursive_construct(val, std::forward<Args>(args)...);
     }
 
@@ -191,7 +191,7 @@ public:
       }
     }
 
-    Derived& alg_;
+    C& alg_;
     size_t row_, col_, curr_;
   };
 
@@ -214,36 +214,36 @@ constexpr void eval(alg<Eval>& ev, const alg<Alg>& alg) {
 }
 
 template <typename Eval, typename Alg, typename O>
-constexpr void eval(alg<Eval>& ev, const alg<Alg>& alg, const O& i) {
+constexpr void eval(alg<Eval>& ev, const alg<Alg>& alg, const O&) {
   eval_helper(ev, alg);
 }
 
 template <typename Eval, typename Alg>
-constexpr void eval(alg<Eval>& ev, const alg<Alg>& alg, std::vector< alg_t<Eval> >& i) {
-  i.resize(ev.size());
+constexpr void eval(alg<Eval>& ev, const alg<Alg>& alg, typename Eval::dynamics_data& i) {
+  i.d.resize(ev.size());
   eval_helper(ev, alg);
 }
 
 // Cwise
-template <typename Derived>
-auto alg<Derived>::sum() const -> T {
+template <typename C>
+auto alg<C>::sum() const -> T {
   return std::accumulate(begin(), end(), T(0));
 }
 
-template <typename Derived>
-auto alg<Derived>::prod() const -> T {
+template <typename C>
+auto alg<C>::prod() const -> T {
   return std::accumulate(begin(), end(), T(1), std::multiplies<T>{});
 }
 
-template <typename Derived>
-auto alg<Derived>::mean() const -> T {
+template <typename C>
+auto alg<C>::mean() const -> T {
   return sum() / size();
 }
 
 template <typename Alg>
 inline std::ostream& operator<<(std::ostream& stream, const alg<Alg>& alg) {
-  auto width = size_t{0};
-  auto w = std::stringstream{}; w.precision(3);
+  size_t width = 0;
+  std::stringstream w{}; w.precision(3);
 
   for (auto&& elemt : alg) {
     w.str(std::string{}); w.clear(); w << std::fixed << elemt;

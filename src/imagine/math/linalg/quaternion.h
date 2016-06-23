@@ -113,8 +113,8 @@ constexpr auto operator*(quaternion<T> q, T scalar) {
 
 template <typename T>
 inline std::ostream& operator<<(std::ostream& stream, const quaternion<T>& quat) {
-  auto width = size_t{0};
-  auto w = std::stringstream{}; w.precision(3);
+  size_t width = 0;
+  std::stringstream w{}; w.precision(3);
 
   for (auto&& velemt : quat.vec_) {
     w.str(std::string{}); w.clear(); w << std::fixed << velemt;

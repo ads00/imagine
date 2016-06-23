@@ -41,7 +41,7 @@ public:
 
   template <typename Fn, typename... Args>
   void measure(const std::string& name, size_t runs , Fn&& fn, Args&&... args) {
-    auto runner = std::vector<std::chrono::microseconds>(runs);
+    std::vector<std::chrono::microseconds> runner(runs);
     for (size_t run = 0; run < runs; ++run) {
       auto begin = std::chrono::high_resolution_clock::now();
       fn(std::forward<Args>(args)...);
@@ -59,13 +59,12 @@ public:
 
   template <typename T = std::chrono::microseconds>
   auto generate_reports() {
-    auto reports = std::vector<benchmark_report>(benchs_.size());
+    std::vector<benchmark_report> reports(benchs_.size());
     std::transform(benchs_.begin(), benchs_.end(), reports.begin(), [](auto&& bench) {
-      auto report = benchmark_report{bench.first};
+      benchmark_report report{bench.first};
       for (auto&& sample : bench.second) {
         report.samples_.emplace_back(std::chrono::duration_cast<T>(sample).count());
-      }
-      return std::move(report);
+      } return std::move(report);
     });
     return reports;
   }

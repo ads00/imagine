@@ -98,16 +98,15 @@ auto cholesky<Alg>::det() const -> T {
 template <typename Alg>
 auto cholesky<Alg>::inv() const -> matrix_t {
   // Forward L-1
-  auto inv = matrix_t{matrix_t::eye(N_)};
+  auto inv = matrix_t::eye(N_);
   for (size_t i = 0; i < N_; ++i) {
     linalg::forward_solve(LLT_, inv.col(i));
-  }
-  return inv.t() * inv;
+  } return inv.t() * inv;
 }
 
 template <typename Alg>
 auto cholesky<Alg>::solve(const vector_t& b) const -> vector_t {
-  auto x = vector_t{b};
+  vector_t x{b};
   linalg::forward_solve (LLT_, x);
   linalg::backward_solve(LLT_.t(), x);
   return x;

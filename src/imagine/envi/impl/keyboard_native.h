@@ -24,23 +24,23 @@
 #ifndef IG_ENVI_KEYBOARD_NATIVE_H
 #define IG_ENVI_KEYBOARD_NATIVE_H
 
-#include "imagine/envi/keyboard.h"
+#include "imagine/envi/input_keyboard.h"
 
 #if defined(IG_WIN)
 #include <windows.h>
 #endif
 
 namespace ig       {
-namespace impl     {
 namespace keyboard {
+namespace impl     {
 
 #if defined(IG_WIN)
-modifier_ft modifiers();
-key_t key(WPARAM wparam);
+auto modifiers() -> modifier_flags;
+auto key(WPARAM wparam) -> key_t;
 #endif
 
-} // namespace keyboard
 } // namespace impl
+} // namespace keyboard
 } // namespace ig
 
 #endif // IG_ENVI_KEYBOARD_NATIVE_H

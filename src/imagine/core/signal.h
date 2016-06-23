@@ -89,7 +89,7 @@ void signal<R (Args...)>::disconnect(const std::shared_ptr<slot_t>& slot) {
 template <typename R, typename... Args>
 template <typename Collect>
 auto signal<R (Args...)>::collect(Args&&... args) const {
-  auto collecter = Collect{};
+  Collect collecter{};
   for (auto&& slot : slots_) {
     collecter.emplace_back(slot->fn_(std::forward<Args>(args)...));
   } return collecter;

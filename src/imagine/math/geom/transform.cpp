@@ -45,7 +45,8 @@ void transform::positions(const vec3& pos, space_t space) {
     pos_ = pos;
     break;
   case space_t::world:
-    pos_ = parent_ ? parent_->inv_wt().transform(pos) : pos;
+    pos_ = parent_ ? 
+      parent_->inv_wt().transform(pos) : pos;
     break;
   }
 }
@@ -56,7 +57,8 @@ void transform::directs(const quat& ori, space_t space) {
     ori_ = ori;
     break;
   case space_t::world:
-    ori_ = parent_ ? parent_->ori_ * ori_ : ori_;
+    ori_ = parent_ ? 
+      parent_->ori_ * ori_ : ori_;
     break;
   }
 }
@@ -67,7 +69,8 @@ void transform::scales(const vec3& sca, space_t space) {
     sca_ = sca;
     break;
   case space_t::world:
-    sca_ = parent_ ? sca / parent_->sca_ : sca_;
+    sca_ = parent_ ? 
+      sca / parent_->sca_ : sca_;
     break;
   }
 }
@@ -79,7 +82,8 @@ transform& transform::translate(const vec3& tra, space_t space) {
     break;
   case space_t::world:
     pos_ += 
-      parent_ ? parent_->inv_wt().transform(tra) :
+      parent_ ? 
+      parent_->inv_wt().transform(tra) :
       tra;
     break;
   }
@@ -94,11 +98,13 @@ transform& transform::rotate(const quat& rot, space_t space) {
     break;
   case space_t::world:
     auto into = 
-      parent_ ? parent_->ori_ * ori_ : 
+      parent_ ? 
+      parent_->ori_ * ori_ : 
       ori_;
 
     ori_ = 
-      parent_ ? ori_ * linalg::inv(into) * rot * into :
+      parent_ ? 
+      ori_ * linalg::inv(into) * rot * into :
       linalg::normalise(rot * into);
     break;
   }
@@ -120,7 +126,6 @@ void transform::remove_child(const transform& tr) {
 
 void transform::link(transform* parent) {
   assert(parent != this && "Parent transform can't be itself");
-
   if (parent_) {
     parent_->remove_child(*this);
   }

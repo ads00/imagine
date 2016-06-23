@@ -108,24 +108,25 @@ lu<Alg>::lu(const matrix_t& alg)
 
 template <typename Alg>
 auto lu<Alg>::det() const -> T {
-  auto detsign = (permutations_ % 2) ? -1 : 1;
+  auto detsign = (permutations_ % 2) ? 
+    -1 :
+     1;
   return detsign * LU_.diag().prod();
 }
 
 template <typename Alg>
 auto lu<Alg>::inv() const -> matrix_t {
   // Solve for each column on eye matrix
-  auto inv = matrix_t{P_};
+  auto inv = P_;
   for (size_t i = 0; i < N_; ++i) {
     linalg::forward_solve (LU_, inv.col(i), true);
     linalg::backward_solve(LU_, inv.col(i));
-  }
-  return inv;
+  } return inv;
 }
 
 template <typename Alg>
 auto lu<Alg>::solve(const vector_t& b) const -> vector_t {
-  auto x = vector_t{P_ * b};
+  vector_t x{P_ * b};
   linalg::forward_solve (LU_, x, true);
   linalg::backward_solve(LU_, x);
   return x;

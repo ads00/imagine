@@ -22,7 +22,6 @@
 */
 
 #include "imagine/envi/impl/cursor_native.h"
-#include "imagine/envi/impl/window_native.h"
 
 namespace ig   {
 namespace impl {
@@ -52,7 +51,7 @@ const LPSTR cursor_tbl[] =
 
 cursor_native::cursor_native(cursor::shape_t shape, int32_t x, int32_t y)
   : shape_{shape}, x_{x}, y_{y}, handle_{nullptr} {
-  handle_ = static_cast<HCURSOR>(LoadImage(nullptr, cursor_tbl[shape], IMAGE_CURSOR, 0, 0, LR_DEFAULTSIZE | LR_SHARED));
+  handle_ = static_cast<HCURSOR>(LoadImage(nullptr, cursor_tbl[static_cast<uint32_t>(shape)], IMAGE_CURSOR, 0, 0, LR_DEFAULTSIZE | LR_SHARED));
 }
 
 cursor_native::~cursor_native() {
@@ -63,22 +62,6 @@ cursor_native::~cursor_native() {
 
 void cursor::refresh() const {
   SetCursor(native_->handle_);
-}
-
-void cursor::move(int32_t x, int32_t y, const window* ref) {
-  auto point = POINT{x, y};
-  auto res = ref ? ClientToScreen(ref->native_->handle_, &point) != 0 : true;
-  if (res) {
-    SetCursorPos(point.x, point.y);
-  }
-}
-
-std::pair<int, int> cursor::position(const window* ref) {
-  auto point = POINT{}; GetCursorPos(&point);
-  auto res = ref ? ScreenToClient(ref->native_->handle_, &point) != 0 : true;
-  if (res) {
-    return {point.x, point.y};
-  } return {};
 }
 
 } // namespace ig

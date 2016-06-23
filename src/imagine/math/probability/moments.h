@@ -34,8 +34,7 @@ public:
   static_assert(std::is_arithmetic<T>::value,
                 "Moments calculation requires arithmetic values");
 
-  constexpr moments() 
-    : size_{0}, m1_{0}, m2_{0}, m3_{0}, m4_{0} {}
+  constexpr moments() = default;
 
   template <typename InputIt>
   moments(InputIt first, InputIt last) : moments{} {

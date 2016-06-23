@@ -21,45 +21,66 @@
  SOFTWARE.
 */
 
+#include "imagine/envi/impl/window_native.h"
 #include "imagine/envi/impl/mouse_native.h"
 
 namespace ig    {
-namespace impl  {
 namespace mouse {
+namespace impl  {
 
-button_ft buttons() {
-  auto buttons = button_ft{button_t::none};
-  auto swapped = GetSystemMetrics(SM_SWAPBUTTON);
+auto buttons() -> button_flags {
+  auto swap = GetSystemMetrics(SM_SWAPBUTTON);
+  button_flags buttons{button_t::none};
   if (GetAsyncKeyState(VK_LBUTTON) < 0) {
-    buttons |= swapped ? button_t::right : button_t::left;
+    buttons |= swap ? 
+      button_t::right :
+      button_t::left;
   } if (GetAsyncKeyState(VK_RBUTTON) < 0) {
-    buttons |= swapped ? button_t::left : button_t::right;
+    buttons |= swap ? 
+      button_t::left :
+      button_t::right;
   } if (GetAsyncKeyState(VK_MBUTTON) < 0) {
     buttons |= button_t::middle;
-  }
-  return buttons;
+  } return buttons;
 }
 
-int32_t x(LPARAM lparam) {
+auto x(LPARAM lparam) -> int32_t {
   return GET_X_LPARAM(lparam);
 }
 
-int32_t y(LPARAM lparam) {
+auto y(LPARAM lparam) -> int32_t {
   return GET_Y_LPARAM(lparam);
 }
 
-float wheel_delta(WPARAM wparam) {
+auto wheel_delta(WPARAM wparam) -> float {
   return static_cast<float>(GET_WHEEL_DELTA_WPARAM(wparam)) / WHEEL_DELTA;
 }
 
-bool track(HWND window) {
-  TRACKMOUSEEVENT tme;
+auto track(HWND window) -> bool {
+  TRACKMOUSEEVENT tme{};
   tme.cbSize = sizeof(TRACKMOUSEEVENT);
   tme.dwFlags = TME_LEAVE;
   tme.hwndTrack = window;
   return TrackMouseEvent(&tme) == TRUE;
 }
 
-} // namespace mouse
 } // namespace impl
+
+void move(int32_t x, int32_t y, const window* ref) {
+  POINT point{x, y};
+  ref ?
+    ClientToScreen(reinterpret_cast<HWND>(ref->handle()), &point) :
+    true;
+  SetCursorPos(point.x, point.y);
+}
+
+std::pair<int, int> position(const window* ref) {
+  POINT point{}; GetCursorPos(&point);
+  ref ?
+    ScreenToClient(reinterpret_cast<HWND>(ref->handle()), &point) :
+    true;
+  return {point.x, point.y};
+}
+
+} // namespace mouse
 } // namespace ig

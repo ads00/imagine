@@ -29,7 +29,7 @@
 namespace ig   {
 namespace test {
 
-void IG_API backtrace(std::exception_ptr exception);
+IG_API void backtrace(std::exception_ptr exception);
 
 } // namespace test
 } // namespace ig

@@ -70,7 +70,7 @@ template <typename Alg>
 eigen<Alg, true>::eigen(const matrix_t& alg)
   : N_{alg.diagsize()}, V_{alg}, D_{N_} {
 
-  auto work = vector_t{N_};
+  vector_t work{N_};
   // Symmetric Householder reduction to tridiagonal form
   for (size_t i = N_; i--> 1; ) {
     auto h = T(0);
@@ -130,7 +130,7 @@ eigen<Alg, true>::eigen(const matrix_t& alg)
   for (size_t i = 1; i < N_; ++i) work[i - 1] = work[i];
 
   // Symmetric tridiagonal QL algorithm
-  auto sweeps = 40;
+  size_t sweeps = 40;
   for (size_t l = 0, m = 0; l < N_; ++l) {
     for (size_t it = 0; it <= sweeps; ++it) {
       // Find smallest subdiagonal element

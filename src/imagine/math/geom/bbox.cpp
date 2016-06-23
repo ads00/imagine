@@ -21,31 +21,21 @@
  SOFTWARE.
 */
 
-#include "imagine/envi/impl/cursor_native.h"
-#include "imagine/envi/cursor.h"
+#include "imagine/math/geom/bbox.h"
 
 namespace ig {
 
-constexpr cursor::cursor(shape_t shape)
-  : native_{std::make_unique<impl::cursor_native>(shape)} {
+bbox::bbox(const vec3& min, const vec3& max)
+  : min_{min}, max_{max}, extent_{max_ - min_} {
 }
 
-cursor::~cursor() = default;
-
-void cursor::reshape(shape_t shape) {
-  native_.reset(new impl::cursor_native(shape, native_->x_, native_->y_));
-  refresh();
+void bbox::expand(const vec3& point) {
+  std::tie(min_, max_) = std::minmax({min_, max_, point});
+  extent_ = max_ - min_;
 }
 
-auto cursor::shape() const -> shape_t {
-  return native_->shape_;
+float bbox::surface_area() const {
+  return 2.f * (extent_[0]*extent_[2] + extent_[0]*extent_[1] + extent_[1]*extent_[2]);
 }
-
-// Native implementations
-//
-
-// void cursor::refresh() const;
-// void cursor::move(int32_t x, int32_t y, const window* ref);
-// std::pair<int32_t, int32_t> cursor::position(const window* ref);
 
 } // namespace ig

@@ -21,20 +21,40 @@
  SOFTWARE.
 */
 
-#ifndef IG_ENVI_MOUSE_H
-#define IG_ENVI_MOUSE_H
-
-#include "imagine/core/flags.h"
+#include "imagine/core/threadpool.h"
 
 namespace ig {
 
-enum class button_t : uint32_t {
-  none   = 0x00,
-  left   = 0x01,
-  right  = 0x02,
-  middle = 0x04
-}; using button_ft = flags<button_t>;
+void threadpool::thread_work_internal() {
+  for (;;) {
+    std::function<void ()> task{};
+    {
+      std::unique_lock<decltype(mutex_)> lock(mutex_);
+      cv_.wait(lock, [this] { return !running_ || !tasks_.empty(); });
+
+      if (!running_ && tasks_.empty())
+        return;
+      task = std::move(tasks_.front());
+      tasks_.pop();
+    }
+    task();
+  }
+}
+
+threadpool::threadpool(size_t workers)
+  : running_{true} {
+  for (size_t i = 0; i < workers; ++i) {
+    workers_.emplace_back(&threadpool::thread_work_internal, this);
+  }
+}
+
+threadpool::~threadpool() {
+  running_ = false;
+  cv_.notify_all();
+
+  for (auto&& worker : workers_) {
+    worker.join();
+  }
+}
 
 } // namespace ig
-
-#endif // IG_ENVI_MOUSE_H

@@ -36,13 +36,11 @@ dispatcher_native::dispatcher_native()
 } // namespace impl
 
 bool dispatcher::process_events() {
-  auto msg = MSG{};
+  MSG msg{};
   while (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE)) {
     TranslateMessage(&msg);
     DispatchMessage(&msg);
-  }
-
-  handle();
+  } handle();
   return true;
 }
 

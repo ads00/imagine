@@ -34,7 +34,7 @@ namespace impl {
 class window_native {
 public:
   window_native(const window& ref);
-  window_native(const window& ref, const std::string& caption, uint32_t width, uint32_t height, window::style_ft style);
+  window_native(const window& ref, const std::string& caption, uint32_t width, uint32_t height, window::style_flags style);
   ~window_native() = default;
 
   const window& ref_;
@@ -43,7 +43,7 @@ public:
   uint32_t width_, height_;
   int32_t x_, y_;
 
-  window::style_ft style_;
+  window::style_flags style_;
   window::visibility_t visibility_;
 
   bool mouse_tracked_;

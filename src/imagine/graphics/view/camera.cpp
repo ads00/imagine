@@ -36,7 +36,7 @@ camera::camera(type_t type, size_t w, size_t h, const vec3& pos, const vec3& tar
 
 void camera::update() {
   if (!uview_) {
-    view_  = mat4::look(pos_, target_, up_), iview_ = linalg::inv(view_); 
+    view_ = mat4::look(pos_, target_, up_), iview_ = linalg::inv(view_); 
     uview_ = true;
   }
 
@@ -75,7 +75,7 @@ ray camera::cast_ray(size_t x, size_t y) const {
   auto ny = y/static_cast<float>(h_)*2.f - 1.f;
 
   auto raster = iproj_.transform({nx, ny, 0.f});
-  vec3 wo, wd;
+  vec3 wo{}, wd{};
   if (type_ == type_t::perspective) {
     wo = iview_.transform({0.f});
     wd = iview_.transform(raster, true);

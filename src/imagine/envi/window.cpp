@@ -30,7 +30,7 @@ constexpr window::window()
   : native_{std::make_unique<impl::window_native>(*this)}, cursor_{cursor::shape_t::none} {
 }
 
-constexpr window::window(const std::string& caption, uint32_t width, uint32_t height, style_ft style)
+constexpr window::window(const std::string& caption, uint32_t width, uint32_t height, style_flags style)
   : native_{std::make_unique<impl::window_native>(*this, caption, width, height, style)},
     cursor_{cursor::shape_t::arrow} {
 }
@@ -76,6 +76,7 @@ const std::string& window::caption() const {
 // bool window::minimized() const;
 // bool window::maximized() const;
 // bool window::visible() const;
+// auto window::handle() const -> window_handle*;
 // void window::set_fullscreen(bool fullscreen);
 // void window::set_caption(const std::string& title);
 // void window::set_parent(const window* parent);

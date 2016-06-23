@@ -65,7 +65,6 @@ uint8_t& image::operator[](access_t coords) {
 
 bool image::save(format_t format, const std::string& filename) {
   using namespace detail;
-
   std::ofstream file{filename, std::ios::binary | std::ios::trunc};
   if (!file.good()) 
     return false;
@@ -82,7 +81,6 @@ bool image::save(format_t format, const std::string& filename) {
 
 std::unique_ptr<image> image::load(const std::string& filename) {
   using namespace detail;
-
   std::ifstream file{filename, std::ios::binary};
   if (!file.good()) 
     return nullptr;

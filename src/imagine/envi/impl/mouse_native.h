@@ -24,7 +24,7 @@
 #ifndef IG_ENVI_MOUSE_NATIVE_H
 #define IG_ENVI_MOUSE_NATIVE_H
 
-#include "imagine/envi/mouse.h"
+#include "imagine/envi/input_mouse.h"
 
 #if defined(IG_WIN)
 #include <windows.h>
@@ -32,20 +32,21 @@
 #endif
 
 namespace ig    {
-namespace impl  {
 namespace mouse {
+namespace impl  {
 
 #if defined(IG_WIN)
-button_ft buttons();
-int32_t x(LPARAM lparam);
-int32_t y(LPARAM lparam);
-float wheel_delta(WPARAM wparam);
+auto buttons() -> button_flags;
 
-bool track(HWND window);
+auto x(LPARAM lparam) -> int32_t;
+auto y(LPARAM lparam) -> int32_t;
+auto wheel_delta(WPARAM wparam) -> float;
+
+auto track(HWND window) -> bool;
 #endif
 
-} // namespace mouse
 } // namespace impl
+} // namespace mouse
 } // namespace ig
 
 #endif // IG_ENVI_MOUSE_NATIVE_H

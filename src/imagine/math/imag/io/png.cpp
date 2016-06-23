@@ -65,8 +65,8 @@ std::unique_ptr<image> png_read(std::istream& stream) {
 
   png_read_info(png_ptr, info_ptr);
 
-  auto width = png_uint_32{}, height = png_uint_32{};
-  auto bitdepth = int{}, colortype = int{};
+  png_uint_32 width{}, height{};
+  int bitdepth{}, colortype{};
 
   png_get_IHDR(png_ptr, info_ptr, &width, &height, &bitdepth, &colortype, nullptr, nullptr, nullptr);
   auto channels = png_get_channels(png_ptr, info_ptr);

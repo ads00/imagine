@@ -31,7 +31,8 @@ namespace ig {
 
 // log
 log& log::get() {
-  static log l; return l;
+  static log l; 
+  return l;
 }
 
 void log::add_sink(const std::shared_ptr<log_sink>& sink) {
@@ -51,9 +52,9 @@ void log::push(const log_context& ctx) {
 }
 
 log::formatter_t log::default_format = [](const log_context& c) {
-  auto ss = std::stringstream{};
-  
   auto tt = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+
+  std::stringstream ss{};
   ss << std::put_time(std::localtime(&tt), "%c");
 
   switch (c.type_) {
@@ -63,7 +64,6 @@ log::formatter_t log::default_format = [](const log_context& c) {
   case log_t::warn:  ss << " - WARN  "; break;
   case log_t::err:   ss << " - ERR   "; break;
   }
-
   ss << c.stream_.str() << std::endl;
   return ss.str();
 };

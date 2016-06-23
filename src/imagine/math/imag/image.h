@@ -33,7 +33,7 @@ namespace ig {
 
 class IG_API image {
 public:
-  enum format_t { unknown, jpeg, png };
+  enum class format_t { unknown, jpeg, png };
   using access_t = std::initializer_list<uint32_t>;
 
   constexpr image();

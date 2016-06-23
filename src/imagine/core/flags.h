@@ -28,10 +28,10 @@
 
 namespace ig {
 
-template <typename Enum>
+template <typename E>
 class flags {
 public:
-  using enum_t       = Enum;
+  using enum_t       = E;
   using underlying_t = typename std::make_unsigned_t<
                        typename std::underlying_type_t<enum_t> >;
 
@@ -62,16 +62,21 @@ public:
   constexpr auto operator!() const { return !flags_; }
 
 private:
-  friend auto operator|(Enum lhs, flags rhs) { return rhs | lhs; }
-  friend auto operator&(Enum lhs, flags rhs) { return rhs & lhs; }
-  friend auto operator^(Enum lhs, flags rhs) { return rhs ^ lhs; }
+  friend auto operator|(E lhs, flags rhs) { return rhs | lhs; }
+  friend auto operator&(E lhs, flags rhs) { return rhs & lhs; }
+  friend auto operator^(E lhs, flags rhs) { return rhs ^ lhs; }
 
-  friend auto operator|(Enum lhs, Enum rhs) { return flags{lhs} | rhs; }
-  friend auto operator&(Enum lhs, Enum rhs) { return flags{lhs} & rhs; }
-  friend auto operator^(Enum lhs, Enum rhs) { return flags{lhs} ^ rhs; }
+  friend auto operator|(E lhs, E rhs) { return flags{lhs} | rhs; }
+  friend auto operator&(E lhs, E rhs) { return flags{lhs} & rhs; }
+  friend auto operator^(E lhs, E rhs) { return flags{lhs} ^ rhs; }
 
   underlying_t flags_;
 };
+
+template <typename E>
+constexpr auto to_f(E e) {
+  return static_cast< std::underlying_type_t<E> >(e);
+}
 
 } // namespace ig
 

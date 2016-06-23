@@ -34,7 +34,7 @@ namespace impl { class cursor_native; class window_native; }
 class window;
 class IG_API cursor {
 public:
-  enum shape_t {
+  enum class shape_t {
     none, arrow, cross, hand, pointer,
     help, progress, wait, text, sizeall,
     resize_n, resize_s, resize_e, resize_w,
@@ -50,9 +50,6 @@ public:
   void reshape(shape_t shape);
 
   auto shape() const -> shape_t;
-
-  static void move(int32_t x, int32_t y, const window* ref = nullptr);
-  static std::pair<int32_t, int32_t> position(const window* ref = nullptr);
 
 private:
   std::unique_ptr<impl::cursor_native> native_;

@@ -21,8 +21,8 @@
  SOFTWARE.
 */
 
-#ifndef IG_MATH_SCALAR_EXPR_H
-#define IG_MATH_SCALAR_EXPR_H
+#ifndef IG_MATH_SCALAR_H
+#define IG_MATH_SCALAR_H
 
 #include "imagine/math/linalg/base/alg.h"
 #include <functional>
@@ -31,10 +31,8 @@ namespace ig {
 
 template <typename Alg, typename Op>
 struct alg_traits< scalar_expr<Alg, Op> > {
-
   using T = alg_t<Alg>;
-  static constexpr auto M = Alg::M;
-  static constexpr auto N = Alg::N;
+  static constexpr auto M = Alg::M, N = Alg::N;
 };
 
 template <typename Alg, typename Op>
@@ -87,4 +85,4 @@ constexpr auto operator*(alg_t<Alg> scalar, const alg<Alg>& alg) {
 
 } // namespace ig
 
-#endif // IG_MATH_SCALAR_EXPR_H
+#endif // IG_MATH_SCALAR_H

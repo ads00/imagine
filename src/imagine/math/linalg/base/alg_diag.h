@@ -21,8 +21,8 @@
  SOFTWARE.
 */
 
-#ifndef IG_MATH_ALG_DIAG_H
-#define IG_MATH_ALG_DIAG_H
+#ifndef IG_MATH_DIAG_H
+#define IG_MATH_DIAG_H
 
 #include "imagine/math/linalg/base/alg.h"
 
@@ -30,10 +30,8 @@ namespace ig {
 
 template <typename Xpr>
 struct alg_traits< alg_diag<Xpr> > : alg_traits<Xpr> {
-
   using T = alg_t<Xpr>;
-  static constexpr auto M = Xpr::M;
-  static constexpr auto N = 1;
+  static constexpr auto M = Xpr::M, N = 1;
 };
 
 template <typename Xpr>
@@ -66,4 +64,4 @@ private:
 
 } // namespace ig
 
-#endif // IG_MATH_ALG_DIAG_H
+#endif // IG_MATH_DIAG_H

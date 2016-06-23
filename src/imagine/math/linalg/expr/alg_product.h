@@ -21,8 +21,8 @@
  SOFTWARE.
 */
 
-#ifndef IG_MATH_PRODUCT_EXPR_H
-#define IG_MATH_PRODUCT_EXPR_H
+#ifndef IG_MATH_PRODUCT_H
+#define IG_MATH_PRODUCT_H
 
 #include "imagine/math/linalg/base/alg.h"
 #include "imagine/math/linalg/operation.h"
@@ -31,10 +31,8 @@ namespace ig {
 
 template <typename Lhs, typename Rhs>
 struct alg_traits< product_expr<Lhs, Rhs> > {
-
   using T = std::common_type_t< alg_t<Lhs>, alg_t<Rhs> >;
-  static constexpr auto M = Lhs::M;
-  static constexpr auto N = Rhs::N;
+  static constexpr auto M = Lhs::M, N = Rhs::N;
 };
 
 template <typename Lhs, typename Rhs>
@@ -53,8 +51,7 @@ public:
     auto val = T(0);
     for (size_t i = 0; i < lhs_.cols(); ++i) {
       val += lhs_(row, i) * rhs_(i, col);
-    }
-    return val;
+    } return val;
   }
 
   auto operator()(size_t row, size_t col) const { return row_col_multiply(row, col); }
@@ -73,4 +70,4 @@ constexpr auto operator*(const alg<Lhs>& lhs, const alg<Rhs>& rhs) {
 
 } // namespace ig
 
-#endif // IG_MATH_PRODUCT_EXPR_H
+#endif // IG_MATH_PRODUCT_H

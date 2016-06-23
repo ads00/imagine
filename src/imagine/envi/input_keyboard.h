@@ -26,9 +26,10 @@
 
 #include "imagine/core/flags.h"
 
-namespace ig {
+namespace ig       {
+namespace keyboard {
 
-enum class key_t : int32_t {
+enum class key_t {
   unknown = -1,
 
   // misc
@@ -56,7 +57,7 @@ enum class key_t : int32_t {
   num0, num1, num2, num3, num4, num5, num6, num7, num8, num9,
 
   // letters
-  a, b, c, d, e, f, g, h, i, j, k, l, m, 
+  a, b, c, d, e, f, g, h, i, j, k, l, m,
   n, o, p, q, r, s, t, u, v, w, x, y, z,
 
   // navigation
@@ -84,13 +85,14 @@ enum class key_t : int32_t {
 };
 
 enum class modifier_t : uint32_t {
-  none  = 0x00,
+  none = 0x00,
   shift = 0x01,
-  ctrl  = 0x02,
-  alt   = 0x04,
-  meta  = 0x08
-}; using modifier_ft = flags<modifier_t>;
+  ctrl = 0x02,
+  alt = 0x04,
+  meta = 0x08
+}; using modifier_flags = flags<modifier_t>;
 
+} // namespace keyboard
 } // namespace ig
 
 #endif // IG_ENVI_KEYBOARD_H

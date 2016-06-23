@@ -21,21 +21,25 @@
  SOFTWARE.
 */
 
-#include "imagine/math/geom/bbox.h"
+#ifndef IG_ENVI_MOUSE_H
+#define IG_ENVI_MOUSE_H
 
-namespace ig {
+#include "imagine/core/flags.h"
 
-constexpr bbox::bbox(const vec3& min, const vec3& max)
-  : min_{min}, max_{max}, extent_{max - min} {
-}
+namespace ig    { class window;
+namespace mouse {
 
-void bbox::expand(const vec3& point) {
-  std::tie(min_, max_) = std::minmax({min_, max_, point});
-  extent_ = max_ - min_;
-}
+enum class button_t : uint32_t {
+  none = 0x00,
+  left = 0x01,
+  right = 0x02,
+  middle = 0x04
+}; using button_flags = flags<button_t>;
 
-float bbox::surface_area() const {
-  return 2.f * (extent_[0]*extent_[2] + extent_[0]*extent_[1] + extent_[1]*extent_[2]);
-}
+IG_API void move(int32_t x, int32_t y, const window* ref = nullptr);
+IG_API std::pair<int32_t, int32_t> position(const window* ref = nullptr);
 
+} // namespace mouse
 } // namespace ig
+
+#endif // IG_ENVI_MOUSE_H

@@ -21,8 +21,8 @@
  SOFTWARE.
 */
 
-#ifndef IG_MATH_ALG_TRANS_H
-#define IG_MATH_ALG_TRANS_H
+#ifndef IG_MATH_TRANS_H
+#define IG_MATH_TRANS_H
 
 #include "imagine/math/linalg/base/alg.h"
 
@@ -30,10 +30,8 @@ namespace ig {
 
 template <typename Xpr>
 struct alg_traits< alg_trans<Xpr> > {
-
   using T = alg_t<Xpr>;
-  static constexpr auto M = Xpr::N;
-  static constexpr auto N = Xpr::M;
+  static constexpr auto M = Xpr::N, N = Xpr::M;
 };
 
 template <typename Xpr>
@@ -57,4 +55,4 @@ private:
 
 } // namespace ig
 
-#endif // IG_MATH_ALG_TRANS_H
+#endif // IG_MATH_TRANS_H

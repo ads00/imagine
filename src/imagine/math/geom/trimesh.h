@@ -36,9 +36,9 @@ public:
   constexpr trimesh(const std::vector<face>& faces, const std::vector<vec3>& vertices,
                     const std::vector<vec3>& normals = {}, const std::vector<vec2>& coords = {});
 
-  static trimesh make_box(size_t tess);
-  static trimesh make_plane(size_t tess);
-  static trimesh make_sphere(size_t tess);
+  static trimesh generate_box(size_t tess);
+  static trimesh generate_plane(size_t tess);
+  static trimesh generate_sphere(size_t tess);
 
 private:
   std::vector<face> faces_;

@@ -32,7 +32,6 @@ namespace ig {
 
 using vec3 = vector<float, 3>;
 using vec2 = vector<float, 2>;
-
 using quat = quaternion<float>;
 
 class IG_API mat4 : public matrix<float, 4> {

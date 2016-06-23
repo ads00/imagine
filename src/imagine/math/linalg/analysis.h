@@ -50,7 +50,6 @@ namespace detail {
 
 template <typename Alg, size_t size = Alg::N>
 struct determinant {
-
   static constexpr auto run(const alg<Alg>& alg) {
     return lu_run(alg).det();
   }
@@ -58,7 +57,6 @@ struct determinant {
 
 template <typename Alg>
 struct determinant<Alg, 4> {
-
   static auto run(const alg<Alg>& alg) {
     const auto det_helper = [&alg](size_t a, size_t b, size_t c, size_t d) {
       return (alg(a, 0)*alg(b, 1) - alg(b, 0)*alg(a, 1)) *
@@ -76,7 +74,6 @@ struct determinant<Alg, 4> {
 
 template <typename Alg>
 struct determinant<Alg, 3> {
-
   static auto run(const alg<Alg>& alg) {
     const auto det_helper = [&alg](size_t a, size_t b, size_t c) {
       return alg(0, a) * (alg(1, b)*alg(2, c) - alg(1, c)*alg(2, b));
@@ -90,7 +87,6 @@ struct determinant<Alg, 3> {
 
 template <typename Alg>
 struct determinant<Alg, 2> {
-
   static auto run(const alg<Alg>& alg) {
     return alg(0, 0)*alg(1, 1) - alg(1, 0)*alg(0, 1);
   }
@@ -98,7 +94,6 @@ struct determinant<Alg, 2> {
 
 template <typename Alg, size_t size = Alg::M>
 struct inverse {
-
   static constexpr typename Alg::plain_t run(const alg<Alg>& alg) {
     return lu_run(alg).inv();
   }
@@ -106,7 +101,6 @@ struct inverse {
 
 template <typename Alg>
 struct inverse<Alg, 4> {
-
   static auto run(const alg<Alg>& alg) {
     const auto cofactor = [&alg](size_t a, size_t b) {
       const auto det3_helper = [&alg](size_t a1, size_t a2, size_t a3,
@@ -123,15 +117,15 @@ struct inverse<Alg, 4> {
     };
 
     using T = Alg::T;
-    auto inv = Alg::plain_t{};
+    Alg::plain_t inv{};
     auto invdet = T(1) / det(alg);
 
-    inv(0, 0) = cofactor(0, 0) * invdet; inv(1, 0) = -cofactor(0, 1) * invdet;
-    inv(2, 0) = cofactor(0, 2) * invdet; inv(3, 0) = -cofactor(0, 3) * invdet;
+    inv(0, 0) = cofactor(0, 0) * invdet;  inv(1, 0) = -cofactor(0, 1) * invdet;
+    inv(2, 0) = cofactor(0, 2) * invdet;  inv(3, 0) = -cofactor(0, 3) * invdet;
     inv(0, 1) = -cofactor(1, 0) * invdet; inv(1, 1) = cofactor(1, 1) * invdet;
     inv(2, 1) = -cofactor(1, 2) * invdet; inv(3, 1) = cofactor(1, 3) * invdet;
-    inv(0, 2) = cofactor(2, 0) * invdet; inv(1, 2) = -cofactor(2, 1) * invdet;
-    inv(2, 2) = cofactor(2, 2) * invdet; inv(3, 2) = -cofactor(2, 3) * invdet;
+    inv(0, 2) = cofactor(2, 0) * invdet;  inv(1, 2) = -cofactor(2, 1) * invdet;
+    inv(2, 2) = cofactor(2, 2) * invdet;  inv(3, 2) = -cofactor(2, 3) * invdet;
     inv(0, 3) = -cofactor(3, 0) * invdet; inv(1, 3) = cofactor(3, 1) * invdet;
     inv(2, 3) = -cofactor(3, 2) * invdet; inv(3, 3) = cofactor(3, 3) * invdet;
     return inv;
@@ -140,7 +134,6 @@ struct inverse<Alg, 4> {
 
 template <typename Alg>
 struct inverse<Alg, 3> {
-
   static auto run(const alg<Alg>& alg) {
     const auto cofactor = [&alg](size_t a, size_t b) {
       auto a1 = (a + 1) % 3, a2 = (a + 2) % 3;
@@ -150,7 +143,7 @@ struct inverse<Alg, 3> {
     };
 
     using T = Alg::T;
-    auto inv = Alg::plain_t{};
+    Alg::plain_t inv{};
     auto invdet = T(1) / det(alg);
 
     inv(0, 0) = cofactor(0, 0) * invdet; inv(1, 0) = cofactor(0, 1) * invdet; inv(2, 0) = cofactor(0, 2) * invdet;
@@ -162,13 +155,12 @@ struct inverse<Alg, 3> {
 
 template <typename Alg>
 struct inverse<Alg, 2> {
-
   static auto run(const alg<Alg>& alg) {
     using T = Alg::T;
-    auto inv = Alg::plain_t{};
+    Alg::plain_t inv{};
     auto invdet = T(1) / det(alg);
 
-    inv(0, 0) = alg(1, 1) * invdet; inv(1, 0) = -alg(1, 0) * invdet;
+    inv(0, 0) = alg(1, 1) * invdet;  inv(1, 0) = -alg(1, 0) * invdet;
     inv(0, 1) = -alg(0, 1) * invdet; inv(1, 1) = alg(0, 0) * invdet;
     return inv;
   }

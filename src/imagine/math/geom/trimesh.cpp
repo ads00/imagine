@@ -30,9 +30,9 @@ constexpr trimesh::trimesh(const std::vector<face>& faces, const std::vector<vec
   : faces_(faces), vertices_(vertices), normals_(normals), coords_(coords) {
 }
 
-trimesh trimesh::make_box(size_t tess) {
+trimesh trimesh::generate_box(size_t tess) {
   assert(tess > 0 && "Tesselation value must be at least 1");
-  auto box = trimesh{};
+  trimesh box{};
   auto nv = 6 * (tess + 1) * (tess + 1);
 
   auto gen_face = [&tess, &box](const vec3& center, const vec3& uaxis, const vec3& vaxis) {
@@ -70,9 +70,9 @@ trimesh trimesh::make_box(size_t tess) {
   return box;
 }
 
-trimesh trimesh::make_plane(size_t tess) {
+trimesh trimesh::generate_plane(size_t tess) {
   assert(tess > 0 && "Tesselation value must be at least 1");
-  auto pln = trimesh{};
+  trimesh pln{};
   auto nv = (tess + 1) * (tess + 1);
 
   pln.vertices_.reserve(nv); pln.normals_.resize(nv, {0.f, 0.f, 1.f}); pln.coords_.reserve(nv);
@@ -95,9 +95,9 @@ trimesh trimesh::make_plane(size_t tess) {
   return pln;
 }
 
-trimesh trimesh::make_sphere(size_t tess) {
+trimesh trimesh::generate_sphere(size_t tess) {
   assert(tess > 3 && "Tesselation value must be at least 4");
-  auto sph = trimesh{};
+  trimesh sph{};
   auto tess_s = tess + 1, tess_r = tess/2 + 1, nv = tess_s * tess_r;
 
   sph.vertices_.reserve(nv); sph.normals_.reserve(nv); sph.coords_.reserve(nv);

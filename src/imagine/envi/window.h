@@ -31,21 +31,22 @@
 namespace ig   {
 namespace impl { class window_native; }
 
+struct window_handle{};
 class IG_API window : public events {
 public:
-  enum visibility_t { hidden, windowed, fullscreen };
-  enum style_t {
+  enum class visibility_t { hidden, windowed, fullscreen };
+  enum class style_t : uint32_t {
     none        = 0x00,
     closable    = 0x01,
     resizable   = 0x02,
     titlebar    = 0x04,
     interactive = closable | resizable | titlebar
-  }; using style_ft = flags<style_t>;
+  }; using style_flags = flags<style_t>;
 
   friend cursor;
 
   constexpr window();
-  constexpr window(const std::string& caption, uint32_t width, uint32_t height, style_ft style);
+  constexpr window(const std::string& caption, uint32_t width, uint32_t height, style_flags style);
   virtual ~window();
 
   void close();
@@ -66,6 +67,7 @@ public:
   uint32_t width() const;
   uint32_t height() const;
 
+  auto handle() const -> window_handle*;
   auto visibility() const -> visibility_t;
 
   const std::string& caption() const;
