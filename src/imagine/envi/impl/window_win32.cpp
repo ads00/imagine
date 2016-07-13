@@ -226,18 +226,18 @@ bool window_native::reg() {
     return true;
 
   window_class = {
-    sizeof(WNDCLASSEX),
-    CS_DBLCLKS,
-    proc,
-    0, 
-    0,
-    GetModuleHandle(nullptr),
-    nullptr,
-    nullptr,
-    GetSysColorBrush(COLOR_WINDOW),
-    nullptr,
-    ig_window_class.data(),
-    nullptr
+    sizeof(WNDCLASSEX),             // UINT         cbSize;
+    CS_DBLCLKS,                     // UINT         style;
+    proc,                           // WNDPROC      lpfnWndProc;
+    0,                              // int          cbClsExtra;
+    0,                              // int          cbWndExtra;
+    GetModuleHandle(nullptr),       // HINSTANCE    hInstance;
+    nullptr,                        // HICON        hIcon;
+    nullptr,                        // HCURSOR      hCursor;
+    GetSysColorBrush(COLOR_WINDOW), // HBRUSH       hbrBackground;
+    nullptr,                        // LPCTSTR      lpszMenuName;
+    ig_window_class.data(),         // LPCTSTR      lpszClassName;
+    nullptr                         // HICON        hIconSm;
   };
   return RegisterClassEx(&window_class) != 0;
 }
