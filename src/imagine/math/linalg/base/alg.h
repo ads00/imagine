@@ -160,9 +160,8 @@ public:
 
   class initializer {
   public:
-    initializer(C& alg)
-      : alg_{alg}, row_{0}, col_{0}, curr_{0} {
-    }
+    initializer(C& alg) 
+      : alg_{alg}, row_{0}, col_{0}, curr_{0} {}
 
     auto operator,(T val) {
       if (col_ == alg_.cols()) {
@@ -220,7 +219,7 @@ constexpr void eval(alg<Eval>& ev, const alg<Alg>& alg, const O&) {
 
 template <typename Eval, typename Alg>
 constexpr void eval(alg<Eval>& ev, const alg<Alg>& alg, typename Eval::dynamics_data& i) {
-  i.d.resize(ev.size());
+  i.d_.resize(ev.size());
   eval_helper(ev, alg);
 }
 

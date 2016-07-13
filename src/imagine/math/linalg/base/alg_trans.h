@@ -46,8 +46,8 @@ public:
   auto operator()(size_t row, size_t col) const { return xpr_(col, row); }
   auto& operator()(size_t row, size_t col)      { return xpr_(col, row); }
 
-  auto operator[](size_t n) const = delete;
-  auto& operator[](size_t n)      = delete;
+  auto operator[](size_t) const = delete;
+  auto& operator[](size_t)      = delete;
 
 private:
   Xpr& xpr_;
