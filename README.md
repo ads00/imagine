@@ -5,10 +5,8 @@
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 Imagine is a graphics framework made with performances and modularity in mind.
-It aims towards research and development.
 
-Imagine will always use the newest features from both its core language and the third party libraries its using.
-It is currently planned to use Vulkan for rendering and Lua for scripting later on.
+Imagine was initially developed towards research & development and provides structures and algorithms to solve real world problems, render expressive and realistic images as well as interactive virtual worlds.
 
 Technology    | for
 --------------|---------
@@ -17,17 +15,18 @@ Technology    | for
 
 ## Features
 
-This is a list of the CURRENTLY implemented features. 
-The development will be focused on the renderer as soon as Vulkan comes out.
-
-A learning module may be developed in parallel.
-
 * Computational mathematics
   * Expression template library for linear algebra (matrices / vectors and numerical solvers)
-  * Ray tracing, geometric primitives and triangle meshes manipulation
+  * Geometric primitives, homogeneous transformations and triangle meshes manipulation
+  * Statistical moments, regression, classification, clustering and Markov random fields
+  * Image manipulation 
 * Interactive environment
-  * Cross-platform windowing and easy events handling with lambdas functions
+  * Cross-platform windowing and events handling with lambdas functions
+  * Vulkan renderer
 
+At the moment, the development is focused on the renderer [Vulkan 1.0.x]. 
+Next step will be to implement modern rendering techniques in order to produces interesting results/images.
+  
 ## License
 
 Imagine is released under the [MIT](LICENSE) licence.
