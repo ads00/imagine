@@ -75,7 +75,7 @@ public:
 class log_sink {
 public:
   friend log;
-  log_sink(std::ostream& stream, log::formatter_t format = log::default_format)
+  log_sink(std::ostream& stream, const log::formatter_t& format = log::default_format)
     : stream_{stream}, formatter_{format} {}
 
 private:

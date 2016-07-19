@@ -44,7 +44,7 @@ public:
 
   constexpr signal() = default;
 
-  auto connect(fn_t&& fn);
+  auto connect(const fn_t& fn);
   void disconnect(const std::shared_ptr<slot_t>& slot);
 
   template <typename Collect>
@@ -67,7 +67,7 @@ public:
   using sig_t = signal<Signature>;
   using fn_t  = typename sig_t::fn_t;
 
-  constexpr signal_slot(typename sig_t::ctor, sig_t& signal, fn_t&& fn) 
+  constexpr signal_slot(typename sig_t::ctor, sig_t& signal, const fn_t& fn) 
     : signal_{signal}, fn_{fn} {}
 
   sig_t& signal_; 
@@ -75,8 +75,8 @@ public:
 };
 
 template <typename R, typename... Args>
-auto signal<R (Args...)>::connect(fn_t&& fn) {
-  slots_.emplace_back(std::make_shared<slot_t>(ctor{}, *this, std::forward<fn_t>(fn)));
+auto signal<R (Args...)>::connect(const fn_t& fn) {
+  slots_.emplace_back(std::make_shared<slot_t>(ctor{}, *this, fn));
   return slots_.back();
 }
 

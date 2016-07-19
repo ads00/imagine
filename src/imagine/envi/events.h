@@ -87,10 +87,9 @@ public:
     }
   }
 
-  void keyboard(fn_t<event_keyboard> fn) { std::get<decltype(fn)>(fns_) = fn; }
-  void mouse(fn_t<event_mouse> fn)       { std::get<decltype(fn)>(fns_) = fn; }
-
-  void status(fn_t<event_status> fn)     { std::get<decltype(fn)>(fns_) = fn; }
+  void keyboard(const fn_t<event_keyboard>& fn) { std::get< std::decay_t<decltype(fn)> >(fns_) = fn; }
+  void mouse   (const fn_t<event_mouse>& fn)    { std::get< std::decay_t<decltype(fn)> >(fns_) = fn; }
+  void status  (const fn_t<event_status>& fn)   { std::get< std::decay_t<decltype(fn)> >(fns_) = fn; }
 
 protected:
   std::tuple< fn_t<event_keyboard>, fn_t<event_mouse>,

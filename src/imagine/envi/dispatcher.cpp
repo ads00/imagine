@@ -52,7 +52,7 @@ void dispatcher::handle() const {
   tick_();
 }
 
-void dispatcher::tick(std::function<void ()> func) {
+void dispatcher::tick(const std::function<void ()>& func) {
   tick_ = func;
 }
 

@@ -42,7 +42,7 @@ public:
 
   virtual bool process_events();
   virtual void handle() const;
-  virtual void tick(std::function<void ()> func);
+  virtual void tick(const std::function<void ()>& func);
 
   static dispatcher* get() { return self_; };
 
