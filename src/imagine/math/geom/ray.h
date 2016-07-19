@@ -30,8 +30,8 @@ namespace ig {
 
 class ray {
 public:
-  constexpr ray() = default;
-  constexpr ray(const vec3& ori, const vec3& dir)
+  ray() = default;
+  ray(const vec3& ori, const vec3& dir)
     : ori_{ori}, dir_{dir} {}
 
   vec3 operator()(float t) const { return ori_ + t*dir_; }

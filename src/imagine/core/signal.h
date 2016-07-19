@@ -34,7 +34,6 @@ namespace ig {
 
 template <typename Signature> class signal_slot;
 template <typename Signature> class signal;
-
 template <typename R, typename... Args>
 class signal<R (Args...)> {
 public:
@@ -42,7 +41,7 @@ public:
   using slot_t = signal_slot  <R (Args...)>;
   friend slot_t;
 
-  constexpr signal() = default;
+  signal() = default;
 
   auto connect(const fn_t& fn);
   void disconnect(const std::shared_ptr<slot_t>& slot);
@@ -67,7 +66,7 @@ public:
   using sig_t = signal<Signature>;
   using fn_t  = typename sig_t::fn_t;
 
-  constexpr signal_slot(typename sig_t::ctor, sig_t& signal, const fn_t& fn) 
+  signal_slot(typename sig_t::ctor, sig_t& signal, const fn_t& fn) 
     : signal_{signal}, fn_{fn} {}
 
   sig_t& signal_; 
@@ -90,14 +89,14 @@ template <typename R, typename... Args>
 template <typename Collect>
 auto signal<R (Args...)>::collect(Args&&... args) const {
   Collect collecter{};
-  for (auto&& slot : slots_) {
+  for (auto& slot : slots_) {
     collecter.emplace_back(slot->fn_(std::forward<Args>(args)...));
   } return collecter;
 }
 
 template <typename R, typename... Args>
 void signal<R (Args...)>::emit(Args&&... args) const {
-  for (auto&& slot : slots_) {
+  for (auto& slot : slots_) {
     slot->fn_(std::forward<Args>(args)...);
   }
 }

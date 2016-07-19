@@ -25,7 +25,7 @@
 
 namespace ig {
 
-constexpr trimesh::trimesh(const std::vector<face>& faces, const std::vector<vec3>& vertices,
+trimesh::trimesh(const std::vector<face>& faces, const std::vector<vec3>& vertices,
                            const std::vector<vec3>& normals, const std::vector<vec2>& coords)
   : faces_(faces), vertices_(vertices), normals_(normals), coords_(coords) {
 }

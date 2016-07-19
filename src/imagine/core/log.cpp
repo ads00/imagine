@@ -46,7 +46,7 @@ void log::remove_sink(const std::shared_ptr<log_sink>& sink) {
 
 void log::push(const log_context& ctx) {
   std::lock_guard<decltype(mutex_)> lock{mutex_};
-  for (auto&& sink : sinks_) {
+  for (auto& sink : sinks_) {
     sink->consume(ctx);
   }
 }
@@ -69,7 +69,7 @@ log::formatter_t log::default_format = [](const log_context& c) {
 };
 
 // log_context
-constexpr log_context::log_context(log_t type, const char* func, const char* file, int32_t line)
+log_context::log_context(log_t type, const char* func, const char* file, int32_t line)
   : type_{type}, func_{func}, file_{file}, line_{line} {
 }
 

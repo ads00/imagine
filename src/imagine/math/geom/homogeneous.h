@@ -38,16 +38,16 @@ class IG_API mat4 : public matrix<float, 4> {
 public:
   using base = matrix<float, 4>;
 
-  constexpr mat4() = default;
-  constexpr mat4(float a11, float a12, float a13, float a14,
-                 float a21, float a22, float a23, float a24,
-                 float a31, float a32, float a33, float a34,
-                 float a41, float a42, float a43, float a44)
+  mat4() = default;
+  mat4(float a11, float a12, float a13, float a14,
+       float a21, float a22, float a23, float a24,
+       float a31, float a32, float a33, float a34,
+       float a41, float a42, float a43, float a44)
     : base{a11, a21, a31, a41, a12, a22, a32, a42,
            a13, a23, a33, a43, a14, a24, a34, a44} {}
 
   template <typename Alg> 
-  constexpr mat4(const alg<Alg>& o) 
+  mat4(const alg<Alg>& o) 
     : base(o) {}
 
   vec3 transform(const vec3& v, bool unit = false) const;

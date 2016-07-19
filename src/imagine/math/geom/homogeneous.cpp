@@ -26,7 +26,7 @@
 namespace ig {
 
 vec3 mat4::transform(const vec3& v, bool unit) const {
-  auto&& s = *this;
+  auto& s = *this;
   auto xp = s(0, 0)*v[0] + s(0, 1)*v[1] + s(0, 2)*v[2];
   auto yp = s(1, 0)*v[0] + s(1, 1)*v[1] + s(1, 2)*v[2];
   auto zp = s(2, 0)*v[0] + s(2, 1)*v[1] + s(2, 2)*v[2];
@@ -46,7 +46,7 @@ mat4 mat4::translating(const vec3& t) {
 }
 
 mat4 mat4::rotating(const quat& r) {
-  auto&& v = r.vec_;
+  auto& v = r.vec_;
   auto
     x = v[0] + v[0],
     y = v[1] + v[1],

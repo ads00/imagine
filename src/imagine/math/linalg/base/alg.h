@@ -244,7 +244,7 @@ inline std::ostream& operator<<(std::ostream& stream, const alg<Alg>& alg) {
   size_t width = 0;
   std::stringstream w{}; w.precision(3);
 
-  for (auto&& elemt : alg) {
+  for (auto& elemt : alg) {
     w.str(std::string{}); w.clear(); w << std::fixed << elemt;
     width = std::max<size_t>(width, size_t(w.tellp()));
   }

@@ -26,7 +26,7 @@
 
 namespace ig {
 
-constexpr library::library()
+library::library()
   : native_{std::make_unique<impl::library_native>()} {
 }
 

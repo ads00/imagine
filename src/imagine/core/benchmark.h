@@ -60,9 +60,9 @@ public:
   template <typename T = std::chrono::microseconds>
   auto generate_reports() {
     std::vector<benchmark_report> reports(benchs_.size());
-    std::transform(benchs_.begin(), benchs_.end(), reports.begin(), [](auto&& bench) {
+    std::transform(benchs_.begin(), benchs_.end(), reports.begin(), [](auto& bench) {
       benchmark_report report{bench.first};
-      for (auto&& sample : bench.second) {
+      for (auto& sample : bench.second) {
         report.samples_.emplace_back(std::chrono::duration_cast<T>(sample).count());
       } return std::move(report);
     });

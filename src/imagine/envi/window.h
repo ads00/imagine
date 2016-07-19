@@ -45,8 +45,8 @@ public:
 
   friend cursor;
 
-  constexpr window();
-  constexpr window(const std::string& caption, uint32_t width, uint32_t height, style_flags style);
+  window();
+  window(const std::string& caption, uint32_t width, uint32_t height, style_flags style);
   virtual ~window();
 
   void close();

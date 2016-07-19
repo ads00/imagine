@@ -26,7 +26,7 @@
 
 namespace ig {
 
-constexpr cursor::cursor(shape_t shape)
+cursor::cursor(shape_t shape)
   : native_{std::make_unique<impl::cursor_native>(shape)} {
 }
 

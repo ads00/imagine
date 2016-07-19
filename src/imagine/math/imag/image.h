@@ -36,7 +36,7 @@ public:
   enum class format_t { unknown, jpeg, png };
   using access_t = std::initializer_list<uint32_t>;
 
-  constexpr image();
+  image();
   image(access_t dimensions, uint32_t channels, uint32_t bit_depth);
 
   auto pixels() const { return pixels_.data(); }
@@ -44,9 +44,9 @@ public:
 
   auto& dimensions() const { return dims_; }
 
-  auto channels() const  { return channels_; }
-  auto bit_depth() const { return bit_depth_; }
-  auto pitch() const     { return pitch_; }
+  auto& channels() const  { return channels_; }
+  auto& bit_depth() const { return bit_depth_; }
+  auto& pitch() const     { return pitch_; }
   
   const uint8_t& operator[](access_t coords) const;
   uint8_t& operator[](access_t coords);

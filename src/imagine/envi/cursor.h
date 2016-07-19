@@ -43,7 +43,7 @@ public:
   };
   friend impl::window_native;
 
-  constexpr cursor(shape_t shape);
+  cursor(shape_t shape);
   ~cursor();
 
   void refresh() const;

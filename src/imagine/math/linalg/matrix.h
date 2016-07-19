@@ -119,11 +119,13 @@ public:
 
 protected:
   struct dynamic_data {
-    constexpr auto rows() const { return rows_; } constexpr auto cols() const { return cols_; }
-    size_t rows_, cols_; std::vector<T> d_; 
+    constexpr auto& rows() const { return rows_; } 
+    constexpr auto& cols() const { return cols_; }
+    size_t rows_, cols_;  std::vector<T> d_; 
   };
   struct static_data {
-    constexpr size_t rows() const { return M; } constexpr size_t cols() const { return N; }
+    constexpr auto rows() const { return static_cast<size_t>(M); } 
+    constexpr auto cols() const { return static_cast<size_t>(N); }
     std::array<T, M * N> d_;
   };
   std::conditional_t<hybrid, dynamic_data, static_data> data_;

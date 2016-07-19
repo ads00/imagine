@@ -53,7 +53,7 @@ public:
   static std::shared_ptr<log_sink> default_sink;
 
 protected:
-  constexpr log() = default;
+  log() = default;
 
   void push(const log_context& ctx);
   static log& get();
@@ -64,7 +64,7 @@ protected:
 
 class IG_API log_context {
 public:
-  constexpr log_context(log_t type, const char* func, const char* file, int32_t line);
+  log_context(log_t type, const char* func, const char* file, int32_t line);
   ~log_context();
 
   log_t type_;

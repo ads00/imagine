@@ -69,7 +69,7 @@ auto quaternion<T>::operator+=(const quaternion& q) -> quaternion& {
 
 template <typename T>
 auto quaternion<T>::operator*=(const quaternion& q) -> quaternion& {
-  auto&& s = *this;
+  auto& s = *this;
   sca_ = s.sca_*q.sca_ - linalg::dot(s.vec_, q.vec_);
   vec_ = s.sca_*q.vec_ + q.sca_*s.vec_ + linalg::cross(s.vec_, q.vec_);
   return *this;
@@ -116,13 +116,13 @@ inline std::ostream& operator<<(std::ostream& stream, const quaternion<T>& quat)
   size_t width = 0;
   std::stringstream w{}; w.precision(3);
 
-  for (auto&& velemt : quat.vec_) {
+  for (auto& velemt : quat.vec_) {
     w.str(std::string{}); w.clear(); w << std::fixed << velemt;
     width = std::max<size_t>(width, size_t(w.tellp()));
   }
 
   stream.precision(3); stream.setf(std::ios::fixed);
-  for (auto&& velemt : quat.vec_) {
+  for (auto& velemt : quat.vec_) {
     stream << std::endl;
     stream.width(width); stream << velemt;
   }

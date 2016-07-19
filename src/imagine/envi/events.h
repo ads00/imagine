@@ -77,11 +77,11 @@ struct event_status {
 class IG_API events {
 public:
   template <typename T> using fn_t = std::function<void (const T&)>;
-  constexpr events() = default;
+  events() = default;
 
   template <typename T>
   void process(T&& arg) const {
-    auto fn = std::get< fn_t<T> >(fns_);
+    auto& fn = std::get< fn_t<T> >(fns_);
     if (fn) {
       fn(std::forward<T>(arg));
     }

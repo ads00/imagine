@@ -52,7 +52,7 @@ threadpool::~threadpool() {
   running_ = false;
   cv_.notify_all();
 
-  for (auto&& worker : workers_) {
+  for (auto& worker : workers_) {
     worker.join();
   }
 }

@@ -31,7 +31,7 @@
 
 namespace ig {
 
-constexpr image::image()
+image::image()
   : dims_{}, channels_{0}, size_{0}, bit_depth_{0}, pitch_{0} {
 }
 

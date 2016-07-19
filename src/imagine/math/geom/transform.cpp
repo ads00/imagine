@@ -26,14 +26,14 @@
 
 namespace ig {
 
-constexpr transform::transform(const vec3& pos, const quat& ori, const vec3& sca)
+transform::transform(const vec3& pos, const quat& ori, const vec3& sca)
   : parent_{nullptr}, umatrix_{false}, matrix_{mat4::eye}, pos_{pos}, ori_{ori}, sca_{sca} {
 }
 
 transform::~transform() {
   if (parent_) {
     parent_->remove_child(*this);
-    for (auto&& child : children_) {
+    for (auto& child : children_) {
       child.get().parent_ = nullptr;
     }
   }
@@ -119,7 +119,7 @@ transform& transform::scale(const vec3& sca) {
 }
 
 void transform::remove_child(const transform& tr) {
-  children_.erase(std::remove_if(children_.begin(), children_.end(), [this, &tr](auto&& child) {
+  children_.erase(std::remove_if(children_.begin(), children_.end(), [this, &tr](auto& child) {
     return &child.get() == &tr;
   }), children_.end());
 }
@@ -156,7 +156,7 @@ const mat4 transform::inv_wt() {
 void transform::needs_update() {
   if (umatrix_) {
     umatrix_ = false;
-    for (auto&& child : children_) {
+    for (auto& child : children_) {
       child.get().needs_update();
     }
   }

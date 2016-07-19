@@ -35,7 +35,7 @@ class IG_API library {
 public:
   typedef void (*func_ptr)();
 
-  constexpr library();
+  library();
   library(const std::string& path);
   ~library();
 

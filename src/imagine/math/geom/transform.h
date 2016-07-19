@@ -32,7 +32,7 @@ class IG_API transform {
 public:
   enum class space_t { local, world };
 
-  constexpr transform(const vec3& pos, const quat& ori, const vec3& sca);
+  transform(const vec3& pos, const quat& ori, const vec3& sca);
   virtual ~transform();
 
   void positions(const vec3& pos, space_t space = space_t::local);
