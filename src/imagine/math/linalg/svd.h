@@ -25,7 +25,7 @@
 #define IG_MATH_SVD_H
 
 #include "imagine/math/linalg/matrix.h"
-#include "imagine/math/linalg/equation.h"
+#include "imagine/math/linalg/solver/direct.h"
 
 namespace ig {
 
@@ -48,21 +48,20 @@ template <typename Alg>
 class svd {
 public:
   using T = alg_t<Alg>;
-  using matrix_t = matrix<T>;
-  using vector_t = vector<T>;
+  using matrix_type = matrix<T>;
+  using vector_type = colvec<T>;
 
-  static_assert(std::is_arithmetic<T>::value, 
-                "Singular value decomposition requires an arithmetic matrix");
+  static_assert(std::is_arithmetic<T>::value, "Singular value decomposition requires an arithmetic matrix");
 
-  svd(const matrix_t& alg);
+  explicit svd(const matrix_type& alg);
 
   size_t rank() const;
-  auto pinv() const -> matrix_t;
-  auto solve(const vector_t& b) -> vector_t;
+  auto pinv() const -> matrix_type;
+  auto solve(const vector_type& b) -> vector_type;
 
-  constexpr auto& matrixU() const         { return U_; }
-  constexpr auto& matrixV() const         { return V_; }
-  constexpr auto& singular_values() const { return S_; }
+  auto& matU() const           { return U_; }
+  auto& matV() const           { return V_; }
+  auto& singularvalues() const { return S_; }
 
 private:
   const size_t M_;
@@ -70,16 +69,16 @@ private:
 
   T threshold_;
 
-  matrix_t U_;
-  matrix_t V_;
-  vector_t S_;
+  matrix_type U_;
+  matrix_type V_;
+  vector_type S_;
 };
 
 template <typename Alg>
-svd<Alg>::svd(const matrix_t& alg)
+svd<Alg>::svd(const matrix_type& alg)
   : M_{alg.rows()}, N_{alg.cols()}, threshold_{T(0)}, U_{alg}, V_{N_, N_}, S_{N_} {
 
-  vector_t work{N_};
+  vector_type work{N_};
   auto g = T(0);
   // Householder's reduction to bidiagonal form
   for (size_t i = 0; i < N_; ++i) {
@@ -89,7 +88,7 @@ svd<Alg>::svd(const matrix_t& alg)
     auto s1 = T(0);
     for (size_t j = i; j < M_; ++j) s1 += U_(j, i) * U_(j, i);
 
-    if (s1 > std::numeric_limits<T>::epsilon()/*eps<T>*/) {
+    if (s1 > std::numeric_limits<T>::epsilon()) {
       auto f = U_(i, i);
       g = -sign(f) * std::sqrt(s1);
 
@@ -111,7 +110,7 @@ svd<Alg>::svd(const matrix_t& alg)
     auto s2 = T(0);
     for (size_t j = l; j < N_; ++j) s2 += U_(i, j) * U_(i, j);
 
-    if (s2 > std::numeric_limits<T>::epsilon()/*eps<T>*/) {
+    if (s2 > std::numeric_limits<T>::epsilon()) {
       auto f = U_(i, l);
       g = -sign(f) * std::sqrt(s2);
 
@@ -170,7 +169,7 @@ svd<Alg>::svd(const matrix_t& alg)
   }
 
   size_t sweeps = 75;
-  threshold_ = std::numeric_limits<T>::epsilon()/*eps<T>*/ * std::max(M_, N_) * std::abs(S_[0]);
+  threshold_ = std::numeric_limits<T>::epsilon() * std::max(M_, N_) * std::abs(S_[0]);
 
   // Diagonalization of the bidiagonal form
   for (size_t i = N_; i--> 0; ) {
@@ -285,9 +284,9 @@ size_t svd<Alg>::rank() const {
 }
 
 template <typename Alg>
-auto svd<Alg>::pinv() const -> matrix_t {
+auto svd<Alg>::pinv() const -> matrix_type {
   // Compute w = VS+
-  matrix_t w{N_, N_};
+  matrix_type w{N_, N_};
   for (size_t i = 0; i < N_; ++i)
     for (size_t j = 0; j < N_; ++j)
       if (std::abs(S_[j]) > threshold_) w(i, j) = V_(i, j) * (T(1) / S_[j]);
@@ -298,7 +297,7 @@ auto svd<Alg>::pinv() const -> matrix_t {
 template <typename Alg>
 auto svd<Alg>::solve(const vector_t& b) -> vector_t {
   // Compute w = U^Tb
-  vector_t w{U_.t() * b};
+  vector_type w{U_.t() * b};
 
   // Apply singularity
   for (size_t i = 0; i < N_; ++i) {
@@ -315,8 +314,8 @@ auto svd<Alg>::solve(const vector_t& b) -> vector_t {
 namespace linalg {
 
 template <typename Alg>
-constexpr svd<Alg> svd_run(const alg<Alg>& alg) {
-  return svd<Alg>(alg);
+constexpr auto svd_run(const alg<Alg>& alg) {
+  return svd<Alg>{alg};
 }
 
 } // namespace linalg

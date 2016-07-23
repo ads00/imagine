@@ -45,8 +45,7 @@ void message(png_structp png_ptr, const char* msg);
 
 std::unique_ptr<image> png_read(std::istream& stream) {
   auto png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, nullptr, message, message);
-  if (!png_ptr) 
-    return nullptr;
+  if (!png_ptr) return nullptr;
 
   auto info_ptr = png_create_info_struct(png_ptr);
   if (!info_ptr) {
@@ -54,7 +53,7 @@ std::unique_ptr<image> png_read(std::istream& stream) {
     return nullptr;
   }
 
-  auto src = png_src{};
+  png_src src{};
   src.stream = &stream;
   png_set_read_fn(png_ptr, &src, readproc);
 
@@ -132,7 +131,7 @@ bool png_write(const image& imag, std::ostream& stream) {
     return false;
   }
 
-  auto dst = png_dst{};
+  png_dst dst{};
   dst.stream = &stream;
   png_set_write_fn(png_ptr, &dst, writeproc, flushproc);
 
@@ -200,8 +199,7 @@ void writeproc(png_structp png_ptr, png_bytep data, png_size_t size) {
   dst->stream->write(reinterpret_cast<char*>(data), size);
 }
 
-void flushproc(png_structp png_ptr) {
-}
+void flushproc(png_structp png_ptr) {}
 
 void message(png_structp png_ptr, const char* msg) {
   LOG(info) << "(libpng): " << msg;

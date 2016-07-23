@@ -55,10 +55,6 @@ template <typename T> constexpr T planck      = T(6.62606957e-34);  // Planck co
 template <typename T> constexpr T boltzmann   = T(1.3806488e-23);   // Boltzmann constant in J.K-1
 template <typename T> constexpr T avogadro    = T(6.02214129e23);   // Avogadro's number in mol-1
 
-template <typename T> constexpr T NaN = std::numeric_limits<T>::quiet_NaN();
-template <typename T> constexpr T inf = std::numeric_limits<T>::infinity();
-template <typename T> constexpr T eps = std::numeric_limits<T>::epsilon();
-
 template <typename T>
 constexpr int32_t sign(T val) { return (T(0) < val) - (val < T(0)); }
 

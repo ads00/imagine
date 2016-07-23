@@ -21,8 +21,7 @@
  SOFTWARE.
 */
 
-#include "imagine/envi/impl/window_native.h"
-#include "imagine/envi/impl/mouse_native.h"
+#include "imagine/envi/impl/mouse_impl.h"
 
 namespace ig    {
 namespace mouse {
@@ -41,15 +40,16 @@ auto buttons() -> button_flags {
       button_t::right;
   } if (GetAsyncKeyState(VK_MBUTTON) < 0) {
     buttons |= button_t::middle;
-  } return buttons;
+  } 
+  return buttons;
 }
 
 auto x(LPARAM lparam) -> int32_t {
-  return GET_X_LPARAM(lparam);
+  return LOWORD(lparam);
 }
 
 auto y(LPARAM lparam) -> int32_t {
-  return GET_Y_LPARAM(lparam);
+  return HIWORD(lparam);
 }
 
 auto wheel_delta(WPARAM wparam) -> float {
@@ -65,22 +65,5 @@ auto track(HWND window) -> bool {
 }
 
 } // namespace impl
-
-void move(int32_t x, int32_t y, const window* ref) {
-  POINT point{x, y};
-  ref ?
-    ClientToScreen(reinterpret_cast<HWND>(ref->handle()), &point) :
-    true;
-  SetCursorPos(point.x, point.y);
-}
-
-std::pair<int, int> position(const window* ref) {
-  POINT point{}; GetCursorPos(&point);
-  ref ?
-    ScreenToClient(reinterpret_cast<HWND>(ref->handle()), &point) :
-    true;
-  return {point.x, point.y};
-}
-
 } // namespace mouse
 } // namespace ig

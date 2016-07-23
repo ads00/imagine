@@ -37,11 +37,11 @@ struct alg_traits< alg_row<Xpr> > : alg_traits<Xpr> {
 template <typename Xpr>
 class alg_row : public alg< alg_row<Xpr> > {
 public:
-  constexpr alg_row(Xpr& xpr, size_t row)
+  explicit alg_row(Xpr& xpr, size_t row)
     : xpr_{xpr}, row_{row} {}
 
-  constexpr auto rows() const { return 1; }
-  constexpr auto cols() const { return xpr_.cols(); }
+  auto rows() const { return 1; }
+  auto cols() const { return xpr_.cols(); }
 
   auto operator()(size_t, size_t col) const { return xpr_(row_, col); }
   auto& operator()(size_t, size_t col)      { return xpr_(row_, col); }

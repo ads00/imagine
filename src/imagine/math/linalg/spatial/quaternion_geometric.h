@@ -24,9 +24,6 @@
 #ifndef IG_MATH_GEOMETRIC_H
 #define IG_MATH_GEOMETRIC_H
 
-#include "imagine/math/linalg/matrix.h"
-#include "imagine/math/linalg/quaternion.h"
-
 namespace ig     {
 namespace linalg {
 
@@ -51,21 +48,19 @@ constexpr auto norm(const quaternion<T>& q) {
 }
 
 template <typename T>
-constexpr auto conj(const quaternion<T>& q) -> quaternion<T> {
-  return {q.sca_, -q.vec_};
+constexpr auto conj(const quaternion<T>& q) {
+  return quaternion<T>{q.sca_, -q.vec_};
 }
 
 template <typename T>
-auto normalise(const quaternion<T>& q) -> quaternion<T> {
+auto normalise(const quaternion<T>& q) {
   auto nrm = norm(q);
-  return {q.sca_ / nrm, q.vec_ / nrm};
+  return quaternion<T>{q.sca_ / nrm, q.vec_ / nrm};
 }
 
 template <typename T, typename Alg>
-auto rotate(const quaternion<T>& q, const alg<Alg>& v)
--> vector<std::common_type_t< T, alg_t<Alg> >, 3> {
-  assert(v.vector() && v.vecsize() == 3
-         && "Quaternion can only rotate vectors in three-dimensional space");
+auto rotate(const quaternion<T>& q, const alg<Alg>& v) {
+  assert(v.vector() && v.vecsize() == 3 && "Quaternion can only rotate vectors in three-dimensional space");
 
   auto c1 = linalg::cross(q.vec_, v);
   auto c2 = linalg::cross(q.vec_, c1);

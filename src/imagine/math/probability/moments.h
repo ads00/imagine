@@ -31,13 +31,12 @@ namespace ig {
 template <typename T = double>
 class moments {
 public:
-  static_assert(std::is_arithmetic<T>::value,
-                "Moments calculation requires arithmetic values");
+  static_assert(std::is_arithmetic<T>::value, "Moments calculation requires arithmetic values");
 
-  constexpr moments() = default;
+  moments() = default;
 
   template <typename InputIt>
-  moments(InputIt first, InputIt last) : moments{} {
+  explicit moments(InputIt first, InputIt last) : moments{} {
     process(first, last);
   }
 

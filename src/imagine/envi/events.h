@@ -76,24 +76,22 @@ struct event_status {
 
 class IG_API events {
 public:
-  template <typename T> using fn_t = std::function<void (const T&)>;
+  template <typename T> using func_type = std::function<void (const T&)>;
   events() = default;
 
   template <typename T>
-  void process(T&& arg) const {
-    auto& fn = std::get< fn_t<T> >(fns_);
-    if (fn) {
-      fn(std::forward<T>(arg));
-    }
+  void process(const T& arg) const {
+    auto& fn = std::get< func_type<T> >(handlers_);
+    if (fn) fn(arg);
   }
 
-  void keyboard(const fn_t<event_keyboard>& fn) { std::get< std::decay_t<decltype(fn)> >(fns_) = fn; }
-  void mouse   (const fn_t<event_mouse>& fn)    { std::get< std::decay_t<decltype(fn)> >(fns_) = fn; }
-  void status  (const fn_t<event_status>& fn)   { std::get< std::decay_t<decltype(fn)> >(fns_) = fn; }
+  void keyboard(const func_type<event_keyboard>& fn) { std::get< std::decay_t<decltype(fn)> >(handlers_) = fn; }
+  void mouse   (const func_type<event_mouse>& fn)    { std::get< std::decay_t<decltype(fn)> >(handlers_) = fn; }
+  void status  (const func_type<event_status>& fn)   { std::get< std::decay_t<decltype(fn)> >(handlers_) = fn; }
 
 protected:
-  std::tuple< fn_t<event_keyboard>, fn_t<event_mouse>,
-              fn_t<event_status> > fns_;
+  std::tuple< func_type<event_keyboard>, func_type<event_mouse>,
+              func_type<event_status> > handlers_;
 };
 
 } // namespace ig

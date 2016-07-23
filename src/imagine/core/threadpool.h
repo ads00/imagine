@@ -33,14 +33,14 @@ namespace ig {
 
 class IG_API threadpool {
 public:
-  threadpool(size_t workers = std::thread::hardware_concurrency());
+  explicit threadpool(size_t workers = std::thread::hardware_concurrency());
   ~threadpool();
 
   template <typename Fn, typename... Args>
   auto work(Fn&& fn, Args&&... args) {
-    using return_t = decltype(f(args...));
+    using return_type = decltype(f(args...));
     auto task = std::make_shared<
-      std::packaged_task<return_t()> >
+      std::packaged_task<return_type()> >
       (std::bind(std::forward<Fn>(fn), std::forward<Args>(args)...));
 
     auto retval = task->get_future();

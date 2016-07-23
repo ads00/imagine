@@ -21,30 +21,24 @@
  SOFTWARE.
 */
 
-#include "imagine/envi/impl/window_native.h"
+#include "imagine/envi/impl/window_impl.h"
 #include "imagine/envi/window.h"
 
 namespace ig {
 
 window::window()
-  : native_{std::make_unique<impl::window_native>(*this)}, cursor_{cursor::shape_t::none} {
-}
+  : native_{std::make_unique<impl::window_native>(*this)}, cursor_{cursor::shape_t::none} {}
 
 window::window(const std::string& caption, uint32_t width, uint32_t height, style_flags style)
   : native_{std::make_unique<impl::window_native>(*this, caption, width, height, style)},
-    cursor_{cursor::shape_t::arrow} {
-}
+    cursor_{cursor::shape_t::arrow} {}
 
 window::~window() {
   close();
 }
 
-int32_t window::x() const {
-  return native_->x_;
-}
-
-int32_t window::y() const {
-  return native_->y_;
+const std::string& window::caption() const {
+  return native_->caption_;
 }
 
 uint32_t window::width() const {
@@ -55,12 +49,16 @@ uint32_t window::height() const {
   return native_->height_;
 }
 
-auto window::visibility() const -> visibility_t {
-  return native_->visibility_;
+int32_t window::x() const {
+  return native_->x_;
 }
 
-const std::string& window::caption() const {
-  return native_->caption_;
+int32_t window::y() const {
+  return native_->y_;
+}
+
+auto window::visibility() const -> visibility_t {
+  return native_->visibility_;
 }
 
 // Native implementations
@@ -70,8 +68,8 @@ const std::string& window::caption() const {
 // void window::show();
 // void window::hide();
 // void window::focus();
-// void window::move(int32_t x, int32_t y);
 // void window::resize(uint32_t width, uint32_t height);
+// void window::move(int32_t x, int32_t y);
 // bool window::opened() const;
 // bool window::minimized() const;
 // bool window::maximized() const;

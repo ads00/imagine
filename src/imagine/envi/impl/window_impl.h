@@ -21,24 +21,43 @@
  SOFTWARE.
 */
 
-#ifndef IG_ENVI_DISPATCHER_NATIVE_H
-#define IG_ENVI_DISPATCHER_NATIVE_H
+#ifndef IG_ENVI_WINDOW_IMPL_H
+#define IG_ENVI_WINDOW_IMPL_H
 
-#include <atomic>
+#include "imagine/envi/window.h"
+#include "imagine/envi/impl/widget_impl.h"
 
 namespace ig   {
 namespace impl {
 
-class dispatcher_native {
+class window_native {
 public:
-  dispatcher_native();
-  ~dispatcher_native() = default;
+  window_native(const window& ref);
+  window_native(const window& ref, const std::string& caption, uint32_t width, uint32_t height, window::style_flags style);
+  ~window_native() = default;
 
-  std::atomic_int return_code_;
-  std::atomic_bool running_;
+  const window& ref_;
+
+  std::string caption_;
+  uint32_t width_, height_;
+  int32_t x_, y_;
+
+  window::style_flags style_;
+  window::visibility_t visibility_;
+
+  bool mouse_tracked_;
+
+  #if defined(IG_WIN)
+  LRESULT internal(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
+  static LRESULT CALLBACK proc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
+  static bool reg();
+
+  HWND handle_;
+  DWORD wstyle_;
+  #endif
 };
 
-} // namespace impl
+} // namespace native
 } // namespace ig
 
-#endif // IG_ENVI_DISPATCHER_NATIVE_H
+#endif // IG_ENVI_WINDOW_IMPL_H

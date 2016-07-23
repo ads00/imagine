@@ -21,27 +21,27 @@
  SOFTWARE.
 */
 
-#include "imagine/envi/impl/library_native.h"
+#include "imagine/envi/impl/library_impl.h"
 #include "imagine/envi/library.h"
 
 namespace ig   {
 namespace impl {
 
 library_native::library_native()
-  : path_{}, handle_{nullptr} {
-}
+  : path_{}, handle_{nullptr} {}
 
 library_native::library_native(const std::string& path)
-  : path_{path}, handle_{nullptr} {
-}
+  : path_{path}, handle_{nullptr} {}
 
 } // namespace impl
 
-auto library::resolve(const char* symbol) -> func_ptr {
+auto library::resolve(const char* symbol) -> funcptr_type {
   if (native_->handle_) {
     auto proc = GetProcAddress(native_->handle_, symbol);
-    return reinterpret_cast<func_ptr>(proc);
-  } return nullptr;
+    return reinterpret_cast<funcptr_type>(proc);
+  } else {
+    return nullptr;
+  }
 }
 
 bool library::open(const std::string& path) {

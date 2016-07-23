@@ -32,17 +32,19 @@ vec3 mat4::transform(const vec3& v, bool unit) const {
   auto zp = s(2, 0)*v[0] + s(2, 1)*v[1] + s(2, 2)*v[2];
 
   if (!unit) {
-    auto wp = s(3, 0)*v[0] + s(3, 1)*v[1] + s(3, 2)*v[2] + s(3, 3);
     auto us = vec3{xp + s(0, 3), yp + s(1, 3), zp + s(2, 3)};
+    auto wp = s(3, 0)*v[0] + s(3, 1)*v[1] + s(3, 2)*v[2] + s(3, 3);
     return us / wp;
-  } return {xp, yp, zp};
+  } else {
+    return vec3{xp, yp, zp};
+  }
 }
 
 mat4 mat4::translating(const vec3& t) {
-  return { 1.f, 0.f, 0.f, t[0],
-           0.f, 1.f, 0.f, t[1],
-           0.f, 0.f, 1.f, t[2],
-           0.f, 0.f, 0.f, 1.f };
+  return mat4{1.f, 0.f, 0.f, t[0],
+              0.f, 1.f, 0.f, t[1],
+              0.f, 0.f, 1.f, t[2],
+              0.f, 0.f, 0.f, 1.f};
 }
 
 mat4 mat4::rotating(const quat& r) {
@@ -54,27 +56,27 @@ mat4 mat4::rotating(const quat& r) {
 
   auto xx = x * v[0], xy = y * v[0], xz = z * v[0];
   auto yy = y * v[1], yz = z * v[1], zz = z * v[2];
-  auto wx = x * r.sca_,  wy = y * r.sca_,  wz = z * r.sca_;
+  auto wx = x * r.sca_, wy = y * r.sca_, wz = z * r.sca_;
 
-  return { 1.f - (yy + zz), xy - wz,         xz + wy,         0.f,
-           xy + wz,         1.f - (xx + zz), yz - wx,         0.f,
-           xz - wy,         yz + wx,         1.f - (xx + yy), 0.f,
-           0.f,             0.f,             0.f,             1.f };
+  return mat4{1.f - (yy + zz), xy - wz,         xz + wy,         0.f,
+              xy + wz,         1.f - (xx + zz), yz - wx,         0.f,
+              xz - wy,         yz + wx,         1.f - (xx + yy), 0.f,
+              0.f,             0.f,             0.f,             1.f};
 }
 
 mat4 mat4::scaling(const vec3& s) {
-  return { s[0], 0.f,  0.f,  0.f,
-           0.f,  s[1], 0.f,  0.f,
-           0.f,  0.f,  s[2], 0.f,
-           0.f,  0.f,  0.f,  1.f };
+  return mat4{s[0], 0.f,  0.f,  0.f,
+              0.f,  s[1], 0.f,  0.f,
+              0.f,  0.f,  s[2], 0.f,
+              0.f,  0.f,  0.f,  1.f};
 }
 
 mat4 mat4::orthographic(size_t w, size_t h, float zn, float zf) {
   auto zr = zf - zn;
-  return { 1.f / w, 0.f,      0.f,       0.f,
-           0.f,     1.f / h,  0.f,       0.f,
-           0.f,     0.f,     -1.f / zr, -zn / zr,
-           0.f,     0.f,      0.f,       1.f };
+  return mat4{1.f / w, 0.f,      0.f,       0.f,
+              0.f,     1.f / h,  0.f,       0.f,
+              0.f,     0.f,     -1.f / zr, -zn / zr,
+              0.f,     0.f,      0.f,       1.f};
 }
 
 mat4 mat4::perspective(float fovy, float asp, float zn, float zf) {
@@ -82,10 +84,10 @@ mat4 mat4::perspective(float fovy, float asp, float zn, float zf) {
   auto ta = asp * tanh;
   auto zr = zf - zn;
 
-  return { 1.f / ta, 0.f,         0.f,      0.f,
-           0.f,      1.f / tanh,  0.f,      0.f,
-           0.f,      0.f,        -zf / zr, -(zf * zn) / zr,
-           0.f,      0.f,        -1.f,      0.f };
+  return mat4{1.f / ta, 0.f,         0.f,      0.f,
+              0.f,      1.f / tanh,  0.f,      0.f,
+              0.f,      0.f,        -zf / zr, -(zf * zn) / zr,
+              0.f,      0.f,        -1.f,      0.f};
 }
 
 mat4 mat4::look(const vec3& eye, const vec3& focus, const vec3& up) {
@@ -94,16 +96,15 @@ mat4 mat4::look(const vec3& eye, const vec3& focus, const vec3& up) {
   auto R1 = linalg::cross(R2, R0);
   auto neye = -eye;
 
-  return { R0[0], R0[1], R0[2], linalg::dot(R0, neye),
-           R1[0], R1[1], R1[2], linalg::dot(R1, neye),
-           R2[0], R2[1], R2[2], linalg::dot(R2, neye),
-           0.f,   0.f,   0.f,   1.f };
+  return mat4{R0[0], R0[1], R0[2], linalg::dot(R0, neye),
+              R1[0], R1[1], R1[2], linalg::dot(R1, neye),
+              R2[0], R2[1], R2[2], linalg::dot(R2, neye),
+              0.f,   0.f,   0.f,   1.f};
 }
 
-const mat4 mat4::eye =
-{ 1.f, 0.f, 0.f, 0.f,
-  0.f, 1.f, 0.f, 0.f,
-  0.f, 0.f, 1.f, 0.f,
-  0.f, 0.f, 0.f, 1.f };
+const mat4 mat4::eye = mat4{1.f, 0.f, 0.f, 0.f,
+                            0.f, 1.f, 0.f, 0.f,
+                            0.f, 0.f, 1.f, 0.f,
+                            0.f, 0.f, 0.f, 1.f};
 
 } // namespace ig

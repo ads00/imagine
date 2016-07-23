@@ -29,11 +29,12 @@
 namespace ig {
 
 template <typename Lhs, typename Rhs>
-auto operator<(const alg<Lhs>& lhs, const alg<Rhs>& rhs) {
+bool operator<(const alg<Lhs>& lhs, const alg<Rhs>& rhs) {
   assert(lhs.size() == rhs.size() && "Incoherent matrix comparison");
 
   auto pair = std::mismatch(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
-  return (pair.first == lhs.end() || ((*pair.first) < (*pair.second)));
+  return (pair.first == lhs.end() || 
+        ((*pair.first) < (*pair.second)));
 }
 
 template <typename Lhs, typename Rhs>

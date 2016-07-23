@@ -21,14 +21,14 @@
  SOFTWARE.
 */
 
-#include "imagine/envi/impl/keyboard_native.h"
+#include "imagine/envi/impl/keyboard_impl.h"
 
 namespace ig       {
 namespace keyboard {
 namespace impl     {
 
-static const key_t key_tbl[] =
-{                     // keyboard mapping table
+static const key_t key_tbl[] = {                     
+                      // keyboard mapping table
                       // Dec |  Hex | Windows Virtual key
   key_t::unknown,     //   0   0x00
   key_t::unknown,     //   1   0x01   VK_LBUTTON
@@ -298,7 +298,8 @@ auto modifiers() -> modifier_flags {
     mods |= modifier_t::ctrl;
   } if (GetAsyncKeyState(VK_MENU)    < 0) {
     mods |= modifier_t::alt;
-  } return mods;
+  } 
+  return mods;
 }
 
 auto key(WPARAM wparam) -> key_t {

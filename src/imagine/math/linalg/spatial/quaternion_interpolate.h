@@ -21,44 +21,29 @@
  SOFTWARE.
 */
 
-#ifndef IG_ENVI_WINDOW_NATIVE_H
-#define IG_ENVI_WINDOW_NATIVE_H
+#ifndef IG_MATH_INTERPOLATE_H
+#define IG_MATH_INTERPOLATE_H
 
-#include "imagine/envi/window.h"
-#include "imagine/envi/cursor.h"
-#include "imagine/envi/impl/widget_native.h"
+namespace ig     {
+namespace linalg {
 
-namespace ig   {
-namespace impl {
+template <typename T>
+constexpr auto lerp(const quaternion<T>& lhs, const quaternion<T>& rhs, T t) {
+  return normalise(lhs*(T(1) - t) + rhs*t);
+}
 
-class window_native {
-public:
-  window_native(const window& ref);
-  window_native(const window& ref, const std::string& caption, uint32_t width, uint32_t height, window::style_flags style);
-  ~window_native() = default;
+template <typename T>
+auto slerp(const quaternion<T>& lhs, const quaternion<T>& rhs, T t) {
+  auto coshalf = dot(lhs, rhs);
+  if (std::abs(coshalf) >= T(1)) {
+    return lerp(lhs, rhs, t);
+  } else {
+    auto a = std::acos(coshalf);
+    return (lhs*std::sin((T(1) - t) * a) + rhs*std::sin(t * a)) / std::sin(a);
+  }
+}
 
-  const window& ref_;
-
-  std::string caption_;
-  uint32_t width_, height_;
-  int32_t x_, y_;
-
-  window::style_flags style_;
-  window::visibility_t visibility_;
-
-  bool mouse_tracked_;
-
-  #if defined(IG_WIN)
-  LRESULT internal(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
-  static LRESULT CALLBACK proc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
-  static bool reg();
-
-  HWND handle_;
-  DWORD wstyle_;
-  #endif
-};
-
-} // namespace native
+} // namespace linalg
 } // namespace ig
 
-#endif // IG_ENVI_WINDOW_NATIVE_H
+#endif // IG_MATH_INTERPOLATE_H

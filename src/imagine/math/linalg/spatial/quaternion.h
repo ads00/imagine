@@ -31,10 +31,10 @@ namespace ig {
 template <typename T>
 class quaternion {
 public:
-  using vec_t = vector<T, 3>;
+  using vector_type = colvec<T, 3>;
 
-  constexpr quaternion() : sca_{1}, vec_{} {}
-  constexpr quaternion(T sca, const vec_t& vec)
+  quaternion() : sca_{1}, vec_{} {}
+  explicit quaternion(T sca, const vector_type& vec)
     : sca_{sca}, vec_{vec} {}
 
   auto operator+=(const quaternion& q) -> quaternion&;
@@ -43,22 +43,22 @@ public:
   auto operator/=(T scalar) -> quaternion&; 
   auto operator*=(T scalar) -> quaternion&;
 
-  static quaternion axis(T angle, const vec_t& axis) {
-    return {std::cos(angle / T(2)), axis * std::sin(angle / T(2))};
+  static auto axis(T angle, const vector_type& axis) {
+    return quaternion{std::cos(angle / T(2)), axis * std::sin(angle / T(2))};
   }
 
-  static quaternion euler(T roll, T pitch, T yaw) {
+  static auto euler(T roll, T pitch, T yaw) {
     auto cr = std::cos(roll),  sr = std::sin(roll);
     auto cp = std::cos(pitch), sp = std::sin(pitch);
     auto cy = std::cos(yaw),   sy = std::sin(yaw);
 
-    return {cr*cp*cy - sr*sp*sy, {cr*cp*cy + sr*sp*sy,
-                                  sr*cp*cy + cr*sp*sy,
-                                  cr*sp*cy - sr*cp*sy}};
+    return quaternion{cr*cp*cy - sr*sp*sy, {cr*cp*cy + sr*sp*sy,
+                                            sr*cp*cy + cr*sp*sy,
+                                            cr*sp*cy - sr*cp*sy}};
   }
 
   T sca_;
-  vec_t vec_;
+  vector_type vec_;
 };
 
 template <typename T>
@@ -116,13 +116,13 @@ inline std::ostream& operator<<(std::ostream& stream, const quaternion<T>& quat)
   size_t width = 0;
   std::stringstream w{}; w.precision(3);
 
-  for (auto& velemt : quat.vec_) {
+  for (auto velemt : quat.vec_) {
     w.str(std::string{}); w.clear(); w << std::fixed << velemt;
     width = std::max<size_t>(width, size_t(w.tellp()));
   }
 
   stream.precision(3); stream.setf(std::ios::fixed);
-  for (auto& velemt : quat.vec_) {
+  for (auto velemt : quat.vec_) {
     stream << std::endl;
     stream.width(width); stream << velemt;
   }
@@ -138,5 +138,8 @@ using quaternionf = quaternion<float>;
 using quaterniond = quaternion<double>;
 
 } // namespace ig
+
+#include "imagine/math/linalg/spatial/quaternion_geometric.h"
+#include "imagine/math/linalg/spatial/quaternion_interpolate.h"
 
 #endif // IG_MATH_QUATERNION_H

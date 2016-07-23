@@ -21,32 +21,31 @@
  SOFTWARE.
 */
 
-#ifndef IG_MATH_INTERPOLATE_H
-#define IG_MATH_INTERPOLATE_H
+#ifndef IG_MATH_RAY_H
+#define IG_MATH_RAY_H
 
 #include "imagine/math/linalg/matrix.h"
-#include "imagine/math/linalg/quaternion.h"
 
-namespace ig     {
-namespace linalg {
+namespace ig {
 
-template <typename T>
-constexpr auto lerp(const quaternion<T>& lhs, const quaternion<T>& rhs, T t) {
-  return normalise(lhs*(T(1) - t) + rhs*t);
-}
+template <typename T, size_t N>
+class ray {
+public:
+  using vector_type = colvec<T, N>;
 
-template <typename T>
-auto slerp(const quaternion<T>& lhs, const quaternion<T>& rhs, T t) {
-  auto coshalf = dot(lhs, rhs);
-  if (std::abs(coshalf) >= T(1)) {
-    return lerp(lhs, rhs, t);
-  } else {
-    auto a = std::acos(coshalf);
-    return (lhs*std::sin((T(1) - t) * a) + rhs*std::sin(t * a)) / std::sin(a);
-  }
-}
+  ray() = default;
+  explicit ray(const vector_type& ori, const vector_type& dir)
+    : ori_{ori}, dir_{dir} {}
 
-} // namespace linalg
+  auto& origin() const    { return ori_; }
+  auto& direction() const { return dir_; }
+
+  auto operator()(T t) const { return ori_ + t*dir_; }
+
+private:
+  vector_type ori_, dir_;
+};
+
 } // namespace ig
 
-#endif // IG_MATH_INTERPOLATE_H
+#endif // IG_MATH_RAY_H

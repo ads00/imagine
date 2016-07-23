@@ -35,16 +35,14 @@ constexpr auto dot(const alg<Lhs>& lhs, const alg<Rhs>& rhs) {
 }
 
 template <typename Lhs, typename Rhs>
-constexpr auto cross(const alg<Lhs>& lhs, const alg<Rhs>& rhs) 
--> vector<std::common_type_t< alg_t<Lhs>, alg_t<Rhs> >, 3> {
-  assert(lhs.vector() && lhs.vecsize() == 3
-         && "Cross exists only in three-dimensional space");
-  assert(rhs.vector() && rhs.vecsize() == 3
-         && "Cross exists only in three-dimensional space");
+constexpr auto cross(const alg<Lhs>& lhs, const alg<Rhs>& rhs) {
+  using vec_type = colvec<std::common_type_t< alg_t<Lhs>, alg_t<Rhs> >, 3>;
+  assert(lhs.vector() && lhs.vecsize() == 3 && "Cross exists only in three-dimensional space");
+  assert(rhs.vector() && rhs.vecsize() == 3 && "Cross exists only in three-dimensional space");
 
-  return { lhs[1]*rhs[2] - lhs[2]*rhs[1],
-           lhs[2]*rhs[0] - lhs[0]*rhs[2],
-           lhs[0]*rhs[1] - lhs[1]*rhs[0] };
+  return vec_type{lhs[1]*rhs[2] - lhs[2]*rhs[1],
+                  lhs[2]*rhs[0] - lhs[0]*rhs[2],
+                  lhs[0]*rhs[1] - lhs[1]*rhs[0]};
 }
 
 } // namespace linalg

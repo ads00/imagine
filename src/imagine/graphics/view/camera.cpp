@@ -25,44 +25,22 @@
 
 namespace ig {
 
-camera::camera(type_t type, size_t w, size_t h)
-  : camera{type, w, h, {1.f, 1.0f, -1.f}, {0.f}, {0.f, 1.f, 0.f}} {
-}
+camera::camera(projection_t projection, size_t w, size_t h)
+  : camera{projection, w, h, vec3{0.f}, vec3{0.f}, vec3{0.f, 1.f, 0.f}} {}
 
-camera::camera(type_t type, size_t w, size_t h, const vec3& pos, const vec3& target, const vec3& up)
-  : type_{type}, w_{w}, h_{h}, pos_{pos}, target_{target}, up_{up},
-    zn_{1e-3f}, zf_{1e3f}, fovy_{1.57f}, uview_{false}, uproj_{false} {
-}
-
-void camera::update() {
-  if (!uview_) {
-    view_ = mat4::look(pos_, target_, up_), iview_ = linalg::inv(view_); 
-    uview_ = true;
-  }
-
-  if (!uproj_) {
-    switch (type_) {
-    case type_t::orthographic:
-      proj_ = mat4::orthographic(1, 1, zn_, zf_);
-      break;
-    case type_t::perspective:
-      proj_ = mat4::perspective(fovy_, static_cast<float>(w_ / h_), zn_, zf_);
-      break;
-    }
-    iproj_ = linalg::inv(proj_); 
-    uproj_ = true;
-  }
-}
+camera::camera(projection_t projection, size_t w, size_t h, const vec3& pos, const vec3& target, const vec3& up)
+  : projection_{projection}, w_{w}, h_{h}, pos_{pos}, target_{target}, up_{up},
+    zn_{1e-3f}, zf_{1e3f}, fovy_{1.57f}, uview_{false}, uproj_{false} {}
 
 void camera::make_orthographic() {
   uproj_ = false;
-  type_ = type_t::orthographic; 
+  projection_ = projection_t::orthographic;
 }
 
 void camera::make_perspective(float fovy) {
   uproj_ = false;
   fovy_ = fovy;
-  type_ = type_t::perspective; 
+  projection_ = projection_t::perspective;
 }
 
 void camera::clip(float zn, float zf) {
@@ -70,20 +48,44 @@ void camera::clip(float zn, float zf) {
   zn_ = zn, zf_ = zf;
 }
 
-ray camera::cast_ray(size_t x, size_t y) const {
+ray3 camera::cast_ray(size_t x, size_t y) const {
   auto nx = x/static_cast<float>(w_)*2.f - 1.f;
   auto ny = y/static_cast<float>(h_)*2.f - 1.f;
 
-  auto raster = iproj_.transform({nx, ny, 0.f});
+  auto raster = iproj_.transform(vec3{nx, ny, 0.f});
   vec3 wo{}, wd{};
-  if (type_ == type_t::perspective) {
-    wo = iview_.transform({0.f});
+  if (projection_ == projection_t::perspective) {
+    wo = iview_.transform(vec3{0.f});
     wd = iview_.transform(raster, true);
   } else {
     wo = iview_.transform(raster);
-    wd = iview_.transform({0.f, 0.f, -1.f}, true);
+    wd = iview_.transform(vec3{0.f, 0.f, -1.f}, true);
   }
-  return {wo, linalg::normalise(wd)};
+  return ray3{wo, linalg::normalise(wd)};
+}
+
+const mat4& camera::view() {
+  if (!uview_) {
+    view_ = mat4::look(pos_, target_, up_), iview_ = linalg::inv(view_);
+    uview_ = true;
+  }
+  return view_;
+}
+
+const mat4& camera::proj() {
+  if (!uproj_) {
+    switch (projection_) {
+    case projection_t::orthographic:
+      proj_ = mat4::orthographic(1, 1, zn_, zf_);
+      break;
+    case projection_t::perspective:
+      proj_ = mat4::perspective(fovy_, static_cast<float>(w_ / h_), zn_, zf_);
+      break;
+    }
+    iproj_ = linalg::inv(proj_);
+    uproj_ = true;
+  }
+  return proj_;
 }
 
 } // namespace ig

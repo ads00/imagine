@@ -31,30 +31,30 @@ namespace ig {
 template <typename E>
 class flags {
 public:
-  using enum_t       = E;
-  using underlying_t = typename std::make_unsigned_t<
-                       typename std::underlying_type_t<enum_t> >;
+  using enum_type       = E;
+  using underlying_type = typename std::make_unsigned_t<
+                          typename std::underlying_type_t<enum_type> >;
 
   constexpr flags() = default;
-  constexpr flags(enum_t e) : flags_{underlying_t(e)} {}
-  constexpr flags(underlying_t flags) : flags_{flags} {}
+  constexpr flags(enum_type e) : flags_{underlying_type(e)} {}
+  constexpr explicit flags(underlying_type flags) : flags_{flags} {}
 
   auto operator~() const { return flags{~flags_}; }
   auto operator&(flags f) const { return flags{flags_ & f.flags_}; }
   auto operator|(flags f) const { return flags{flags_ | f.flags_}; }
   auto operator^(flags f) const { return flags{flags_ ^ f.flags_}; }
 
-  auto operator&(enum_t e) const { return operator&(flags{e}); }
-  auto operator|(enum_t e) const { return operator|(flags{e}); }
-  auto operator^(enum_t e) const { return operator^(flags{e}); }
+  auto operator&(enum_type e) const { return operator&(flags{e}); }
+  auto operator|(enum_type e) const { return operator|(flags{e}); }
+  auto operator^(enum_type e) const { return operator^(flags{e}); }
 
   auto& operator&=(flags f) { flags_ &= f.flags_; return *this; }
   auto& operator|=(flags f) { flags_ |= f.flags_; return *this; }
   auto& operator^=(flags f) { flags_ ^= f.flags_; return *this; }
 
-  auto& operator&=(enum_t e) { return operator&=(flags{e}); }
-  auto& operator|=(enum_t e) { return operator|=(flags{e}); }
-  auto& operator^=(enum_t e) { return operator^=(flags{e}); }
+  auto& operator&=(enum_type e) { return operator&=(flags{e}); }
+  auto& operator|=(enum_type e) { return operator|=(flags{e}); }
+  auto& operator^=(enum_type e) { return operator^=(flags{e}); }
 
   auto& operator=(flags f) { flags_ = f.flags_; return *this; }
 
@@ -70,7 +70,7 @@ private:
   friend auto operator&(E lhs, E rhs) { return flags{lhs} & rhs; }
   friend auto operator^(E lhs, E rhs) { return flags{lhs} ^ rhs; }
 
-  underlying_t flags_;
+  underlying_type flags_;
 };
 
 template <typename E>

@@ -38,11 +38,11 @@ struct alg_traits< binary_expr<Lhs, Rhs, Op> > {
 template <typename Lhs, typename Rhs, typename Op>
 class binary_expr : public alg< binary_expr<Lhs, Rhs, Op> > {
 public:
-  constexpr binary_expr(const Lhs& lhs, const Rhs& rhs, const Op& op)
+  explicit binary_expr(const Lhs& lhs, const Rhs& rhs, const Op& op)
     : lhs_{lhs}, rhs_{rhs}, op_{op} {}
 
-  constexpr auto rows() const { return lhs_.rows(); }
-  constexpr auto cols() const { return lhs_.cols(); }
+  auto rows() const { return lhs_.rows(); }
+  auto cols() const { return lhs_.cols(); }
 
   auto operator()(size_t row, size_t col) const { return op_(lhs_(row, col), rhs_(row, col)); }
   auto operator[](size_t n) const               { return op_(lhs_[n], rhs_[n]); }

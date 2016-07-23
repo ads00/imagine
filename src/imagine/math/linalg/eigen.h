@@ -48,29 +48,28 @@ template <typename Alg>
 class eigen<Alg, true> {
 public:
   using T = alg_t<Alg>;
-  using matrix_t = matrix<T>;
-  using vector_t = vector<T>;
+  using matrix_type = matrix<T>;
+  using vector_type = colvec<T>;
 
-  static_assert(std::is_arithmetic<T>::value,
-                "Eigendecomposition requires an arithmetic matrix");
+  static_assert(std::is_arithmetic<T>::value, "Eigendecomposition requires an arithmetic matrix");
 
-  eigen(const matrix_t& alg);
+  explicit eigen(const matrix_type& alg);
 
-  constexpr auto& eigen_vectors() const { return V_; }
-  constexpr auto& eigen_values()  const { return D_; }
+  auto& eigenvectors() const { return V_; }
+  auto& eigenvalues()  const { return D_; }
 
 private:
   const size_t N_;
 
-  matrix_t V_;
-  vector_t D_;
+  matrix_type V_;
+  vector_type D_;
 };
 
 template <typename Alg>
-eigen<Alg, true>::eigen(const matrix_t& alg)
+eigen<Alg, true>::eigen(const matrix_type& alg)
   : N_{alg.diagsize()}, V_{alg}, D_{N_} {
 
-  vector_t work{N_};
+  vector_type work{N_};
   // Symmetric Householder reduction to tridiagonal form
   for (size_t i = N_; i--> 1; ) {
     auto h = T(0);
@@ -136,7 +135,7 @@ eigen<Alg, true>::eigen(const matrix_t& alg)
       // Find smallest subdiagonal element
       for (m = l; m < N_ - 1; ++m) {
         auto s = std::abs(D_[m]) + std::abs(D_[m + 1]);
-        if (std::abs(work[m]) <= std::numeric_limits<T>::epsilon()/*eps<T>*/ * s)
+        if (std::abs(work[m]) <= std::numeric_limits<T>::epsilon() * s)
           break;
       }
 
@@ -186,9 +185,9 @@ eigen<Alg, true>::eigen(const matrix_t& alg)
 namespace linalg {
 
 template <typename Alg>
-eigen<Alg, true> eig_sym_run(const alg<Alg>& alg) {
+constexpr auto eig_sym_run(const alg<Alg>& alg) {
   assert(alg.square() && "Eigendecomposition requires a square matrix");
-  return eigen<Alg, true>(alg);
+  return eigen<Alg, true>{alg};
 }
 
 } // namespace linalg

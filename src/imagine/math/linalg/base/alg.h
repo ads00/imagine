@@ -34,8 +34,8 @@ namespace ig {
 
 constexpr int dynamic_sized = -1;
 template <typename T, int M, int N> class matrix;
-template <typename T, int N = dynamic_sized> using vector = matrix<T, N, 1>;
-template <typename T, int N = dynamic_sized> using row    = matrix<T, 1, N>;
+template <typename T, int N = dynamic_sized> using colvec = matrix<T, 1, N>;
+template <typename T, int N = dynamic_sized> using rowvec = matrix<T, N, 1>;
 
 template <typename Xpr> class alg_block;
 template <typename Xpr> class alg_col;
@@ -51,7 +51,7 @@ template <typename Lhs, typename Rhs, typename Op> class binary_expr;
 
 // Meta
 template <typename Xpr> struct alg_traits;
-template <typename Xpr> struct alg_traits<const Xpr> : alg_traits<Xpr>{};
+template <typename Xpr> struct alg_traits<const Xpr> : alg_traits<Xpr> {};
 
 template <typename Alg> using alg_t = typename Alg::T;
 
@@ -62,8 +62,8 @@ public:
   static constexpr auto M = alg_traits<C>::M;
   static constexpr auto N = alg_traits<C>::N;
 
-  using plain_t = matrix<T, M, N>;
-  using U = std::conditional_t<std::is_same<C, plain_t>::value, const T&, T>;
+  using plain_type = matrix<T, M, N>;
+  using U = std::conditional_t<std::is_same<C, plain_type>::value, const T&, T>;
 
   auto& derived() const { return static_cast<const C&>(*this); }
   auto& derived()       { return static_cast<C&>(*this); }
@@ -103,15 +103,15 @@ public:
   auto prod() const -> T;
   auto mean() const -> T;
 
-  constexpr auto square() const { return rows() == cols(); }
-  constexpr auto vector() const { return rows() == 1 || cols() == 1; }
+  auto square() const { return rows() == cols(); }
+  auto vector() const { return rows() == 1 || cols() == 1; }
 
-  constexpr auto rows() const { return derived().rows(); }
-  constexpr auto cols() const { return derived().cols(); }
-  constexpr auto size() const { return rows() * cols(); }
+  auto rows() const { return derived().rows(); }
+  auto cols() const { return derived().cols(); }
+  auto size() const { return rows() * cols(); }
 
-  constexpr auto diagsize() const { return (std::min)(rows(), cols()); }
-  constexpr auto vecsize() const  { return (std::max)(rows(), cols()); }
+  auto diagsize() const { return (std::min)(rows(), cols()); }
+  auto vecsize() const  { return (std::max)(rows(), cols()); }
 
   auto head(size_t n) const { return alg_block<const C>{derived(), 0, n}; }
   auto head(size_t n)       { return alg_block<C>{derived(), 0, n}; }
@@ -160,36 +160,18 @@ public:
 
   class initializer {
   public:
-    initializer(C& alg) 
+    explicit initializer(C& alg) 
       : alg_{alg}, row_{0}, col_{0}, curr_{0} {}
 
     auto operator,(T val) {
       if (col_ == alg_.cols()) {
         row_++, col_ = 0;
-      } alg_(row_, col_++) = val;
+      } 
+      alg_(row_, col_++) = val;
       curr_++; return *this;
     }
 
-    template <typename... Args>
-    static void auto_construct(C& alg, T val, Args&&... args) {
-      initializer init{alg};
-      init.recursive_construct(val, std::forward<Args>(args)...);
-    }
-
   private:
-    template <typename... Args>
-    void recursive_construct(T val, Args&&... args) {
-      operator,(val);
-      recursive_construct(std::forward<Args>(args)...);
-    }
-
-    void recursive_construct(T val) {
-      operator,(val);
-      if (curr_ < alg_.size()) {
-        for (size_t i = curr_; i < alg_.size(); ++i) operator,(val);
-      }
-    }
-
     C& alg_;
     size_t row_, col_, curr_;
   };
@@ -202,9 +184,9 @@ void eval_helper(alg<Eval>& ev, const alg<Alg>& alg) {
   assert(ev.rows() == alg.rows() && ev.cols() == alg.cols()
          && "Incoherent algebraic evaluation");
 
-  auto evc = ev.cols(), evr = ev.rows();
-  for (size_t i = 0; i < evc; ++i)
-    for (size_t j = 0; j < evr; ++j) ev(j, i) = alg(j, i);
+  auto evr = ev.rows(), evc = ev.cols();
+  for (size_t i = 0; i < evr; ++i)
+    for (size_t j = 0; j < evc; ++j) ev(i, j) = alg(i, j);
 }
 
 template <typename Eval, typename Alg>
@@ -244,7 +226,7 @@ inline std::ostream& operator<<(std::ostream& stream, const alg<Alg>& alg) {
   size_t width = 0;
   std::stringstream w{}; w.precision(3);
 
-  for (auto& elemt : alg) {
+  for (auto elemt : alg) {
     w.str(std::string{}); w.clear(); w << std::fixed << elemt;
     width = std::max<size_t>(width, size_t(w.tellp()));
   }

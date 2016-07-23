@@ -32,7 +32,7 @@ class IG_API transform {
 public:
   enum class space_t { local, world };
 
-  transform(const vec3& pos, const quat& ori, const vec3& sca);
+  explicit transform(const vec3& pos, const quat& ori, const vec3& sca);
   virtual ~transform();
 
   void positions(const vec3& pos, space_t space = space_t::local);
@@ -50,7 +50,7 @@ public:
 
 private:
   void remove_child(const transform& tr);
-  void needs_update();
+  void hierarchical_invalidate();
 
   transform* parent_;
   std::vector< std::reference_wrapper<transform> > children_;

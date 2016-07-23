@@ -21,7 +21,7 @@
  SOFTWARE.
 */
 
-#include "imagine/envi/impl/dispatcher_native.h"
+#include "imagine/envi/impl/dispatcher_impl.h"
 #include "imagine/envi/dispatcher.h"
 
 namespace ig {
@@ -36,11 +36,12 @@ dispatcher::~dispatcher() = default;
 
 int32_t dispatcher::run() {
   assert(!native_->running_ && "Dispatcher already running");
-  native_->running_ = true;
 
+  native_->running_ = true;
   while (native_->running_) {
     process_events();
-  } return native_->return_code_;
+  } 
+  return native_->return_code_;
 }
 
 void dispatcher::exit(int32_t return_code) {
@@ -52,8 +53,8 @@ void dispatcher::handle() const {
   tick_();
 }
 
-void dispatcher::tick(const std::function<void ()>& func) {
-  tick_ = func;
+void dispatcher::tick(const func_type& fn) {
+  tick_ = fn;
 }
 
 dispatcher* dispatcher::self_ = nullptr;
@@ -61,6 +62,6 @@ dispatcher* dispatcher::self_ = nullptr;
 // Native implementations
 //
 
-// bool dispatcher::process_events();
+// void dispatcher::process_events();
 
 } // namespace ig

@@ -26,7 +26,7 @@
 
 #include "imagine/core/flags.h"
 
-namespace ig    { class window;
+namespace ig    {
 namespace mouse {
 
 enum class button_t : uint32_t {
@@ -35,9 +35,6 @@ enum class button_t : uint32_t {
   right = 0x02,
   middle = 0x04
 }; using button_flags = flags<button_t>;
-
-IG_API void move(int32_t x, int32_t y, const window* ref = nullptr);
-IG_API std::pair<int32_t, int32_t> position(const window* ref = nullptr);
 
 } // namespace mouse
 } // namespace ig

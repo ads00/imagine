@@ -52,7 +52,6 @@ template <typename T, int M = dynamic_sized, int N = M>
 class matrix : public alg< matrix<T, M, N> > {
 public:
   using base = alg< matrix<T, M, N> >;
-  struct order{};
 
   static constexpr auto dynamic_rows = (M < 0);
   static constexpr auto dynamic_cols = (N < 0);
@@ -64,27 +63,21 @@ public:
   constexpr matrix() : data_{} {}
 
   template < typename = std::enable_if_t<immutable>, typename... Args >
-  constexpr matrix(order, Args&&... args) : data_{} {
-    base::initializer::
-      auto_construct(*this, std::forward<Args>(args)...);
-  }
-
-  template < typename = std::enable_if_t<immutable>, typename... Args >
-  constexpr matrix(T i, Args&&... args) 
+  constexpr explicit matrix(T i, Args&&... args)
     : data_{{i, std::forward<Args>(args)...}} {
     [this](size_t s) {
-      std::fill(data_.d_.begin() + s + 1, data_.d_.end(), data_.d_[s]);
+      std::fill(data_.d.begin() + s + 1, data_.d.end(), data_.d[s]);
     }(sizeof...(args));
   }
 
-  template < typename = std::enable_if_t<dynamic> >
-  constexpr matrix(size_t m, size_t n)
-    : data_{m, n, std::vector<T>(data_.rows_ * data_.cols_)} {}
-
   template < typename = std::enable_if_t<hybrid> >
-  constexpr matrix(size_t n)
+  constexpr explicit matrix(size_t n)
     : data_{dynamic_rows ? n : static_cast<size_t>(M), dynamic_cols ? n : static_cast<size_t>(N),
-            std::vector<T>(data_.rows_ * data_.cols_)} {}
+            std::vector<T>(data_.rows() * data_.cols())} {}
+
+  template < typename = std::enable_if_t<dynamic> >
+  constexpr explicit matrix(size_t m, size_t n)
+    : data_{m, n, std::vector<T>(data_.rows() * data_.cols())} {}
 
   template <typename Alg>
   matrix(const alg<Alg>& o) : matrix{o, std::integral_constant<bool, immutable>{}} {
@@ -93,15 +86,15 @@ public:
   template <typename Alg> matrix(const alg<Alg>& o, std::true_type) {}
   template <typename Alg> matrix(const alg<Alg>& o, std::false_type)
     : data_{dynamic_rows ? o.rows() : static_cast<size_t>(M), dynamic_cols ? o.cols() : static_cast<size_t>(N),
-            std::vector<T>(data_.rows_ * data_.cols_)} {}
+            std::vector<T>(data_.rows() * data_.cols())} {}
 
   matrix(const base& o) : data_{o.derived().data_} {}
 
-  constexpr auto rows() const { return data_.rows(); }
-  constexpr auto cols() const { return data_.cols(); }
+  auto rows() const { return data_.rows(); }
+  auto cols() const { return data_.cols(); }
 
-  auto data() const { return data_.d_.data(); }
-  auto data()       { return data_.d_.data(); }
+  auto data() const { return data_.d.data(); }
+  auto data()       { return data_.d.data(); }
 
   auto operator()(size_t row, size_t col) const -> const T&;
   auto operator()(size_t row, size_t col) -> T&;
@@ -119,59 +112,57 @@ public:
 
 protected:
   struct dynamic_data {
-    constexpr auto& rows() const { return rows_; } 
-    constexpr auto& cols() const { return cols_; }
-    size_t rows_, cols_;  std::vector<T> d_; 
-  };
+    auto rows() const { return dM; } 
+    auto cols() const { return dN; }
+      size_t dM, dN;  std::vector<T> d; };
   struct static_data {
-    constexpr auto rows() const { return static_cast<size_t>(M); } 
-    constexpr auto cols() const { return static_cast<size_t>(N); }
-    std::array<T, M * N> d_;
-  };
+    auto rows() const { return static_cast<size_t>(M); } 
+    auto cols() const { return static_cast<size_t>(N); }
+      std::array<T, M * N> d; };
   std::conditional_t<hybrid, dynamic_data, static_data> data_;
 };
 
 template <typename T, int M, int N>
 auto matrix<T, M, N>::operator()(size_t row, size_t col) const -> const T& {
   assert(row < rows() && col < cols() && "Invalid matrix subscript");
-  return data_.d_[col*rows() + row];
+  return data_.d[row*cols() + col];
 }
 
 template <typename T, int M, int N>
 auto matrix<T, M, N>::operator()(size_t row, size_t col) -> T& {
   assert(row < rows() && col < cols() && "Invalid matrix subscript");
-  return data_.d_[col*rows() + row];
+  return data_.d[row*cols() + col];
 }
 
 template <typename T, int M, int N>
 auto matrix<T, M, N>::operator[](size_t n) const -> const T& {
   assert(n < rows() * cols() && "Invalid matrix subscript");
-  return data_.d_[n];
+  return data_.d[n];
 }
 
 template <typename T, int M, int N>
 auto matrix<T, M, N>::operator[](size_t n) -> T& {
   assert(n < rows() * cols() && "Invalid matrix subscript");
-  return data_.d_[n];
+  return data_.d[n];
 }
 
 // Eye (Identity)
 template <typename T, int M, int N>
 auto matrix<T, M, N>::make_eye() -> matrix& {
-  size_t i = 0, stride = diagsize() + 1;
-  std::generate(begin(), end(), [&i, &stride, this]() { return !(i++ % stride); });
+  size_t i = 0, stride = base::diagsize() + 1;
+  std::generate(base::begin(), base::end(), [&i, &stride, this]() { return !(i++ % stride); });
   return *this;
 }
 
 #define IG_ALG_USINGS(Type, TypeSuffix, Size) \
 using matrix##Size##TypeSuffix = matrix<Type, Size, Size>; \
-using vector##Size##TypeSuffix = matrix<Type, Size, 1>;    \
-using row##Size##TypeSuffix    = matrix<Type, 1, Size>;
+using colvec##Size##TypeSuffix = matrix<Type, Size, 1>;    \
+using rowvec##Size##TypeSuffix = matrix<Type, 1, Size>;
 
 #define IG_MATRIX_USINGS_SIZES(Type, TypeSuffix) \
 using matrix##TypeSuffix = matrix<Type, dynamic_sized, dynamic_sized>; \
-using vector##TypeSuffix = matrix<Type, dynamic_sized, 1>;             \
-using row##TypeSuffix    = matrix<Type, 1, dynamic_sized>;             \
+using colvec##TypeSuffix = matrix<Type, dynamic_sized, 1>;             \
+using rowvec##TypeSuffix = matrix<Type, 1, dynamic_sized>;             \
 IG_ALG_USINGS(Type, TypeSuffix, 2) \
 IG_ALG_USINGS(Type, TypeSuffix, 3) \
 IG_ALG_USINGS(Type, TypeSuffix, 4)

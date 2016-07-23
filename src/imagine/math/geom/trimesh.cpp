@@ -27,8 +27,7 @@ namespace ig {
 
 trimesh::trimesh(const std::vector<face>& faces, const std::vector<vec3>& vertices,
                            const std::vector<vec3>& normals, const std::vector<vec2>& coords)
-  : faces_(faces), vertices_(vertices), normals_(normals), coords_(coords) {
-}
+  : faces_(faces), vertices_(vertices), normals_(normals), coords_(coords) {}
 
 trimesh trimesh::generate_box(size_t tess) {
   assert(tess > 0 && "Tesselation value must be at least 1");
@@ -61,12 +60,12 @@ trimesh trimesh::generate_box(size_t tess) {
   box.vertices_.reserve(nv); box.normals_.reserve(nv); box.coords_.reserve(nv);
   box.faces_.reserve(12 * tess * tess);
 
-  gen_face({0.5f, 0.f, 0.f}, {0.f, 0.f, 0.5f}, {0.f, 0.5f, 0.f});  // +x
-  gen_face({0.f, 0.5f, 0.f}, {0.5f, 0.f, 0.f}, {0.f, 0.f, 0.5f});  // +y
-  gen_face({0.f, 0.f, 0.5f}, {0.f, 0.5f, 0.f}, {0.5f, 0.f, 0.f});  // +z
-  gen_face({-0.5f, 0.f, 0.f}, {0.f, 0.5f, 0.f}, {0.f, 0.f, 0.5f}); // -x
-  gen_face({0.f, -0.5f, 0.f}, {0.f, 0.f, 0.5f}, {0.5f, 0.f, 0.f}); // -y
-  gen_face({0.f, 0.f, -0.5f}, {0.5f, 0.f, 0.f}, {0.f, 0.5f, 0.f}); // -z
+  gen_face(vec3{0.5f, 0.f, 0.f},  vec3{0.f, 0.f, 0.5f}, vec3{0.f, 0.5f, 0.f}); // +x
+  gen_face(vec3{0.f, 0.5f, 0.f},  vec3{0.5f, 0.f, 0.f}, vec3{0.f, 0.f, 0.5f}); // +y
+  gen_face(vec3{0.f, 0.f, 0.5f},  vec3{0.f, 0.5f, 0.f}, vec3{0.5f, 0.f, 0.f}); // +z
+  gen_face(vec3{-0.5f, 0.f, 0.f}, vec3{0.f, 0.5f, 0.f}, vec3{0.f, 0.f, 0.5f}); // -x
+  gen_face(vec3{0.f, -0.5f, 0.f}, vec3{0.f, 0.f, 0.5f}, vec3{0.5f, 0.f, 0.f}); // -y
+  gen_face(vec3{0.f, 0.f, -0.5f}, vec3{0.5f, 0.f, 0.f}, vec3{0.f, 0.5f, 0.f}); // -z
   return box;
 }
 
@@ -75,7 +74,7 @@ trimesh trimesh::generate_plane(size_t tess) {
   trimesh pln{};
   auto nv = (tess + 1) * (tess + 1);
 
-  pln.vertices_.reserve(nv); pln.normals_.resize(nv, {0.f, 0.f, 1.f}); pln.coords_.reserve(nv);
+  pln.vertices_.reserve(nv); pln.normals_.resize(nv, vec3{0.f, 0.f, 1.f}); pln.coords_.reserve(nv);
   for (size_t i = 0; i < tess + 1; ++i) {
     auto y = -1.f + 2.f*i/tess;
     for (size_t j = 0; j < tess + 1; ++j) {

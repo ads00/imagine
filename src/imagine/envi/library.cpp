@@ -21,14 +21,13 @@
  SOFTWARE.
 */
 
-#include "imagine/envi/impl/library_native.h"
+#include "imagine/envi/impl/library_impl.h"
 #include "imagine/envi/library.h"
 
 namespace ig {
 
 library::library()
-  : native_{std::make_unique<impl::library_native>()} {
-}
+  : native_{std::make_unique<impl::library_native>()} {}
 
 library::library(const std::string& path)
   : native_{std::make_unique<impl::library_native>(path)} {
@@ -46,7 +45,7 @@ bool library::loaded() const {
 // Native implementations
 //
 
-// auto library::resolve(const char* symbol) -> func_ptr;
+// auto library::resolve(const char* symbol) -> funcptr_type;
 // bool library::open(const std::string& path);
 // void library::close();
 

@@ -21,32 +21,29 @@
  SOFTWARE.
 */
 
-#ifndef IG_ENVI_MOUSE_NATIVE_H
-#define IG_ENVI_MOUSE_NATIVE_H
+#ifndef IG_ENVI_CURSOR_IMPL_H
+#define IG_ENVI_CURSOR_IMPL_H
 
-#include "imagine/envi/input_mouse.h"
+#include "imagine/envi/cursor.h"
+#include "imagine/envi/impl/widget_impl.h"
 
-#if defined(IG_WIN)
-#include <windows.h>
-#include <windowsx.h>
-#endif
+namespace ig   {
+namespace impl {
 
-namespace ig    {
-namespace mouse {
-namespace impl  {
+class cursor_native {
+public:
+  cursor_native(cursor::shape_t shape, int32_t x = 0, int32_t y = 0);
+  ~cursor_native();
 
-#if defined(IG_WIN)
-auto buttons() -> button_flags;
+  cursor::shape_t shape_;
+  int32_t x_, y_;
 
-auto x(LPARAM lparam) -> int32_t;
-auto y(LPARAM lparam) -> int32_t;
-auto wheel_delta(WPARAM wparam) -> float;
-
-auto track(HWND window) -> bool;
-#endif
+  #if defined(IG_WIN)
+  HCURSOR handle_;
+  #endif
+};
 
 } // namespace impl
-} // namespace mouse
 } // namespace ig
 
-#endif // IG_ENVI_MOUSE_NATIVE_H
+#endif // IG_ENVI_CURSOR_IMPL_H

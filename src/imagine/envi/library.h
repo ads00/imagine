@@ -33,13 +33,13 @@ namespace impl { class library_native; }
 
 class IG_API library {
 public:
-  typedef void (*func_ptr)();
+  using funcptr_type = void (*)();
 
   library();
-  library(const std::string& path);
-  ~library();
+  explicit library(const std::string& path);
+  virtual ~library();
 
-  auto resolve(const char* symbol) -> func_ptr;
+  auto resolve(const char* symbol) -> funcptr_type;
   bool open(const std::string& path);
   void close();
 

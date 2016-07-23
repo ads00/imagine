@@ -38,35 +38,35 @@ struct alg_traits< product_expr<Lhs, Rhs> > {
 template <typename Lhs, typename Rhs>
 class product_expr : public alg< product_expr<Lhs, Rhs> > {
 public:
-  using matrix_t = typename product_expr::plain_t;
+  using matrix_type = typename product_expr::plain_type;
 
-  product_expr(const Lhs& lhs, const Rhs& rhs) 
+  explicit product_expr(const Lhs& lhs, const Rhs& rhs)
     : product_expr{lhs, rhs, 
-                   std::integral_constant<bool, matrix_t::immutable>{},
-                   std::integral_constant<bool, matrix_t::hybrid>{}}
+                   std::integral_constant<bool, matrix_type::immutable>{},
+                   std::integral_constant<bool, matrix_type::hybrid>{}}
   { eval_product(lhs, rhs); }
 
   product_expr(const Lhs& lhs, const Rhs& rhs, std::true_type,  std::false_type) : prod_{} {}
   product_expr(const Lhs& lhs, const Rhs& rhs, std::false_type, std::false_type) : prod_{lhs.rows(), rhs.cols()} {}
-  product_expr(const Lhs& lhs, const Rhs& rhs, std::false_type, std::true_type)  : prod_{matrix_t::dynamic_rows ? lhs.rows() : rhs.cols()} {}
+  product_expr(const Lhs& lhs, const Rhs& rhs, std::false_type, std::true_type)  : prod_{matrix_type::dynamic_rows ? lhs.rows() : rhs.cols()} {}
 
-  constexpr auto rows() const { return prod_.rows(); }
-  constexpr auto cols() const { return prod_.cols(); }
+  auto rows() const { return prod_.rows(); }
+  auto cols() const { return prod_.cols(); }
 
   auto operator()(size_t row, size_t col) const { return prod_(row, col); }
   auto operator[](size_t n) const               { return prod_[n]; }
 
 private:
   void eval_product(const Lhs& lhs, const Rhs& rhs) {
-    typename Lhs::plain_t ev_lhs = lhs;
-    typename Rhs::plain_t ev_rhs = rhs;
+    typename Lhs::plain_type ev_lhs = lhs;
+    typename Rhs::plain_type ev_rhs = rhs;
 
     for (size_t i = 0; i < lhs.rows(); ++i)
       for (size_t j = 0; j < rhs.cols(); ++j)
         for (size_t k = 0; k < lhs.cols(); ++k) prod_(i, j) += ev_lhs(i, k) * ev_rhs(k, j);
   }
 
-  matrix_t prod_;
+  matrix_type prod_;
 };
 
 template <typename Lhs, typename Rhs>

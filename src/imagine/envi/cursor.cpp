@@ -21,19 +21,18 @@
  SOFTWARE.
 */
 
-#include "imagine/envi/impl/cursor_native.h"
+#include "imagine/envi/impl/cursor_impl.h"
 #include "imagine/envi/cursor.h"
 
 namespace ig {
 
 cursor::cursor(shape_t shape)
-  : native_{std::make_unique<impl::cursor_native>(shape)} {
-}
+  : native_{std::make_unique<impl::cursor_native>(shape)} {}
 
 cursor::~cursor() = default;
 
 void cursor::reshape(shape_t shape) {
-  native_.reset(new impl::cursor_native(shape, native_->x_, native_->y_));
+  native_.reset(new impl::cursor_native{shape, native_->x_, native_->y_});
   refresh();
 }
 
@@ -45,5 +44,7 @@ auto cursor::shape() const -> shape_t {
 //
 
 // void cursor::refresh() const;
+// static void cursor::clip(const window& win);
+// static void cursor::move(int32_t x, int32_t y, const window* win = nullptr);
 
 } // namespace ig

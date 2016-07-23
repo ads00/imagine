@@ -43,13 +43,16 @@ public:
   };
   friend impl::window_native;
 
-  cursor(shape_t shape);
-  ~cursor();
+  explicit cursor(shape_t shape);
+  virtual ~cursor();
 
   void refresh() const;
   void reshape(shape_t shape);
 
   auto shape() const -> shape_t;
+
+  static void clip(const window& win);
+  static void move(int32_t x, int32_t y, const window* win = nullptr);
 
 private:
   std::unique_ptr<impl::cursor_native> native_;

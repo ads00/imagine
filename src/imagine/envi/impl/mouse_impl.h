@@ -21,26 +21,28 @@
  SOFTWARE.
 */
 
-#ifndef IG_ENVI_KEYBOARD_NATIVE_H
-#define IG_ENVI_KEYBOARD_NATIVE_H
+#ifndef IG_ENVI_MOUSE_IMPL_H
+#define IG_ENVI_MOUSE_IMPL_H
 
-#include "imagine/envi/input_keyboard.h"
+#include "imagine/envi/input_mouse.h"
+#include "imagine/envi/impl/widget_impl.h"
 
-#if defined(IG_WIN)
-#include <windows.h>
-#endif
-
-namespace ig       {
-namespace keyboard {
-namespace impl     {
+namespace ig    {
+namespace mouse {
+namespace impl  {
 
 #if defined(IG_WIN)
-auto modifiers() -> modifier_flags;
-auto key(WPARAM wparam) -> key_t;
+auto buttons() -> button_flags;
+
+auto x(LPARAM lparam) -> int32_t;
+auto y(LPARAM lparam) -> int32_t;
+auto wheel_delta(WPARAM wparam) -> float;
+
+auto track(HWND window) -> bool;
 #endif
 
 } // namespace impl
-} // namespace keyboard
+} // namespace mouse
 } // namespace ig
 
-#endif // IG_ENVI_KEYBOARD_NATIVE_H
+#endif // IG_ENVI_MOUSE_IMPL_H

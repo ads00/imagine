@@ -51,7 +51,7 @@ void log::push(const log_context& ctx) {
   }
 }
 
-log::formatter_t log::default_format = [](const log_context& c) {
+log::formatter_type log::default_format = [](const log_context& c) {
   auto tt = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 
   std::stringstream ss{};
@@ -70,8 +70,7 @@ log::formatter_t log::default_format = [](const log_context& c) {
 
 // log_context
 log_context::log_context(log_t type, const char* func, const char* file, int32_t line)
-  : type_{type}, func_{func}, file_{file}, line_{line} {
-}
+  : type_{type}, func_{func}, file_{file}, line_{line} {}
 
 log_context::~log_context() {
   log::get().push(*this);

@@ -26,11 +26,10 @@
 namespace ig {
 
 bbox::bbox(const vec3& min, const vec3& max)
-  : min_{min}, max_{max}, extent_{max_ - min_} {
-}
+  : min_{min}, max_{max}, extent_{max_ - min_} {}
 
 void bbox::expand(const vec3& point) {
-  std::tie(min_, max_) = std::minmax({min_, max_, point});
+  min_ = std::min(min_, point), max_ = std::max(max_, point);
   extent_ = max_ - min_;
 }
 

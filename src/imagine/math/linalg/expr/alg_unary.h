@@ -38,11 +38,11 @@ struct alg_traits< unary_expr<Alg, Op> > {
 template <typename Alg, typename Op>
 class unary_expr : public alg< unary_expr<Alg, Op> > {
 public:
-  constexpr unary_expr(const Alg& alg, const Op& op)
+  explicit unary_expr(const Alg& alg, const Op& op)
     : alg_{alg}, op_{op} {}
 
-  constexpr auto rows() const { return alg_.rows(); }
-  constexpr auto cols() const { return alg_.cols(); }
+  auto rows() const { return alg_.rows(); }
+  auto cols() const { return alg_.cols(); }
 
   auto operator()(size_t row, size_t col) const { return op_(alg_(row, col)); }
   auto operator[](size_t n) const               { return op_(alg_[n]); }
@@ -61,8 +61,8 @@ namespace linalg {
 
 struct conj_op {
   template <typename T>
-  constexpr auto operator()(T&& val) const { 
-    return std::conj(std::forward<T>(val)); 
+  constexpr auto operator()(const T& val) const { 
+    return std::conj(val); 
   }
 };
 

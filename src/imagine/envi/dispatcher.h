@@ -34,24 +34,26 @@ namespace impl { class dispatcher_native; }
 
 class IG_API dispatcher {
 public:
+  using func_type = std::function<void ()>;
+
   dispatcher();
   virtual ~dispatcher();
 
   virtual int32_t run();
   virtual void exit(int32_t return_code);
 
-  virtual bool process_events();
+  virtual void process_events();
   virtual void handle() const;
-  virtual void tick(const std::function<void ()>& func);
+  virtual void tick(const func_type& fn);
 
-  static dispatcher* get() { return self_; };
+  static auto* get() { return self_; };
 
   dispatcher(const dispatcher&) = delete;
   dispatcher& operator=(const dispatcher&) = delete;
 
 private:
   std::unique_ptr<impl::dispatcher_native> native_;
-  std::function<void ()> tick_ = [] {};
+  func_type tick_ = [] {};
 
   static dispatcher* self_;
 };

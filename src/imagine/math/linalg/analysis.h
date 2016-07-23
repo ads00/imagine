@@ -116,7 +116,7 @@ struct inverse<Alg, 4> {
              det3_helper(a3, a1, a2, b1, b2, b3);
     };
 
-    Alg::plain_t inv{};
+    Alg::plain_type inv{};
     auto invdet = Alg::T(1) / det(alg);
 
     inv(0, 0) = cofactor(0, 0) * invdet;  inv(1, 0) = -cofactor(0, 1) * invdet;
@@ -141,7 +141,7 @@ struct inverse<Alg, 3> {
       return alg(a1, b1)*alg(a2, b2) - alg(a1, b2)*alg(a2, b1);
     };
 
-    Alg::plain_t inv{};
+    Alg::plain_type inv{};
     auto invdet = Alg::T(1) / det(alg);
 
     inv(0, 0) = cofactor(0, 0) * invdet; inv(1, 0) = cofactor(0, 1) * invdet; inv(2, 0) = cofactor(0, 2) * invdet;
@@ -154,7 +154,7 @@ struct inverse<Alg, 3> {
 template <typename Alg>
 struct inverse<Alg, 2> {
   static auto run(const alg<Alg>& alg) {
-    Alg::plain_t inv{};
+    Alg::plain_type inv{};
     auto invdet = Alg::T(1) / det(alg);
 
     inv(0, 0) = alg(1, 1) * invdet;  inv(1, 0) = -alg(1, 0) * invdet;

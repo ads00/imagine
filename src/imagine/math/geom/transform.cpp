@@ -22,13 +22,11 @@
 */
 
 #include "imagine/math/geom/transform.h"
-#include "imagine/math/linalg/geometric.h"
 
 namespace ig {
 
 transform::transform(const vec3& pos, const quat& ori, const vec3& sca)
-  : parent_{nullptr}, umatrix_{false}, matrix_{mat4::eye}, pos_{pos}, ori_{ori}, sca_{sca} {
-}
+  : parent_{nullptr}, umatrix_{false}, matrix_{mat4::eye}, pos_{pos}, ori_{ori}, sca_{sca} {}
 
 transform::~transform() {
   if (parent_) {
@@ -46,7 +44,8 @@ void transform::positions(const vec3& pos, space_t space) {
     break;
   case space_t::world:
     pos_ = parent_ ? 
-      parent_->inv_wt().transform(pos) : pos;
+      parent_->inv_wt().transform(pos) : 
+      pos;
     break;
   }
 }
@@ -58,7 +57,8 @@ void transform::directs(const quat& ori, space_t space) {
     break;
   case space_t::world:
     ori_ = parent_ ? 
-      parent_->ori_ * ori_ : ori_;
+      parent_->ori_ * ori_ : 
+      ori_;
     break;
   }
 }
@@ -70,7 +70,8 @@ void transform::scales(const vec3& sca, space_t space) {
     break;
   case space_t::world:
     sca_ = parent_ ? 
-      sca / parent_->sca_ : sca_;
+      sca / parent_->sca_ : 
+      sca_;
     break;
   }
 }
@@ -87,7 +88,7 @@ transform& transform::translate(const vec3& tra, space_t space) {
       tra;
     break;
   }
-  needs_update();
+  hierarchical_invalidate();
   return *this;
 }
 
@@ -108,13 +109,13 @@ transform& transform::rotate(const quat& rot, space_t space) {
       linalg::normalise(rot * into);
     break;
   }
-  needs_update();
+  hierarchical_invalidate();
   return *this;
 }
 
 transform& transform::scale(const vec3& sca) {
   sca_ *= sca; 
-  needs_update();
+  hierarchical_invalidate();
   return *this;
 }
 
@@ -131,7 +132,7 @@ void transform::link(transform* parent) {
   }
 
   parent_ = parent;
-  needs_update();
+  hierarchical_invalidate();
   if (parent_) {
     parent_->children_.push_back(*this);
   }
@@ -153,11 +154,11 @@ const mat4 transform::inv_wt() {
   return linalg::inv(wt());
 }
 
-void transform::needs_update() {
+void transform::hierarchical_invalidate() {
   if (umatrix_) {
     umatrix_ = false;
     for (auto& child : children_) {
-      child.get().needs_update();
+      child.get().hierarchical_invalidate();
     }
   }
 }

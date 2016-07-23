@@ -26,25 +26,26 @@
 
 #include "imagine/math/linalg/matrix.h"
 #include "imagine/math/linalg/analysis.h"
-#include "imagine/math/linalg/quaternion.h"
+#include "imagine/math/linalg/spatial/quaternion.h"
+#include "imagine/math/linalg/spatial/ray.h"
 
 namespace ig {
 
-using vec3 = vector<float, 3>;
-using vec2 = vector<float, 2>;
+using vec3 = colvec<float, 3>;
+using vec2 = colvec<float, 2>;
+
 using quat = quaternion<float>;
+using ray3 = ray<float, 3>;
 
 class IG_API mat4 : public matrix<float, 4> {
 public:
   using base = matrix<float, 4>;
 
   mat4() = default;
-  mat4(float a11, float a12, float a13, float a14,
-       float a21, float a22, float a23, float a24,
-       float a31, float a32, float a33, float a34,
-       float a41, float a42, float a43, float a44)
-    : base{a11, a21, a31, a41, a12, a22, a32, a42,
-           a13, a23, a33, a43, a14, a24, a34, a44} {}
+
+  template <typename... Args>
+  explicit mat4(T i, Args&&... args)
+    : base{i, std::forward<Args>(args)...} {}
 
   template <typename Alg> 
   mat4(const alg<Alg>& o) 

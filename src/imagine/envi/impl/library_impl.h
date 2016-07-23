@@ -21,14 +21,11 @@
  SOFTWARE.
 */
 
-#ifndef IG_ENVI_LIBRARY_NATIVE_H
-#define IG_ENVI_LIBRARY_NATIVE_H
+#ifndef IG_ENVI_LIBRARY_IMPL_H
+#define IG_ENVI_LIBRARY_IMPL_H
 
 #include "imagine/ig.h"
-
-#if defined(IG_WIN)
-#include <windows.h>
-#endif
+#include "imagine/envi/impl/widget_impl.h"
 
 namespace ig   {
 namespace impl {
@@ -49,4 +46,4 @@ public:
 } // namespace impl
 } // namespace ig
 
-#endif // IG_ENVI_LIBRARY_NATIVE_H
+#endif // IG_ENVI_LIBRARY_IMPL_H

@@ -34,10 +34,10 @@ namespace ig {
 class IG_API image {
 public:
   enum class format_t { unknown, jpeg, png };
-  using access_t = std::initializer_list<uint32_t>;
+  using dimensions_type = std::initializer_list<uint32_t>;
 
   image();
-  image(access_t dimensions, uint32_t channels, uint32_t bit_depth);
+  explicit image(dimensions_type dimensions, uint32_t channels, uint32_t bit_depth);
 
   auto pixels() const { return pixels_.data(); }
   auto pixels()       { return pixels_.data(); }
@@ -48,8 +48,8 @@ public:
   auto& bit_depth() const { return bit_depth_; }
   auto& pitch() const     { return pitch_; }
   
-  const uint8_t& operator[](access_t coords) const;
-  uint8_t& operator[](access_t coords);
+  const uint8_t& operator[](dimensions_type coords) const;
+  uint8_t& operator[](dimensions_type coords);
 
   bool save(format_t format, const std::string& filename);
   static std::unique_ptr<image> load(const std::string& filename);

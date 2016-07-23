@@ -33,8 +33,8 @@ public:
   using face = std::array<size_t, 3>;
 
   trimesh() = default;
-  trimesh(const std::vector<face>& faces, const std::vector<vec3>& vertices,
-          const std::vector<vec3>& normals = {}, const std::vector<vec2>& coords = {});
+  explicit trimesh(const std::vector<face>& faces, const std::vector<vec3>& vertices,
+                   const std::vector<vec3>& normals = {}, const std::vector<vec2>& coords = {});
 
   static trimesh generate_box(size_t tess);
   static trimesh generate_plane(size_t tess);

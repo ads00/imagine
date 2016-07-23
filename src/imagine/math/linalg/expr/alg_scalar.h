@@ -38,11 +38,13 @@ struct alg_traits< scalar_expr<Alg, Op> > {
 template <typename Alg, typename Op>
 class scalar_expr : public alg< scalar_expr<Alg, Op> > {
 public:
-  constexpr scalar_expr(const Alg& alg, const T scalar, const Op& op)
+  using T = alg_t<scalar_expr>;
+
+  explicit scalar_expr(const Alg& alg, const T scalar, const Op& op)
     : alg_{alg}, scalar_{scalar}, op_{op} {}
 
-  constexpr auto rows() const { return alg_.rows(); }
-  constexpr auto cols() const { return alg_.cols(); }
+  auto rows() const { return alg_.rows(); }
+  auto cols() const { return alg_.cols(); }
 
   auto operator()(size_t row, size_t col) const { return op_(alg_(row, col), scalar_); }
   auto operator[](size_t n) const               { return op_(alg_[n], scalar_); }

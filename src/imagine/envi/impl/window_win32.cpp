@@ -21,10 +21,10 @@
  SOFTWARE.
 */
 
-#include "imagine/envi/impl/window_native.h"
-#include "imagine/envi/impl/keyboard_native.h"
-#include "imagine/envi/impl/mouse_native.h"
-#include "imagine/envi/impl/cursor_native.h"
+#include "imagine/envi/impl/window_impl.h"
+#include "imagine/envi/impl/keyboard_impl.h"
+#include "imagine/envi/impl/mouse_impl.h"
+#include "imagine/envi/impl/cursor_impl.h"
 
 #if defined(IG_WIN64)
 # define GCL_HCURSOR GCLP_HCURSOR
@@ -58,7 +58,6 @@ window_native::window_native(const window& ref, const std::string& caption, uint
   wstyle_ = WS_VISIBLE;
   if (style_ & window::style_t::titlebar) {
     wstyle_ |= WS_CAPTION | WS_MINIMIZEBOX;
-
     if (style_ & window::style_t::closable) {
       wstyle_ |= WS_SYSMENU;
     } if (style_ & window::style_t::resizable) {
@@ -68,21 +67,22 @@ window_native::window_native(const window& ref, const std::string& caption, uint
     wstyle_ |= WS_POPUP;
   }
 
-  RECT rect{0, 0, static_cast<LONG>(width), static_cast<LONG>(height)};
-  AdjustWindowRect(&rect, wstyle_, false);
-  width = rect.right - rect.left; height = rect.bottom - rect.top;
+  RECT adjrect{0, 0, static_cast<LONG>(width), static_cast<LONG>(height)};
+  AdjustWindowRect(&adjrect, wstyle_, false);
+  auto cwidth = adjrect.right - adjrect.left, cheight = adjrect.bottom - adjrect.top;
 
-  auto x = (GetSystemMetrics(SM_CXSCREEN) - width) / 2;
-  auto y = (GetSystemMetrics(SM_CYSCREEN) - height) / 2;
+  auto cx = (GetSystemMetrics(SM_CXSCREEN) - width) / 2;
+  auto cy = (GetSystemMetrics(SM_CYSCREEN) - height) / 2;
   
   handle_ = CreateWindowEx(0, ig_window_class.data(), caption.data(), wstyle_,
-                           x, y, width, height, nullptr, nullptr, GetModuleHandle(nullptr), this);
+                           cx, cy, cwidth, cheight, nullptr, nullptr, GetModuleHandle(nullptr), this);
 
-  RECT client{}, window{};
-  GetClientRect(handle_, &client); GetWindowRect(handle_, &window);
+  RECT clirect{}, winrect{};
+  GetClientRect(handle_, &clirect);
+  GetWindowRect(handle_, &winrect);
 
-  x_ = window.left; y_ = window.top;
-  width_ = client.right - client.left; height_ = client.bottom - client.top;
+  width_ = clirect.right - clirect.left, height_ = clirect.bottom - clirect.top;
+  x_ = winrect.left, y_ = winrect.top;
 }
 
 LRESULT window_native::internal(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
@@ -90,21 +90,8 @@ LRESULT window_native::internal(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
     return {type, keyboard::impl::modifiers(), keyboard::impl::key(wparam), static_cast<uint32_t>(wparam)};
   };
 
-  auto mouse_move_ev = [&lparam, this](event_mouse::type_t type, bool enter) -> event_mouse {
-    auto nx = mouse::impl::x(lparam), ny = mouse::impl::y(lparam);
-    event_mouse ev{type, keyboard::impl::modifiers(), mouse::impl::buttons(), nx, ny};
-    ev.move.dx = enter ? 
-      0 : 
-      nx - ref_.cursor_.native_->x_,
-    ev.move.dy = enter ? 
-      0 : 
-      ny - ref_.cursor_.native_->y_;
-
-    ref_.cursor_.native_->x_ = nx; ref_.cursor_.native_->y_ = ny;
-    return ev;
-  };
   auto mouse_ev = [&lparam](event_mouse::type_t type) -> event_mouse {
-    return {type, keyboard::impl::modifiers(), 
+    return {type, keyboard::impl::modifiers(),
             mouse::impl::buttons(), mouse::impl::x(lparam), mouse::impl::y(lparam)};
   };
   auto mouse_click_ev = [&lparam, &mouse_ev](event_mouse::type_t type, mouse::button_t button) -> event_mouse {
@@ -113,6 +100,21 @@ LRESULT window_native::internal(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
   };
   auto mouse_wheel_ev = [&lparam, &wparam, &mouse_ev](event_mouse::type_t type) -> event_mouse {
     auto ev = mouse_ev(type); ev.wheel.delta = mouse::impl::wheel_delta(wparam);
+    return ev;
+  };
+  auto mouse_move_ev = [&lparam, this, &mouse_ev](event_mouse::type_t type, bool entered) -> event_mouse {
+    auto ev = mouse_ev(type);
+    if (ev.x != ref_.cursor_.native_->x_ || ev.y != ref_.cursor_.native_->y_) {
+      ev.move.dx = entered ?
+        0 :
+        ev.x - ref_.cursor_.native_->x_,
+        ev.move.dy = entered ?
+        0 :
+        ev.y - ref_.cursor_.native_->y_;
+      ref_.cursor_.native_->x_ = ev.x, ref_.cursor_.native_->y_ = ev.y;
+    } else {
+      ev.type = event_mouse::none;
+    }
     return ev;
   };
 
@@ -175,19 +177,19 @@ LRESULT window_native::internal(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
     break;
   case WM_EXITSIZEMOVE: 
     {
-      RECT client{}, window{};
-      GetClientRect(handle_, &client); GetWindowRect(handle_, &window);
+      RECT clirect{}, winrect{};
+      GetClientRect(handle_, &clirect);
+      GetWindowRect(handle_, &winrect);
 
-      if (x_ != window.left || y_ != window.top) {
-        x_ = window.left; y_ = window.top;
-        ref_.process(event_status{event_status::moved});
+      auto cwidth = clirect.right - clirect.left, cheight = clirect.bottom - clirect.top;
+      if (width_ != cwidth || height_ != cheight) {
+        width_ = cwidth, height_ = cheight;
+        ref_.process(event_status{event_status::resized});
       }
 
-      auto cwidth = client.right - client.left;
-      auto cheight = client.bottom - client.top;
-      if (width_ != cwidth || height_ != cheight) {
-        width_ = cwidth; height_ = cheight;
-        ref_.process(event_status{event_status::resized});
+      if (x_ != winrect.left || y_ != winrect.top) {
+        x_ = winrect.left, y_ = winrect.top;
+        ref_.process(event_status{event_status::moved});
       }
     }
     break;
@@ -209,7 +211,7 @@ LRESULT CALLBACK window_native::proc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
   window_native* callback = nullptr;
   if (msg == WM_NCCREATE) {
     auto cs = reinterpret_cast<CREATESTRUCT*>(lparam);
-    callback  = reinterpret_cast<window_native*>(cs->lpCreateParams);
+    callback = reinterpret_cast<window_native*>(cs->lpCreateParams);
     SetWindowLongPtr(hwnd, GWL_USERDATA, reinterpret_cast<LONG_PTR>(callback));
   } else {
     callback = reinterpret_cast<window_native*>(GetWindowLongPtr(hwnd, GWL_USERDATA));
@@ -217,7 +219,9 @@ LRESULT CALLBACK window_native::proc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
 
   if (callback) {
     return callback->internal(hwnd, msg, wparam, lparam);
-  } return DefWindowProc(hwnd, msg, wparam, lparam);
+  } else {
+    return DefWindowProc(hwnd, msg, wparam, lparam);
+  }
 }
 
 bool window_native::reg() {
@@ -261,14 +265,14 @@ void window::focus() {
   SetForegroundWindow(native_->handle_);
 }
 
-void window::move(int32_t x, int32_t y) {
-  SetWindowPos(native_->handle_, nullptr, x, y, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
+void window::resize(uint32_t width, uint32_t height) {
+  RECT winrect{0, 0, static_cast<LONG>(width), static_cast<LONG>(height)};
+  AdjustWindowRect(&winrect, static_cast<DWORD>(GetWindowLongPtr(native_->handle_, GWL_STYLE)), false);
+  SetWindowPos(native_->handle_, nullptr, 0, 0, winrect.right - winrect.left, winrect.bottom - winrect.top, SWP_NOMOVE | SWP_NOZORDER);
 }
 
-void window::resize(uint32_t width, uint32_t height) {
-  RECT rect{0, 0, static_cast<LONG>(width), static_cast<LONG>(height)};
-  AdjustWindowRect(&rect, static_cast<DWORD>(GetWindowLongPtr(native_->handle_, GWL_STYLE)), false);
-  SetWindowPos(native_->handle_, nullptr, 0, 0, rect.right - rect.left, rect.bottom - rect.top, SWP_NOMOVE | SWP_NOZORDER);
+void window::move(int32_t x, int32_t y) {
+  SetWindowPos(native_->handle_, nullptr, x, y, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
 }
 
 bool window::opened() const {

@@ -46,29 +46,28 @@ template <typename Alg>
 class qr {
 public:
   using T = alg_t<Alg>;
-  using matrix_t = matrix<T>;
-  using vector_t = vector<T>;
+  using matrix_type = matrix<T>;
+  using vector_type = colvec<T>;
 
-  static_assert(std::is_arithmetic<T>::value,
-                "QR decomposition requires an arithmetic matrix");
+  static_assert(std::is_arithmetic<T>::value, "QR decomposition requires an arithmetic matrix");
 
-  qr(const matrix_t& alg);
+  explicit qr(const matrix_type& alg);
 
   auto solve(const vector_t& b) -> vector_t;
 
-  constexpr auto& matrix() const { return QR_; }
-  constexpr auto& tau() const    { return tau_; }
+  auto& mat() const { return QR_; }
+  auto& tau() const { return tau_; }
 
 private:
   const size_t M_;
   const size_t N_;
 
-  matrix_t QR_;
-  vector_t tau_;
+  matrix_type QR_;
+  vector_type tau_;
 };
 
 template <typename Alg>
-qr<Alg>::qr(const matrix_t& alg)
+qr<Alg>::qr(const matrix_type& alg)
   : M_{alg.rows()}, N_{alg.cols()}, QR_{alg}, tau_{N_} {
 
   for (size_t i = 0; i < N_; ++i) {
@@ -94,7 +93,7 @@ qr<Alg>::qr(const matrix_t& alg)
 }
 
 template <typename Alg>
-auto qr<Alg>::solve(const vector_t& b) -> vector_t {
+auto qr<Alg>::solve(const vector_type& b) -> vector_type {
   // Compute y = Q^Tb
   auto y = b;
   for (size_t i = 0; i < N_; ++i) {
@@ -106,7 +105,7 @@ auto qr<Alg>::solve(const vector_t& b) -> vector_t {
   }
 
   // Backward Rx = y
-  vector_t x{N_};
+  vector_type x{N_};
   for (size_t i = N_; i--> 0;) {
     x[i] = y[i] / tau_[i];
     for (size_t j = 0; j < i; ++j) y[j] -= x[i] * QR_(j, i);
@@ -117,10 +116,10 @@ auto qr<Alg>::solve(const vector_t& b) -> vector_t {
 namespace linalg {
 
 template <typename Alg>
-constexpr qr<Alg> qr_run(const alg<Alg>& alg) {
+constexpr auto qr_run(const alg<Alg>& alg) {
   assert(alg.rows() >= alg.cols() && "QR decomposition requires a square or rectangular matrix"
                                      " where m >= n");
-  return qr<Alg>(alg);
+  return qr<Alg>{alg};
 }
 
 } // namespace linalg

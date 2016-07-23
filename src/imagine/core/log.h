@@ -40,7 +40,7 @@ class log_context;
 class log_sink;
 class IG_API log {
 public:
-  using formatter_t = std::function<std::string (const log_context&)>;
+  using formatter_type = std::function<std::string (const log_context&)>;
   friend log_context;
   
   static void add_sink(const std::shared_ptr<log_sink>& sink);
@@ -49,7 +49,7 @@ public:
   log(const log&) = delete;
   log& operator=(const log&) = delete;
 
-  static formatter_t default_format;
+  static formatter_type default_format;
   static std::shared_ptr<log_sink> default_sink;
 
 protected:
@@ -64,7 +64,7 @@ protected:
 
 class IG_API log_context {
 public:
-  log_context(log_t type, const char* func, const char* file, int32_t line);
+  explicit log_context(log_t type, const char* func, const char* file, int32_t line);
   ~log_context();
 
   log_t type_;
@@ -75,19 +75,19 @@ public:
 class log_sink {
 public:
   friend log;
-  log_sink(std::ostream& stream, const log::formatter_t& format = log::default_format)
+  explicit log_sink(std::ostream& stream, const log::formatter_type& format = log::default_format)
     : stream_{stream}, formatter_{format} {}
 
 private:
   void consume(const log_context& ctx) { stream_ << formatter_(ctx); }
 
   std::ostream& stream_;
-  log::formatter_t formatter_;
+  log::formatter_type formatter_;
 };
 
 } // namespace ig
 
 using ig::log_t;
-#define LOG(log_t) ig::log_context(log_t, IG_FUNC, __FILE__, __LINE__).stream_
+#define LOG(type) ig::log_context(type, IG_FUNC, __FILE__, __LINE__).stream_
 
 #endif // IG_CORE_LOG_H

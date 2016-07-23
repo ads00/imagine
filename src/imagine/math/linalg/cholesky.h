@@ -25,7 +25,7 @@
 #define IG_MATH_CHOLESKY_H
 
 #include "imagine/math/linalg/matrix.h"
-#include "imagine/math/linalg/equation.h"
+#include "imagine/math/linalg/solver/direct.h"
 
 namespace ig {
 
@@ -47,27 +47,26 @@ template <typename Alg>
 class cholesky {
 public:
   using T = alg_t<Alg>;
-  using matrix_t = matrix<T>;
-  using vector_t = vector<T>;
+  using matrix_type = matrix<T>;
+  using vector_type = colvec<T>;
 
-  static_assert(std::is_arithmetic<T>::value,
-                "Cholesky decomposition requires an arithmetic matrix");
+  static_assert(std::is_arithmetic<T>::value, "Cholesky decomposition requires an arithmetic matrix");
 
-  cholesky(const matrix_t& mat);
+  explicit cholesky(const matrix_type& mat);
 
   auto det() const -> T;
-  auto inv() const -> matrix_t;
-  auto solve(const vector_t& b) const -> vector_t;
+  auto inv() const -> matrix_type;
+  auto solve(const vector_type& b) const -> vector_type;
 
-  constexpr auto& matrix() const { return LLT_; }
+  auto& mat() const { return LLT_; }
 
 private:
   const size_t N_;
-  matrix_t LLT_;
+  matrix_type LLT_;
 };
 
 template <typename Alg>
-cholesky<Alg>::cholesky(const matrix_t& alg)
+cholesky<Alg>::cholesky(const matrix_type& alg)
   : N_{alg.diagsize()}, LLT_{alg} {
 
   for (size_t i = 0; i < N_; ++i) {
@@ -77,10 +76,9 @@ cholesky<Alg>::cholesky(const matrix_t& alg)
 
       if (i == j) {
         // Diagonal square root
-        if (s <= std::numeric_limits<T>::epsilon()/*eps<T>*/) {
+        if (s <= std::numeric_limits<T>::epsilon()) {
           throw std::logic_error{"Cholesky decomposition failed (Not positive-definite)"};
         }
-
         LLT_(i, i) = std::sqrt(s);
       } else {
         LLT_(j, i) = s / LLT_(i, i);
@@ -96,17 +94,17 @@ auto cholesky<Alg>::det() const -> T {
 }
 
 template <typename Alg>
-auto cholesky<Alg>::inv() const -> matrix_t {
+auto cholesky<Alg>::inv() const -> matrix_type {
   // Forward L-1
-  auto inv = matrix_t::eye(N_);
+  auto inv = matrix_type::eye(N_);
   for (size_t i = 0; i < N_; ++i) {
     linalg::forward_solve(LLT_, inv.col(i));
   } return inv.t() * inv;
 }
 
 template <typename Alg>
-auto cholesky<Alg>::solve(const vector_t& b) const -> vector_t {
-  vector_t x{b};
+auto cholesky<Alg>::solve(const vector_type& b) const -> vector_type {
+  vector_type x{b};
   linalg::forward_solve (LLT_, x);
   linalg::backward_solve(LLT_.t(), x);
   return x;
@@ -115,9 +113,9 @@ auto cholesky<Alg>::solve(const vector_t& b) const -> vector_t {
 namespace linalg {
 
 template <typename Alg>
-constexpr cholesky<Alg> chol_run(const alg<Alg>& alg) {
+constexpr auto chol_run(const alg<Alg>& alg) {
   assert(alg.square() && "Cholesky decomposition requires a square matrix");
-  return cholesky<Alg>(alg);
+  return cholesky<Alg>{alg};
 }
 
 } // namespace linalg

@@ -21,24 +21,27 @@
  SOFTWARE.
 */
 
-#ifndef IG_MATH_RAY_H
-#define IG_MATH_RAY_H
+#ifndef IG_ENVI_WIDGET_IMPL_H
+#define IG_ENVI_WIDGET_IMPL_H
 
-#include "imagine/math/geom/homogeneous.h"
+#include "imagine/ig.h"
 
-namespace ig {
+#if defined(IG_WIN)
+ #define ISOLATION_AWARE_ENABLED 1
+ #include <windows.h>
+ #include <commctrl.h>
 
-class ray {
-public:
-  ray() = default;
-  ray(const vec3& ori, const vec3& dir)
-    : ori_{ori}, dir_{dir} {}
+ #pragma comment(lib, "comctl32.lib")
+ #pragma comment(linker,"\"/manifestdependency:type='win32' \
+ name='Microsoft.Windows.Common-Controls' version='6.0.0.0' \
+ processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
+#endif
 
-  vec3 operator()(float t) const { return ori_ + t*dir_; }
+namespace ig   {
+namespace impl {
 
-  vec3 ori_, dir_;
-};
 
+} // namespace impl
 } // namespace ig
 
-#endif // IG_MATH_RAY_H
+#endif // IG_ENVI_WIDGET_IMPL_H

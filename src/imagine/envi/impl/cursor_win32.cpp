@@ -21,13 +21,13 @@
  SOFTWARE.
 */
 
-#include "imagine/envi/impl/cursor_native.h"
+#include "imagine/envi/impl/window_impl.h"
+#include "imagine/envi/impl/cursor_impl.h"
 
 namespace ig   {
 namespace impl {
 
-const LPSTR cursor_tbl[] = 
-{
+const LPSTR cursor_tbl[] = {
   nullptr,         // cursor::none
   IDC_ARROW,       // cursor::arrow
   IDC_CROSS,       // cursor::cross
@@ -62,6 +62,22 @@ cursor_native::~cursor_native() {
 
 void cursor::refresh() const {
   SetCursor(native_->handle_);
+}
+
+void cursor::clip(const window& win) {
+  RECT winrect{};
+  GetWindowRect(reinterpret_cast<HWND>(win.handle()), &winrect);
+  ClipCursor(&winrect);
+}
+
+void cursor::move(int32_t x, int32_t y, const window* win) {
+  POINT pos{x, y};
+  win ?
+    ClientToScreen(reinterpret_cast<HWND>(win->handle()), &pos) :
+    true;
+
+  win->cursor_.native_->x_ = x, win->cursor_.native_->y_ = y;
+  SetCursorPos(pos.x, pos.y);
 }
 
 } // namespace ig

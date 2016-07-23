@@ -25,27 +25,27 @@
 #define IG_GRAPHICS_CAMERA_H
 
 #include "imagine/math/geom/homogeneous.h"
-#include "imagine/math/geom/ray.h"
 
 namespace ig {
 
 class IG_API camera {
 public:
-  enum type_t { orthographic, perspective };
+  enum class projection_t { orthographic, perspective };
 
-  camera(type_t type, size_t w, size_t h);
-  camera(type_t type, size_t w, size_t h, const vec3& pos, const vec3& target, const vec3& up);
-
-  void update();
+  explicit camera(projection_t projection, size_t w, size_t h);
+  explicit camera(projection_t projection, size_t w, size_t h, const vec3& pos, const vec3& target, const vec3& up);
 
   void make_orthographic();
   void make_perspective(float fovy);
   void clip(float zn, float zf);
 
-  ray cast_ray(size_t x, size_t y) const;
+  ray3 cast_ray(size_t x, size_t y) const;
+
+  const mat4& view();
+  const mat4& proj();
 
 private:
-  type_t type_;
+  projection_t projection_;
 
   size_t w_, h_;
   vec3 pos_, target_, up_;

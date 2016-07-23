@@ -25,7 +25,7 @@
 #define IG_MATH_LU_H
 
 #include "imagine/math/linalg/matrix.h"
-#include "imagine/math/linalg/equation.h"
+#include "imagine/math/linalg/solver/direct.h"
 
 namespace ig {
 
@@ -50,32 +50,31 @@ template <typename Alg>
 class lu {
 public:
   using T = alg_t<Alg>;
-  using matrix_t = matrix<T>;
-  using vector_t = vector<T>;
+  using matrix_type = matrix<T>;
+  using vector_type = colvec<T>;
 
-  static_assert(std::is_arithmetic<T>::value,
-                "LU decomposition requires an arithmetic matrix");
+  static_assert(std::is_arithmetic<T>::value, "LU decomposition requires an arithmetic matrix");
 
-  lu(const matrix_t& alg);
+  explicit lu(const matrix_type& alg);
 
   auto det() const -> T;
-  auto inv() const -> matrix_t;
-  auto solve(const vector_t& b) const -> vector_t;
+  auto inv() const -> matrix_type;
+  auto solve(const vector_type& b) const -> vector_type;
 
-  constexpr auto& matrix() const       { return LU_; }
-  constexpr auto& permutations() const { return P_; }
+  auto& mat() const   { return LU_; }
+  auto& perms() const { return P_; }
 
 private:
   const size_t N_;
   size_t permutations_;
 
-  matrix_t LU_;
-  matrix_t P_;
+  matrix_type LU_;
+  matrix_type P_;
 };
 
 template <typename Alg>
-lu<Alg>::lu(const matrix_t& alg)
-  : N_{alg.diagsize()}, permutations_{0}, LU_{alg}, P_{matrix_t::eye(N_)} {
+lu<Alg>::lu(const matrix_type& alg)
+  : N_{alg.diagsize()}, permutations_{0}, LU_{alg}, P_{matrix_type::eye(N_)} {
 
   for (size_t i = 0, row = i; i < N_; ++i) {
     // Find largest pivot element
@@ -115,7 +114,7 @@ auto lu<Alg>::det() const -> T {
 }
 
 template <typename Alg>
-auto lu<Alg>::inv() const -> matrix_t {
+auto lu<Alg>::inv() const -> matrix_type {
   // Solve for each column on eye matrix
   auto inv = P_;
   for (size_t i = 0; i < N_; ++i) {
@@ -125,8 +124,8 @@ auto lu<Alg>::inv() const -> matrix_t {
 }
 
 template <typename Alg>
-auto lu<Alg>::solve(const vector_t& b) const -> vector_t {
-  vector_t x{P_ * b};
+auto lu<Alg>::solve(const vector_type& b) const -> vector_type {
+  vector_type x{P_ * b};
   linalg::forward_solve (LU_, x, true);
   linalg::backward_solve(LU_, x);
   return x;
@@ -135,9 +134,9 @@ auto lu<Alg>::solve(const vector_t& b) const -> vector_t {
 namespace linalg {
 
 template <typename Alg>
-lu<Alg> lu_run(const alg<Alg>& alg) {
+constexpr auto lu_run(const alg<Alg>& alg) {
   assert(alg.square() && "LU decomposition requires a square matrix");
-  return lu<Alg>(alg);
+  return lu<Alg>{alg};
 }
 
 } // namespace linalg

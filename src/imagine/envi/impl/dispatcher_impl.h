@@ -21,29 +21,24 @@
  SOFTWARE.
 */
 
-#ifndef IG_ENVI_CURSOR_NATIVE_H
-#define IG_ENVI_CURSOR_NATIVE_H
+#ifndef IG_ENVI_DISPATCHER_IMPL_H
+#define IG_ENVI_DISPATCHER_IMPL_H
 
-#include "imagine/envi/cursor.h"
-#include "imagine/envi/impl/widget_native.h"
+#include <atomic>
 
 namespace ig   {
 namespace impl {
 
-class cursor_native {
+class dispatcher_native {
 public:
-  cursor_native(cursor::shape_t shape, int32_t x = 0, int32_t y = 0);
-  ~cursor_native();
+  dispatcher_native();
+  ~dispatcher_native() = default;
 
-  cursor::shape_t shape_;
-  int32_t x_, y_;
-
-  #if defined(IG_WIN)
-  HCURSOR handle_;
-  #endif
+  std::atomic_int return_code_;
+  std::atomic_bool running_;
 };
 
 } // namespace impl
 } // namespace ig
 
-#endif // IG_ENVI_CURSOR_NATIVE_H
+#endif // IG_ENVI_DISPATCHER_IMPL_H

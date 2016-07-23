@@ -32,32 +32,36 @@
 namespace ig {
 
 image::image()
-  : dims_{}, channels_{0}, size_{0}, bit_depth_{0}, pitch_{0} {
-}
+  : dims_{}, channels_{0}, size_{0}, bit_depth_{0}, pitch_{0} {}
 
-image::image(access_t dimensions, uint32_t channels, uint32_t bit_depth)
+image::image(dimensions_type dimensions, uint32_t channels, uint32_t bit_depth)
   : dims_{dimensions}, channels_{channels}, size_{1}, bit_depth_{bit_depth} {
   pitch_ = dims_.front() * bit_depth_ / 8;
-  for (auto it = dims_.begin() + 1; it != dims_.end(); ++it)
+  for (auto it = dims_.begin() + 1; it != dims_.end(); ++it) {
     size_ *= (*it);
+  }
 
   size_ *= pitch_;
   pixels_.resize(size_ * channels_);
 }
 
-const uint8_t& image::operator[](access_t coords) const {
-  size_t acc = 0; auto it = coords.end();
-  for (auto dim = dims_.size(); dim--> 1; )
+const uint8_t& image::operator[](dimensions_type coords) const {
+  size_t acc = 0; 
+  auto it = coords.end();
+  for (auto dim = dims_.size(); dim--> 1; ) {
     acc += (*--it) * std::accumulate(dims_.begin(), dims_.begin() + dim, 1, std::multiplies<>{});
+  }
 
   auto id = ((*--it) + acc) * (pitch_ / dims_.front());
   return pixels_[id];
 }
 
-uint8_t& image::operator[](access_t coords) {
-  size_t acc = 0; auto it = coords.end();
-  for (auto dim = dims_.size(); dim--> 1; )
+uint8_t& image::operator[](dimensions_type coords) {
+  size_t acc = 0;
+  auto it = coords.end();
+  for (auto dim = dims_.size(); dim--> 1; ) {
     acc += (*--it) * std::accumulate(dims_.begin(), dims_.begin() + dim, 1, std::multiplies<>{});
+  }
 
   auto id = ((*--it) + acc) * (pitch_ / dims_.front());
   return pixels_[id];

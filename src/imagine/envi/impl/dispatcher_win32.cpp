@@ -21,7 +21,7 @@
  SOFTWARE.
 */
 
-#include "imagine/envi/impl/dispatcher_native.h"
+#include "imagine/envi/impl/dispatcher_impl.h"
 #include "imagine/envi/dispatcher.h"
 
 #include <windows.h>
@@ -30,18 +30,17 @@ namespace ig   {
 namespace impl {
 
 dispatcher_native::dispatcher_native()
-  : return_code_{-1}, running_{false} {
-}
+  : return_code_{-1}, running_{false} {}
 
 } // namespace impl
 
-bool dispatcher::process_events() {
+void dispatcher::process_events() {
   MSG msg{};
   while (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE)) {
     TranslateMessage(&msg);
     DispatchMessage(&msg);
-  } handle();
-  return true;
+  }
+  handle();
 }
 
 } // namespace ig
