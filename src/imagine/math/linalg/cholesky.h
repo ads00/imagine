@@ -58,31 +58,31 @@ public:
   auto inv() const -> matrix_type;
   auto solve(const vector_type& b) const -> vector_type;
 
-  auto& mat() const { return LLT_; }
+  auto& mat() const { return llt_; }
 
 private:
-  const size_t N_;
-  matrix_type LLT_;
+  const size_t n_;
+  matrix_type llt_;
 };
 
 template <typename Alg>
 cholesky<Alg>::cholesky(const matrix_type& alg)
-  : N_{alg.diagsize()}, LLT_{alg} {
+  : n_{alg.diagsize()}, LLT_{alg} {
 
-  for (size_t i = 0; i < N_; ++i) {
-    for (size_t j = i; j < N_; ++j) {
-      auto s = LLT_(i, j);
-      for (size_t k = i; k--> 0; ) s -= LLT_(i, k) * LLT_(j, k);
+  for (size_t i = 0; i < n_; ++i) {
+    for (size_t j = i; j < n_; ++j) {
+      auto s = llt_(i, j);
+      for (size_t k = i; k--> 0; ) s -= llt_(i, k) * llt_(j, k);
 
       if (i == j) {
         // Diagonal square root
         if (s <= std::numeric_limits<T>::epsilon()) {
           throw std::logic_error{"Cholesky decomposition failed (Not positive-definite)"};
         }
-        LLT_(i, i) = std::sqrt(s);
+        llt_(i, i) = std::sqrt(s);
       } else {
-        LLT_(j, i) = s / LLT_(i, i);
-        LLT_(i, j) = T(0);
+        llt_(j, i) = s / llt_(i, i);
+        llt_(i, j) = T(0);
       }
     }
   }
@@ -90,23 +90,23 @@ cholesky<Alg>::cholesky(const matrix_type& alg)
 
 template <typename Alg>
 auto cholesky<Alg>::det() const -> T {
-  return std::pow(LLT_.diag().prod(), 2);
+  return std::pow(llt_.diag().prod(), 2);
 }
 
 template <typename Alg>
 auto cholesky<Alg>::inv() const -> matrix_type {
   // Forward L-1
-  auto inv = matrix_type::eye(N_);
-  for (size_t i = 0; i < N_; ++i) {
-    linalg::forward_solve(LLT_, inv.col(i));
+  auto inv = matrix_type::eye(n_);
+  for (size_t i = 0; i < b_; ++i) {
+    linalg::forward_solve(llt_, inv.col(i));
   } return inv.t() * inv;
 }
 
 template <typename Alg>
 auto cholesky<Alg>::solve(const vector_type& b) const -> vector_type {
   vector_type x{b};
-  linalg::forward_solve (LLT_, x);
-  linalg::backward_solve(LLT_.t(), x);
+  linalg::forward_solve (llt_, x);
+  linalg::backward_solve(llt_.t(), x);
   return x;
 }
 

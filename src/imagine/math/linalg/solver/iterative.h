@@ -35,14 +35,14 @@ void cg(const alg<Alg>& A, const alg<Rhs>& b, alg<Lhs>& x,
         const Precond& precond, size_t iterations, U tolerance) {
   using vector_type = Precond::vector_type;
 
-  size_t N = A.diagsize();
+  size_t n = A.diagsize();
   vector_type r = b - A*x;
 
   auto threshold = tolerance * tolerance * dot(b, b);
   auto p = precond.solve(r);
   auto ro = dot(r, p), no = dot(r, r);
 
-  vector_type z{N}, v{N};
+  vector_type z{n}, v{n};
   while (iterations-- != 0) {
     v = A * p;
     auto a = ro / dot(p, v);
@@ -65,7 +65,7 @@ void bicgstab(const alg<Alg>& A, const alg<Rhs>& b, alg<Lhs>& x,
   using vector_type = Precond::vector_type;
   using T = alg_t<Alg>;
 
-  size_t N = A.diagsize();
+  size_t n = A.diagsize();
   vector_type r = b - A*x;
   vector_type rn = r;
 
@@ -73,8 +73,8 @@ void bicgstab(const alg<Alg>& A, const alg<Rhs>& b, alg<Lhs>& x,
   auto ro = dot(r, r);
   auto no = T(1), a = T(1), w = T(1);
 
-  vector_type v{N}, p{N},
-              y{N}, z{N}, s{N}, t{N};
+  vector_type v{n}, p{n},
+              y{n}, z{n}, s{n}, t{n};
 
   while (dot(r, r) > std::numeric_limits<T>::epsilon() && iterations-- != 0) {
     auto nn = no;

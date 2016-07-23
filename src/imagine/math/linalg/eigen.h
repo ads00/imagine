@@ -55,86 +55,86 @@ public:
 
   explicit eigen(const matrix_type& alg);
 
-  auto& eigenvectors() const { return V_; }
-  auto& eigenvalues()  const { return D_; }
+  auto& eigenvectors() const { return v_; }
+  auto& eigenvalues()  const { return d_; }
 
 private:
-  const size_t N_;
+  const size_t n_;
 
-  matrix_type V_;
-  vector_type D_;
+  matrix_type v_;
+  vector_type d_;
 };
 
 template <typename Alg>
 eigen<Alg, true>::eigen(const matrix_type& alg)
-  : N_{alg.diagsize()}, V_{alg}, D_{N_} {
+  : n_{alg.diagsize()}, v_{alg}, d_{n_} {
 
-  vector_type work{N_};
+  vector_type work{n_};
   // Symmetric Householder reduction to tridiagonal form
-  for (size_t i = N_; i--> 1; ) {
+  for (size_t i = n_; i--> 1; ) {
     auto h = T(0);
     if (i - 1 > 0) {
       // Generate Householder vector
-      for (size_t j = 0; j < i; ++j) h += V_(i, j) * V_(i, j);
+      for (size_t j = 0; j < i; ++j) h += v_(i, j) * v_(i, j);
 
-      auto f = V_(i, i - 1);
+      auto f = v_(i, i - 1);
       auto g = sign(f) * std::sqrt(h);
 
       work[i] = g;
       h -= f * g;
 
-      V_(i, i - 1) = f - g;
+      v_(i, i - 1) = f - g;
       f = T(0);
 
       // Apply similarity transformation to remaining columns
       for (size_t j = 0; j < i; ++j) {
-        V_(j, i) = V_(i, j) / h;
+        v_(j, i) = v_(i, j) / h;
 
         g = T(0);
-        for (size_t k = 0; k < j + 1; ++k) g += V_(j, k) * V_(i, k);
-        for (size_t k = j + 1; k < i; ++k) g += V_(k, j) * V_(i, k);
+        for (size_t k = 0; k < j + 1; ++k) g += v_(j, k) * v_(i, k);
+        for (size_t k = j + 1; k < i; ++k) g += v_(k, j) * v_(i, k);
 
         work[j] = g / h;
-        f += work[j] * V_(i, j);
+        f += work[j] * v_(i, j);
       }
 
       auto hh = f / (h + h);
       for (size_t j = 0; j < i; ++j) {
-        f = V_(i, j);
+        f = v_(i, j);
         g = work[j] -= hh * f;
-        for (size_t k = 0; k < j + 1; ++k) V_(j, k) -= f*work[k] + g*V_(i, k);
+        for (size_t k = 0; k < j + 1; ++k) v_(j, k) -= f*work[k] + g*v_(i, k);
       }
-    } else work[i] = V_(i, i - 1);
+    } else work[i] = v_(i, i - 1);
 
-    D_[i] = h;
+    d_[i] = h;
   }
 
-  D_[0] = T(0), work[0] = T(0);
+  d_[0] = T(0), work[0] = T(0);
 
   // Accumulate transformations
-  for (size_t i = 0; i < N_; ++i) {
-    if (D_[i] != T(0)) {
+  for (size_t i = 0; i < n_; ++i) {
+    if (d_[i] != T(0)) {
       for (size_t j = 0; j < i; ++j) {
         auto g = T(0);
-        for (size_t k = 0; k < i; ++k) g += V_(i, k) * V_(k, j);
-        for (size_t k = 0; k < i; ++k) V_(k, j) -= g * V_(k, i);
+        for (size_t k = 0; k < i; ++k) g += v_(i, k) * v_(k, j);
+        for (size_t k = 0; k < i; ++k) v_(k, j) -= g * v_(k, i);
       }
     }
 
-    D_[i] = V_(i, i);
-    V_(i, i) = T(1);
-    for (size_t j = 0; j < i; ++j) V_(j, i) = V_(i, j) = T(0);
+    d_[i] = v_(i, i);
+    v_(i, i) = T(1);
+    for (size_t j = 0; j < i; ++j) v_(j, i) = v_(i, j) = T(0);
   }
   
-  for (size_t i = 1; i < N_; ++i) work[i - 1] = work[i];
+  for (size_t i = 1; i < n_; ++i) work[i - 1] = work[i];
 
   // Symmetric tridiagonal QL algorithm
   size_t sweeps = 40;
-  for (size_t l = 0, m = 0; l < N_; ++l) {
+  for (size_t l = 0, m = 0; l < n_; ++l) {
     for (size_t it = 0; it <= sweeps; ++it) {
       // Find smallest subdiagonal element
-      for (m = l; m < N_ - 1; ++m) {
-        auto s = std::abs(D_[m]) + std::abs(D_[m + 1]);
+      for (m = l; m < n_ - 1; ++m) {
+        auto s = std::abs(d_[m]) + std::abs(d_[m + 1]);
         if (std::abs(work[m]) <= std::numeric_limits<T>::epsilon() * s)
           break;
       }
@@ -147,8 +147,8 @@ eigen<Alg, true>::eigen(const matrix_type& alg)
       }
 
       // Compute implicit shift
-      auto d = (D_[l + 1] - D_[l]) / (T(2) * work[l]);
-      auto g = (D_[m] - D_[l]) + work[l]/(d + sign(d)*std::hypot(d, T(1)));
+      auto d = (d_[l + 1] - d_[l]) / (T(2) * work[l]);
+      auto g = (d_[m] - d_[l]) + work[l]/(d + sign(d)*std::hypot(d, T(1)));
       auto c = T(1), s = T(1), p = T(0);
 
       // Implicit QL transformation
@@ -158,25 +158,25 @@ eigen<Alg, true>::eigen(const matrix_type& alg)
         auto r = work[i + 1] = std::hypot(f, g);
 
         if (r == T(0)) {
-          D_[i + 1] -= p, work[m] = T(0);
+          d_[i + 1] -= p, work[m] = T(0);
           break;
         }
 
         s = f / r;
         c = g / r;
-        g = D_[i + 1] - p;
-        r = (D_[i] - g)*s + T(2)*c*b;
-        D_[i + 1] = g + (p = s*r);
+        g = d_[i + 1] - p;
+        r = (d_[i] - g)*s + T(2)*c*b;
+        d_[i + 1] = g + (p = s*r);
         g = c*r - b;
 
         // Accumulate transformation
-        for (size_t k = 0; k < N_; ++k) {
-          f = V_(k, i + 1);
-          V_(k, i + 1) = s*V_(k, i) + c*f, V_(k, i) = c*V_(k, i) - s*f;
+        for (size_t k = 0; k < n_; ++k) {
+          f = v_(k, i + 1);
+          v_(k, i + 1) = s*v_(k, i) + c*f, v_(k, i) = c*v_(k, i) - s*f;
         }
       }
 
-      D_[l] -= p;
+      d_[l] -= p;
       work[l] = g, work[m] = T(0);
     }
   }

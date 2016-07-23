@@ -51,11 +51,11 @@ void backward_solve(const alg<Alg>& lhs, alg<Vec>& rhs, bool unit = false) {
   assert(lhs.square() && "Backward solver requires a square matrix");
   assert(rhs.vector() && rhs.rows() == lhs.rows() && "Invalid b vector to solve");
 
-  auto N = lhs.diagsize();
-  if (!unit) rhs[N - 1] /= lhs(N - 1, N - 1);
-  for (size_t i = N - 1; i--> 0; ) {
+  auto n = lhs.diagsize();
+  if (!unit) rhs[n - 1] /= lhs(n - 1, n - 1);
+  for (size_t i = n - 1; i--> 0; ) {
     auto s = rhs[i];
-    for (size_t j = i + 1; j < N; ++j)
+    for (size_t j = i + 1; j < n; ++j)
       s -= lhs(i, j) * rhs[j];
 
     if (!unit) rhs[i] = s / lhs(i, i);
@@ -68,10 +68,10 @@ void gauss_solve(alg<Alg>& lhs, alg<Vec>& rhs) {
   assert(lhs.square() && "Gauss solver requires a square matrix");
   assert(rhs.vector() && rhs.rows() == lhs.rows() && "Invalid b vector to solve");
 
-  auto N = lhs.diagsize();
-  for (size_t i = 0, row = i; i < N; ++i) {
+  auto n = lhs.diagsize();
+  for (size_t i = 0, row = i; i < n; ++i) {
     auto pivot = std::abs(lhs(i, i));
-    for (size_t j = i + 1; j < N; ++j) {
+    for (size_t j = i + 1; j < n; ++j) {
       auto abscol = std::abs(lhs(j, i));
       if (abscol > pivot) pivot = abscol, row = j;
     }
@@ -80,19 +80,19 @@ void gauss_solve(alg<Alg>& lhs, alg<Vec>& rhs) {
       throw std::logic_error{"Gaussian elimination failed (Singular matrix)"};
     }
 
-    for (size_t j = i; j < N; ++j) std::swap(lhs(row, j), lhs(i, j));
+    for (size_t j = i; j < n; ++j) std::swap(lhs(row, j), lhs(i, j));
     std::swap(rhs[row], rhs[i]);
 
-    for (size_t j = i + 1; j < N; ++j) {
+    for (size_t j = i + 1; j < n; ++j) {
       auto g = -lhs(j, i) / lhs(i, i);
-      for (size_t k = i; k < N; ++k) {
+      for (size_t k = i; k < n; ++k) {
         if (i == k) lhs(j, k) = alg_t<Alg>(0);
         else        lhs(j, k) += g * lhs(i, k);
       } rhs[j] += g * rhs[i];
     }
   }
 
-  for (size_t i = N; i--> 0; ) {
+  for (size_t i = n; i--> 0; ) {
     rhs[i] /= lhs(i, i);
     for (size_t j = i; j--> 0; ) rhs[j] -= lhs(j, i) * rhs[i];
   }

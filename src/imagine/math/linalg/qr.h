@@ -53,40 +53,39 @@ public:
 
   explicit qr(const matrix_type& alg);
 
-  auto solve(const vector_t& b) -> vector_t;
+  auto solve(const vector_type& b) -> vector_type;
 
-  auto& mat() const { return QR_; }
+  auto& mat() const { return qr_; }
   auto& tau() const { return tau_; }
 
 private:
-  const size_t M_;
-  const size_t N_;
+  const size_t m_, n_;
 
-  matrix_type QR_;
+  matrix_type qr_;
   vector_type tau_;
 };
 
 template <typename Alg>
 qr<Alg>::qr(const matrix_type& alg)
-  : M_{alg.rows()}, N_{alg.cols()}, QR_{alg}, tau_{N_} {
+  : m_{alg.rows()}, n_{alg.cols()}, qr_{alg}, tau_{n_} {
 
-  for (size_t i = 0; i < N_; ++i) {
+  for (size_t i = 0; i < n_; ++i) {
     auto norm = T(0);
-    for (size_t j = i; j < M_; ++j) norm = std::hypot(norm, QR_(j, i));
+    for (size_t j = i; j < m_; ++j) norm = std::hypot(norm, qr_(j, i));
 
     if (norm != T(0)) {
       // Householder i-th reflector
-      tau_[i] = -norm * sign(QR_(i, i));
-      for (size_t j = i; j < M_; ++j) QR_(j, i) /= -tau_[i];
+      tau_[i] = -norm * sign(qr_(i, i));
+      for (size_t j = i; j < m_; ++j) qr_(j, i) /= -tau_[i];
 
       // Transform remaining columns
-      QR_(i, i) += T(1);
-      for (size_t j = i + 1; j < N_; ++j) {
+      qr_(i, i) += T(1);
+      for (size_t j = i + 1; j < n_; ++j) {
         auto s = T(0);
-        for (size_t k = i; k < M_; ++k) s += QR_(k, i) * QR_(k, j);
+        for (size_t k = i; k < m_; ++k) s += qr_(k, i) * qr_(k, j);
 
-        s = -s / QR_(i, i);
-        for (size_t k = i; k < M_; ++k) QR_(k, j) += s * QR_(k, i);
+        s = -s / qr_(i, i);
+        for (size_t k = i; k < m_; ++k) qr_(k, j) += s * qr_(k, i);
       }
     }
   }
@@ -96,19 +95,19 @@ template <typename Alg>
 auto qr<Alg>::solve(const vector_type& b) -> vector_type {
   // Compute y = Q^Tb
   auto y = b;
-  for (size_t i = 0; i < N_; ++i) {
+  for (size_t i = 0; i < n_; ++i) {
     auto s = T(0);
-    for (size_t j = i; j < M_; ++j) s += QR_(j, i) * y[j];
+    for (size_t j = i; j < m_; ++j) s += qr_(j, i) * y[j];
 
-    s = -s / QR_(i, i);
-    for (size_t j = i; j < M_; ++j) y[j] += s * QR_(j, i);
+    s = -s / qr_(i, i);
+    for (size_t j = i; j < m_; ++j) y[j] += s * qr_(j, i);
   }
 
   // Backward Rx = y
-  vector_type x{N_};
-  for (size_t i = N_; i--> 0;) {
+  vector_type x{n_};
+  for (size_t i = n_; i--> 0;) {
     x[i] = y[i] / tau_[i];
-    for (size_t j = 0; j < i; ++j) y[j] -= x[i] * QR_(j, i);
+    for (size_t j = 0; j < i; ++j) y[j] -= x[i] * qr_(j, i);
   }
   return x;
 }

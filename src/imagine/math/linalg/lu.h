@@ -61,26 +61,26 @@ public:
   auto inv() const -> matrix_type;
   auto solve(const vector_type& b) const -> vector_type;
 
-  auto& mat() const   { return LU_; }
-  auto& perms() const { return P_; }
+  auto& mat() const   { return lu_; }
+  auto& perms() const { return p_; }
 
 private:
-  const size_t N_;
+  const size_t n_;
   size_t permutations_;
 
-  matrix_type LU_;
-  matrix_type P_;
+  matrix_type lu_;
+  matrix_type p_;
 };
 
 template <typename Alg>
 lu<Alg>::lu(const matrix_type& alg)
-  : N_{alg.diagsize()}, permutations_{0}, LU_{alg}, P_{matrix_type::eye(N_)} {
+  : n_{alg.diagsize()}, permutations_{0}, lu_{alg}, p_{matrix_type::eye(n_)} {
 
-  for (size_t i = 0, row = i; i < N_; ++i) {
+  for (size_t i = 0, row = i; i < n_; ++i) {
     // Find largest pivot element
     auto pivot = T(0);
-    for (size_t j = i; j < N_; ++j) {
-      auto curr_elemt = std::abs(LU_(j, i)); 
+    for (size_t j = i; j < n_; ++j) {
+      auto curr_elemt = std::abs(lu_(j, i));
       if (curr_elemt > pivot) pivot = curr_elemt, row = j;
     }
 
@@ -91,16 +91,16 @@ lu<Alg>::lu(const matrix_type& alg)
     // Partial row pivoting
     if (row != i) {
       permutations_++;
-      for (size_t j = 0; j < N_; ++j) {
-        std::swap(LU_(row, j), LU_(i, j)), std::swap(P_(row, j), P_(i, j));
+      for (size_t j = 0; j < n_; ++j) {
+        std::swap(lu_(row, j), lu_(i, j)), std::swap(p_(row, j), p_(i, j));
       }
     }
 
     // Factorize
-    auto f = LU_(i, i);
-    for (size_t j = i + 1; j < N_; ++j) {
-      auto g = LU_(j, i) /= f;
-      for (size_t k = i + 1; k < N_; ++k) LU_(j, k) -= g * LU_(i, k);
+    auto f = lu_(i, i);
+    for (size_t j = i + 1; j < n_; ++j) {
+      auto g = lu_(j, i) /= f;
+      for (size_t k = i + 1; k < n_; ++k) lu_(j, k) -= g * lu_(i, k);
     }
   }
 }
@@ -110,24 +110,24 @@ auto lu<Alg>::det() const -> T {
   auto detsign = (permutations_ % 2) ? 
     -1 :
      1;
-  return detsign * LU_.diag().prod();
+  return detsign * lu_.diag().prod();
 }
 
 template <typename Alg>
 auto lu<Alg>::inv() const -> matrix_type {
   // Solve for each column on eye matrix
-  auto inv = P_;
-  for (size_t i = 0; i < N_; ++i) {
-    linalg::forward_solve (LU_, inv.col(i), true);
-    linalg::backward_solve(LU_, inv.col(i));
+  auto inv = p_;
+  for (size_t i = 0; i < n_; ++i) {
+    linalg::forward_solve (lu_, inv.col(i), true);
+    linalg::backward_solve(lu_, inv.col(i));
   } return inv;
 }
 
 template <typename Alg>
 auto lu<Alg>::solve(const vector_type& b) const -> vector_type {
-  vector_type x{P_ * b};
-  linalg::forward_solve (LU_, x, true);
-  linalg::backward_solve(LU_, x);
+  vector_type x{p_ * b};
+  linalg::forward_solve (lu_, x, true);
+  linalg::backward_solve(lu_, x);
   return x;
 }
 
