@@ -34,8 +34,8 @@ namespace ig {
 
 constexpr int dynamic_sized = -1;
 template <typename T, int M, int N> class matrix;
-template <typename T, int N = dynamic_sized> using colvec = matrix<T, 1, N>;
-template <typename T, int N = dynamic_sized> using rowvec = matrix<T, N, 1>;
+template <typename T, int N = dynamic_sized> using colvec = matrix<T, N, 1>;
+template <typename T, int N = dynamic_sized> using rowvec = matrix<T, 1, N>;
 
 template <typename Xpr> class alg_block;
 template <typename Xpr> class alg_col;

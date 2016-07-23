@@ -73,11 +73,11 @@ public:
   template < typename = std::enable_if_t<hybrid> >
   constexpr explicit matrix(size_t n)
     : data_{dynamic_rows ? n : static_cast<size_t>(M), dynamic_cols ? n : static_cast<size_t>(N),
-            std::vector<T>(data_.rows() * data_.cols())} {}
+            std::vector<T>(data_.dM * data_.dN)} {}
 
   template < typename = std::enable_if_t<dynamic> >
   constexpr explicit matrix(size_t m, size_t n)
-    : data_{m, n, std::vector<T>(data_.rows() * data_.cols())} {}
+    : data_{m, n, std::vector<T>(data_.dM * data_.dN)} {}
 
   template <typename Alg>
   matrix(const alg<Alg>& o) : matrix{o, std::integral_constant<bool, immutable>{}} {
@@ -86,7 +86,7 @@ public:
   template <typename Alg> matrix(const alg<Alg>& o, std::true_type) {}
   template <typename Alg> matrix(const alg<Alg>& o, std::false_type)
     : data_{dynamic_rows ? o.rows() : static_cast<size_t>(M), dynamic_cols ? o.cols() : static_cast<size_t>(N),
-            std::vector<T>(data_.rows() * data_.cols())} {}
+            std::vector<T>(data_.dM * data_.dN)} {}
 
   matrix(const base& o) : data_{o.derived().data_} {}
 
