@@ -24,8 +24,6 @@
 #include "imagine/envi/impl/dispatcher_impl.h"
 #include "imagine/envi/dispatcher.h"
 
-#include <windows.h>
-
 namespace ig   {
 namespace impl {
 

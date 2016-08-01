@@ -24,7 +24,6 @@
 #ifndef IG_ENVI_LIBRARY_IMPL_H
 #define IG_ENVI_LIBRARY_IMPL_H
 
-#include "imagine/ig.h"
 #include "imagine/envi/impl/widget_impl.h"
 
 namespace ig   {

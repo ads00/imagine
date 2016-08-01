@@ -24,7 +24,7 @@
 #ifndef IG_MATH_MOMENTS_H
 #define IG_MATH_MOMENTS_H
 
-#include "imagine/math/kernel.h"
+#include "imagine/math/discrete.h"
 
 namespace ig {
 

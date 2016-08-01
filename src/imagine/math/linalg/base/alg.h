@@ -24,7 +24,7 @@
 #ifndef IG_MATH_ALG_H
 #define IG_MATH_ALG_H
 
-#include "imagine/math/kernel.h"
+#include "imagine/math/discrete.h"
 
 #include <numeric>
 #include <vector>

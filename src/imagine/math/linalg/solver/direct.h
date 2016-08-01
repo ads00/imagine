@@ -25,7 +25,6 @@
 #define IG_MATH_DIRECT_H
 
 #include "imagine/math/linalg/matrix.h"
-#include "imagine/core/log.h"
 
 namespace ig     {
 namespace linalg {
