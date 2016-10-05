@@ -292,13 +292,12 @@ static const key_t key_tbl[] = {
 
 auto modifiers() -> modifier_flags {
   modifier_flags mods{modifier_t::none};
-  if (GetAsyncKeyState(VK_SHIFT)     < 0) {
+  if (GetAsyncKeyState(VK_SHIFT)   < 0)
     mods |= modifier_t::shift;
-  } if (GetAsyncKeyState(VK_CONTROL) < 0) {
+  if (GetAsyncKeyState(VK_CONTROL) < 0)
     mods |= modifier_t::ctrl;
-  } if (GetAsyncKeyState(VK_MENU)    < 0) {
+  if (GetAsyncKeyState(VK_MENU)    < 0)
     mods |= modifier_t::alt;
-  } 
   return mods;
 }
 

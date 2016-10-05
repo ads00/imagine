@@ -26,14 +26,18 @@
 namespace ig {
 
 transform::transform(const vec3& pos, const quat& ori, const vec3& sca)
-  : parent_{nullptr}, umatrix_{false}, matrix_{mat4::eye}, pos_{pos}, ori_{ori}, sca_{sca} {}
+  : parent_{nullptr}
+  , umatrix_{false}
+  , matrix_{mat4::eye}
+  , pos_{pos}
+  , ori_{ori}
+  , sca_{sca} {}
 
 transform::~transform() {
   if (parent_) {
     parent_->remove_child(*this);
-    for (auto& child : children_) {
+    for (auto& child : children_)
       child.get().parent_ = nullptr;
-    }
   }
 }
 
@@ -43,9 +47,9 @@ void transform::positions(const vec3& pos, space_t space) {
     pos_ = pos;
     break;
   case space_t::world:
-    pos_ = parent_ ? 
-      parent_->inv_wt().transform(pos) : 
-      pos;
+    pos_ = parent_ 
+      ? parent_->inv_wt().transform(pos) 
+      : pos;
     break;
   }
 }
@@ -56,9 +60,9 @@ void transform::directs(const quat& ori, space_t space) {
     ori_ = ori;
     break;
   case space_t::world:
-    ori_ = parent_ ? 
-      parent_->ori_ * ori_ : 
-      ori_;
+    ori_ = parent_ 
+      ? parent_->ori_ * ori_ 
+      : ori_;
     break;
   }
 }
@@ -69,9 +73,9 @@ void transform::scales(const vec3& sca, space_t space) {
     sca_ = sca;
     break;
   case space_t::world:
-    sca_ = parent_ ? 
-      sca / parent_->sca_ : 
-      sca_;
+    sca_ = parent_ 
+      ? sca / parent_->sca_ 
+      : sca_;
     break;
   }
 }
@@ -82,10 +86,9 @@ transform& transform::translate(const vec3& tra, space_t space) {
     pos_ += linalg::rotate(ori_, tra);
     break;
   case space_t::world:
-    pos_ += 
-      parent_ ? 
-      parent_->inv_wt().transform(tra) :
-      tra;
+    pos_ += parent_ 
+      ? parent_->inv_wt().transform(tra) 
+      : tra;
     break;
   }
   hierarchical_invalidate();
@@ -98,15 +101,13 @@ transform& transform::rotate(const quat& rot, space_t space) {
     ori_ = linalg::normalise(ori_ * rot);
     break;
   case space_t::world:
-    auto into = 
-      parent_ ? 
-      parent_->ori_ * ori_ : 
-      ori_;
+    auto into = parent_ 
+      ? parent_->ori_ * ori_
+      : ori_;
 
-    ori_ = 
-      parent_ ? 
-      ori_ * linalg::inv(into) * rot * into :
-      linalg::normalise(rot * into);
+    ori_ = parent_ 
+      ? ori_ * linalg::inv(into) * rot * into 
+      : linalg::normalise(rot * into);
     break;
   }
   hierarchical_invalidate();
@@ -126,7 +127,7 @@ void transform::remove_child(const transform& tr) {
 }
 
 void transform::link(transform* parent) {
-  assert(parent != this && "Parent transform can't be itself");
+  assert(parent != this && "Reflexive transform classes are not allowed");
   if (parent_) {
     parent_->remove_child(*this);
   }
@@ -157,9 +158,8 @@ const mat4 transform::inv_wt() {
 void transform::hierarchical_invalidate() {
   if (umatrix_) {
     umatrix_ = false;
-    for (auto& child : children_) {
+    for (auto& child : children_)
       child.get().hierarchical_invalidate();
-    }
   }
 }
 

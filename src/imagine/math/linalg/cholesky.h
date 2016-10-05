@@ -67,7 +67,8 @@ private:
 
 template <typename Alg>
 cholesky<Alg>::cholesky(const matrix_type& alg)
-  : n_{alg.diagsize()}, LLT_{alg} {
+  : n_{alg.diagsize()}
+  , llt_{alg} {
 
   for (size_t i = 0; i < n_; ++i) {
     for (size_t j = i; j < n_; ++j) {
@@ -97,9 +98,9 @@ template <typename Alg>
 auto cholesky<Alg>::inv() const -> matrix_type {
   // Forward L-1
   auto inv = matrix_type::eye(n_);
-  for (size_t i = 0; i < b_; ++i) {
+  for (size_t i = 0; i < b_; ++i)
     linalg::forward_solve(llt_, inv.col(i));
-  } return inv.t() * inv;
+  return inv.t() * inv;
 }
 
 template <typename Alg>

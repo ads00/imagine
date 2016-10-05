@@ -80,9 +80,9 @@ public:
     : data_{m, n, std::vector<T>(data_.dM * data_.dN)} {}
 
   template <typename Alg>
-  matrix(const alg<Alg>& o) : matrix{o, std::integral_constant<bool, immutable>{}} {
-    eval(*this, o, data_);
-  }
+  matrix(const alg<Alg>& o) : matrix{o, std::integral_constant<bool, immutable>{}} 
+  { eval(*this, o, data_); }
+
   template <typename Alg> matrix(const alg<Alg>& o, std::true_type) {}
   template <typename Alg> matrix(const alg<Alg>& o, std::false_type)
     : data_{dynamic_rows ? o.rows() : static_cast<size_t>(M), dynamic_cols ? o.cols() : static_cast<size_t>(N),
@@ -110,7 +110,7 @@ public:
   template < typename = std::enable_if_t<hybrid> >
   static auto eye(size_t n) { matrix eye{n}; return eye.make_eye(); }
 
-protected:
+private:
   struct dynamic_data {
     auto rows() const { return dM; } 
     auto cols() const { return dN; }
@@ -125,13 +125,13 @@ protected:
 template <typename T, int M, int N>
 auto matrix<T, M, N>::operator()(size_t row, size_t col) const -> const T& {
   assert(row < rows() && col < cols() && "Invalid matrix subscript");
-  return data_.d[row*cols() + col];
+  return data_.d[row * cols() + col];
 }
 
 template <typename T, int M, int N>
 auto matrix<T, M, N>::operator()(size_t row, size_t col) -> T& {
   assert(row < rows() && col < cols() && "Invalid matrix subscript");
-  return data_.d[row*cols() + col];
+  return data_.d[row * cols() + col];
 }
 
 template <typename T, int M, int N>

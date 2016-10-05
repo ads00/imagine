@@ -21,7 +21,7 @@
  SOFTWARE.
 */
 
-#include "imagine/math/imag/io/jpeg.h"
+#include "imagine/math/processing/io/jpeg.h"
 #include "imagine/core/log.h"
 
 #include "jpeg/jpeglib.h"
@@ -51,7 +51,7 @@ boolean writeproc(j_compress_ptr jpeg_ptr);
 void jpeg_message(j_common_ptr jpeg_ptr);
 void jpeg_exit(j_common_ptr jpeg_ptr);
 
-std::unique_ptr<image> jpeg_read(std::istream& stream) {
+std::unique_ptr<data> jpeg_read(std::istream& stream) {
   jpeg_decompress_struct jpeg_ptr{};
   jpeg_error_mgr jerr{};
 
@@ -96,10 +96,10 @@ std::unique_ptr<image> jpeg_read(std::istream& stream) {
   jpeg_start_decompress(&jpeg_ptr);
 
   auto dims = {jpeg_ptr.output_width, jpeg_ptr.output_height};
-  auto imag = std::make_unique<image>(dims, jpeg_ptr.output_components, 8);
+  auto imag = std::make_unique<data>(dims, jpeg_ptr.output_components);
 
   while (jpeg_ptr.output_scanline < jpeg_ptr.output_height) {
-    auto r = imag->pixels() + (imag->pitch() * imag->channels() * (jpeg_ptr.output_height - jpeg_ptr.output_scanline - 1));
+    auto r = imag->ptr() + (imag->pitch() * imag->channels() * (jpeg_ptr.output_height - jpeg_ptr.output_scanline - 1));
     jpeg_read_scanlines(&jpeg_ptr, (JSAMPARRAY)&r, 1);
   }
 
@@ -108,7 +108,7 @@ std::unique_ptr<image> jpeg_read(std::istream& stream) {
   return imag;
 }
 
-bool jpeg_write(const image& imag, std::ostream& stream) {
+bool jpeg_write(const data& imag, std::ostream& stream) {
   jpeg_compress_struct jpeg_ptr{};
   jpeg_error_mgr jerr{};
 
@@ -166,7 +166,7 @@ bool jpeg_write(const image& imag, std::ostream& stream) {
   jpeg_start_compress(&jpeg_ptr, true);
 
   while (jpeg_ptr.next_scanline < jpeg_ptr.image_height) {
-    auto r = imag.pixels() + (imag.pitch() * imag.channels() * (jpeg_ptr.image_height - jpeg_ptr.next_scanline - 1));
+    auto r = imag.ptr() + (imag.pitch() * imag.channels() * (jpeg_ptr.image_height - jpeg_ptr.next_scanline - 1));
     jpeg_write_scanlines(&jpeg_ptr, (JSAMPARRAY)&r, 1);
   }
 

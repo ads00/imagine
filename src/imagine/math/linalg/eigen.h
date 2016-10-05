@@ -67,7 +67,9 @@ private:
 
 template <typename Alg>
 eigen<Alg, true>::eigen(const matrix_type& alg)
-  : n_{alg.diagsize()}, v_{alg}, d_{n_} {
+  : n_{alg.diagsize()}
+  , v_{alg}
+  , d_{n_} {
 
   vector_type work{n_};
   // Symmetric Householder reduction to tridiagonal form
@@ -102,7 +104,7 @@ eigen<Alg, true>::eigen(const matrix_type& alg)
       for (size_t j = 0; j < i; ++j) {
         f = v_(i, j);
         g = work[j] -= hh * f;
-        for (size_t k = 0; k < j + 1; ++k) v_(j, k) -= f*work[k] + g*v_(i, k);
+        for (size_t k = 0; k < j + 1; ++k) v_(j, k) -= f * work[k] + g * v_(i, k);
       }
     } else work[i] = v_(i, i - 1);
 
@@ -148,7 +150,7 @@ eigen<Alg, true>::eigen(const matrix_type& alg)
 
       // Compute implicit shift
       auto d = (d_[l + 1] - d_[l]) / (T(2) * work[l]);
-      auto g = (d_[m] - d_[l]) + work[l]/(d + sign(d)*std::hypot(d, T(1)));
+      auto g = (d_[m] - d_[l]) + work[l] / (d + sign(d) * std::hypot(d, T(1)));
       auto c = T(1), s = T(1), p = T(0);
 
       // Implicit QL transformation
@@ -165,14 +167,14 @@ eigen<Alg, true>::eigen(const matrix_type& alg)
         s = f / r;
         c = g / r;
         g = d_[i + 1] - p;
-        r = (d_[i] - g)*s + T(2)*c*b;
-        d_[i + 1] = g + (p = s*r);
-        g = c*r - b;
+        r = (d_[i] - g) * s + T(2) * c * b;
+        d_[i + 1] = g + (p = s * r);
+        g = c * r - b;
 
         // Accumulate transformation
         for (size_t k = 0; k < n_; ++k) {
           f = v_(k, i + 1);
-          v_(k, i + 1) = s*v_(k, i) + c*f, v_(k, i) = c*v_(k, i) - s*f;
+          v_(k, i + 1) = s * v_(k, i) + c * f, v_(k, i) = c * v_(k, i) - s * f;
         }
       }
 

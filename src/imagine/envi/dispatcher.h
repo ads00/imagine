@@ -34,7 +34,7 @@ namespace impl { class dispatcher_native; }
 
 class IG_API dispatcher {
 public:
-  using func_type = std::function<void ()>;
+  using func_type = std::function<void()>;
 
   dispatcher();
   virtual ~dispatcher();

@@ -28,7 +28,8 @@ namespace ig   {
 namespace impl {
 
 dispatcher_native::dispatcher_native()
-  : return_code_{-1}, running_{false} {}
+  : return_code_{-1}
+  , running_{false} {}
 
 } // namespace impl
 

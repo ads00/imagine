@@ -67,7 +67,10 @@ private:
 
 template <typename Alg>
 qr<Alg>::qr(const matrix_type& alg)
-  : m_{alg.rows()}, n_{alg.cols()}, qr_{alg}, tau_{n_} {
+  : m_{alg.rows()}
+  , n_{alg.cols()}
+  , qr_{alg}
+  , tau_{n_} {
 
   for (size_t i = 0; i < n_; ++i) {
     auto norm = T(0);
@@ -105,7 +108,7 @@ auto qr<Alg>::solve(const vector_type& b) -> vector_type {
 
   // Backward Rx = y
   vector_type x{n_};
-  for (size_t i = n_; i--> 0;) {
+  for (size_t i = n_; i--> 0; ) {
     x[i] = y[i] / tau_[i];
     for (size_t j = 0; j < i; ++j) y[j] -= x[i] * qr_(j, i);
   }

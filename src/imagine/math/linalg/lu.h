@@ -74,14 +74,19 @@ private:
 
 template <typename Alg>
 lu<Alg>::lu(const matrix_type& alg)
-  : n_{alg.diagsize()}, permutations_{0}, lu_{alg}, p_{matrix_type::eye(n_)} {
+  : n_{alg.diagsize()}
+  , permutations_{0}
+  , lu_{alg}
+  , p_{matrix_type::eye(n_)} {
 
   for (size_t i = 0, row = i; i < n_; ++i) {
     // Find largest pivot element
     auto pivot = T(0);
     for (size_t j = i; j < n_; ++j) {
       auto curr_elemt = std::abs(lu_(j, i));
-      if (curr_elemt > pivot) pivot = curr_elemt, row = j;
+      if (curr_elemt > pivot) {
+        pivot = curr_elemt, row = j;
+      }
     }
 
     if (pivot == T(0)) {
@@ -91,9 +96,9 @@ lu<Alg>::lu(const matrix_type& alg)
     // Partial row pivoting
     if (row != i) {
       permutations_++;
-      for (size_t j = 0; j < n_; ++j) {
-        std::swap(lu_(row, j), lu_(i, j)), std::swap(p_(row, j), p_(i, j));
-      }
+      for (size_t j = 0; j < n_; ++j)
+        std::swap(lu_(row, j), lu_(i, j)), 
+        std::swap(p_ (row, j), p_ (i, j));
     }
 
     // Factorize
@@ -107,9 +112,9 @@ lu<Alg>::lu(const matrix_type& alg)
 
 template <typename Alg>
 auto lu<Alg>::det() const -> T {
-  auto detsign = (permutations_ % 2) ? 
-    -1 :
-     1;
+  auto detsign = (permutations_ % 2) 
+    ? -1 
+    :  1;
   return detsign * lu_.diag().prod();
 }
 
@@ -117,10 +122,10 @@ template <typename Alg>
 auto lu<Alg>::inv() const -> matrix_type {
   // Solve for each column on eye matrix
   auto inv = p_;
-  for (size_t i = 0; i < n_; ++i) {
-    linalg::forward_solve (lu_, inv.col(i), true);
+  for (size_t i = 0; i < n_; ++i)
+    linalg::forward_solve (lu_, inv.col(i), true),
     linalg::backward_solve(lu_, inv.col(i));
-  } return inv;
+  return inv;
 }
 
 template <typename Alg>

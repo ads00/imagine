@@ -27,13 +27,13 @@ namespace ig {
 
 vec3 mat4::transform(const vec3& v, bool unit) const {
   auto& s = *this;
-  auto xp = s(0, 0)*v[0] + s(0, 1)*v[1] + s(0, 2)*v[2];
-  auto yp = s(1, 0)*v[0] + s(1, 1)*v[1] + s(1, 2)*v[2];
-  auto zp = s(2, 0)*v[0] + s(2, 1)*v[1] + s(2, 2)*v[2];
+  auto xp = s(0, 0) * v[0] + s(0, 1) * v[1] + s(0, 2) * v[2];
+  auto yp = s(1, 0) * v[0] + s(1, 1) * v[1] + s(1, 2) * v[2];
+  auto zp = s(2, 0) * v[0] + s(2, 1) * v[1] + s(2, 2) * v[2];
 
   if (!unit) {
     auto us = vec3{xp + s(0, 3), yp + s(1, 3), zp + s(2, 3)};
-    auto wp = s(3, 0)*v[0] + s(3, 1)*v[1] + s(3, 2)*v[2] + s(3, 3);
+    auto wp = s(3, 0) * v[0] + s(3, 1) * v[1] + s(3, 2) * v[2] + s(3, 3);
     return us / wp;
   } else {
     return vec3{xp, yp, zp};

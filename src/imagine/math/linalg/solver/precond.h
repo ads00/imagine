@@ -39,11 +39,11 @@ public:
 
   explicit jacobi_precond(const matrix_type& mat)
     : invdiag_{mat.diagsize()} {
-    for (size_t i = 0; i < mat.diagsize(); ++i) {
-      invdiag_[i] = mat(i, i) != 0 ? 
-        T(1) / mat(i, i) : 
-        T(1);
-    }
+
+    for (size_t i = 0; i < mat.diagsize(); ++i)
+      invdiag_[i] = mat(i, i) != 0 
+        ? T(1) / mat(i, i) 
+        : T(1);
   }
 
   auto solve(const vector_type& b) const {

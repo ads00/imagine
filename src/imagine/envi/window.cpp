@@ -27,11 +27,12 @@
 namespace ig {
 
 window::window()
-  : native_{std::make_unique<impl::window_native>(*this)}, cursor_{cursor::shape_t::none} {}
+  : native_{std::make_unique<impl::window_native>(*this)}
+  , cursor{cursor::shape_t::none} {}
 
 window::window(const std::string& caption, uint32_t width, uint32_t height, style_flags style)
-  : native_{std::make_unique<impl::window_native>(*this, caption, width, height, style)},
-    cursor_{cursor::shape_t::arrow} {}
+  : native_{std::make_unique<impl::window_native>(*this, caption, width, height, style)}
+  , cursor{cursor::shape_t::arrow} {}
 
 window::~window() {
   close();

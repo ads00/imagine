@@ -41,6 +41,7 @@ public:
     resize_nw, resize_se, resize_ne, resize_sw,
     bitmap
   };
+
   friend impl::window_native;
 
   explicit cursor(shape_t shape);

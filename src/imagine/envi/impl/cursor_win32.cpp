@@ -50,7 +50,11 @@ const LPSTR cursor_tbl[] = {
 };
 
 cursor_native::cursor_native(cursor::shape_t shape, int32_t x, int32_t y)
-  : shape_{shape}, x_{x}, y_{y}, handle_{nullptr} {
+  : shape_{shape}
+  , x_{x}
+  , y_{y}
+  , handle_{nullptr} {
+
   handle_ = static_cast<HCURSOR>(LoadImage(nullptr, cursor_tbl[static_cast<uint32_t>(shape)], IMAGE_CURSOR, 0, 0, LR_DEFAULTSIZE | LR_SHARED));
 }
 
@@ -72,11 +76,11 @@ void cursor::clip(const window& win) {
 
 void cursor::move(int32_t x, int32_t y, const window* win) {
   POINT pos{x, y};
-  win ?
-    ClientToScreen(reinterpret_cast<HWND>(win->handle()), &pos) :
-    true;
+  win 
+    ? ClientToScreen(reinterpret_cast<HWND>(win->handle()), &pos) 
+    : true;
 
-  win->cursor_.native_->x_ = x, win->cursor_.native_->y_ = y;
+  win->cursor.native_->x_ = x, win->cursor.native_->y_ = y;
   SetCursorPos(pos.x, pos.y);
 }
 

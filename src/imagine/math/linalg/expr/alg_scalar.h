@@ -41,7 +41,9 @@ public:
   using T = alg_t<scalar_expr>;
 
   explicit scalar_expr(const Alg& alg, const T scalar, const Op& op)
-    : alg_{alg}, scalar_{scalar}, op_{op} {}
+    : alg_{alg}
+    , scalar_{scalar}
+    , op_{op} {}
 
   auto rows() const { return alg_.rows(); }
   auto cols() const { return alg_.cols(); }

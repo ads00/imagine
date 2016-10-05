@@ -85,11 +85,11 @@ enum class key_t {
 };
 
 enum class modifier_t : uint32_t {
-  none = 0x00,
-  shift = 0x01,
-  ctrl = 0x02,
-  alt = 0x04,
-  meta = 0x08
+  none  = 0x000,
+  shift = 0x001,
+  ctrl  = 0x002,
+  alt   = 0x004,
+  meta  = 0x008
 }; using modifier_flags = flags<modifier_t>;
 
 } // namespace keyboard

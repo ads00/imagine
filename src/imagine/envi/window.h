@@ -34,14 +34,14 @@ namespace impl { class window_native; }
 struct window_handle {};
 class IG_API window : public events {
 public:
-  enum class visibility_t { hidden, windowed, fullscreen };
-  enum class style_t : uint32_t {
-    none        = 0x00,
-    closable    = 0x01,
-    resizable   = 0x02,
-    titlebar    = 0x04,
+  enum style_t : uint32_t {
+    none = 0x000,
+    closable = 0x001,
+    resizable = 0x002,
+    titlebar = 0x004,
     interactive = closable | resizable | titlebar
   }; using style_flags = flags<style_t>;
+  enum class visibility_t { hidden, windowed, fullscreen };
 
   friend cursor;
 
@@ -79,9 +79,9 @@ public:
   window(const window&) = delete;
   window& operator=(const window&) = delete;
 
-  cursor cursor_;
+  cursor cursor;
 
-protected:
+private:
   std::unique_ptr<impl::window_native> native_;
 };
 

@@ -29,18 +29,18 @@ namespace impl  {
 
 auto buttons() -> button_flags {
   auto swap = GetSystemMetrics(SM_SWAPBUTTON);
+
   button_flags buttons{button_t::none};
-  if (GetAsyncKeyState(VK_LBUTTON) < 0) {
-    buttons |= swap ? 
-      button_t::right :
-      button_t::left;
-  } if (GetAsyncKeyState(VK_RBUTTON) < 0) {
-    buttons |= swap ? 
-      button_t::left :
-      button_t::right;
-  } if (GetAsyncKeyState(VK_MBUTTON) < 0) {
+  if (GetAsyncKeyState(VK_LBUTTON) < 0)
+    buttons |= swap 
+      ? button_t::right 
+      : button_t::left;
+  if (GetAsyncKeyState(VK_RBUTTON) < 0)
+    buttons |= swap 
+      ? button_t::left 
+      : button_t::right;
+  if (GetAsyncKeyState(VK_MBUTTON) < 0)
     buttons |= button_t::middle;
-  } 
   return buttons;
 }
 

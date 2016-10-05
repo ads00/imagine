@@ -161,7 +161,10 @@ public:
   class initializer {
   public:
     explicit initializer(C& alg) 
-      : alg_{alg}, row_{0}, col_{0}, curr_{0} {}
+      : alg_{alg}
+      , row_{0}
+      , col_{0}
+      , curr_{0} {}
 
     auto operator,(T val) {
       if (col_ == alg_.cols()) {

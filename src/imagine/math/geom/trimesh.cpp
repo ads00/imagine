@@ -26,8 +26,11 @@
 namespace ig {
 
 trimesh::trimesh(const std::vector<face>& faces, const std::vector<vec3>& vertices,
-                           const std::vector<vec3>& normals, const std::vector<vec2>& coords)
-  : faces_(faces), vertices_(vertices), normals_(normals), coords_(coords) {}
+                 const std::vector<vec3>& normals, const std::vector<vec2>& coords)
+  : faces_(faces)
+  , vertices_(vertices)
+  , normals_(normals)
+  , coords_(coords) {}
 
 trimesh trimesh::generate_box(size_t tess) {
   assert(tess > 0 && "Tesselation value must be at least 1");
@@ -50,7 +53,7 @@ trimesh trimesh::generate_box(size_t tess) {
 
     for (size_t i = 0; i < tess; ++i) {
       for (size_t j = 0; j < tess; ++j) {
-        auto id = i + j*(tess + 1);
+        auto id = i + j * (tess + 1);
         box.faces_.emplace_back(face{baseid + id, baseid + id + tess + 1, baseid + id + 1});
         box.faces_.emplace_back(face{baseid + i + 1, baseid + i + tess + 1, baseid + i + tess + 2});
       }
@@ -76,9 +79,9 @@ trimesh trimesh::generate_plane(size_t tess) {
 
   pln.vertices_.reserve(nv); pln.normals_.resize(nv, vec3{0.f, 0.f, 1.f}); pln.coords_.reserve(nv);
   for (size_t i = 0; i < tess + 1; ++i) {
-    auto y = -1.f + 2.f*i/tess;
+    auto y = -1.f + 2.f * i / tess;
     for (size_t j = 0; j < tess + 1; ++j) {
-      pln.vertices_.emplace_back(-1.f + 2.f*j/tess, y, 0.f);
+      pln.vertices_.emplace_back(-1.f + 2.f * j / tess, y, 0.f);
       pln.coords_  .emplace_back(static_cast<float>(i) / tess, static_cast<float>(j) / tess);
     }
   }
@@ -86,7 +89,7 @@ trimesh trimesh::generate_plane(size_t tess) {
   pln.faces_.reserve(2 * tess * tess);
   for (size_t i = 0; i < tess; ++i) {
     for (size_t j = 0; j < tess; ++j) {
-      auto id = j + i*(tess + 1);
+      auto id = j + i * (tess + 1);
       pln.faces_.emplace_back(face{id, id + 1, id + tess + 2});
       pln.faces_.emplace_back(face{id, id + tess + 2, id + tess + 1});
     }
@@ -97,13 +100,13 @@ trimesh trimesh::generate_plane(size_t tess) {
 trimesh trimesh::generate_sphere(size_t tess) {
   assert(tess > 3 && "Tesselation value must be at least 4");
   trimesh sph{};
-  auto tess_s = tess + 1, tess_r = tess/2 + 1, nv = tess_s * tess_r;
+  auto tess_s = tess + 1, tess_r = tess / 2 + 1, nv = tess_s * tess_r;
 
   sph.vertices_.reserve(nv); sph.normals_.reserve(nv); sph.coords_.reserve(nv);
   for (size_t r = 0; r < tess_r; ++r) {
     auto rh = r * (1.f / (tess_r - 1.f));
     for (size_t s = 0; s < tess_s; ++s) {
-      auto sh = 1.f - s*(1.f / (tess_s - 1.f));
+      auto sh = 1.f - s * (1.f / (tess_s - 1.f));
       auto vn = vec3{
         std::sin(two_pi<float> * sh) * std::sin(pi<float> * rh),
         std::sin(pi<float> * (rh - 0.5f)),
@@ -118,9 +121,9 @@ trimesh trimesh::generate_sphere(size_t tess) {
   sph.faces_.reserve(2 * (tess_s - 1) * (tess_r - 1));
   for (size_t r = 0; r < tess_r - 1; ++r) {
     for (size_t s = 0; s < tess_s - 1; ++s) {
-      auto id = (r + 1)*tess_s;
-      sph.faces_.emplace_back(face{r*tess_s + s + 1, r*tess_s + s, id + s + 1});
-      sph.faces_.emplace_back(face{id + s, id + s + 1, r*tess_s + s});
+      auto id = (r + 1) * tess_s;
+      sph.faces_.emplace_back(face{r * tess_s + s + 1, r * tess_s + s, id + s + 1});
+      sph.faces_.emplace_back(face{id + s, id + s + 1, r * tess_s + s});
     }
   }
   return sph;

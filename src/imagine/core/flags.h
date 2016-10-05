@@ -57,21 +57,18 @@ public:
   auto& operator^=(enum_type e) { return operator^=(flags{e}); }
 
   auto& operator=(flags f) { flags_ = f.flags_; return *this; }
+  auto& operator=(underlying_type flags) { flags_ = underlying_type(flags); return *this; }
 
-  constexpr operator bool() const  { return flags_ != 0; }
-  constexpr auto operator!() const { return !flags_; }
+  constexpr operator underlying_type() const { return flags_; }
+  constexpr auto operator!() const           { return !flags_; }
 
 private:
-  friend auto operator|(E lhs, flags rhs) { return rhs | lhs; }
-  friend auto operator&(E lhs, flags rhs) { return rhs & lhs; }
-  friend auto operator^(E lhs, flags rhs) { return rhs ^ lhs; }
-
-  friend auto operator|(E lhs, E rhs) { return flags{lhs} | rhs; }
-  friend auto operator&(E lhs, E rhs) { return flags{lhs} & rhs; }
-  friend auto operator^(E lhs, E rhs) { return flags{lhs} ^ rhs; }
-
   underlying_type flags_;
 };
+
+template <typename E> constexpr auto operator|(E lhs, E rhs) { return flags<E>{lhs} | rhs; }
+template <typename E> constexpr auto operator&(E lhs, E rhs) { return flags<E>{lhs} & rhs; }
+template <typename E> constexpr auto operator^(E lhs, E rhs) { return flags<E>{lhs} ^ rhs; }
 
 template <typename E>
 constexpr auto to_f(E e) {

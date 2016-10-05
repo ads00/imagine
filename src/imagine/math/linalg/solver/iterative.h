@@ -36,7 +36,7 @@ void cg(const alg<Alg>& A, const alg<Rhs>& b, alg<Lhs>& x,
   using vector_type = Precond::vector_type;
 
   size_t n = A.diagsize();
-  vector_type r = b - A*x;
+  vector_type r = b - A * x;
 
   auto threshold = tolerance * tolerance * dot(b, b);
   auto p = precond.solve(r);
@@ -55,7 +55,7 @@ void cg(const alg<Alg>& A, const alg<Rhs>& b, alg<Lhs>& x,
     z = precond.solve(r);
 
     auto rn = ro;
-    ro = dot(r, z), p = z + (ro / rn)*p;
+    ro = dot(r, z), p = z + (ro / rn) * p;
   }
 }
 
@@ -66,7 +66,7 @@ void bicgstab(const alg<Alg>& A, const alg<Rhs>& b, alg<Lhs>& x,
   using T = alg_t<Alg>;
 
   size_t n = A.diagsize();
-  vector_type r = b - A*x;
+  vector_type r = b - A * x;
   vector_type rn = r;
 
   auto threshold = tolerance * tolerance * dot(b, b);
@@ -81,29 +81,29 @@ void bicgstab(const alg<Alg>& A, const alg<Rhs>& b, alg<Lhs>& x,
     no = dot(rn, r);
     
     if (std::abs(no) < std::numeric_limits<T>::epsilon() * ro) {
-      r = b - A*x;
+      r = b - A * x;
       rn = r, no = ro = dot(r, r);
     }
 
     auto c = (no / nn) * (a / w);
-    p = r + c*(p - w*v);
+    p = r + c * (p - w * v);
 
     y = precond.solve(p);
-    v = A*y;
+    v = A * y;
 
     a = no / dot(rn, v);
-    s = r - a*v;
+    s = r - a * v;
 
     z = precond.solve(s);
-    t = A*z;
+    t = A * z;
 
     auto tt = dot(t, t);
-    w = (tt > T(0)) ? 
-      dot(t, s) / tt :
-      T(0);
+    w = tt > T(0)
+      ? dot(t, s) / tt
+      : T(0);
 
-    x += a*y + w*z;
-    r = s - w*t;
+    x += a * y + w * z;
+    r = s - w * t;
   }
 }
 

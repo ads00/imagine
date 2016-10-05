@@ -56,7 +56,13 @@ template <typename T> constexpr T boltzmann   = T(1.3806488e-23);   // Boltzmann
 template <typename T> constexpr T avogadro    = T(6.02214129e23);   // Avogadro's number in mol-1
 
 template <typename T>
-constexpr auto sign(T x) { return (x > 0) ? 1 : (x < 0) ? -1 : 0 }
+constexpr auto sign(T x) { 
+  return x > 0 
+    ? 1 
+    : x < 0 
+      ? -1 
+      : 0 
+}
 
 template <typename T> constexpr auto degrees(T x) { return x * T(180.0) / pi<T>; }
 template <typename T> constexpr auto radians(T x) { return x * pi<T> / T(180.0); }

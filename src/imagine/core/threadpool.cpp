@@ -27,7 +27,7 @@ namespace ig {
 
 void threadpool::thread_work_internal() {
   for (;;) {
-    std::function<void ()> task{};
+    std::function<void()> task{};
     {
       std::unique_lock<decltype(mutex_)> lock(mutex_);
       cv_.wait(lock, [this] { return !running_ || !tasks_.empty(); });
@@ -43,18 +43,17 @@ void threadpool::thread_work_internal() {
 
 threadpool::threadpool(size_t workers)
   : running_{true} {
-  for (size_t i = 0; i < workers; ++i) {
+
+  for (size_t i = 0; i < workers; ++i)
     workers_.emplace_back(&threadpool::thread_work_internal, this);
-  }
 }
 
 threadpool::~threadpool() {
   running_ = false;
   cv_.notify_all();
 
-  for (auto& worker : workers_) {
+  for (auto& worker : workers_)
     worker.join();
-  }
 }
 
 } // namespace ig

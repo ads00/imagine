@@ -21,8 +21,8 @@
  SOFTWARE.
 */
 
-#ifndef IG_MATH_IMAGE_H
-#define IG_MATH_IMAGE_H
+#ifndef IG_MATH_DATA_H
+#define IG_MATH_DATA_H
 
 #include "imagine/ig.h"
 
@@ -31,35 +31,34 @@
 
 namespace ig {
 
-class IG_API image {
+class IG_API data {
 public:
-  enum class format_t { unknown, jpeg, png };
+  enum class io_t { unknown, jpeg, png };
   using dimensions_type = std::initializer_list<uint32_t>;
 
-  image();
-  explicit image(dimensions_type dimensions, uint32_t channels, uint32_t bit_depth);
+  data() = default;
+  explicit data(dimensions_type dimensions, uint32_t channels);
 
-  auto pixels() const { return pixels_.data(); }
-  auto pixels()       { return pixels_.data(); }
+  auto ptr() const { return ptr_.data(); }
+  auto ptr()       { return ptr_.data(); }
 
   auto& dimensions() const { return dims_; }
 
-  auto& channels() const  { return channels_; }
-  auto& bit_depth() const { return bit_depth_; }
-  auto& pitch() const     { return pitch_; }
+  auto& channels() const   { return channels_; }
+  auto& pitch() const      { return pitch_; }
   
   const uint8_t& operator[](dimensions_type coords) const;
   uint8_t& operator[](dimensions_type coords);
 
-  bool save(format_t format, const std::string& filename);
-  static std::unique_ptr<image> load(const std::string& filename);
+  bool save(io_t format, const std::string& filename);
+  static std::unique_ptr<data> load(const std::string& filename);
 
 private:
-  std::vector<uint8_t> pixels_;
+  std::vector<uint8_t> ptr_;
   std::vector<uint32_t> dims_;
-  uint32_t channels_, size_, bit_depth_, pitch_;
+  uint32_t channels_, size_, pitch_;
 };
 
 } // namespace ig
 
-#endif // IG_MATH_IMAGE_H
+#endif // IG_MATH_DATA_H

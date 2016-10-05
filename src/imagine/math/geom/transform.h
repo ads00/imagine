@@ -52,6 +52,7 @@ private:
   void remove_child(const transform& tr);
   void hierarchical_invalidate();
 
+private:
   transform* parent_;
   std::vector< std::reference_wrapper<transform> > children_;
 

@@ -39,7 +39,9 @@ template <typename Lhs, typename Rhs, typename Op>
 class binary_expr : public alg< binary_expr<Lhs, Rhs, Op> > {
 public:
   explicit binary_expr(const Lhs& lhs, const Rhs& rhs, const Op& op)
-    : lhs_{lhs}, rhs_{rhs}, op_{op} {}
+    : lhs_{lhs}
+    , rhs_{rhs}
+    , op_{op} {}
 
   auto rows() const { return lhs_.rows(); }
   auto cols() const { return lhs_.cols(); }

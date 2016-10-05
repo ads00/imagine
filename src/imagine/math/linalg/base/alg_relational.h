@@ -34,7 +34,7 @@ bool operator<(const alg<Lhs>& lhs, const alg<Rhs>& rhs) {
 
   auto pair = std::mismatch(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
   return (pair.first == lhs.end() || 
-        ((*pair.first) < (*pair.second)));
+         *pair.first < *pair.second);
 }
 
 template <typename Lhs, typename Rhs>

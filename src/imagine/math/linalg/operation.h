@@ -40,9 +40,9 @@ constexpr auto cross(const alg<Lhs>& lhs, const alg<Rhs>& rhs) {
   assert(lhs.vector() && lhs.vecsize() == 3 && "Cross exists only in three-dimensional space");
   assert(rhs.vector() && rhs.vecsize() == 3 && "Cross exists only in three-dimensional space");
 
-  return vec_type{lhs[1]*rhs[2] - lhs[2]*rhs[1],
-                  lhs[2]*rhs[0] - lhs[0]*rhs[2],
-                  lhs[0]*rhs[1] - lhs[1]*rhs[0]};
+  return vec_type{lhs[1] * rhs[2] - lhs[2] * rhs[1],
+                  lhs[2] * rhs[0] - lhs[0] * rhs[2],
+                  lhs[0] * rhs[1] - lhs[1] * rhs[0]};
 }
 
 } // namespace linalg

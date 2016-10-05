@@ -33,9 +33,12 @@ class quaternion {
 public:
   using vector_type = colvec<T, 3>;
 
-  quaternion() : sca_{1}, vec_{} {}
+  quaternion() 
+    : sca_{1}
+    , vec_{} {}
   explicit quaternion(T sca, const vector_type& vec)
-    : sca_{sca}, vec_{vec} {}
+    : sca_{sca}
+    , vec_{vec} {}
 
   auto operator+=(const quaternion& q) -> quaternion&;
   auto operator*=(const quaternion& q) -> quaternion&;
@@ -52,9 +55,9 @@ public:
     auto cp = std::cos(pitch), sp = std::sin(pitch);
     auto cy = std::cos(yaw),   sy = std::sin(yaw);
 
-    return quaternion{cr*cp*cy - sr*sp*sy, {cr*cp*cy + sr*sp*sy,
-                                            sr*cp*cy + cr*sp*sy,
-                                            cr*sp*cy - sr*cp*sy}};
+    return quaternion{cr * cp * cy - sr * sp * sy, {cr * cp * cy + sr * sp * sy,
+                                                    sr * cp * cy + cr * sp * sy,
+                                                    cr * sp * cy - sr * cp * sy}};
   }
 
   T sca_;
@@ -70,8 +73,8 @@ auto quaternion<T>::operator+=(const quaternion& q) -> quaternion& {
 template <typename T>
 auto quaternion<T>::operator*=(const quaternion& q) -> quaternion& {
   auto& s = *this;
-  sca_ = s.sca_*q.sca_ - linalg::dot(s.vec_, q.vec_);
-  vec_ = s.sca_*q.vec_ + q.sca_*s.vec_ + linalg::cross(s.vec_, q.vec_);
+  sca_ = s.sca_ * q.sca_ - linalg::dot(s.vec_, q.vec_);
+  vec_ = s.sca_ * q.vec_ + q.sca_ * s.vec_ + linalg::cross(s.vec_, q.vec_);
   return *this;
 }
 

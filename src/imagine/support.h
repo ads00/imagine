@@ -33,7 +33,6 @@ CLANG    - C++ front-end for the LLVM compiler
 
 #if defined(_MSC_VER)
 # define IG_MSVC (_MSC_VER)
-# define IG_FUNC __FUNCTION__
 # define IG_DEPRECATED __declspec(deprecated)
 # define IG_DEPRECATED_X(text) __declspec(deprecated(text))
 # define IG_NORETURN __declspec(noreturn)
@@ -82,7 +81,6 @@ CLANG    - C++ front-end for the LLVM compiler
 #  define IG_EXPORT __attribute__((visibility("default")))
 #  define IG_IMPORT __attribute__((visibility("default")))
 # endif
-# define IG_FUNC __PRETTY_FUNCTION__
 # define IG_DEPRECATED __attribute__((__deprecated__))
 # define IG_UNUSED __attribute__((__unused__))
 # define IG_NORETURN __attribute__((__noreturn__))

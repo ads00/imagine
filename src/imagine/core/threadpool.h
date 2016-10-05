@@ -46,7 +46,7 @@ public:
     auto retval = task->get_future();
     {
       std::lock_guard<decltype(mutex_)> lock(mutex_);
-      tasks_.emplace([task]() { (*task)(); });
+      tasks_.emplace([&task]() { (*task)(); });
     }
 
     cv_.notify_one();
@@ -56,7 +56,7 @@ public:
   threadpool(const threadpool&) = delete;
   threadpool& operator=(const threadpool&) = delete;
 
-protected:
+private:
   virtual void thread_work_internal();
 
 private:

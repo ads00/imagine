@@ -30,9 +30,8 @@ library::library()
   : native_{std::make_unique<impl::library_native>()} {}
 
 library::library(const std::string& path)
-  : native_{std::make_unique<impl::library_native>(path)} {
-  open(path);
-}
+  : native_{std::make_unique<impl::library_native>(path)} 
+{ open(path);}
 
 library::~library() {
   close();

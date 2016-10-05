@@ -29,7 +29,7 @@ namespace linalg {
 
 template <typename T>
 constexpr auto dot(const quaternion<T>& lhs, const quaternion<T>& rhs) {
-  return lhs.sca_*rhs.sca_ + linalg::dot(lhs.vec_, rhs.vec_);
+  return lhs.sca_ * rhs.sca_ + linalg::dot(lhs.vec_, rhs.vec_);
 }
 
 template <typename T>
@@ -64,7 +64,7 @@ auto rotate(const quaternion<T>& q, const alg<Alg>& v) {
 
   auto c1 = linalg::cross(q.vec_, v);
   auto c2 = linalg::cross(q.vec_, c1);
-  return v + T(2)*(c1*q.sca_ + c2);
+  return v + T(2) * (c1 * q.sca_ + c2);
 }
 
 } // namespace linalg

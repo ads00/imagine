@@ -26,7 +26,9 @@
 namespace ig {
 
 bbox::bbox(const vec3& min, const vec3& max)
-  : min_{min}, max_{max}, extent_{max_ - min_} {}
+  : min_{min}
+  , max_{max}
+  , extent_{max_ - min_} {}
 
 void bbox::expand(const vec3& point) {
   min_ = std::min(min_, point), max_ = std::max(max_, point);
@@ -34,7 +36,7 @@ void bbox::expand(const vec3& point) {
 }
 
 float bbox::surface_area() const {
-  return 2.f * (extent_[0]*extent_[2] + extent_[0]*extent_[1] + extent_[1]*extent_[2]);
+  return 2.f * (extent_[0] * extent_[2] + extent_[0] * extent_[1] + extent_[1] * extent_[2]);
 }
 
 } // namespace ig

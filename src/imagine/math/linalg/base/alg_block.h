@@ -38,12 +38,22 @@ template <typename Xpr>
 class alg_block : public alg< alg_block<Xpr> > {
 public:
   explicit alg_block(Xpr& xpr, size_t row, size_t col, size_t nr, size_t nc)
-    : xpr_{xpr}, colvec_{false}, rowvec_{false}, row_{row}, col_{col}, nr_{nr}, nc_{nc} {}
+    : xpr_{xpr}
+    , colvec_{false}
+    , rowvec_{false}
+    , row_{row}
+    , col_{col}
+    , nr_{nr}
+    , nc_{nc} {}
 
   explicit alg_block(Xpr& xpr, size_t start, size_t n)
-    : xpr_{xpr}, colvec_{xpr_.cols() == 1}, rowvec_{xpr_.rows() == 1},
-      row_{colvec_ ? start : 0}, col_{rowvec_ ? start : 0},
-      nr_{colvec_ ? n : 1},      nc_{rowvec_ ? n : 1} {}
+    : xpr_{xpr}
+    , colvec_{xpr_.cols() == 1}
+    , rowvec_{xpr_.rows() == 1}
+    , row_{colvec_ ? start : 0}
+    , col_{rowvec_ ? start : 0}
+    , nr_{colvec_ ? n : 1}
+    , nc_{rowvec_ ? n : 1} {}
 
   auto rows() const { return nr_; }
   auto cols() const { return nc_; }

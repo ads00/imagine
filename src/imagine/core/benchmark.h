@@ -34,7 +34,6 @@
 
 namespace ig {
 
-class benchmark_report;
 class benchmark {
 public:
   benchmark() = default;
@@ -44,7 +43,7 @@ public:
     std::vector<std::chrono::microseconds> runner(runs);
     for (size_t run = 0; run < runs; ++run) {
       auto begin = std::chrono::high_resolution_clock::now();
-      fn(std::forward<Args>(args)...);
+      std::forward<Fn>(fn)(std::forward<Args>(args)...);
       runner[run] = std::chrono::duration_cast<std::chrono::microseconds>(
         std::chrono::high_resolution_clock::now() - begin);
     }
@@ -57,14 +56,15 @@ public:
     }
   }
 
+  struct report { std::string name; std::vector<uint64_t> samples; };
   template <typename T = std::chrono::microseconds>
   auto generate_reports() {
-    std::vector<benchmark_report> reports(benchs_.size());
+    std::vector<report> reports(benchs_.size());
     std::transform(benchs_.begin(), benchs_.end(), reports.begin(), [](auto& bench) {
-      benchmark_report report{bench.first};
-      for (auto& sample : bench.second) {
-        report.samples_.emplace_back(std::chrono::duration_cast<T>(sample).count());
-      } return std::move(report);
+      report report{bench.first};
+      for (auto& sample : bench.second)
+        report.samples.emplace_back(std::chrono::duration_cast<T>(sample).count());
+      return std::move(report);
     });
     return reports;
   }
@@ -74,12 +74,6 @@ public:
 
 private:
   std::unordered_map< std::string, std::vector<std::chrono::microseconds> > benchs_;
-};
-
-class benchmark_report {
-public:
-  std::string name_;
-  std::vector<uint64_t> samples_;
 };
 
 } // namespace ig

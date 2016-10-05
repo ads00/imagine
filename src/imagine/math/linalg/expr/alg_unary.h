@@ -39,7 +39,8 @@ template <typename Alg, typename Op>
 class unary_expr : public alg< unary_expr<Alg, Op> > {
 public:
   explicit unary_expr(const Alg& alg, const Op& op)
-    : alg_{alg}, op_{op} {}
+    : alg_{alg}
+    , op_{op} {}
 
   auto rows() const { return alg_.rows(); }
   auto cols() const { return alg_.cols(); }

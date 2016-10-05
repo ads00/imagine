@@ -30,9 +30,8 @@ namespace ig     {
 namespace endian {
 
 void helper(const uint8_t* src, uint8_t* dst, size_t size) {
-  for (size_t i = 0; i < size; ++i) {
+  for (size_t i = 0; i < size; ++i)
     dst[i] = src[size - 1 - i];
-  }
 }
 
 template <typename T> constexpr void swap(T src, uint8_t* dst) {

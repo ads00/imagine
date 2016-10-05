@@ -37,8 +37,13 @@ namespace impl {
 static std::string ig_window_class = "ig_winclass";
 
 window_native::window_native(const window& ref)
-  : ref_{ref}, style_{window::style_t::none}, visibility_{window::visibility_t::hidden},
-    mouse_tracked_{false}, handle_{nullptr}, wstyle_{0} {
+  : ref_{ref}
+  , style_{window::style_t::none}
+  , visibility_{window::visibility_t::hidden}
+  , mouse_tracked_{false}
+  , handle_{nullptr}
+  , wstyle_{0} {
+
   if (!reg()) {
     throw std::runtime_error{"Failed to register wndclass instance"};
   }
@@ -49,8 +54,14 @@ window_native::window_native(const window& ref)
 }
 
 window_native::window_native(const window& ref, const std::string& caption, uint32_t width, uint32_t height, window::style_flags style)
-  : ref_{ref}, caption_{caption}, style_{style}, visibility_{window::visibility_t::windowed},
-    mouse_tracked_{false}, handle_{nullptr}, wstyle_{0} {
+  : ref_{ref}
+  , caption_{caption}
+  , style_{style}
+  , visibility_{window::visibility_t::windowed}
+  , mouse_tracked_{false}
+  , handle_{nullptr}
+  , wstyle_{0} {
+
   if (!reg()) {
     throw std::runtime_error{"Failed to register wndclass instance"};
   }
@@ -58,14 +69,12 @@ window_native::window_native(const window& ref, const std::string& caption, uint
   wstyle_ = WS_VISIBLE;
   if (style_ & window::style_t::titlebar) {
     wstyle_ |= WS_CAPTION | WS_MINIMIZEBOX;
-    if (style_ & window::style_t::closable) {
+    if (style_ & window::style_t::closable)
       wstyle_ |= WS_SYSMENU;
-    } if (style_ & window::style_t::resizable) {
+    if (style_ & window::style_t::resizable)
       wstyle_ |= WS_MAXIMIZEBOX | WS_SIZEBOX;
-    }
-  } else {
+  } else
     wstyle_ |= WS_POPUP;
-  }
 
   RECT adjrect{0, 0, static_cast<LONG>(width), static_cast<LONG>(height)};
   AdjustWindowRect(&adjrect, wstyle_, false);
@@ -104,14 +113,14 @@ LRESULT window_native::internal(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
   };
   auto mouse_move_ev = [&lparam, this, &mouse_ev](event_mouse::type_t type, bool entered) -> event_mouse {
     auto ev = mouse_ev(type);
-    if (ev.x != ref_.cursor_.native_->x_ || ev.y != ref_.cursor_.native_->y_) {
-      ev.move.dx = entered ?
-        0 :
-        ev.x - ref_.cursor_.native_->x_,
-        ev.move.dy = entered ?
-        0 :
-        ev.y - ref_.cursor_.native_->y_;
-      ref_.cursor_.native_->x_ = ev.x, ref_.cursor_.native_->y_ = ev.y;
+    if (ev.x != ref_.cursor.native_->x_ || ev.y != ref_.cursor.native_->y_) {
+      ev.move.dx = entered 
+        ? 0 
+        : ev.x - ref_.cursor.native_->x_,
+      ev.move.dy = entered
+        ? 0 
+        : ev.y - ref_.cursor.native_->y_;
+      ref_.cursor.native_->x_ = ev.x, ref_.cursor.native_->y_ = ev.y;
     } else {
       ev.type = event_mouse::none;
     }
@@ -198,7 +207,7 @@ LRESULT window_native::internal(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
     break;
   case WM_SETCURSOR:
     if (LOWORD(lparam) == HTCLIENT) {
-      ref_.cursor_.refresh();
+      ref_.cursor.refresh();
     }
     break;
   default:
@@ -321,12 +330,12 @@ void window::set_caption(const std::string& caption) {
 }
 
 void window::set_parent(const window* parent) {
-  auto handle = parent ? 
-    parent->native_->handle_ : 
-    nullptr;
-  native_->wstyle_ &= handle ? 
-    ~WS_POPUP | WS_CHILD : 
-    ~WS_CHILD;
+  auto handle = parent 
+    ? parent->native_->handle_ 
+    : nullptr;
+  native_->wstyle_ &= handle 
+    ? ~WS_POPUP | WS_CHILD 
+    :  ~WS_CHILD;
 
   SetWindowLong(native_->handle_, GWL_STYLE, native_->wstyle_);
   SetParent(native_->handle_, handle);

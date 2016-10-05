@@ -29,8 +29,14 @@ camera::camera(projection_t projection, size_t w, size_t h)
   : camera{projection, w, h, vec3{0.f}, vec3{0.f}, vec3{0.f, 1.f, 0.f}} {}
 
 camera::camera(projection_t projection, size_t w, size_t h, const vec3& pos, const vec3& target, const vec3& up)
-  : projection_{projection}, w_{w}, h_{h}, pos_{pos}, target_{target}, up_{up},
-    zn_{1e-3f}, zf_{1e3f}, fovy_{1.57f}, uview_{false}, uproj_{false} {}
+  : projection_{projection}
+  , w_{w}
+  , h_{h}
+  , pos_{pos}
+  , target_{target}
+  , up_{up}
+  , zn_{1e-3f}, zf_{1e3f}, fovy_{1.57f}
+  , uview_{false}, uproj_{false} {}
 
 void camera::make_orthographic() {
   uproj_ = false;
@@ -49,8 +55,8 @@ void camera::clip(float zn, float zf) {
 }
 
 ray3 camera::cast_ray(size_t x, size_t y) const {
-  auto nx = x/static_cast<float>(w_)*2.f - 1.f;
-  auto ny = y/static_cast<float>(h_)*2.f - 1.f;
+  auto nx = x / static_cast<float>(w_) * 2.f - 1.f;
+  auto ny = y / static_cast<float>(h_) * 2.f - 1.f;
 
   auto raster = iproj_.transform(vec3{nx, ny, 0.f});
   vec3 wo{}, wd{};

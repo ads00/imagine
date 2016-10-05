@@ -46,9 +46,8 @@ void log::remove_sink(const std::shared_ptr<log_sink>& sink) {
 
 void log::push(const log_context& ctx) {
   std::lock_guard<decltype(mutex_)> lock{mutex_};
-  for (auto& sink : sinks_) {
+  for (auto& sink : sinks_)
     sink->consume(ctx);
-  }
 }
 
 log::formatter_type log::default_format = [](const log_context& c) {
@@ -57,20 +56,23 @@ log::formatter_type log::default_format = [](const log_context& c) {
   std::stringstream ss{};
   ss << std::put_time(std::localtime(&tt), "%c");
 
-  switch (c.type_) {
-  case log_t::dbg:   ss << " - DEBUG [" << c.func_ << '@' << c.line_ << "] ";
+  switch (c.type) {
+  case log_t::dbg:   ss << " - DEBUG [" << c.func << '@' << c.line << "] ";
     break;
   case log_t::info:  ss << " - INFO  "; break;
   case log_t::warn:  ss << " - WARN  "; break;
   case log_t::err:   ss << " - ERR   "; break;
   }
-  ss << c.stream_.str() << std::endl;
+  ss << c.stream.str() << std::endl;
   return ss.str();
 };
 
 // log_context
 log_context::log_context(log_t type, const char* func, const char* file, int32_t line)
-  : type_{type}, func_{func}, file_{file}, line_{line} {}
+  : type{type}
+  , func{func}
+  , file{file}
+  , line{line} {}
 
 log_context::~log_context() {
   log::get().push(*this);

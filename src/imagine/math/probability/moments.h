@@ -36,21 +36,20 @@ public:
   moments() = default;
 
   template <typename InputIt>
-  explicit moments(InputIt first, InputIt last) : moments{} {
-    process(first, last);
-  }
+  explicit moments(InputIt first, InputIt last) : moments{} 
+  { process(first, last); }
 
   template <typename InputIt>
   void process(InputIt first, InputIt last) {
     for (size_t i = size_; first != last; ++first, ++i) {
-      auto d = (*first) - m1_;
+      auto d = *first - m1_;
       auto dn = d / ++size_;
       auto ds = dn * dn;
       auto t = d * dn * i;
 
       m1_ += dn;
-      m4_ += t * ds * (size_*size_ - 3*size_ + 3) + 6*ds*m2_ - 4*dn*m3_;
-      m3_ += t * dn * (size_ - 2) - 3*dn*m2_;
+      m4_ += t * ds * (size_ * size_ - 3 * size_ + 3) + 6 * ds * m2_ - 4 * dn * m3_;
+      m3_ += t * dn * (size_ - 2) - 3 * dn * m2_;
       m2_ += t;
     }
   }

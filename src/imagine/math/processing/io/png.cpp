@@ -21,11 +21,11 @@
  SOFTWARE.
 */
 
-#include "imagine/math/imag/io/png.h"
+#include "imagine/math/processing/io/png.h"
 #include "imagine/core/log.h"
 
 #include "png/png.h"
-#include "zlib/zlib.h"
+#include "png/zlib.h"
 
 #include <memory>
 #include <vector>
@@ -43,7 +43,7 @@ void flushproc(png_structp png_ptr);
 
 void message(png_structp png_ptr, const char* msg);
 
-std::unique_ptr<image> png_read(std::istream& stream) {
+std::unique_ptr<data> png_read(std::istream& stream) {
   auto png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, nullptr, message, message);
   if (!png_ptr) return nullptr;
 
@@ -91,8 +91,7 @@ std::unique_ptr<image> png_read(std::istream& stream) {
   }
 
   #if IG_BIG_ENDIAN
-  if (bitdepth == 16)
-    png_set_swap(png_ptr);
+  if (bitdepth == 16) png_set_swap(png_ptr);
   #endif
 
   png_read_update_info(png_ptr, info_ptr);
@@ -101,12 +100,11 @@ std::unique_ptr<image> png_read(std::istream& stream) {
   bitdepth = png_get_bit_depth(png_ptr, info_ptr);
 
   auto dims = {width, height};
-  auto imag = std::make_unique<image>(dims, channels, bitdepth);
+  auto imag = std::make_unique<data>(dims, channels);
 
   auto rowptrs = std::vector<png_bytep>(height * sizeof(png_bytepp));
-  for (png_uint_32 j = 0; j < height; ++j) {
-    rowptrs[height - 1 - j] = imag->pixels() + (imag->pitch() * imag->channels() * j);
-  }
+  for (png_uint_32 j = 0; j < height; ++j)
+    rowptrs[height - 1 - j] = imag->ptr() + (imag->pitch() * imag->channels() * j);
 
   png_set_benign_errors(png_ptr, 1);
   png_read_image(png_ptr, rowptrs.data());
@@ -116,7 +114,7 @@ std::unique_ptr<image> png_read(std::istream& stream) {
   return imag;
 }
 
-bool png_write(const image& imag, std::ostream& stream) {
+bool png_write(const data& imag, std::ostream& stream) {
   auto png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, nullptr, message, message);
   if (!png_ptr) return false;
 
@@ -135,7 +133,7 @@ bool png_write(const image& imag, std::ostream& stream) {
   dst.stream = &stream;
   png_set_write_fn(png_ptr, &dst, writeproc, flushproc);
 
-  int colortype;
+  int colortype, bitdepth = sizeof(uint8_t) * 8;
   switch (imag.channels()) {
   case 1:
     colortype = PNG_COLOR_TYPE_GRAY;
@@ -154,7 +152,7 @@ bool png_write(const image& imag, std::ostream& stream) {
   }
 
   png_set_compression_level(png_ptr, 6);
-  if (imag.channels() * imag.bit_depth() >= 16) {
+  if (imag.channels() * bitdepth >= 16) {
     png_set_compression_strategy(png_ptr, Z_FILTERED);
     png_set_filter(png_ptr, 0, PNG_FILTER_NONE | PNG_FILTER_SUB | PNG_FILTER_PAETH);
   } else {
@@ -162,18 +160,17 @@ bool png_write(const image& imag, std::ostream& stream) {
   }
 
   png_set_IHDR(png_ptr, info_ptr, imag.dimensions()[0], imag.dimensions()[1],
-               imag.bit_depth(), colortype, PNG_INTERLACE_NONE,
+               bitdepth, colortype, PNG_INTERLACE_NONE,
                PNG_COMPRESSION_TYPE_BASE, PNG_FILTER_TYPE_BASE);
 
   png_write_info(png_ptr, info_ptr);
 
   #if IG_BIG_ENDIAN
-  if (imag.bit_depth() == 16) png_set_swap(png_ptr);
+  if (bitdepth == 16) png_set_swap(png_ptr);
   #endif
 
-  for (png_uint_32 j = 0; j < imag.dimensions()[1]; ++j) {
-    png_write_row(png_ptr, imag.pixels() + (imag.pitch() * imag.channels() * (imag.dimensions()[1] - j - 1)));
-  }
+  for (png_uint_32 j = 0; j < imag.dimensions()[1]; ++j)
+    png_write_row(png_ptr, imag.ptr() + (imag.pitch() * imag.channels() * (imag.dimensions()[1] - j - 1)));
 
   png_write_end(png_ptr, info_ptr);
   png_destroy_write_struct(&png_ptr, &info_ptr);

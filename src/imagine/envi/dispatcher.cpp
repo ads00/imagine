@@ -28,6 +28,7 @@ namespace ig {
 
 dispatcher::dispatcher()
   : native_{std::make_unique<impl::dispatcher_native>()} {
+
   assert(self_ != this && "Dispatcher must be unique");
   self_ = this;
 }
@@ -36,11 +37,10 @@ dispatcher::~dispatcher() = default;
 
 int32_t dispatcher::run() {
   assert(!native_->running_ && "Dispatcher already running");
-
   native_->running_ = true;
-  while (native_->running_) {
+
+  while (native_->running_)
     process_events();
-  } 
   return native_->return_code_;
 }
 

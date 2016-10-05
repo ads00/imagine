@@ -38,7 +38,8 @@ template <typename Xpr>
 class alg_col : public alg< alg_col<Xpr> > {
 public:
   explicit alg_col(Xpr& xpr, size_t col)
-    : xpr_{xpr}, col_{col} {}
+    : xpr_{xpr}
+    , col_{col} {}
 
   auto rows() const { return xpr_.rows(); }
   auto cols() const { return 1; }

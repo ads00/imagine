@@ -28,10 +28,12 @@ namespace ig   {
 namespace impl {
 
 library_native::library_native()
-  : path_{}, handle_{nullptr} {}
+  : path_{}
+  , handle_{nullptr} {}
 
 library_native::library_native(const std::string& path)
-  : path_{path}, handle_{nullptr} {}
+  : path_{path}
+  , handle_{nullptr} {}
 
 } // namespace impl
 

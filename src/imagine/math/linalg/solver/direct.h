@@ -40,8 +40,11 @@ void forward_solve(const alg<Alg>& lhs, alg<Vec>& rhs, bool unit = false) {
     for (size_t j = 0; j < i; ++j)
       s -= lhs(i, j) * rhs[j];
 
-    if (!unit) rhs[i] = s / lhs(i, i);
-    else       rhs[i] = s;
+    if (!unit) {
+      rhs[i] = s / lhs(i, i);
+    } else {
+      rhs[i] = s;
+    }
   }
 }
 
@@ -57,8 +60,11 @@ void backward_solve(const alg<Alg>& lhs, alg<Vec>& rhs, bool unit = false) {
     for (size_t j = i + 1; j < n; ++j)
       s -= lhs(i, j) * rhs[j];
 
-    if (!unit) rhs[i] = s / lhs(i, i);
-    else       rhs[i] = s;
+    if (!unit) {
+      rhs[i] = s / lhs(i, i);
+    } else {
+      rhs[i] = s;
+    }
   }
 }
 
@@ -72,7 +78,9 @@ void gauss_solve(alg<Alg>& lhs, alg<Vec>& rhs) {
     auto pivot = std::abs(lhs(i, i));
     for (size_t j = i + 1; j < n; ++j) {
       auto abscol = std::abs(lhs(j, i));
-      if (abscol > pivot) pivot = abscol, row = j;
+      if (abscol > pivot) {
+        pivot = abscol, row = j;
+      }
     }
 
     if (pivot == alg_t<Alg>(0)) {
@@ -84,10 +92,11 @@ void gauss_solve(alg<Alg>& lhs, alg<Vec>& rhs) {
 
     for (size_t j = i + 1; j < n; ++j) {
       auto g = -lhs(j, i) / lhs(i, i);
-      for (size_t k = i; k < n; ++k) {
-        if (i == k) lhs(j, k) = alg_t<Alg>(0);
-        else        lhs(j, k) += g * lhs(i, k);
-      } rhs[j] += g * rhs[i];
+      for (size_t k = i; k < n; ++k)
+        lhs(j, k) = i == k
+          ? alg_t<Alg>(0)
+          : g * lhs(i, k);
+      rhs[j] += g * rhs[i];
     }
   }
 

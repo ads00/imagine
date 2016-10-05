@@ -75,7 +75,12 @@ private:
 
 template <typename Alg>
 svd<Alg>::svd(const matrix_type& alg)
-  : m_{alg.rows()}, n_{alg.cols()}, threshold_{T(0)}, u_{alg}, v_{n_, n_}, s_{n_} {
+  : m_{alg.rows()}
+  , n_{alg.cols()}
+  , threshold_{T(0)}
+  , u_{alg}
+  , v_{n_, n_}
+  , s_{n_} {
 
   vector_type work{n_};
   auto g = T(0);
@@ -91,7 +96,7 @@ svd<Alg>::svd(const matrix_type& alg)
       auto f = u_(i, i);
       g = -sign(f) * std::sqrt(s1);
 
-      auto h = f*g - s1;
+      auto h = f * g - s1;
       u_(i, i) = f - g;
 
       for (size_t j = l; j < n_; ++j) {
@@ -104,7 +109,8 @@ svd<Alg>::svd(const matrix_type& alg)
     } else g = T(0);
 
     s_[i] = g;
-    if (i >= m_) continue;
+    if (i >= m_) 
+      continue;
 
     auto s2 = T(0);
     for (size_t j = l; j < n_; ++j) s2 += u_(i, j) * u_(i, j);
@@ -113,10 +119,9 @@ svd<Alg>::svd(const matrix_type& alg)
       auto f = u_(i, l);
       g = -sign(f) * std::sqrt(s2);
 
-      auto h = f*g - s2;
+      auto h = f * g - s2;
       u_(i, l) = f - g;
       for (size_t j = l; j < n_; ++j) work[j] = u_(i, j) / h;
-
       for (size_t j = l; j < m_; ++j) {
         auto s = T(0);
         for (size_t k = l; k < n_; ++k) s += u_(j, k) * u_(i, k);
@@ -126,11 +131,10 @@ svd<Alg>::svd(const matrix_type& alg)
   }
 
   // Accumulation of right hand transformations
-  for (size_t i = n_; i--> 0;) {
+  for (size_t i = n_; i--> 0; ) {
     if (g != T(0)) {
       auto h = g * u_(i, i + 1);
       for (size_t j = i + 1; j < n_; ++j) v_(j, i) = u_(i, j) / h;
-
       for (size_t j = i + 1; j < n_; ++j) {
         auto s = T(0);
         for (size_t k = i + 1; k < n_; ++k) s += u_(i, k) * v_(k, j);
@@ -145,7 +149,7 @@ svd<Alg>::svd(const matrix_type& alg)
   }
 
   // Accumulation of left hand transformations
-  for (size_t i = std::min(m_, n_); i--> 0;) {
+  for (size_t i = std::min(m_, n_); i--> 0; ) {
     auto l = i + 1;
     for (size_t j = l; j < n_; ++j) u_(i, j) = T(0);
 
@@ -202,7 +206,7 @@ svd<Alg>::svd(const matrix_type& alg)
 
           for (size_t k = 0; k < m_; ++k) {
             auto y = u_(k, nm), z = u_(k, j);
-            u_(k, nm) = y*c + z*s, u_(k, j) = z*c - y*s;
+            u_(k, nm) = y * c + z * s, u_(k, j) = z * c - y * s;
           }
         }
       }
@@ -227,9 +231,9 @@ svd<Alg>::svd(const matrix_type& alg)
       auto g = work[i - 1];
 
       auto x = s_[l];
-      auto f = ((y - z)*(y + z) + (g - h)*(g + h)) / (T(2) * h * y);
+      auto f = ((y - z) * (y + z) + (g - h) * (g + h)) / (T(2) * h * y);
       g = std::hypot(f, T(1));
-      f = ((x - z)*(x + z) + h*((y / (f + sign(f)*g)) - h)) / x;
+      f = ((x - z) * (x + z) + h * ((y / (f + sign(f) * g)) - h)) / x;
 
       auto c = T(1), s = T(1);
 
@@ -242,14 +246,14 @@ svd<Alg>::svd(const matrix_type& alg)
         work[j] = z1;
         c = f / z1;
         s = h1 / z1;
-        f = x*c + g1*s;
+        f = x * c + g1 * s;
 
-        auto g2 = g1*c - x*s, h2 = y1 * s, y2 = y1 * c;
+        auto g2 = g1 * c - x * s, h2 = y1 * s, y2 = y1 * c;
         auto z2 = std::hypot(f, h2);
 
         for (size_t k = 0; k < n_; ++k) {
           auto x = v_(k, j), z = v_(k, j1);
-          v_(k, j) = x*c + z*s, v_(k, j1) = z*c - x*s;
+          v_(k, j) = x * c + z * s, v_(k, j1) = z * c - x * s;
         }
 
         s_[j] = z2;
@@ -257,12 +261,12 @@ svd<Alg>::svd(const matrix_type& alg)
           c = f / z2, s = h2 / z2;
         }
 
-        f = c*g2 + s*y2;
-        x = c*y2 - s*g2;
+        f = c * g2 + s * y2;
+        x = c * y2 - s * g2;
 
         for (size_t k = 0; k < m_; ++k) {
           auto y = u_(k, j), z = u_(k, j1);
-          u_(k, j) = y*c + z*s, u_(k, j1) = z*c - y*s;
+          u_(k, j) = y * c + z * s, u_(k, j1) = z * c - y * s;
         }
       }
 
@@ -276,9 +280,8 @@ template <typename Alg>
 size_t svd<Alg>::rank() const {
   // Lookup for singular values > threshold 
   size_t r = 0;
-  for (size_t i = 0; i < n_; ++i) {
+  for (size_t i = 0; i < n_; ++i)
     if (s_[i] > threshold_) r++;
-  }
   return r;
 }
 
@@ -301,9 +304,9 @@ auto svd<Alg>::solve(const vector_type& b) -> vector_type {
   // Apply singularity
   for (size_t i = 0; i < n_; ++i) {
     auto sv = s_[i];
-    auto alpha = (std::abs(sv) > threshold_) ? 
-      T(1) / sv : 
-      sv;
+    auto alpha = (std::abs(sv) > threshold_) 
+      ? T(1) / sv 
+      : sv;
     w[i] *= alpha;
   }
   // Compute x = Vw
