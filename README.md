@@ -17,11 +17,11 @@ Technology    | for
 
 * Computational mathematics
   * Expression template library for linear algebra (matrices / vectors and numerical solvers)
+  * Statistical learning including regression, classification and clustering
   * Geometric primitives, homogeneous transformations and triangle meshes manipulation
-  * Statistical moments, regression, classification, clustering and Markov random fields
-  * Image manipulation 
+  * Signal processing 
 * Interactive environment
-  * Cross-platform windowing and events handling with lambdas functions
+  * Cross-platform windowing and events handling
   * Vulkan renderer
 
 At the moment, the development is focused on the renderer [Vulkan 1.0.x]. 
