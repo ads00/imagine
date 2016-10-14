@@ -31,9 +31,11 @@
 
 namespace ig {
 
+enum class data_format 
+  { unknown, jpeg, png };
+
 class IG_API data {
 public:
-  enum class io_t { unknown, jpeg, png };
   using dimensions_type = std::initializer_list<uint32_t>;
 
   data() = default;
@@ -50,7 +52,7 @@ public:
   const uint8_t& operator[](dimensions_type coords) const;
   uint8_t& operator[](dimensions_type coords);
 
-  bool save(io_t format, const std::string& filename);
+  bool save(data_format format, const std::string& filename);
   static std::unique_ptr<data> load(const std::string& filename);
 
 private:

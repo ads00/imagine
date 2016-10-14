@@ -29,7 +29,7 @@
 namespace ig       {
 namespace keyboard {
 
-enum class key_t {
+enum class key {
   unknown = -1,
 
   // misc
@@ -84,13 +84,13 @@ enum class key_t {
   zoom
 };
 
-enum class modifier_t : uint32_t {
+enum class modifier : uint32_t {
   none  = 0x000,
   shift = 0x001,
   ctrl  = 0x002,
   alt   = 0x004,
   meta  = 0x008
-}; using modifier_flags = flags<modifier_t>;
+}; using modifiers = flags<modifier>;
 
 } // namespace keyboard
 } // namespace ig

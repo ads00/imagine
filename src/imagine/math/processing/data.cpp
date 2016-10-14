@@ -64,15 +64,15 @@ uint8_t& data::operator[](dimensions_type coords) {
   return ptr_[id];
 }
 
-bool data::save(io_t format, const std::string& filename) {
+bool data::save(data_format format, const std::string& filename) {
   using namespace detail;
   std::ofstream out{filename, std::ios::binary | std::ios::trunc};
   if (!out.good()) return false;
 
   switch (format) {
-  case io_t::png:
+  case data_format::png:
     return png_write(*this, out);
-  case io_t::jpeg:
+  case data_format::jpeg:
     return jpeg_write(*this, out);
   default:
     return false;

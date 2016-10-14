@@ -38,8 +38,8 @@ struct event_keyboard {
     pressed, released,
   } type;
 
-  keyboard::modifier_flags modifiers;
-  keyboard::key_t key;
+  keyboard::modifiers modifiers;
+  keyboard::key key;
   uint32_t vk;
 };
 
@@ -51,12 +51,12 @@ struct event_mouse {
     moved, entered, leaved, wheeled,
   } type;
 
-  struct event_click { mouse::button_t button; };
+  struct event_click { mouse::button button; };
   struct event_move  { int32_t dx, dy; };
   struct event_wheel { float delta; };
   
-  keyboard::modifier_flags modifiers;
-  mouse::button_flags buttons;
+  keyboard::modifiers modifiers;
+  mouse::buttons buttons;
   int32_t x, y;
 
   union {

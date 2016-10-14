@@ -30,17 +30,15 @@ namespace ig {
 
 class IG_API transform {
 public:
-  enum class space_t { local, world };
-
   explicit transform(const vec3& pos, const quat& ori, const vec3& sca);
   virtual ~transform();
 
-  void positions(const vec3& pos, space_t space = space_t::local);
-  void directs(const quat& ori, space_t space = space_t::local);
-  void scales(const vec3& sca, space_t space = space_t::local);
+  void positions(const vec3& pos, coordinate coord = coordinate::local);
+  void directs(const quat& ori, coordinate coord = coordinate::local);
+  void scales(const vec3& sca, coordinate coord = coordinate::local);
 
-  transform& translate(const vec3& tra, space_t space = space_t::local);
-  transform& rotate(const quat& rot, space_t space = space_t::local);
+  transform& translate(const vec3& tra, coordinate coord = coordinate::local);
+  transform& rotate(const quat& rot, coordinate coord = coordinate::local);
   transform& scale(const vec3& sca);
 
   void link(transform* parent);

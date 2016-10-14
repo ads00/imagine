@@ -64,6 +64,9 @@ public:
   static const mat4 eye;
 };
 
+enum class projection { orthographic, perspective };
+enum class coordinate { local, world };
+
 } // namespace ig
 
 #endif // IG_MATH_HOMOGENEOUS_H

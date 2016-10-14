@@ -32,8 +32,8 @@ namespace keyboard {
 namespace impl     {
 
 #if defined(IG_WIN)
-auto modifiers()        -> modifier_flags;
-auto key(WPARAM wparam) -> key_t;
+auto get_modifiers()        -> modifiers;
+auto get_key(WPARAM wparam) -> key;
 #endif
 
 } // namespace impl

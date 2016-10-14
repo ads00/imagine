@@ -28,11 +28,11 @@ namespace ig {
 
 window::window()
   : native_{std::make_unique<impl::window_native>(*this)}
-  , cursor{cursor::shape_t::none} {}
+  , cursor{cursor_shape::none} {}
 
-window::window(const std::string& caption, uint32_t width, uint32_t height, style_flags style)
-  : native_{std::make_unique<impl::window_native>(*this, caption, width, height, style)}
-  , cursor{cursor::shape_t::arrow} {}
+window::window(types_t types, const std::string& caption, uint32_t w, uint32_t h)
+  : native_{std::make_unique<impl::window_native>(*this, types, caption, w, h)}
+  , cursor{cursor_shape::arrow} {}
 
 window::~window() {
   close();
@@ -43,11 +43,11 @@ const std::string& window::caption() const {
 }
 
 uint32_t window::width() const {
-  return native_->width_;
+  return native_->w_;
 }
 
 uint32_t window::height() const {
-  return native_->height_;
+  return native_->h_;
 }
 
 int32_t window::x() const {
@@ -58,7 +58,7 @@ int32_t window::y() const {
   return native_->y_;
 }
 
-auto window::visibility() const -> visibility_t {
+window_visibility window::visibility() const {
   return native_->visibility_;
 }
 

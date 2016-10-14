@@ -45,7 +45,7 @@ public:
 
     auto retval = task->get_future();
     {
-      std::lock_guard<decltype(mutex_)> lock(mutex_);
+      std::lock_guard<decltype(mutex_)> lock{mutex_};
       tasks_.emplace([&task]() { (*task)(); });
     }
 

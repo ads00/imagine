@@ -32,11 +32,11 @@ namespace mouse {
 namespace impl  {
 
 #if defined(IG_WIN)
-auto buttons() -> button_flags;
+auto get_buttons() -> buttons;
 
-auto x(LPARAM lparam) -> int32_t;
-auto y(LPARAM lparam) -> int32_t;
-auto wheel_delta(WPARAM wparam) -> float;
+auto get_x(LPARAM lparam) -> int32_t;
+auto get_y(LPARAM lparam) -> int32_t;
+auto get_wheel_delta(WPARAM wparam) -> float;
 
 auto track(HWND window) -> bool;
 #endif

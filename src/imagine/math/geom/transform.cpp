@@ -41,12 +41,12 @@ transform::~transform() {
   }
 }
 
-void transform::positions(const vec3& pos, space_t space) {
-  switch (space) {
-  case space_t::local:
+void transform::positions(const vec3& pos, coordinate coord) {
+  switch (coord) {
+  case coordinate::local:
     pos_ = pos;
     break;
-  case space_t::world:
+  case coordinate::world:
     pos_ = parent_ 
       ? parent_->inv_wt().transform(pos) 
       : pos;
@@ -54,12 +54,12 @@ void transform::positions(const vec3& pos, space_t space) {
   }
 }
 
-void transform::directs(const quat& ori, space_t space) {
-  switch (space) {
-  case space_t::local:
+void transform::directs(const quat& ori, coordinate coord) {
+  switch (coord) {
+  case coordinate::local:
     ori_ = ori;
     break;
-  case space_t::world:
+  case coordinate::world:
     ori_ = parent_ 
       ? parent_->ori_ * ori_ 
       : ori_;
@@ -67,12 +67,12 @@ void transform::directs(const quat& ori, space_t space) {
   }
 }
 
-void transform::scales(const vec3& sca, space_t space) {
-  switch (space) {
-  case space_t::local:
+void transform::scales(const vec3& sca, coordinate coord) {
+  switch (coord) {
+  case coordinate::local:
     sca_ = sca;
     break;
-  case space_t::world:
+  case coordinate::world:
     sca_ = parent_ 
       ? sca / parent_->sca_ 
       : sca_;
@@ -80,12 +80,12 @@ void transform::scales(const vec3& sca, space_t space) {
   }
 }
 
-transform& transform::translate(const vec3& tra, space_t space) {
-  switch (space) {
-  case space_t::local:
+transform& transform::translate(const vec3& tra, coordinate coord) {
+  switch (coord) {
+  case coordinate::local:
     pos_ += linalg::rotate(ori_, tra);
     break;
-  case space_t::world:
+  case coordinate::world:
     pos_ += parent_ 
       ? parent_->inv_wt().transform(tra) 
       : tra;
@@ -95,12 +95,12 @@ transform& transform::translate(const vec3& tra, space_t space) {
   return *this;
 }
 
-transform& transform::rotate(const quat& rot, space_t space) {
-  switch (space) {
-  case space_t::local:
+transform& transform::rotate(const quat& rot, coordinate coord) {
+  switch (coord) {
+  case coordinate::local:
     ori_ = linalg::normalise(ori_ * rot);
     break;
-  case space_t::world:
+  case coordinate::world:
     auto into = parent_ 
       ? parent_->ori_ * ori_
       : ori_;

@@ -29,7 +29,7 @@ void threadpool::thread_work_internal() {
   for (;;) {
     std::function<void()> task{};
     {
-      std::unique_lock<decltype(mutex_)> lock(mutex_);
+      std::unique_lock<decltype(mutex_)> lock{mutex_};
       cv_.wait(lock, [this] { return !running_ || !tasks_.empty(); });
 
       if (!running_ && tasks_.empty())

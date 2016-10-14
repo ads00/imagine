@@ -27,37 +27,37 @@ namespace ig    {
 namespace mouse {
 namespace impl  {
 
-auto buttons() -> button_flags {
+auto get_buttons() -> buttons {
   auto swap = GetSystemMetrics(SM_SWAPBUTTON);
 
-  button_flags buttons{button_t::none};
+  buttons buttons{button::none};
   if (GetAsyncKeyState(VK_LBUTTON) < 0)
     buttons |= swap 
-      ? button_t::right 
-      : button_t::left;
+      ? button::right
+      : button::left;
   if (GetAsyncKeyState(VK_RBUTTON) < 0)
     buttons |= swap 
-      ? button_t::left 
-      : button_t::right;
+      ? button::left
+      : button::right;
   if (GetAsyncKeyState(VK_MBUTTON) < 0)
-    buttons |= button_t::middle;
+    buttons |= button::middle;
   return buttons;
 }
 
-auto x(LPARAM lparam) -> int32_t {
+auto get_x(LPARAM lparam) -> int32_t {
   return LOWORD(lparam);
 }
 
-auto y(LPARAM lparam) -> int32_t {
+auto get_y(LPARAM lparam) -> int32_t {
   return HIWORD(lparam);
 }
 
-auto wheel_delta(WPARAM wparam) -> float {
+auto get_wheel_delta(WPARAM wparam) -> float {
   return static_cast<float>(GET_WHEEL_DELTA_WPARAM(wparam)) / WHEEL_DELTA;
 }
 
 auto track(HWND window) -> bool {
-  TRACKMOUSEEVENT tme{};
+  TRACKMOUSEEVENT tme;
   tme.cbSize = sizeof(TRACKMOUSEEVENT);
   tme.dwFlags = TME_LEAVE;
   tme.hwndTrack = window;

@@ -32,10 +32,10 @@ namespace impl {
 
 class cursor_native {
 public:
-  cursor_native(cursor::shape_t shape, int32_t x = 0, int32_t y = 0);
+  cursor_native(cursor_shape shape, int32_t x = 0, int32_t y = 0);
   ~cursor_native();
 
-  cursor::shape_t shape_;
+  cursor_shape shape_;
   int32_t x_, y_;
 
   #if defined(IG_WIN)

@@ -29,12 +29,12 @@
 namespace ig    {
 namespace mouse {
 
-enum class button_t : uint32_t {
+enum class button : uint32_t {
   none   = 0x00,
   left   = 0x01,
   right  = 0x02,
   middle = 0x04
-}; using button_flags = flags<button_t>;
+}; using buttons = flags<button>;
 
 } // namespace mouse
 } // namespace ig

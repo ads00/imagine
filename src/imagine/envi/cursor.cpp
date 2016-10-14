@@ -26,17 +26,17 @@
 
 namespace ig {
 
-cursor::cursor(shape_t shape)
+cursor::cursor(cursor_shape shape)
   : native_{std::make_unique<impl::cursor_native>(shape)} {}
 
 cursor::~cursor() = default;
 
-void cursor::reshape(shape_t shape) {
+void cursor::reshape(cursor_shape shape) {
   native_.reset(new impl::cursor_native{shape, native_->x_, native_->y_});
   refresh();
 }
 
-auto cursor::shape() const -> shape_t {
+cursor_shape cursor::shape() const {
   return native_->shape_;
 }
 

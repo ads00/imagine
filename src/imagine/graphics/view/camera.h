@@ -30,10 +30,8 @@ namespace ig {
 
 class IG_API camera {
 public:
-  enum class projection_t { orthographic, perspective };
-
-  explicit camera(projection_t projection, size_t w, size_t h);
-  explicit camera(projection_t projection, size_t w, size_t h, const vec3& pos, const vec3& target, const vec3& up);
+  explicit camera(projection proj, size_t w, size_t h);
+  explicit camera(projection proj, size_t w, size_t h, const vec3& pos, const vec3& target, const vec3& up);
 
   void make_orthographic();
   void make_perspective(float fovy);
@@ -45,7 +43,7 @@ public:
   const mat4& proj();
 
 private:
-  projection_t projection_;
+  projection projection_;
 
   size_t w_, h_;
   vec3 pos_, target_, up_;

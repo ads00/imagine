@@ -31,32 +31,34 @@
 namespace ig   {
 namespace impl { class cursor_native; class window_native; }
 
+enum class cursor_shape
+  : int32_t;
+
 class window;
 class IG_API cursor {
 public:
-  enum class shape_t {
-    none, arrow, cross, hand, pointer,
-    help, progress, wait, text, sizeall,
-    resize_n, resize_s, resize_e, resize_w,
-    resize_nw, resize_se, resize_ne, resize_sw,
-    bitmap
-  };
-
   friend impl::window_native;
 
-  explicit cursor(shape_t shape);
+  explicit cursor(cursor_shape shape);
   virtual ~cursor();
 
   void refresh() const;
-  void reshape(shape_t shape);
+  void reshape(cursor_shape shape);
 
-  auto shape() const -> shape_t;
+  cursor_shape shape() const;
 
   static void clip(const window& win);
   static void move(int32_t x, int32_t y, const window* win = nullptr);
 
 private:
   std::unique_ptr<impl::cursor_native> native_;
+};
+
+enum class cursor_shape : int32_t {
+  none, arrow,    cross, hand, pointer,
+  help, progress, wait,  text, sizeall,
+  resize_n, resize_s, resize_e, resize_w, resize_nw, resize_se, resize_ne, resize_sw,
+  bitmap
 };
 
 } // namespace ig

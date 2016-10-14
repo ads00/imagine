@@ -49,7 +49,7 @@ const LPSTR cursor_tbl[] = {
   nullptr,         // cursor::bitmap
 };
 
-cursor_native::cursor_native(cursor::shape_t shape, int32_t x, int32_t y)
+cursor_native::cursor_native(cursor_shape shape, int32_t x, int32_t y)
   : shape_{shape}
   , x_{x}
   , y_{y}
@@ -69,7 +69,7 @@ void cursor::refresh() const {
 }
 
 void cursor::clip(const window& win) {
-  RECT winrect{};
+  RECT winrect;
   GetWindowRect(reinterpret_cast<HWND>(win.handle()), &winrect);
   ClipCursor(&winrect);
 }

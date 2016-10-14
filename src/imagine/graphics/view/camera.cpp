@@ -25,11 +25,11 @@
 
 namespace ig {
 
-camera::camera(projection_t projection, size_t w, size_t h)
-  : camera{projection, w, h, vec3{0.f}, vec3{0.f}, vec3{0.f, 1.f, 0.f}} {}
+camera::camera(projection proj, size_t w, size_t h)
+  : camera{proj, w, h, vec3{0.f}, vec3{0.f}, vec3{0.f, 1.f, 0.f}} {}
 
-camera::camera(projection_t projection, size_t w, size_t h, const vec3& pos, const vec3& target, const vec3& up)
-  : projection_{projection}
+camera::camera(projection proj, size_t w, size_t h, const vec3& pos, const vec3& target, const vec3& up)
+  : projection_{proj}
   , w_{w}
   , h_{h}
   , pos_{pos}
@@ -40,13 +40,13 @@ camera::camera(projection_t projection, size_t w, size_t h, const vec3& pos, con
 
 void camera::make_orthographic() {
   uproj_ = false;
-  projection_ = projection_t::orthographic;
+  projection_ = projection::orthographic;
 }
 
 void camera::make_perspective(float fovy) {
   uproj_ = false;
   fovy_ = fovy;
-  projection_ = projection_t::perspective;
+  projection_ = projection::perspective;
 }
 
 void camera::clip(float zn, float zf) {
@@ -60,7 +60,7 @@ ray3 camera::cast_ray(size_t x, size_t y) const {
 
   auto raster = iproj_.transform(vec3{nx, ny, 0.f});
   vec3 wo{}, wd{};
-  if (projection_ == projection_t::perspective) {
+  if (projection_ == projection::perspective) {
     wo = iview_.transform(vec3{0.f});
     wd = iview_.transform(raster, true);
   } else {
@@ -81,10 +81,10 @@ const mat4& camera::view() {
 const mat4& camera::proj() {
   if (!uproj_) {
     switch (projection_) {
-    case projection_t::orthographic:
+    case projection::orthographic:
       proj_ = mat4::orthographic(1, 1, zn_, zf_);
       break;
-    case projection_t::perspective:
+    case projection::perspective:
       proj_ = mat4::perspective(fovy_, static_cast<float>(w_ / h_), zn_, zf_);
       break;
     }
