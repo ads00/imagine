@@ -21,19 +21,32 @@
  SOFTWARE.
 */
 
-#ifndef IG_MATH_JPEG_H
-#define IG_MATH_JPEG_H
+#include "imagine/math/bridge/bridge_image.h"
+#include "imagine/math/bridge/impl_image/bridge_jpeg.h"
+#include "imagine/math/bridge/impl_image/bridge_png.h"
 
-#include "imagine/math/processing/data.h"
+#include <fstream>
 
-namespace ig     {
-namespace detail {
+namespace ig {
 
-std::unique_ptr<data> jpeg_read(std::istream& stream);
-bool jpeg_write(const data& imag, std::ostream& stream);
-bool jpeg_validate(std::istream& stream);
+auto bridge_image::load(const std::string& filename) -> std::unique_ptr<data> {
+  std::ifstream in{filename, std::ios::binary};
+  if (!in.good()) return nullptr;
 
-} // namespace detail
+  if (impl::jpeg_validate(in)) return impl::jpeg_read(in);
+  if (impl::png_validate(in))  return impl::png_read(in);
+  return nullptr;
+}
+
+bool bridge_image::save(type_t format, const data& image, const std::string& filename) {
+  std::ofstream out{filename, std::ios::binary | std::ios::trunc};
+  if (!out.good()) return false;
+
+  switch (format) {
+  case type_t::jpeg: return impl::jpeg_write(image, out);
+  case type_t::png:  return impl::png_write(image, out);
+  default: return false;
+  }
+}
+
 } // namespace ig
-
-#endif // IG_MATH_JPEG_H

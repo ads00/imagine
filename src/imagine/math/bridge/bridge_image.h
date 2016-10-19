@@ -21,44 +21,21 @@
  SOFTWARE.
 */
 
+#ifndef IG_MATH_BRIDGE_IMAGE_H
+#define IG_MATH_BRIDGE_IMAGE_H
+
 #include "imagine/math/processing/data.h"
 
-#include <algorithm>
-#include <numeric>
+namespace ig  {
 
-namespace ig {
+class IG_API bridge_image {
+public:
+  enum type_t { unknown, jpeg, png };
 
-data::data(dimensions_type dimensions, uint32_t channels)
-  : dims_{dimensions}
-  , channels_{channels}
-  , size_{1} {
-
-  pitch_ = dims_.front();
-  for (auto it = dims_.begin() + 1; it != dims_.end(); ++it)
-    size_ *= *it;
-
-  size_ *= pitch_;
-  ptr_.resize(size_ * channels_);
-}
-
-const uint8_t& data::operator[](dimensions_type coords) const {
-  size_t acc = 0; 
-  auto it = coords.end();
-  for (auto dim = dims_.size(); dim--> 1; )
-    acc += *--it * std::accumulate(dims_.begin(), dims_.begin() + dim, 1, std::multiplies<>{});
-
-  auto id = *--it + acc;
-  return ptr_[id];
-}
-
-uint8_t& data::operator[](dimensions_type coords) {
-  size_t acc = 0;
-  auto it = coords.end();
-  for (auto dim = dims_.size(); dim--> 1; )
-    acc += *--it * std::accumulate(dims_.begin(), dims_.begin() + dim, 1, std::multiplies<>{});
-
-  auto id = *--it + acc;
-  return ptr_[id];
-}
+  static auto load(const std::string& filename) -> std::unique_ptr<data>;
+  static bool save(type_t format, const data& image, const std::string& filename);
+};
 
 } // namespace ig
+
+#endif // IG_MATH_BRIDGE_IMAGE_H

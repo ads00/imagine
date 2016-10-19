@@ -21,44 +21,20 @@
  SOFTWARE.
 */
 
-#include "imagine/math/processing/data.h"
+#ifndef IG_MATH_PNG_H
+#define IG_MATH_PNG_H
 
-#include <algorithm>
-#include <numeric>
+#include "imagine/ig.h"
+#include <sstream>
 
-namespace ig {
+namespace ig   { class data;
+namespace impl {
 
-data::data(dimensions_type dimensions, uint32_t channels)
-  : dims_{dimensions}
-  , channels_{channels}
-  , size_{1} {
+auto png_read(std::istream& stream) -> std::unique_ptr<data>;
+bool png_write(const data& imag, std::ostream& stream);
+bool png_validate(std::istream& stream);
 
-  pitch_ = dims_.front();
-  for (auto it = dims_.begin() + 1; it != dims_.end(); ++it)
-    size_ *= *it;
-
-  size_ *= pitch_;
-  ptr_.resize(size_ * channels_);
-}
-
-const uint8_t& data::operator[](dimensions_type coords) const {
-  size_t acc = 0; 
-  auto it = coords.end();
-  for (auto dim = dims_.size(); dim--> 1; )
-    acc += *--it * std::accumulate(dims_.begin(), dims_.begin() + dim, 1, std::multiplies<>{});
-
-  auto id = *--it + acc;
-  return ptr_[id];
-}
-
-uint8_t& data::operator[](dimensions_type coords) {
-  size_t acc = 0;
-  auto it = coords.end();
-  for (auto dim = dims_.size(); dim--> 1; )
-    acc += *--it * std::accumulate(dims_.begin(), dims_.begin() + dim, 1, std::multiplies<>{});
-
-  auto id = *--it + acc;
-  return ptr_[id];
-}
-
+} // namespace impl
 } // namespace ig
+
+#endif // IG_MATH_PNG_H

@@ -21,16 +21,18 @@
  SOFTWARE.
 */
 
-#include "imagine/math/processing/io/jpeg.h"
+#include "imagine/math/bridge/impl_image/bridge_jpeg.h"
+#include "imagine/math/processing/data.h"
 #include "imagine/core/log.h"
 
+extern "C" 
+{
 #include "jpeg/jpeglib.h"
 #include "jpeg/jerror.h"
+}
 
-#include <memory>
-
-namespace ig     {
-namespace detail {
+namespace ig   {
+namespace impl {
 
 struct jpeg_src {
   jpeg_source_mgr jpeg;
@@ -51,7 +53,7 @@ boolean writeproc(j_compress_ptr jpeg_ptr);
 void jpeg_message(j_common_ptr jpeg_ptr);
 void jpeg_exit(j_common_ptr jpeg_ptr);
 
-std::unique_ptr<data> jpeg_read(std::istream& stream) {
+auto jpeg_read(std::istream& stream) -> std::unique_ptr<data> {
   jpeg_decompress_struct jpeg_ptr{};
   jpeg_error_mgr jerr{};
 
@@ -216,5 +218,5 @@ void jpeg_exit(j_common_ptr jpeg_ptr) {
   }
 }
 
-} // namespace detail
+} // namespace impl
 } // namespace ig

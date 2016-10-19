@@ -21,19 +21,20 @@
  SOFTWARE.
 */
 
-#ifndef IG_MATH_PNG_H
-#define IG_MATH_PNG_H
+#ifndef IG_MATH_JPEG_H
+#define IG_MATH_JPEG_H
 
-#include "imagine/math/processing/data.h"
+#include "imagine/ig.h"
+#include <sstream>
 
-namespace ig     {
-namespace detail {
+namespace ig   { class data;
+namespace impl {
 
-std::unique_ptr<data> png_read(std::istream& stream);
-bool png_write(const data& imag, std::ostream& stream);
-bool png_validate(std::istream& stream);
+auto jpeg_read(std::istream& stream) -> std::unique_ptr<data>;
+bool jpeg_write(const data& imag, std::ostream& stream);
+bool jpeg_validate(std::istream& stream);
 
-} // namespace detail
+} // namespace impl
 } // namespace ig
 
-#endif // IG_MATH_PNG_H
+#endif // IG_MATH_JPEG_H

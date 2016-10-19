@@ -27,12 +27,8 @@
 #include "imagine/ig.h"
 
 #include <vector>
-#include <memory>
 
 namespace ig {
-
-enum class data_format 
-  { unknown, jpeg, png };
 
 class IG_API data {
 public:
@@ -51,9 +47,6 @@ public:
   
   const uint8_t& operator[](dimensions_type coords) const;
   uint8_t& operator[](dimensions_type coords);
-
-  bool save(data_format format, const std::string& filename);
-  static std::unique_ptr<data> load(const std::string& filename);
 
 private:
   std::vector<uint8_t> ptr_;

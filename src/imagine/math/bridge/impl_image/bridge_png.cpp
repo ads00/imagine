@@ -21,18 +21,21 @@
  SOFTWARE.
 */
 
-#include "imagine/math/processing/io/png.h"
+#include "imagine/math/bridge/impl_image/bridge_png.h"
+#include "imagine/math/processing/data.h"
 #include "imagine/core/log.h"
 
+extern "C" 
+{
 #include "png/png.h"
 #include "png/zlib.h"
+}
 
-#include <memory>
 #include <vector>
 #include <csetjmp>
 
-namespace ig     {
-namespace detail {
+namespace ig   {
+namespace impl {
 
 struct png_src { std::istream* stream; };
 struct png_dst { std::ostream* stream; };
@@ -43,7 +46,7 @@ void flushproc(png_structp png_ptr);
 
 void message(png_structp png_ptr, const char* msg);
 
-std::unique_ptr<data> png_read(std::istream& stream) {
+auto png_read(std::istream& stream) -> std::unique_ptr<data> {
   auto png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, nullptr, message, message);
   if (!png_ptr) return nullptr;
 
@@ -202,5 +205,5 @@ void message(png_structp png_ptr, const char* msg) {
   LOG(info) << "(libpng): " << msg;
 }
 
-} // namespace detail
+} // namespace impl
 } // namespace ig
