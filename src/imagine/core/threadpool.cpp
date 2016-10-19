@@ -25,33 +25,30 @@
 
 namespace ig {
 
-void threadpool::thread_work_internal() {
-  for (;;) {
-    std::function<void()> task{};
-    {
-      std::unique_lock<decltype(mutex_)> lock{mutex_};
-      cv_.wait(lock, [this] { return !running_ || !tasks_.empty(); });
-
-      if (!running_ && tasks_.empty())
-        return;
-      task = std::move(tasks_.front());
-      tasks_.pop();
-    }
-    task();
-  }
-}
-
 threadpool::threadpool(size_t workers)
   : running_{true} {
 
   for (size_t i = 0; i < workers; ++i)
-    workers_.emplace_back(&threadpool::thread_work_internal, this);
+    workers_.emplace_back([this] {
+      for (;;) {
+        std::function<void()> task{};
+        {
+          std::unique_lock<decltype(mutex_)> lock{mutex_};
+          cv_.wait(lock, [this] { return !running_ || !tasks_.empty(); });
+
+          if (!running_ && tasks_.empty())
+            return;
+          task = std::move(tasks_.front());
+          tasks_.pop();
+        }
+        task();
+      }
+    });
 }
 
 threadpool::~threadpool() {
   running_ = false;
   cv_.notify_all();
-
   for (auto& worker : workers_)
     worker.join();
 }

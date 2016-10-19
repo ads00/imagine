@@ -38,30 +38,27 @@ public:
 
   template <typename Fn, typename... Args>
   auto work(Fn&& fn, Args&&... args) {
-    using return_type = decltype(f(args...));
+    using return_type = decltype(fn(args...));
     auto task = std::make_shared<
       std::packaged_task<return_type()> >
       (std::bind(std::forward<Fn>(fn), std::forward<Args>(args)...));
 
-    auto retval = task->get_future();
+    auto res = task->get_future();
     {
       std::lock_guard<decltype(mutex_)> lock{mutex_};
-      tasks_.emplace([&task]() { (*task)(); });
+      tasks_.emplace([task]() { (*task)(); });
     }
 
     cv_.notify_one();
-    return retval;
+    return res;
   }
 
   threadpool(const threadpool&) = delete;
   threadpool& operator=(const threadpool&) = delete;
 
 private:
-  virtual void thread_work_internal();
-
-private:
   std::vector<std::thread> workers_;
-  std::queue< std::function<void ()> > tasks_;
+  std::queue< std::function<void()> > tasks_;
 
   std::mutex mutex_;
   std::condition_variable cv_;

@@ -68,30 +68,24 @@ public:
   auto& derived() const { return static_cast<const C&>(*this); }
   auto& derived()       { return static_cast<C&>(*this); }
 
-  template <typename It, typename CIt>
+  template <typename iter, typename citer>
   class iterator : public std::iterator<std::random_access_iterator_tag, T> {
   public:
     friend alg;
 
-    auto operator=(const iterator& o) { pos_ = o.pos_; return *this; }
-    auto operator++() { ++pos_; return *this; }
-    auto operator--() { --pos_; return *this; }
+    auto operator=(const iterator& o) { i_ = o.i_; return *this; }
+    auto operator++() { ++i_; return *this; }
+    auto operator--() { --i_; return *this; }
 
-    auto operator++(int) { auto tmp = iterator{*this}; ++pos_; return tmp; }
-    auto operator--(int) { auto tmp = iterator{*this}; --pos_; return tmp; }
+    bool operator==(const iterator& o) { return i_ == o.i_; }
+    bool operator!=(const iterator& o) { return i_ != o.i_; }
+    bool operator<(const iterator& o) { return i_ < o.i_; }
 
-    bool operator==(const iterator& o) { return pos_ == o.pos_; }
-    bool operator!=(const iterator& o) { return pos_ != o.pos_; }
-    bool operator<(const iterator& o) { return pos_ < o.pos_; }
-
-    It operator*() const { return derived_[pos_]; }
+    iter operator*() const { return derived_[i_]; }
 
   private:
-    constexpr iterator(CIt& derived, size_t pos)
-      : derived_{derived}, pos_{pos} {}
-
-    size_t pos_;
-    CIt& derived_;
+    constexpr iterator(citer& derived, size_t i) : derived_{derived}, i_{i} {}
+    citer& derived_; size_t i_;
   };
 
   auto begin() const { return iterator<U, const C>{derived(), 0}; }
