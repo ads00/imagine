@@ -27,7 +27,6 @@
 #include "imagine/ig.h"
 
 #include <functional>
-#include <memory>
 
 namespace ig   {
 namespace impl { class dispatcher_native; }

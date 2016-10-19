@@ -26,8 +26,6 @@
 
 #include "imagine/ig.h"
 
-#include <memory>
-
 namespace ig   {
 namespace impl { class library_native; }
 

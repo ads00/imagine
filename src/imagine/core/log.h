@@ -29,7 +29,6 @@
 #include <sstream>
 #include <functional>
 #include <mutex>
-#include <memory>
 #include <vector>
 
 namespace ig {

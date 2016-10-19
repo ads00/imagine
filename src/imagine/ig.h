@@ -34,4 +34,6 @@
 #include <stdexcept>
 #include <cassert>
 
+#include <memory>
+
 #endif // IMAGINE_H
