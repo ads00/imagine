@@ -30,10 +30,10 @@
 #include "imagine/platform.h"
 #include "imagine/support.h"
 
-#include <exception>
-#include <stdexcept>
-#include <cassert>
-
 #include <memory>
+#include <stdexcept>
+
+#include <cstddef>
+#include <cassert>
 
 #endif // IMAGINE_H

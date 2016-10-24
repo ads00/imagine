@@ -55,9 +55,10 @@ public:
     auto cp = std::cos(pitch), sp = std::sin(pitch);
     auto cy = std::cos(yaw),   sy = std::sin(yaw);
 
-    return quaternion{cr * cp * cy - sr * sp * sy, {cr * cp * cy + sr * sp * sy,
-                                                    sr * cp * cy + cr * sp * sy,
-                                                    cr * sp * cy - sr * cp * sy}};
+    return quaternion{cr * cp * cy - sr * sp * sy, 
+      vector_type{cr * cp * cy + sr * sp * sy,
+                  sr * cp * cy + cr * sp * sy,
+                  cr * sp * cy - sr * cp * sy}};
   }
 
   T sca_;

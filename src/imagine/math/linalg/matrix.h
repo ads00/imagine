@@ -51,7 +51,7 @@ struct alg_traits< matrix<T_, M_, N_> > {
 template <typename T, int M = dynamic_sized, int N = M>
 class matrix : public alg< matrix<T, M, N> > {
 public:
-  using base = alg< matrix<T, M, N> >;
+  using base_type = alg< matrix<T, M, N> >;
 
   static constexpr auto dynamic_rows = (M < 0);
   static constexpr auto dynamic_cols = (N < 0);
@@ -88,7 +88,7 @@ public:
     : data_{dynamic_rows ? o.rows() : static_cast<size_t>(M), dynamic_cols ? o.cols() : static_cast<size_t>(N),
             std::vector<T>(data_.dM * data_.dN)} {}
 
-  matrix(const base& o) : data_{o.derived().data_} {}
+  matrix(const base_type& o) : data_{o.derived().data_} {}
 
   auto rows() const { return data_.rows(); }
   auto cols() const { return data_.cols(); }
@@ -149,8 +149,8 @@ auto matrix<T, M, N>::operator[](size_t n) -> T& {
 // Eye (Identity)
 template <typename T, int M, int N>
 auto matrix<T, M, N>::make_eye() -> matrix& {
-  size_t i = 0, stride = base::diagsize() + 1;
-  std::generate(base::begin(), base::end(), [&i, &stride, this]() { return !(i++ % stride); });
+  size_t i = 0, stride = base_type::diagsize() + 1;
+  std::generate(base_type::begin(), base_type::end(), [&i, &stride, this]() { return !(i++ % stride); });
   return *this;
 }
 

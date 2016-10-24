@@ -30,9 +30,9 @@
 namespace ig     {
 namespace linalg {
 
-template <typename Alg, typename Rhs, typename Lhs, typename Precond, typename U>
+template <typename Alg, typename Rhs, typename Lhs, typename Precond>
 void cg(const alg<Alg>& A, const alg<Rhs>& b, alg<Lhs>& x, 
-        const Precond& precond, size_t iterations, U tolerance) {
+        const Precond& precond, size_t iterations, double tolerance) {
   using vector_type = Precond::vector_type;
 
   size_t n = A.diagsize();
@@ -59,9 +59,9 @@ void cg(const alg<Alg>& A, const alg<Rhs>& b, alg<Lhs>& x,
   }
 }
 
-template <typename Alg, typename Rhs, typename Lhs, typename Precond, typename U>
+template <typename Alg, typename Rhs, typename Lhs, typename Precond>
 void bicgstab(const alg<Alg>& A, const alg<Rhs>& b, alg<Lhs>& x,
-              const Precond& precond, size_t iterations, U tolerance) {
+              const Precond& precond, size_t iterations, double tolerance) {
   using vector_type = Precond::vector_type;
   using T = alg_t<Alg>;
 

@@ -39,17 +39,17 @@ using ray3 = ray<float, 3>;
 
 class IG_API mat4 : public matrix<float, 4> {
 public:
-  using base = matrix<float, 4>;
+  using base_type = matrix<float, 4>;
 
   mat4() = default;
 
   template <typename... Args>
   explicit mat4(T i, Args&&... args)
-    : base{i, std::forward<Args>(args)...} {}
+    : base_type{i, std::forward<Args>(args)...} {}
 
   template <typename Alg> 
   mat4(const alg<Alg>& o) 
-    : base(o) {}
+    : base_type{o} {}
 
   vec3 transform(const vec3& v, bool unit = false) const;
 

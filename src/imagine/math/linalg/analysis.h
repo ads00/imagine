@@ -94,7 +94,7 @@ struct determinant<Alg, 2> {
 
 template <typename Alg, size_t size = Alg::M>
 struct inverse {
-  static constexpr typename Alg::plain_t run(const alg<Alg>& alg) {
+  static constexpr typename Alg::plain_type run(const alg<Alg>& alg) {
     return lu_run(alg).inv();
   }
 };

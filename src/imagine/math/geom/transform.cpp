@@ -48,7 +48,7 @@ void transform::positions(const vec3& pos, coordinate coord) {
     break;
   case coordinate::world:
     pos_ = parent_ 
-      ? parent_->inv_wt().transform(pos) 
+      ? [this]() -> mat4 { return linalg::inv(parent_->wt()); }().transform(pos)
       : pos;
     break;
   }
@@ -87,7 +87,7 @@ transform& transform::translate(const vec3& tra, coordinate coord) {
     break;
   case coordinate::world:
     pos_ += parent_ 
-      ? parent_->inv_wt().transform(tra) 
+      ? [this]() -> mat4 { return linalg::inv(parent_->wt()); }().transform(tra)
       : tra;
     break;
   }
@@ -149,10 +149,6 @@ const mat4& transform::wt() {
     } umatrix_ = true;
   }
   return matrix_;
-}
-
-const mat4 transform::inv_wt() {
-  return linalg::inv(wt());
 }
 
 void transform::hierarchical_invalidate() {

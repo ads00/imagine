@@ -53,6 +53,7 @@ template <typename Lhs, typename Rhs, typename Op> class binary_expr;
 template <typename Xpr> struct alg_traits;
 template <typename Xpr> struct alg_traits<const Xpr> : alg_traits<Xpr> {};
 
+// _t alias like
 template <typename Alg> using alg_t = typename Alg::T;
 
 template <typename C>
@@ -176,8 +177,8 @@ public:
   auto operator<<(T val) { return initializer{derived()}, val; }
 };
 
-template <typename Eval, typename Alg>
-void eval_helper(alg<Eval>& ev, const alg<Alg>& alg) {
+template <typename gen, typename Alg>
+void eval_helper(alg<gen>& ev, const alg<Alg>& alg) {
   assert(ev.rows() == alg.rows() && ev.cols() == alg.cols()
          && "Incoherent algebraic evaluation");
 
@@ -186,18 +187,18 @@ void eval_helper(alg<Eval>& ev, const alg<Alg>& alg) {
     for (size_t j = 0; j < evc; ++j) ev(i, j) = alg(i, j);
 }
 
-template <typename Eval, typename Alg>
-constexpr void eval(alg<Eval>& ev, const alg<Alg>& alg) {
+template <typename gen, typename Alg>
+constexpr void eval(alg<gen>& ev, const alg<Alg>& alg) {
   eval_helper(ev, alg);
 }
 
-template <typename Eval, typename Alg, typename O>
-constexpr void eval(alg<Eval>& ev, const alg<Alg>& alg, const O&) {
+template <typename gen, typename Alg, typename O>
+constexpr void eval(alg<gen>& ev, const alg<Alg>& alg, const O&) {
   eval_helper(ev, alg);
 }
 
-template <typename Eval, typename Alg>
-constexpr void eval(alg<Eval>& ev, const alg<Alg>& alg, typename Eval::dynamics_data& i) {
+template <typename gen, typename Alg>
+constexpr void eval(alg<gen>& ev, const alg<Alg>& alg, typename gen::dynamics_data& i) {
   i.d_.resize(ev.size());
   eval_helper(ev, alg);
 }
