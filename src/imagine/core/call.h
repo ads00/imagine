@@ -21,8 +21,8 @@
  SOFTWARE.
 */
 
-#ifndef IG_CORE_SIGNAL_H
-#define IG_CORE_SIGNAL_H
+#ifndef IG_CORE_CALL_H
+#define IG_CORE_CALL_H
 
 #include "imagine/ig.h"
 
@@ -31,81 +31,81 @@
 
 namespace ig {
 
-template <typename Signature> class signal;
+template <typename Signature> class call;
 template <typename R, typename... Args>
-class signal<R(Args...)> {
+class call<R(Args...)> {
 public:
   using sig_type  = R(Args...);
   using func_type = std::function<sig_type>;
 
-  signal() = default;
+  call() = default;
 
   auto connect(const func_type& fn);
   void emit(Args&&... args) const;
   void operator()(Args&&... args) const;
 
-  template <typename Collect> auto collect(Args&&... args) const;
+  template <typename collect> auto collect(Args&&... args) const;
 
-  signal(const signal&) = delete;
-  signal& operator=(const signal&) = delete;
+  call(const call&) = delete;
+  call& operator=(const call&) = delete;
 
 private:
   template <typename Signature>
-  class slot {
+  class subscriber {
   public:
-    friend signal;
-    explicit slot(signal& signal, const func_type& fn)
-      : signal_{signal}
+    friend call;
+    explicit subscriber(call& call, const func_type& fn)
+      : call_{call}
       , fn_{fn} {}
     void disconnect();
 
   private:
-    signal& signal_;
+    call& call_;
     func_type fn_;
-  }; using slot_type = slot<sig_type>;
+  }; using subscriber_type = subscriber<sig_type>;
 
-  std::vector< std::shared_ptr<slot_type> > slots_;
+  std::vector< std::shared_ptr<subscriber_type> > subs_;
 };
 
-// signal
+// call
 template <typename R, typename... Args>
-auto signal<R(Args...)>::connect(const func_type& fn) {
-  slots_.emplace_back(std::make_shared<slot_type>(*this, fn));
-  return slots_.back();
+auto call<R(Args...)>::connect(const func_type& fn) {
+  subs_.emplace_back(std::make_shared<subscriber_type>(*this, fn));
+  return subs_.back();
 }
 
 template <typename R, typename... Args>
-void signal<R(Args...)>::emit(Args&&... args) const {
-  for (auto& slot : slots_)
-    slot->fn_(std::forward<Args>(args)...);
+void call<R(Args...)>::emit(Args&&... args) const {
+  for (auto& sub : subs_)
+    sub->fn_(std::forward<Args>(args)...);
 }
 
 template <typename R, typename... Args>
-void signal<R(Args...)>::operator()(Args&&... args) const {
+void call<R(Args...)>::operator()(Args&&... args) const {
   emit(std::forward<Args>(args)...);
 }
 
 template <typename R, typename... Args>
-template <typename Collect>
-auto signal<R(Args...)>::collect(Args&&... args) const {
-  static_assert(std::is_default_constructible<Collect>::value, "Collecter must be default constructible");
-  static_assert(std::is_same<Collect::value_type, R>::value,   "Collecter value type must be equal to signal return type");
+template <typename collect>
+auto call<R(Args...)>::collect(Args&&... args) const {
+  static_assert(std::is_default_constructible<collect>::value, "Collecter must be default constructible");
+  static_assert(std::is_same<collect::value_type, R>::value,   "Collecter value type must be equal to call return type");
 
-  Collect collecter{};
-  for (auto& slot : slots_)
-    collecter.emplace_back(slot->fn_(std::forward<Args>(args)...));
+  collect collecter{};
+  for (auto& sub : subs_)
+    collecter.emplace_back(sub->fn_(std::forward<Args>(args)...));
   return collecter;
 }
 
-// signal::slot
+// call::subscriber
 template <typename R, typename... Args>
 template <typename Signature>
-void signal<R(Args...)>::slot<Signature>::disconnect() {
-  signal_.slots_.erase(std::remove_if(signal_.slots_.begin(), signal_.slots_.end(), [this](auto& slot) {
-    return slot.get() == this;
-  }), signal_.slots_.end());
+void call<R(Args...)>::subscriber<Signature>::disconnect() {
+  call_.subs_.erase(std::remove_if(call_.subs_.begin(), call_.subs_.end(), [this](auto& sub) {
+    return sub.get() == this;
+  }), call_.subs_.end());
 }
 
 } // namespace ig
 
-#endif // IG_CORE_SIGNAL_H
+#endif // IG_CORE_CALL_H
