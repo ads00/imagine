@@ -21,32 +21,21 @@
  SOFTWARE.
 */
 
-#include "imagine/math/bridge/bridge_image.h"
+#include "imagine/math/theory/data.h"
 #include "imagine/math/bridge/impl_image/bridge_jpeg.h"
 #include "imagine/math/bridge/impl_image/bridge_png.h"
 
-#include <fstream>
-
 namespace ig {
 
-auto bridge_image::load(const std::string& filename) -> std::unique_ptr<data> {
-  std::ifstream in{filename, std::ios::binary};
-  if (!in.good()) return nullptr;
+template <>
+decltype(data8_t::bridge_table_) data8_t::bridge_table_ = {{
+  {format_t::jpeg, std::make_tuple(impl::jpeg_validate, impl::jpeg_read_8, impl::jpeg_write_8)},
+  {format_t::png,  std::make_tuple(impl::png_validate,  impl::png_read_8,  impl::png_write_8)}
+}};
 
-  if (impl::jpeg_validate(in)) return impl::jpeg_read(in);
-  if (impl::png_validate(in))  return impl::png_read(in);
-  return nullptr;
-}
-
-bool bridge_image::save(type_t format, const data& image, const std::string& filename) {
-  std::ofstream out{filename, std::ios::binary | std::ios::trunc};
-  if (!out.good()) return false;
-
-  switch (format) {
-  case type_t::jpeg: return impl::jpeg_write(image, out);
-  case type_t::png:  return impl::png_write(image, out);
-  default: return false;
-  }
-}
+template <>
+decltype(data16_t::bridge_table_) data16_t::bridge_table_ = {{
+  {format_t::png, std::make_tuple(impl::png_validate, impl::png_read_16, impl::png_write_16)}
+}};
 
 } // namespace ig

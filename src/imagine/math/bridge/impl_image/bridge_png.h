@@ -24,15 +24,18 @@
 #ifndef IG_MATH_PNG_H
 #define IG_MATH_PNG_H
 
-#include "imagine/ig.h"
+#include "imagine/math/theory/data.h"
 #include <sstream>
 
-namespace ig   { class data;
+namespace ig   {
 namespace impl {
 
-auto png_read(std::istream& stream) -> std::unique_ptr<data>;
-bool png_write(const data& imag, std::ostream& stream);
 bool png_validate(std::istream& stream);
+auto png_read_8  (std::istream& stream) -> std::unique_ptr<data8_t>;
+auto png_read_16 (std::istream& stream) -> std::unique_ptr<data16_t>;
+
+bool png_write_8 (const data8_t&  imag, std::ostream& stream);
+bool png_write_16(const data16_t& imag, std::ostream& stream);
 
 } // namespace impl
 } // namespace ig

@@ -24,35 +24,71 @@
 #ifndef IG_MATH_DATA_H
 #define IG_MATH_DATA_H
 
-#include "imagine/ig.h"
+#include "imagine/math/bridge/bridge.h"
 
 #include <vector>
+#include <map>
 
 namespace ig {
 
-class IG_API data {
+template <typename T>
+class data {
 public:
   using dimensions_type = std::initializer_list<uint32_t>;
+  using data_type = data<T>;
+  enum format_t : int32_t { unknown = -1, jpeg, png, bound = png + 1 };
 
   data() = default;
   explicit data(dimensions_type dimensions, uint32_t channels);
 
-  auto ptr() const { return ptr_.data(); }
-  auto ptr()       { return ptr_.data(); }
+  auto buffer() const { return buffer_.data(); }
+  auto buffer()       { return buffer_.data(); }
 
-  auto& dimensions() const { return dims_; }
-
+  auto& dimensions() const { return dimensions_; }
   auto& channels() const   { return channels_; }
   auto& pitch() const      { return pitch_; }
   
-  const uint8_t& operator[](dimensions_type coords) const;
-  uint8_t& operator[](dimensions_type coords);
+  const T& operator[](dimensions_type i) const { return buffer_[index(i)]; }
+        T& operator[](dimensions_type i)       { return buffer_[index(i)]; }
 
-private:
-  std::vector<uint8_t> ptr_;
-  std::vector<uint32_t> dims_;
+protected:
+  size_t index(dimensions_type i) const;
+
+protected:
+  std::vector<uint32_t> dimensions_;
+  std::vector<T> buffer_;
   uint32_t channels_, size_, pitch_;
+
+  friend bridge<data_type>;
+  IG_API static std::map<int32_t, typename bridge<data_type>::type_t> bridge_table_;
 };
+
+template <typename T>
+data<T>::data(dimensions_type dimensions, uint32_t channels)
+  : dimensions_{dimensions}
+  , channels_{channels}
+  , size_{1} {
+
+  pitch_ = dimensions_.front();
+  for (auto it = dimensions_.begin() + 1; it != dimensions_.end(); ++it)
+    size_ *= *it;
+
+  size_ *= pitch_;
+  buffer_.resize(size_ * channels_);
+}
+
+template <typename T>
+size_t data<T>::index(dimensions_type i) const {
+  size_t acc = 0;
+  auto it = i.end();
+  for (auto dim = dimensions_.size(); dim--> 1; )
+    acc += *--it * std::accumulate(dimensions_.begin(), dimensions_.begin() + dim, 1, std::multiplies<>{});
+
+  return *--it + acc;
+}
+
+using data8_t  = data<uint8_t>;
+using data16_t = data<uint16_t>;
 
 } // namespace ig
 

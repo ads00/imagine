@@ -24,15 +24,16 @@
 #ifndef IG_MATH_JPEG_H
 #define IG_MATH_JPEG_H
 
-#include "imagine/ig.h"
+#include "imagine/math/theory/data.h"
 #include <sstream>
 
-namespace ig   { class data;
+namespace ig   {
 namespace impl {
 
-auto jpeg_read(std::istream& stream) -> std::unique_ptr<data>;
-bool jpeg_write(const data& imag, std::ostream& stream);
 bool jpeg_validate(std::istream& stream);
+auto jpeg_read_8  (std::istream& stream) -> std::unique_ptr<data8_t>;
+
+bool jpeg_write_8(const data8_t& imag, std::ostream& stream);
 
 } // namespace impl
 } // namespace ig

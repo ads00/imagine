@@ -22,7 +22,6 @@
 */
 
 #include "imagine/math/bridge/impl_image/bridge_png.h"
-#include "imagine/math/processing/data.h"
 #include "imagine/core/log.h"
 
 extern "C" 
@@ -31,177 +30,165 @@ extern "C"
 #include "png/zlib.h"
 }
 
-#include <vector>
-#include <csetjmp>
-
 namespace ig   {
 namespace impl {
 
 struct png_src { std::istream* stream; };
 struct png_dst { std::ostream* stream; };
 
-void readproc(png_structp png_ptr, png_bytep data, png_size_t size);
-void writeproc(png_structp png_ptr, png_bytep data, png_size_t size);
-void flushproc(png_structp png_ptr);
+void png_readproc(png_structp png_ptr, 
+                  png_bytep data, 
+                  png_size_t size);
+void png_writeproc(png_structp png_ptr, 
+                   png_bytep data, 
+                   png_size_t size);
 
-void message(png_structp png_ptr, const char* msg);
+void png_flushproc(png_structp png_ptr);
+void png_message(png_structp png_ptr, const char* msg);
 
-auto png_read(std::istream& stream) -> std::unique_ptr<data> {
-  auto png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, nullptr, message, message);
-  if (!png_ptr) return nullptr;
-
-  auto info_ptr = png_create_info_struct(png_ptr);
-  if (!info_ptr) {
-    png_destroy_read_struct(&png_ptr, nullptr, nullptr);
-    return nullptr;
-  }
-
-  png_src src{};
-  src.stream = &stream;
-  png_set_read_fn(png_ptr, &src, readproc);
-
-  if (setjmp(png_jmpbuf(png_ptr))) {
-    png_destroy_read_struct(&png_ptr, &info_ptr, nullptr);
-    return nullptr;
-  }
-
-  png_read_info(png_ptr, info_ptr);
-
-  png_uint_32 width{}, height{};
-  int bitdepth{}, colortype{};
-
-  png_get_IHDR(png_ptr, info_ptr, &width, &height, &bitdepth, &colortype, nullptr, nullptr, nullptr);
-  auto channels = png_get_channels(png_ptr, info_ptr);
-
-  switch (colortype) {
-  case PNG_COLOR_TYPE_PALETTE:
-    png_set_palette_to_rgb(png_ptr);
-    channels = 3;
-    break;
-  case PNG_COLOR_TYPE_GRAY:
-    switch (bitdepth) {
-    case 1:
-    case 2:
-    case 4:
-      png_set_expand_gray_1_2_4_to_8(png_ptr);
-      break;
-    }
-
-    break;
-  case PNG_COLOR_TYPE_GRAY_ALPHA:
-    png_set_gray_to_rgb(png_ptr);
-    break;
-  }
-
-  #if IG_BIG_ENDIAN
-  if (bitdepth == 16) png_set_swap(png_ptr);
-  #endif
-
-  png_read_update_info(png_ptr, info_ptr);
-
-  channels = png_get_channels(png_ptr, info_ptr);
-  bitdepth = png_get_bit_depth(png_ptr, info_ptr);
-
-  auto dims = {width, height};
-  auto imag = std::make_unique<data>(dims, channels);
-
-  auto rowptrs = std::vector<png_bytep>(height * sizeof(png_bytepp));
-  for (png_uint_32 j = 0; j < height; ++j)
-    rowptrs[height - 1 - j] = imag->ptr() + (imag->pitch() * imag->channels() * j);
-
-  png_set_benign_errors(png_ptr, 1);
-  png_read_image(png_ptr, rowptrs.data());
-  png_read_end(png_ptr, info_ptr);
-
-  png_destroy_read_struct(&png_ptr, &info_ptr, nullptr);
-  return imag;
-}
-
-bool png_write(const data& imag, std::ostream& stream) {
-  auto png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, nullptr, message, message);
-  if (!png_ptr) return false;
-
-  auto info_ptr = png_create_info_struct(png_ptr);
-  if (!info_ptr) {
-    png_destroy_read_struct(&png_ptr, nullptr, nullptr);
-    return false;
-  }
-
-  if (setjmp(png_jmpbuf(png_ptr))) {
-    png_destroy_write_struct(&png_ptr, &info_ptr);
-    return false;
-  }
-
-  png_dst dst{};
-  dst.stream = &stream;
-  png_set_write_fn(png_ptr, &dst, writeproc, flushproc);
-
-  int colortype, bitdepth = sizeof(uint8_t) * 8;
-  switch (imag.channels()) {
-  case 1:
-    colortype = PNG_COLOR_TYPE_GRAY;
-    break;
-  case 2:
-    colortype = PNG_COLOR_TYPE_GRAY_ALPHA;
-    break;
-  case 3:
-    colortype = PNG_COLOR_TYPE_RGB;
-    break;
-  case 4:
-    colortype = PNG_COLOR_TYPE_RGBA;
-    break;
-  default:
-    return false;
-  }
-
-  png_set_compression_level(png_ptr, 6);
-  if (imag.channels() * bitdepth >= 16) {
-    png_set_compression_strategy(png_ptr, Z_FILTERED);
-    png_set_filter(png_ptr, 0, PNG_FILTER_NONE | PNG_FILTER_SUB | PNG_FILTER_PAETH);
-  } else {
-    png_set_compression_strategy(png_ptr, Z_DEFAULT_STRATEGY);
-  }
-
-  png_set_IHDR(png_ptr, info_ptr, imag.dimensions()[0], imag.dimensions()[1],
-               bitdepth, colortype, PNG_INTERLACE_NONE,
-               PNG_COMPRESSION_TYPE_BASE, PNG_FILTER_TYPE_BASE);
-
-  png_write_info(png_ptr, info_ptr);
-
-  #if IG_BIG_ENDIAN
-  if (bitdepth == 16) png_set_swap(png_ptr);
-  #endif
-
-  for (png_uint_32 j = 0; j < imag.dimensions()[1]; ++j)
-    png_write_row(png_ptr, imag.ptr() + (imag.pitch() * imag.channels() * (imag.dimensions()[1] - j - 1)));
-
-  png_write_end(png_ptr, info_ptr);
-  png_destroy_write_struct(&png_ptr, &info_ptr);
-  return true;
-}
-
+// Png interface implementation  - validate - read - write
 bool png_validate(std::istream& stream) {
   png_byte png_sig[8];
 
-  stream.read(reinterpret_cast<char*>(png_sig), 8);
-  stream.seekg(0, std::ios::beg);
+  stream.read(reinterpret_cast<char*>(png_sig), 8); stream.seekg(0, std::ios::beg);
   return !png_sig_cmp(png_sig, 0, 8);
 }
 
-void readproc(png_structp png_ptr, png_bytep data, png_size_t size) {
+template <typename T>
+auto png_read(std::istream& stream) -> std::unique_ptr< data<T> > {
+  struct read_handle { 
+    explicit read_handle(png_src& src) {
+      png  = png_create_read_struct(PNG_LIBPNG_VER_STRING, nullptr, png_message, png_message);
+      info = png_create_info_struct(png);
+      if (!info) {
+        png_destroy_read_struct(&png, nullptr, nullptr);
+        throw std::runtime_error{"Failed to create png info structure"};
+      }
+
+      png_set_read_fn(png, &src, png_readproc);
+      png_read_info(png, info);
+    }
+    virtual ~read_handle() { png_destroy_read_struct(&png, &info, nullptr); }
+
+    auto adaptive_generation() {
+      png_get_IHDR(png, info, &width, &height, &bitdepth, &colortype, nullptr, nullptr, nullptr);
+      switch (colortype) {
+      case PNG_COLOR_TYPE_PALETTE:    png_set_palette_to_rgb(png); break;
+      case PNG_COLOR_TYPE_GRAY_ALPHA: png_set_gray_to_rgb(png);    break;
+      case PNG_COLOR_TYPE_GRAY:
+        switch (bitdepth) {
+        case 1:
+        case 2:
+        case 4: png_set_expand_gray_1_2_4_to_8(png);
+        }
+      break; }
+      switch (sizeof(T) * std::numeric_limits<uint8_t>::digits) {
+      case 8:  png_set_scale_16(png);  break;
+      case 16: png_set_expand_16(png); break; }
+
+      png_read_update_info(png, info);
+      auto dims = {width, height};
+      return std::make_unique< data<T> >(dims, png_get_channels(png, info));
+    }
+
+    png_structp png; png_infop info; 
+    png_uint_32 width, height; int bitdepth, colortype;
+  };
+
+  png_src src{&stream};
+  auto handler = std::make_unique<read_handle>(src);
+
+  auto imag = handler->adaptive_generation();
+  auto rowptrs = std::vector<png_bytep>(handler->height * sizeof(png_bytepp));
+  for (png_uint_32 j = 0; j < handler->height; ++j)
+    rowptrs[handler->height - 1 - j] = reinterpret_cast<uint8_t*>(
+      imag->buffer() + (imag->pitch() * imag->channels() * j));
+
+  png_set_benign_errors(handler->png, 1);
+  png_read_image(handler->png, rowptrs.data()); png_read_end(handler->png, handler->info);
+  return imag;
+}
+
+template <typename T>
+bool png_write(const data<T>& imag, std::ostream& stream) {
+  struct write_handle {
+    explicit write_handle(png_dst& dst) {
+      png = png_create_write_struct(PNG_LIBPNG_VER_STRING, nullptr, png_message, png_message);
+      info = png_create_info_struct(png);
+      if (!info) {
+        png_destroy_write_struct(&png, nullptr);
+        throw std::runtime_error{"Failed to create png info structure"};
+      }
+
+      png_set_write_fn(png, &dst, png_writeproc, png_flushproc);
+    }
+    virtual ~write_handle() { png_destroy_write_struct(&png, &info); }
+
+    bool adaptive_generation(const data<T>& imag) {
+      int colortype, bitdepth = sizeof(T) * std::numeric_limits<uint8_t>::digits;
+      switch (imag.channels()) {
+      case 1: colortype = PNG_COLOR_TYPE_GRAY;       break;
+      case 2: colortype = PNG_COLOR_TYPE_GRAY_ALPHA; break;
+      case 3: colortype = PNG_COLOR_TYPE_RGB;        break;
+      case 4: colortype = PNG_COLOR_TYPE_RGBA;       break;
+      default: return false;
+      }
+
+      png_set_compression_level(png, 6);
+      if (imag.channels() * bitdepth >= 16) {
+        png_set_compression_strategy(png, Z_FILTERED);
+        png_set_filter(png, 0, PNG_FILTER_NONE | PNG_FILTER_SUB | PNG_FILTER_PAETH);
+      } else {
+        png_set_compression_strategy(png, Z_DEFAULT_STRATEGY);
+      }
+
+      png_set_IHDR(png, info, imag.dimensions()[0], imag.dimensions()[1],
+                   bitdepth, colortype, PNG_INTERLACE_NONE,
+                   PNG_COMPRESSION_TYPE_BASE, PNG_FILTER_TYPE_BASE);
+      png_write_info(png, info);
+      return true;
+    }
+
+    png_structp png; png_infop info;
+  };
+
+  png_dst dst{&stream};
+  auto handler = std::make_unique<write_handle>(dst);
+
+  if (!handler->adaptive_generation(imag))
+    return false;
+  for (png_uint_32 j = 0; j < imag.dimensions()[1]; ++j)
+    png_write_row(handler->png, reinterpret_cast<const uint8_t*>(
+      imag.buffer() + (imag.pitch() * imag.channels() * (imag.dimensions()[1] - j - 1))));
+
+  png_write_end(handler->png, handler->info);
+  png_destroy_write_struct(&handler->png, &handler->info);
+  return true;
+}
+
+auto png_read_8 (std::istream& stream) -> std::unique_ptr<data8_t>  { return png_read<uint8_t>(stream); }
+auto png_read_16(std::istream& stream) -> std::unique_ptr<data16_t> { return png_read<uint16_t>(stream); }
+
+bool png_write_8 (const data8_t&  imag, std::ostream& stream) { return png_write<uint8_t>(imag, stream); }
+bool png_write_16(const data16_t& imag, std::ostream& stream) { return png_write<uint16_t>(imag, stream); }
+
+void png_readproc(png_structp png_ptr, 
+                  png_bytep data, 
+                  png_size_t size) {
   auto src = reinterpret_cast<png_src*>(png_get_io_ptr(png_ptr));
   src->stream->read(reinterpret_cast<char*>(data), size);
   assert(src->stream->gcount() != 0 && "Invalid or corrupted png file");
 }
 
-void writeproc(png_structp png_ptr, png_bytep data, png_size_t size) {
+void png_writeproc(png_structp png_ptr,
+                   png_bytep data, 
+                   png_size_t size) {
   auto dst = reinterpret_cast<png_dst*>(png_get_io_ptr(png_ptr));
   dst->stream->write(reinterpret_cast<char*>(data), size);
 }
 
-void flushproc(png_structp png_ptr) {}
-
-void message(png_structp png_ptr, const char* msg) {
+void png_flushproc(png_structp png_ptr) {}
+void png_message(png_structp png_ptr, const char* msg) {
   LOG(info) << "(libpng): " << msg;
 }
 
