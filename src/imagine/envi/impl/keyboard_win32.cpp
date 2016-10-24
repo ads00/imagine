@@ -28,7 +28,7 @@ namespace keyboard {
 namespace impl     {
 
 static const key key_tbl[] = {                     
-                      // keyboard mapping table
+                      // Keyboard mapping table
                       // Dec |  Hex | Windows Virtual key
   key::unknown,     //   0   0x00
   key::unknown,     //   1   0x01   VK_LBUTTON

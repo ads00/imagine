@@ -70,14 +70,14 @@ void cursor::refresh() const {
 
 void cursor::clip(const window& win) {
   RECT winrect;
-  GetWindowRect(reinterpret_cast<HWND>(win.handle()), &winrect);
+  GetWindowRect(reinterpret_cast<HWND>(win.get_handle()), &winrect);
   ClipCursor(&winrect);
 }
 
 void cursor::move(int32_t x, int32_t y, const window* win) {
   POINT pos{x, y};
   win 
-    ? ClientToScreen(reinterpret_cast<HWND>(win->handle()), &pos) 
+    ? ClientToScreen(reinterpret_cast<HWND>(win->get_handle()), &pos)
     : true;
 
   win->cursor.native_->x_ = x, win->cursor.native_->y_ = y;

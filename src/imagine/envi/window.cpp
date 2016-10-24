@@ -38,28 +38,28 @@ window::~window() {
   close();
 }
 
-const std::string& window::caption() const {
-  return native_->caption_;
-}
-
-uint32_t window::width() const {
+uint32_t window::get_width() const {
   return native_->w_;
 }
 
-uint32_t window::height() const {
+uint32_t window::get_height() const {
   return native_->h_;
 }
 
-int32_t window::x() const {
+int32_t window::get_x() const {
   return native_->x_;
 }
 
-int32_t window::y() const {
+int32_t window::get_y() const {
   return native_->y_;
 }
 
-window_visibility window::visibility() const {
+window_visibility window::get_visibility() const {
   return native_->visibility_;
+}
+
+const std::string& window::get_caption() const {
+  return native_->caption_;
 }
 
 // Native implementations
@@ -75,7 +75,7 @@ window_visibility window::visibility() const {
 // bool window::minimized() const;
 // bool window::maximized() const;
 // bool window::visible() const;
-// auto window::handle() const -> window_handle*;
+// auto window::get_handle() const -> window_handle*;
 // void window::set_fullscreen(bool fullscreen);
 // void window::set_caption(const std::string& title);
 // void window::set_parent(const window* parent);

@@ -36,7 +36,7 @@ void cursor::reshape(cursor_shape shape) {
   refresh();
 }
 
-cursor_shape cursor::shape() const {
+cursor_shape cursor::get_shape() const {
   return native_->shape_;
 }
 

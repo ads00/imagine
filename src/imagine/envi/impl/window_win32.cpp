@@ -297,7 +297,7 @@ bool window::visible() const {
   return IsWindowVisible(native_->handle_) == TRUE;
 }
 
-auto window::handle() const -> window_handle* {
+auto window::get_handle() const -> window_handle* {
   return reinterpret_cast<window_handle*>(native_->handle_);
 }
 
@@ -324,6 +324,7 @@ void window::set_fullscreen(bool fullscreen) {
 
 void window::set_caption(const std::string& caption) {
   SetWindowText(native_->handle_, caption.data());
+  native_->caption_ = caption;
 }
 
 void window::set_parent(const window* parent) {

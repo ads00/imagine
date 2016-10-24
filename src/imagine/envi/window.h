@@ -62,15 +62,15 @@ public:
   bool maximized() const;
   bool visible() const;
 
-  const std::string& caption() const;
+  auto get_handle() const -> window_handle*;
 
-  uint32_t width() const;
-  uint32_t height() const;
-  int32_t x() const;
-  int32_t y() const;
-  window_visibility visibility() const;
+  uint32_t get_width() const;
+  uint32_t get_height() const;
+  int32_t get_x() const;
+  int32_t get_y() const;
 
-  auto handle() const -> window_handle*;
+  window_visibility get_visibility() const;
+  const std::string& get_caption() const;
 
   void set_fullscreen(bool fullscreen);
   void set_caption(const std::string& caption);

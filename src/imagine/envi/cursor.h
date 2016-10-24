@@ -43,7 +43,7 @@ public:
   void refresh() const;
   void reshape(cursor_shape shape);
 
-  cursor_shape shape() const;
+  cursor_shape get_shape() const;
 
   static void clip(const window& win);
   static void move(int32_t x, int32_t y, const window* win = nullptr);
