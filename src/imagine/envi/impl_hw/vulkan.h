@@ -24,6 +24,7 @@
 #ifndef IG_ENVI_API_H
 #define IG_ENVI_API_H
 
+#include "imagine/core/utility.h"
 #include "imagine/core/flags.h"
 #include "imagine/envi/library.h"
 
@@ -78,6 +79,22 @@ public:
 
   T h_ = nullptr;
 };
+
+enum class pipeline_stage : uint32_t {
+  top_of_pipe   = 0x00001, draw_indirect = 0x00002,
+  vertex_input  = 0x00004, 
+  vertex_shader = 0x00008,
+
+  tesselation_control_shader = 0x00010, tesselation_evaluation_shader = 0x00020,
+  geometry_shader            = 0x00040, fragment_shader               = 0x00080,
+  early_fragment_tests       = 0x00100, late_fragment_tests           = 0x00200,
+  color_attachment_output    = 0x00400,
+  compute_shader             = 0x00800,
+  transfer                   = 0x01000,
+  bottom_of_pipe             = 0x02000,
+
+  host = 0x04000, graphics = 0x08000, commands = 0x10000
+}; using pipeline_stages = flags<pipeline_stage>;
 
 } // namespace ig
 

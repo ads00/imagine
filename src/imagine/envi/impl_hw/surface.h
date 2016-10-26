@@ -34,12 +34,15 @@ namespace ig {
 
 class IG_API surface : public VKObject<VkSurfaceKHR>, public window {
 public:
+  friend swapchain;
+  friend class display;
+
   explicit surface(const physical& physical, types_t types, const std::string& caption, uint32_t w, uint32_t h);
   virtual ~surface();
 
   queue::types_t queue() const;
 
-  auto& capabilities() const { return capabilities_; }
+  auto& get_capabilities() const { return capabilities_; }
 
   const physical& phys;
   const instance& inst;

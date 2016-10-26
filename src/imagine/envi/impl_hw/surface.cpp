@@ -41,7 +41,7 @@ surface::surface(const physical& physical, types_t types, const std::string& cap
     nullptr,                                         // const void*                     pNext;
     0,                                               // VkWin32SurfaceCreateFlagsKHR    flags;
     GetModuleHandle(nullptr),                        // HINSTANCE                       hinstance;
-    reinterpret_cast<HWND>(window::handle())         // HWND                            hwnd;
+    reinterpret_cast<HWND>(window::get_handle())     // HWND                            hwnd;
   };
   auto res = inst.vkCreateWin32SurfaceKHR(inst, &surface_info, nullptr, &h_);
   #endif

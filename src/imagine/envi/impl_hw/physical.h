@@ -42,8 +42,8 @@ public:
   
   explicit physical(const instance& instance, type_t type, uint32_t i = 0);
 
-  auto& properties() const { return properties_; }
-  auto& features() const   { return features_; }
+  auto& get_features() const   { return features_; }
+  auto& get_properties() const { return properties_; }
 
   const instance& inst;
 
@@ -51,8 +51,8 @@ private:
   void configure();
 
 private:
-  VkPhysicalDeviceProperties properties_; 
   VkPhysicalDeviceFeatures   features_;
+  VkPhysicalDeviceProperties properties_; 
   std::vector<VkQueueFamilyProperties> queues_families_;
 };
 

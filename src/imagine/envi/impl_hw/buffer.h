@@ -21,47 +21,42 @@
  SOFTWARE.
 */
 
-#ifndef IG_ENVI_INSTANCE_H
-#define IG_ENVI_INSTANCE_H
+#ifndef IG_ENVI_BUFFER_H
+#define IG_ENVI_BUFFER_H
 
-#include "imagine/envi/impl_hw/vulkan.h"
-
-#include <vector>
-#include <unordered_map>
+#include "imagine/envi/impl_hw/memory.h"
 
 namespace ig {
 
-IG_API VkBool32 VKAPI_CALL vk_dbg_callback(VkDebugReportFlagsEXT flags, VkDebugReportObjectTypeEXT type,
-                                           uint64_t obj, size_t location, int32_t code, const char* prefix, const char* msg, void* udata);
+enum class buffer_usage 
+  : uint32_t; using buffer_usages = flags<buffer_usage>;
+enum class index_type;
 
-class IG_API instance : public VKObject<VkInstance>, public VKpfn {
+class IG_API buffer : public VKObject<VkBuffer>, public memory::resource {
 public:
-  friend vulkan;
-  friend class physical;
+  using bview = VkBufferView;
+  friend memory_allocator;
 
-  explicit instance(bool validation = false);
-  virtual ~instance();
+  explicit buffer(const device& device, uint64_t size, buffer_usages usages);
+  virtual ~buffer();
 
-  bool dbg(decltype(vk_dbg_callback) callback = vk_dbg_callback);
-
-  bool supported(const std::string& name) const;
-
-  auto& get_extensions() const { return extensions_; }
-  auto& get_layers() const     { return layers_; }
+  const device& devi;
 
 private:
-  void configure();
-  void acquire_physicals();
-
-private:
-  std::vector<VkExtensionProperties> extensions_;
-  std::vector<VkLayerProperties>     layers_;
-  std::unordered_map<VkPhysicalDevice, VkPhysicalDeviceProperties> physicals_;
-
-  bool validation_;
-  VkDebugReportCallbackEXT dbg_callback_;
+  void bind(memory& memory, memory::block_iterator block, uint64_t aligned) override;
+  auto requirements(uint64_t& size, uint64_t& alignment) -> uint32_t override;
 };
+
+enum class buffer_usage : uint32_t {
+  transfer_src  = 0x001, transfer_dst  = 0x002,
+  uniform_texel = 0x004, storage_texel = 0x008,
+  uniform       = 0x010, storage       = 0x020,
+  index         = 0x040,
+  vertex        = 0x080,
+  indirect      = 0x100 };
+
+enum class index_type { uint16, uint32 };
 
 } // namespace ig
 
-#endif // IG_ENVI_INSTANCE_H
+#endif // IG_ENVI_BUFFER_H
