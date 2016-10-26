@@ -31,7 +31,8 @@ threadpool::threadpool(size_t workers)
   for (size_t i = 0; i < workers; ++i)
     workers_.emplace_back([this] {
       for (;;) {
-        std::function<void()> task{};
+        std::function<void()> 
+          task{};
         {
           std::unique_lock<decltype(mutex_)> lock{mutex_};
           cv_.wait(lock, [this] { return !running_ || !tasks_.empty(); });

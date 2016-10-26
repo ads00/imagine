@@ -59,7 +59,9 @@ ray3 camera::cast_ray(size_t x, size_t y) const {
   auto ny = y / static_cast<float>(h_) * 2.f - 1.f;
 
   auto raster = iproj_.transform(vec3{nx, ny, 0.f});
-  vec3 wo{}, wd{};
+  vec3 
+    wo{}, 
+    wd{};
   if (projection_ == projection::perspective) {
     wo = iview_.transform(vec3{0.f});
     wd = iview_.transform(raster, true);

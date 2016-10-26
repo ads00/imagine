@@ -85,7 +85,7 @@ public:
     iter operator*() const { return derived_[i_]; }
 
   private:
-    constexpr iterator(citer& derived, size_t i) : derived_{derived}, i_{i} {}
+    explicit iterator(citer& derived, size_t i) : derived_{derived}, i_{i} {}
     citer& derived_; size_t i_;
   };
 
@@ -222,7 +222,8 @@ auto alg<C>::mean() const -> T {
 template <typename Alg>
 inline std::ostream& operator<<(std::ostream& stream, const alg<Alg>& alg) {
   size_t width = 0;
-  std::stringstream w{}; w.precision(3);
+  std::stringstream 
+    w{}; w.precision(3);
 
   for (auto elemt : alg) {
     w.str(std::string{}); w.clear(); w << std::fixed << elemt;

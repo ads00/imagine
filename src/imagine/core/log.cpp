@@ -53,7 +53,8 @@ void log::push(const log_context& ctx) {
 log::formatter_type log::default_format = [](const log_context& c) {
   auto tt = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 
-  std::stringstream ss{};
+  std::stringstream 
+    ss{};
   ss << std::put_time(std::localtime(&tt), "%c");
 
   switch (c.type) {

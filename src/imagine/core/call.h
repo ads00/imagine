@@ -91,7 +91,8 @@ auto call<R(Args...)>::collect(Args&&... args) const {
   static_assert(std::is_default_constructible<collect>::value, "Collecter must be default constructible");
   static_assert(std::is_same<collect::value_type, R>::value,   "Collecter value type must be equal to call return type");
 
-  collect collecter{};
+  collect 
+    collecter{};
   for (auto& sub : subs_)
     collecter.emplace_back(sub->fn_(std::forward<Args>(args)...));
   return collecter;

@@ -58,8 +58,10 @@ bool jpeg_validate(std::istream& stream) {
 }
 
 auto jpeg_read_8(std::istream& stream) -> std::unique_ptr<data8_t> {
-  jpeg_decompress_struct jpeg_ptr{};
-  jpeg_error_mgr jerr{};
+  jpeg_decompress_struct 
+    jpeg_ptr{};
+  jpeg_error_mgr 
+    jerr{};
 
   jpeg_ptr.err = jpeg_std_error(&jerr);
   jerr.error_exit = jpeg_exit;
@@ -115,8 +117,10 @@ auto jpeg_read_8(std::istream& stream) -> std::unique_ptr<data8_t> {
 }
 
 bool jpeg_write_8(const data8_t& imag, std::ostream& stream) {
-  jpeg_compress_struct jpeg_ptr{};
-  jpeg_error_mgr jerr{};
+  jpeg_compress_struct 
+    jpeg_ptr{};
+  jpeg_error_mgr 
+    jerr{};
 
   jpeg_ptr.err = jpeg_std_error(&jerr);
   jerr.error_exit     = jpeg_exit;
