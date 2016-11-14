@@ -55,7 +55,7 @@ bool png_validate(std::istream& stream) {
 }
 
 template <typename T>
-auto png_read(std::istream& stream) -> std::unique_ptr< data<T> > {
+auto png_read(std::istream& stream) -> std::unique_ptr< image2d<T> > {
   struct read_handle { 
     explicit read_handle(png_src& src) {
       png  = png_create_read_struct(PNG_LIBPNG_VER_STRING, nullptr, png_message, png_message);
@@ -68,7 +68,7 @@ auto png_read(std::istream& stream) -> std::unique_ptr< data<T> > {
       png_set_read_fn(png, &src, png_readproc);
       png_read_info(png, info);
     }
-    virtual ~read_handle() { png_destroy_read_struct(&png, &info, nullptr); }
+    ~read_handle() { png_destroy_read_struct(&png, &info, nullptr); }
 
     auto adaptive_generation() {
       png_get_IHDR(png, info, &width, &height, &bitdepth, &colortype, nullptr, nullptr, nullptr);
@@ -87,8 +87,8 @@ auto png_read(std::istream& stream) -> std::unique_ptr< data<T> > {
       case 16: png_set_expand_16(png); break; }
 
       png_read_update_info(png, info);
-      auto dims = {width, height};
-      return std::make_unique< data<T> >(dims, png_get_channels(png, info));
+      return std::make_unique< image2d<T> >(
+        image2d<T>::shape_type{width, height}, png_get_channels(png, info));
     }
 
     png_structp png; png_infop info; 
@@ -101,8 +101,8 @@ auto png_read(std::istream& stream) -> std::unique_ptr< data<T> > {
   auto imag = handler->adaptive_generation();
   auto rowptrs = std::vector<png_bytep>(handler->height * sizeof(png_bytepp));
   for (png_uint_32 j = 0; j < handler->height; ++j)
-    rowptrs[handler->height - 1 - j] = reinterpret_cast<uint8_t*>(
-      imag->buffer() + (imag->pitch() * imag->channels() * j));
+    rowptrs[j] = reinterpret_cast<uint8_t*>(
+      imag->buffer() + (imag->get_shape().front() * imag->get_features() * j));
 
   png_set_benign_errors(handler->png, 1);
   png_read_image(handler->png, rowptrs.data()); png_read_end(handler->png, handler->info);
@@ -110,7 +110,7 @@ auto png_read(std::istream& stream) -> std::unique_ptr< data<T> > {
 }
 
 template <typename T>
-bool png_write(const data<T>& imag, std::ostream& stream) {
+bool png_write(std::ostream& stream, const image2d<T>& imag) {
   struct write_handle {
     explicit write_handle(png_dst& dst) {
       png = png_create_write_struct(PNG_LIBPNG_VER_STRING, nullptr, png_message, png_message);
@@ -122,11 +122,11 @@ bool png_write(const data<T>& imag, std::ostream& stream) {
 
       png_set_write_fn(png, &dst, png_writeproc, png_flushproc);
     }
-    virtual ~write_handle() { png_destroy_write_struct(&png, &info); }
+    ~write_handle() { png_destroy_write_struct(&png, &info); }
 
-    bool adaptive_generation(const data<T>& imag) {
+    bool adaptive_generation(const image2d<T>& imag) {
       int colortype, bitdepth = sizeof(T) * std::numeric_limits<uint8_t>::digits;
-      switch (imag.channels()) {
+      switch (imag.get_features()) {
       case 1: colortype = PNG_COLOR_TYPE_GRAY;       break;
       case 2: colortype = PNG_COLOR_TYPE_GRAY_ALPHA; break;
       case 3: colortype = PNG_COLOR_TYPE_RGB;        break;
@@ -135,14 +135,14 @@ bool png_write(const data<T>& imag, std::ostream& stream) {
       }
 
       png_set_compression_level(png, 6);
-      if (imag.channels() * bitdepth >= 16) {
+      if (imag.get_features() * bitdepth >= 16) {
         png_set_compression_strategy(png, Z_FILTERED);
         png_set_filter(png, 0, PNG_FILTER_NONE | PNG_FILTER_SUB | PNG_FILTER_PAETH);
       } else {
         png_set_compression_strategy(png, Z_DEFAULT_STRATEGY);
       }
 
-      png_set_IHDR(png, info, imag.dimensions()[0], imag.dimensions()[1],
+      png_set_IHDR(png, info, imag.get_shape()[0], imag.get_shape()[1],
                    bitdepth, colortype, PNG_INTERLACE_NONE,
                    PNG_COMPRESSION_TYPE_BASE, PNG_FILTER_TYPE_BASE);
       png_write_info(png, info);
@@ -157,20 +157,20 @@ bool png_write(const data<T>& imag, std::ostream& stream) {
 
   if (!handler->adaptive_generation(imag))
     return false;
-  for (png_uint_32 j = 0; j < imag.dimensions()[1]; ++j)
+  for (png_uint_32 j = 0; j < imag.get_shape()[1]; ++j)
     png_write_row(handler->png, reinterpret_cast<const uint8_t*>(
-      imag.buffer() + (imag.pitch() * imag.channels() * (imag.dimensions()[1] - j - 1))));
+      imag.buffer() + (imag.get_shape().front() * imag.get_features() * j)));
 
   png_write_end(handler->png, handler->info);
   png_destroy_write_struct(&handler->png, &handler->info);
   return true;
 }
 
-auto png_read_8 (std::istream& stream) -> std::unique_ptr<data8_t>  { return png_read<uint8_t>(stream); }
-auto png_read_16(std::istream& stream) -> std::unique_ptr<data16_t> { return png_read<uint16_t>(stream); }
+auto png_readp_uint8_t (std::istream& stream) -> std::unique_ptr< image2d<uint8_t> >  { return png_read<uint8_t>(stream); }
+auto png_readp_uint16_t(std::istream& stream) -> std::unique_ptr< image2d<uint16_t> > { return png_read<uint16_t>(stream); }
 
-bool png_write_8 (const data8_t&  imag, std::ostream& stream) { return png_write<uint8_t>(imag, stream); }
-bool png_write_16(const data16_t& imag, std::ostream& stream) { return png_write<uint16_t>(imag, stream); }
+bool png_write_uint8_t (std::ostream& stream, const image2d<uint8_t> & imag) { return png_write<uint8_t>(stream, imag); }
+bool png_write_uint16_t(std::ostream& stream, const image2d<uint16_t>& imag) { return png_write<uint16_t>(stream, imag); }
 
 void png_readproc(png_structp png_ptr, 
                   png_bytep data, 

@@ -21,21 +21,21 @@
  SOFTWARE.
 */
 
-#include "imagine/math/theory/data.h"
+#include "imagine/math/theory/ndarray.h"
 #include "imagine/math/bridge/impl_image/bridge_jpeg.h"
 #include "imagine/math/bridge/impl_image/bridge_png.h"
 
 namespace ig {
 
 template <>
-decltype(data8_t::bridge_table_) data8_t::bridge_table_ = {{
-  {format_t::jpeg, std::make_tuple(impl::jpeg_validate, impl::jpeg_read_8, impl::jpeg_write_8)},
-  {format_t::png,  std::make_tuple(impl::png_validate,  impl::png_read_8,  impl::png_write_8)}
-}};
+decltype(image2d<uint8_t>::bridge_table_) image2d<uint8_t>::bridge_table_ = {{
+  {static_cast<int32_t>(image_format::jpeg), std::make_tuple(impl::jpeg_validate, impl::jpeg_readp_uint8_t, impl::jpeg_write_uint8_t)},
+  {static_cast<int32_t>(image_format::png ), std::make_tuple( impl::png_validate,  impl::png_readp_uint8_t,  impl::png_write_uint8_t)}
+  }};
 
 template <>
-decltype(data16_t::bridge_table_) data16_t::bridge_table_ = {{
-  {format_t::png, std::make_tuple(impl::png_validate, impl::png_read_16, impl::png_write_16)}
-}};
+decltype(image2d<uint16_t>::bridge_table_) image2d<uint16_t>::bridge_table_ = {{
+  {static_cast<int32_t>(image_format::png), std::make_tuple(impl::png_validate, impl::png_readp_uint16_t, impl::png_write_uint16_t)}
+  }};
 
 } // namespace ig

@@ -35,33 +35,36 @@ namespace ig  {
 template <typename T>
 class bridge {
 public:
-  using type_t = std::tuple<
+  using gen_t = std::tuple<
     std::function<bool(std::istream&)>, 
     std::function<std::unique_ptr<T>(std::istream&)>,
-    std::function<bool(const T&, std::ostream&)> >;
+    std::function<bool(std::ostream&, const T&)> >;
 
   static auto load(const std::string& filename) 
   { return table_load(T::bridge_table_, filename); }
-  static bool save(int32_t format, const T& data, const std::string& filename)
-  { return table_save(T::bridge_table_, format, data, filename); }
+
+  template <typename F>
+  static bool save(const std::string& filename, F format, const T& data)
+  { return table_save(T::bridge_table_, filename, static_cast<int32_t>(format), data); }
 
 private:
   template <typename table>
   static auto table_load(table& tbl, const std::string& filename) -> std::unique_ptr<T> {
     std::ifstream in{filename, std::ios::binary};
-    if (!in.good()) 
-      return nullptr;
+    if (!in.good()) {
+      throw std::ios::failure{"(Bridge): Failed to open file --" + filename + "--"};
+    }
 
     for (auto& format_bridge : tbl)
       if (std::get<0>(format_bridge.second)(in)) return std::get<1>(format_bridge.second)(in);
-    return nullptr;
+    throw std::runtime_error{"(Bridge): No available entry found in the bridge table"};
   }
 
   template <typename table>
-  static bool table_save(table& tbl, int32_t format, const T& data, const std::string& filename) {
+  static bool table_save(table& tbl, const std::string& filename, int32_t fi, const T& data) {
     std::ofstream out{filename, std::ios::binary | std::ios::trunc};
     return out.good()
-      ? std::get<2>(tbl[format])(data, out)
+      ? std::get<2>(tbl[fi])(out, data)
       : true;
   }
 };

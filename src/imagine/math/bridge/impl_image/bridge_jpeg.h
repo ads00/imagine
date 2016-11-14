@@ -24,16 +24,16 @@
 #ifndef IG_MATH_JPEG_H
 #define IG_MATH_JPEG_H
 
-#include "imagine/math/theory/data.h"
+#include "imagine/math/theory/ndarray.h"
 #include <sstream>
 
 namespace ig   {
 namespace impl {
 
 bool jpeg_validate(std::istream& stream);
-auto jpeg_read_8  (std::istream& stream) -> std::unique_ptr<data8_t>;
 
-bool jpeg_write_8(const data8_t& imag, std::ostream& stream);
+auto jpeg_readp_uint8_t(std::istream& stream) -> std::unique_ptr< image2d<uint8_t> >;
+bool jpeg_write_uint8_t(std::ostream& stream, const image2d<uint8_t>& imag);
 
 } // namespace impl
 } // namespace ig

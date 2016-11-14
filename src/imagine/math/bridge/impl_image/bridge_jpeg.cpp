@@ -57,7 +57,7 @@ bool jpeg_validate(std::istream& stream) {
   return memcmp(jpeg_sig, sig, sizeof(jpeg_sig)) == 0;
 }
 
-auto jpeg_read_8(std::istream& stream) -> std::unique_ptr<data8_t> {
+auto jpeg_readp_uint8_t(std::istream& stream) -> std::unique_ptr< image2d<uint8_t> > {
   jpeg_decompress_struct 
     jpeg_ptr{};
   jpeg_error_mgr 
@@ -103,11 +103,11 @@ auto jpeg_read_8(std::istream& stream) -> std::unique_ptr<data8_t> {
   jpeg_read_header(&jpeg_ptr, true);
   jpeg_start_decompress(&jpeg_ptr);
 
-  auto dims = {jpeg_ptr.output_width, jpeg_ptr.output_height};
-  auto imag = std::make_unique<data8_t>(dims, jpeg_ptr.output_components);
+  auto imag = std::make_unique< image2d<uint8_t> >(
+    image2d<uint8_t>::shape_type{jpeg_ptr.output_width, jpeg_ptr.output_height}, jpeg_ptr.output_components);
 
   while (jpeg_ptr.output_scanline < jpeg_ptr.output_height) {
-    auto r = imag->buffer() + (imag->pitch() * imag->channels() * (jpeg_ptr.output_height - jpeg_ptr.output_scanline - 1));
+    auto r = imag->buffer() + (imag->get_shape().front() * imag->get_features() * jpeg_ptr.output_scanline);
     jpeg_read_scanlines(&jpeg_ptr, (JSAMPARRAY)&r, 1);
   }
 
@@ -116,7 +116,7 @@ auto jpeg_read_8(std::istream& stream) -> std::unique_ptr<data8_t> {
   return imag;
 }
 
-bool jpeg_write_8(const data8_t& imag, std::ostream& stream) {
+bool jpeg_write_uint8_t(std::ostream& stream, const image2d<uint8_t>& imag) {
   jpeg_compress_struct 
     jpeg_ptr{};
   jpeg_error_mgr 
@@ -153,10 +153,9 @@ bool jpeg_write_8(const data8_t& imag, std::ostream& stream) {
     }
   };
 
-  jpeg_ptr.image_width = imag.dimensions()[0];
-  jpeg_ptr.image_height = imag.dimensions()[1];
+  jpeg_ptr.image_width = imag.get_shape()[0], jpeg_ptr.image_height = imag.get_shape()[1];
 
-  switch (imag.channels()) {
+  switch (imag.get_features()) {
   case 1:
     jpeg_ptr.in_color_space = JCS_GRAYSCALE;
     jpeg_ptr.input_components = 1;
@@ -175,7 +174,7 @@ bool jpeg_write_8(const data8_t& imag, std::ostream& stream) {
   jpeg_start_compress(&jpeg_ptr, true);
 
   while (jpeg_ptr.next_scanline < jpeg_ptr.image_height) {
-    auto r = imag.buffer() + (imag.pitch() * imag.channels() * (jpeg_ptr.image_height - jpeg_ptr.next_scanline - 1));
+    auto r = imag.buffer() + (imag.get_shape().front() * imag.get_features() * jpeg_ptr.next_scanline);
     jpeg_write_scanlines(&jpeg_ptr, (JSAMPARRAY)&r, 1);
   }
 
