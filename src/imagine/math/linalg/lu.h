@@ -68,8 +68,7 @@ private:
   const size_t n_;
   size_t permutations_;
 
-  matrix_type lu_;
-  matrix_type p_;
+  matrix_type lu_, p_;
 };
 
 template <typename Alg>

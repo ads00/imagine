@@ -40,40 +40,37 @@ public:
   constexpr explicit flags(underlying_type flags) : flags_{flags} {}
 
   auto operator~() const { return flags{~flags_}; }
-  auto operator&(flags f) const { return flags{flags_ & f.flags_}; }
-  auto operator|(flags f) const { return flags{flags_ | f.flags_}; }
-  auto operator^(flags f) const { return flags{flags_ ^ f.flags_}; }
-
   auto operator&(enum_type e) const { return operator&(flags{e}); }
   auto operator|(enum_type e) const { return operator|(flags{e}); }
   auto operator^(enum_type e) const { return operator^(flags{e}); }
+  auto operator&(const flags& f) const { return flags{flags_ & f.flags_}; }
+  auto operator|(const flags& f) const { return flags{flags_ | f.flags_}; }
+  auto operator^(const flags& f) const { return flags{flags_ ^ f.flags_}; }
 
-  auto& operator&=(flags f) { flags_ &= f.flags_; return *this; }
-  auto& operator|=(flags f) { flags_ |= f.flags_; return *this; }
-  auto& operator^=(flags f) { flags_ ^= f.flags_; return *this; }
+  auto& operator&=(const flags& f) { flags_ &= f.flags_; return *this; }
+  auto& operator|=(const flags& f) { flags_ |= f.flags_; return *this; }
+  auto& operator^=(const flags& f) { flags_ ^= f.flags_; return *this; }
 
-  auto& operator&=(enum_type e) { return operator&=(flags{e}); }
-  auto& operator|=(enum_type e) { return operator|=(flags{e}); }
-  auto& operator^=(enum_type e) { return operator^=(flags{e}); }
-
-  auto& operator=(flags f) { flags_ = f.flags_; return *this; }
+  auto& operator=(const flags& f) { flags_ = f.flags_; return *this; }
   auto& operator=(underlying_type flags) { flags_ = underlying_type(flags); return *this; }
 
+  constexpr auto operator!() const { return !flags_; }
   constexpr operator underlying_type() const { return flags_; }
-  constexpr auto operator!() const           { return !flags_; }
+            operator underlying_type*()      { return &flags_; }
 
 private:
   underlying_type flags_;
 };
 
-template <typename E> constexpr auto operator|(E lhs, E rhs) { return flags<E>{lhs} | rhs; }
-template <typename E> constexpr auto operator&(E lhs, E rhs) { return flags<E>{lhs} & rhs; }
-template <typename E> constexpr auto operator^(E lhs, E rhs) { return flags<E>{lhs} ^ rhs; }
+template <typename E> constexpr auto operator|(E lhs, E rhs) 
+{ return flags<E>{lhs} | rhs; }
+template <typename E> constexpr auto operator&(E lhs, E rhs) 
+{ return flags<E>{lhs} & rhs; }
+template <typename E> constexpr auto operator^(E lhs, E rhs)
+{ return flags<E>{lhs} ^ rhs; }
 
 template <typename E>
-constexpr auto to_f(E e) {
-  return static_cast< std::underlying_type_t<E> >(e);
-}
+constexpr auto to_f(E e) { return static_cast< std::underlying_type_t<E> >(e); }
 
 } // namespace ig
 

@@ -48,7 +48,7 @@ void transform::positions(const vec3& pos, coordinate coord) {
     break;
   case coordinate::world:
     pos_ = parent_ 
-      ? [this]() -> mat4 { return linalg::inv(parent_->wt()); }().transform(pos)
+      ? [this]() -> mat4 { return linalg::inv(parent_->get_wt()); }().transform(pos)
       : pos;
     break;
   }
@@ -87,7 +87,7 @@ transform& transform::translate(const vec3& tra, coordinate coord) {
     break;
   case coordinate::world:
     pos_ += parent_ 
-      ? [this]() -> mat4 { return linalg::inv(parent_->wt()); }().transform(tra)
+      ? [this]() -> mat4 { return linalg::inv(parent_->get_wt()); }().transform(tra)
       : tra;
     break;
   }
@@ -139,11 +139,11 @@ void transform::link(transform* parent) {
   }
 }
 
-const mat4& transform::wt() {
+const mat4& transform::get_wt() {
   if (!umatrix_) {
     auto trs = mat4::translating(pos_) * mat4::rotating(ori_) * mat4::scaling(sca_);
     if (parent_) {
-      matrix_ = parent_->wt() * trs;
+      matrix_ = parent_->get_wt() * trs;
     } else {
       matrix_ = trs;
     } umatrix_ = true;

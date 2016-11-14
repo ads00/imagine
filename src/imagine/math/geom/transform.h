@@ -43,7 +43,7 @@ public:
 
   void link(transform* parent);
 
-  const mat4& wt();
+  const mat4& get_wt();
 
 private:
   void remove_child(const transform& tr);

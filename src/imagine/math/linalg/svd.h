@@ -68,8 +68,7 @@ private:
 
   T threshold_;
 
-  matrix_type u_;
-  matrix_type v_;
+  matrix_type u_, v_;
   vector_type s_;
 };
 
