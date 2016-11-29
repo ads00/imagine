@@ -37,8 +37,7 @@ class bridge {
 public:
   using gen_t = std::tuple<
     std::function<bool(std::istream&)>, 
-    std::function<std::unique_ptr<T>(std::istream&)>,
-    std::function<bool(std::ostream&, const T&)> >;
+    std::function<std::unique_ptr<T>(std::istream&)>, std::function<bool(std::ostream&, const T&)> >;
 
   static auto load(const std::string& filename) 
   { return table_load(T::bridge_table_, filename); }
@@ -67,6 +66,11 @@ private:
       ? std::get<2>(tbl[fi])(out, data)
       : true;
   }
+};
+
+enum class ndarray_format : int32_t { 
+  unknown = -1, 
+  jpeg, png, targa, bmp, pnm, hdr // images
 };
 
 } // namespace ig

@@ -23,17 +23,18 @@
 
 #include "imagine/math/bridge/impl_image/bridge_jpeg.h"
 #include "imagine/core/log.h"
+#include <cstring>
 
 extern "C" 
 {
 #include "jpeg/jpeglib.h"
-#include "jpeg/jerror.h"
+#include "jpeg/jerror.h" 
 }
 
 namespace ig   {
 namespace impl {
 
-constexpr uint32_t buffer = 4096;
+constexpr uint32_t buffer_size = 4096;
 struct jpeg_src {
   jpeg_source_mgr jpeg;
   std::istream* stream; JOCTET* buffer; };
@@ -57,7 +58,7 @@ bool jpeg_validate(std::istream& stream) {
   return memcmp(jpeg_sig, sig, sizeof(jpeg_sig)) == 0;
 }
 
-auto jpeg_readp_uint8_t(std::istream& stream) -> std::unique_ptr< image2d<uint8_t> > {
+auto jpeg_readp_uint8_t(std::istream& stream) -> std::unique_ptr< array2d<uint8_t> > {
   jpeg_decompress_struct 
     jpeg_ptr{};
   jpeg_error_mgr 
@@ -75,7 +76,7 @@ auto jpeg_readp_uint8_t(std::istream& stream) -> std::unique_ptr< image2d<uint8_
 
     auto src = reinterpret_cast<jpeg_src*>(jpeg_ptr.src);
     src->buffer = reinterpret_cast<JOCTET*>((*jpeg_ptr.mem->alloc_small)
-                 (reinterpret_cast<j_common_ptr>(&jpeg_ptr), JPOOL_PERMANENT, buffer * sizeof(JOCTET)));
+                 (reinterpret_cast<j_common_ptr>(&jpeg_ptr), JPOOL_PERMANENT, buffer_size * sizeof(JOCTET)));
   }
 
   auto src = reinterpret_cast<jpeg_src*>(jpeg_ptr.src);
@@ -103,8 +104,8 @@ auto jpeg_readp_uint8_t(std::istream& stream) -> std::unique_ptr< image2d<uint8_
   jpeg_read_header(&jpeg_ptr, true);
   jpeg_start_decompress(&jpeg_ptr);
 
-  auto imag = std::make_unique< image2d<uint8_t> >(
-    image2d<uint8_t>::shape_type{jpeg_ptr.output_width, jpeg_ptr.output_height}, jpeg_ptr.output_components);
+  auto imag = std::make_unique< array2d<uint8_t> >(
+    array2d<uint8_t>::shape_type{jpeg_ptr.output_width, jpeg_ptr.output_height}, jpeg_ptr.output_components);
 
   while (jpeg_ptr.output_scanline < jpeg_ptr.output_height) {
     auto r = imag->buffer() + (imag->get_shape().front() * imag->get_features() * jpeg_ptr.output_scanline);
@@ -116,7 +117,7 @@ auto jpeg_readp_uint8_t(std::istream& stream) -> std::unique_ptr< image2d<uint8_
   return imag;
 }
 
-bool jpeg_write_uint8_t(std::ostream& stream, const image2d<uint8_t>& imag) {
+bool jpeg_write_uint8_t(std::ostream& stream, const array2d<uint8_t>& imag) {
   jpeg_compress_struct 
     jpeg_ptr{};
   jpeg_error_mgr 
@@ -127,6 +128,7 @@ bool jpeg_write_uint8_t(std::ostream& stream, const image2d<uint8_t>& imag) {
   jerr.output_message = jpeg_message;
 
   jpeg_create_compress(&jpeg_ptr);
+
   if (!jpeg_ptr.dest) {
     jpeg_ptr.dest = reinterpret_cast<jpeg_destination_mgr*>((*jpeg_ptr.mem->alloc_small)
                    (reinterpret_cast<j_common_ptr>(&jpeg_ptr), JPOOL_PERMANENT, sizeof(jpeg_dst)));
@@ -138,15 +140,15 @@ bool jpeg_write_uint8_t(std::ostream& stream, const image2d<uint8_t>& imag) {
   dst->jpeg.init_destination = [](j_compress_ptr compress) {
     auto dst = reinterpret_cast<jpeg_dst*>(compress->dest);
     dst->buffer = reinterpret_cast<JOCTET*>((*compress->mem->alloc_small)
-                 (reinterpret_cast<j_common_ptr>(compress), JPOOL_IMAGE, buffer * sizeof(JOCTET)));
+                 (reinterpret_cast<j_common_ptr>(compress), JPOOL_IMAGE, buffer_size * sizeof(JOCTET)));
 
     dst->jpeg.next_output_byte = dst->buffer;
-    dst->jpeg.free_in_buffer = buffer;
+    dst->jpeg.free_in_buffer = buffer_size;
   };
 
   dst->jpeg.term_destination = [](j_compress_ptr jpeg_ptr) {
     auto dst = reinterpret_cast<jpeg_dst*>(jpeg_ptr->dest);
-    auto count = buffer - dst->jpeg.free_in_buffer;
+    auto count = buffer_size - dst->jpeg.free_in_buffer;
 
     if (count > 0) {
       dst->stream->write(reinterpret_cast<char*>(dst->buffer), count);
@@ -186,8 +188,7 @@ bool jpeg_write_uint8_t(std::ostream& stream, const image2d<uint8_t>& imag) {
 boolean jpeg_readproc(
   j_decompress_ptr jpeg_ptr) {
   auto src = reinterpret_cast<jpeg_src*>(jpeg_ptr->src);
-  src->stream->read(reinterpret_cast<char*>(src->buffer), buffer);
-  assert(src->stream->gcount() != 0 && "Invalid or corrupted jpeg file");
+  src->stream->read(reinterpret_cast<char*>(src->buffer), buffer_size);
 
   src->jpeg.next_input_byte = src->buffer;
   src->jpeg.bytes_in_buffer = (size_t)src->stream->gcount();
@@ -197,10 +198,10 @@ boolean jpeg_readproc(
 boolean jpeg_writeproc(
   j_compress_ptr jpeg_ptr) {
   auto dst = reinterpret_cast<jpeg_dst*>(jpeg_ptr->dest);
-  dst->stream->write(reinterpret_cast<char*>(dst->buffer), buffer);
+  dst->stream->write(reinterpret_cast<char*>(dst->buffer), buffer_size);
   
   dst->jpeg.next_output_byte = dst->buffer;
-  dst->jpeg.free_in_buffer = buffer;
+  dst->jpeg.free_in_buffer = buffer_size;
   return true;
 }
 

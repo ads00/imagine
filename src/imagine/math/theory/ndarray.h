@@ -93,14 +93,12 @@ size_t ndarray<T, N>::index(shape_type s) const {
   return index * features_;
 }
 
-template 
-<typename T, size_t N> using tensor = ndarray<T, N>;
+template <typename T, size_t N> 
+using tensor = 
+  ndarray<T, N>;
 
-// images
-enum class image_format : int32_t 
-  { unknown = -1, jpeg, png};
-template <typename T> using image1d = ndarray<T, 1>;
-template <typename T> using image2d = ndarray<T, 2>;
+template <typename T> using array1d = ndarray<T, 1>;
+template <typename T> using array2d = ndarray<T, 2>;
 
 } // namespace ig
 

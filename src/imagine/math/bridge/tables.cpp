@@ -27,15 +27,15 @@
 
 namespace ig {
 
-template <>
-decltype(image2d<uint8_t>::bridge_table_) image2d<uint8_t>::bridge_table_ = {{
-  {static_cast<int32_t>(image_format::jpeg), std::make_tuple(impl::jpeg_validate, impl::jpeg_readp_uint8_t, impl::jpeg_write_uint8_t)},
-  {static_cast<int32_t>(image_format::png ), std::make_tuple( impl::png_validate,  impl::png_readp_uint8_t,  impl::png_write_uint8_t)}
+template <> // uchar images
+decltype(array2d<uint8_t>::bridge_table_) array2d<uint8_t>::bridge_table_ = {{
+  {static_cast<int32_t>(ndarray_format::jpeg), std::make_tuple(impl::jpeg_validate, impl::jpeg_readp_uint8_t, impl::jpeg_write_uint8_t)},
+  {static_cast<int32_t>(ndarray_format::png ), std::make_tuple( impl::png_validate,  impl::png_readp_uint8_t,  impl::png_write_uint8_t)}
   }};
 
-template <>
-decltype(image2d<uint16_t>::bridge_table_) image2d<uint16_t>::bridge_table_ = {{
-  {static_cast<int32_t>(image_format::png), std::make_tuple(impl::png_validate, impl::png_readp_uint16_t, impl::png_write_uint16_t)}
+template <> // uint images
+decltype(array2d<uint16_t>::bridge_table_) array2d<uint16_t>::bridge_table_ = {{
+  {static_cast<int32_t>(ndarray_format::png), std::make_tuple(impl::png_validate, impl::png_readp_uint16_t, impl::png_write_uint16_t)}
   }};
 
 } // namespace ig

@@ -31,11 +31,11 @@ namespace ig   {
 namespace impl {
 
 bool png_validate(std::istream& stream);
-auto png_readp_uint8_t (std::istream& stream) -> std::unique_ptr< image2d<uint8_t> >;
-auto png_readp_uint16_t(std::istream& stream) -> std::unique_ptr< image2d<uint16_t> >;
+auto png_readp_uint8_t (std::istream& stream) -> std::unique_ptr< array2d<uint8_t> >;
+auto png_readp_uint16_t(std::istream& stream) -> std::unique_ptr< array2d<uint16_t> >;
 
-bool png_write_uint8_t (std::ostream& stream, const image2d<uint8_t> & imag);
-bool png_write_uint16_t(std::ostream& stream, const image2d<uint16_t>& imag);
+bool png_write_uint8_t (std::ostream& stream, const array2d<uint8_t> & imag);
+bool png_write_uint16_t(std::ostream& stream, const array2d<uint16_t>& imag);
 
 } // namespace impl
 } // namespace ig
