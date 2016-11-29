@@ -29,20 +29,6 @@
 
 namespace ig {
 
-/* 
- Compute the Cholesky factorization of a real symmetric positive definite matrix A
-
- The factorization has the form
-   A = L L^T
-
- - L is lower triangular
- - L^T is upper triangular
-
- L is stored in the lower triangular part, and its corresponding
- transposed L^T is stored in the upper part of the computer matrix
- The diagonal elements are commons to both matrix
-*/
-
 template <typename Alg>
 class cholesky {
 public:

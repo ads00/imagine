@@ -42,13 +42,11 @@ public:
 
   explicit product_expr(const Lhs& lhs, const Rhs& rhs)
     : product_expr{lhs, rhs, 
-                   std::integral_constant<bool, matrix_type::immutable>{},
-                   std::integral_constant<bool, matrix_type::hybrid>{}}
+                   std::integral_constant<bool, matrix_type::immutable>{}}
   { eval_product(lhs, rhs); }
 
-  product_expr(const Lhs& lhs, const Rhs& rhs, std::true_type,  std::false_type) : prod_{} {}
-  product_expr(const Lhs& lhs, const Rhs& rhs, std::false_type, std::false_type) : prod_{lhs.rows(), rhs.cols()} {}
-  product_expr(const Lhs& lhs, const Rhs& rhs, std::false_type, std::true_type)  : prod_{matrix_type::dynamic_rows ? lhs.rows() : rhs.cols()} {}
+  product_expr(const Lhs& lhs, const Rhs& rhs, std::true_type)  : prod_{} {}
+  product_expr(const Lhs& lhs, const Rhs& rhs, std::false_type) : prod_{lhs.rows(), rhs.cols()} {}
 
   auto rows() const { return prod_.rows(); }
   auto cols() const { return prod_.cols(); }
@@ -58,12 +56,9 @@ public:
 
 private:
   void eval_product(const Lhs& lhs, const Rhs& rhs) {
-    typename Lhs::plain_type ev_lhs = lhs;
-    typename Rhs::plain_type ev_rhs = rhs;
-
     for (size_t i = 0; i < lhs.rows(); ++i)
       for (size_t j = 0; j < rhs.cols(); ++j)
-        for (size_t k = 0; k < lhs.cols(); ++k) prod_(i, j) += ev_lhs(i, k) * ev_rhs(k, j);
+        for (size_t k = 0; k < lhs.cols(); ++k) prod_(i, j) += lhs(i, k) * rhs(k, j);
   }
 
   matrix_type prod_;

@@ -28,20 +28,6 @@
 
 namespace ig {
 
-/* 
- Compute a QR factorization of a general M-by-N matrix A
-
- The factorization has the form
-   A = Q R
-
- - Q is an orthogonal M-by-M matrix
- - R is an upper triangular M-by-N matrix
-
- Q is stored as a packed set of Householder transformations
- in the strict lower triangular part of the computed matrix
- R is stored in the diagonal and upper triangular part of the computed matrix
-*/
-
 template <typename Alg>
 class qr {
 public:

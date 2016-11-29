@@ -21,8 +21,8 @@
  SOFTWARE.
 */
 
-#ifndef IG_MATH_INTERPOLATE_H
-#define IG_MATH_INTERPOLATE_H
+#ifndef IG_MATH_QUATERNION_INTERPOLATE_H
+#define IG_MATH_QUATERNION_INTERPOLATE_H
 
 namespace ig     {
 namespace linalg {
@@ -46,4 +46,4 @@ auto slerp(const quaternion<T>& lhs, const quaternion<T>& rhs, T t) {
 } // namespace linalg
 } // namespace ig
 
-#endif // IG_MATH_INTERPOLATE_H
+#endif // IG_MATH_QUATERNION_INTERPOLATE_H

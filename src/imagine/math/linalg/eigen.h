@@ -28,19 +28,6 @@
 
 namespace ig {
 
-/* 
- Compute an eigendecomposition of a N-by-N matrix A
-
- The factorization has the form
-   A = VDV^-1
-
- - V is a column-orthogonal N-by-N matrix
- - D is a diagonal N-by-N matrix
-
- V is stored in a computed matrix and contains the eigenvectors as its columns
- D is stored in a computed matrix and contains the eigenvalues on its diagonal
-*/
-
 template <typename Alg, bool Sym = false> class eigen;
 
 // Symmetric eigendecomposition

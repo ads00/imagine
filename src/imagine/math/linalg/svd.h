@@ -29,21 +29,6 @@
 
 namespace ig {
 
-/* 
- Compute a SVD factorization of a general M-by-N matrix A
-
- The factorization has the form
-   A = U D V^T
-
- - U is a column-orthogonal M-by-N matrix
- - D is a diagonal N-by-N matrix
- - V is an orthogonal N-by-N matrix
-
- U is stored in a computed matrix and contains the left singular vectors
- D is stored in a vector, and contains the singular values
- V is stored in a computed matrix and contains the right singular vectors
-*/
-
 template <typename Alg>
 class svd {
 public:

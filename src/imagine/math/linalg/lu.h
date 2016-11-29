@@ -29,23 +29,6 @@
 
 namespace ig {
 
-/* 
- Compute a LU factorization of a general N-by-N matrix A
- using partial pivoting with row interchange
-
- The factorization has the form
-   P A = L U
-
- - P is a permutation matrix
- - L is unit lower triangular
- - U is upper triangular
-
- P is stored in a separate permutation matrix
- L is stored in the strict lower triangular part of the
- computed matrix. The diagonal elements are unity and are not stored
- U is stored in the diagonal and upper triangular part of the computed matrix
-*/
-
 template <typename Alg>
 class lu {
 public:

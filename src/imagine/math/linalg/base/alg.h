@@ -26,16 +26,17 @@
 
 #include "imagine/math/discrete.h"
 
-#include <numeric>
 #include <vector>
 #include <array>
+#include <numeric>
+#include <algorithm>
 
 namespace ig {
 
-constexpr int dynamic_sized = -1;
-template <typename T, int M, int N> class matrix;
-template <typename T, int N = dynamic_sized> using colvec = matrix<T, N, 1>;
-template <typename T, int N = dynamic_sized> using rowvec = matrix<T, 1, N>;
+constexpr int32_t dynamic_sized = -1;
+template <typename T, int32_t M, int32_t N> class matrix;
+template <typename T, int32_t N = dynamic_sized> using colvec = matrix<T, N, 1>;
+template <typename T, int32_t N = dynamic_sized> using rowvec = matrix<T, 1, N>;
 
 template <typename Xpr> class alg_block;
 template <typename Xpr> class alg_col;
@@ -188,17 +189,17 @@ void eval_helper(alg<gen>& ev, const alg<Alg>& alg) {
 }
 
 template <typename gen, typename Alg>
-constexpr void eval(alg<gen>& ev, const alg<Alg>& alg) {
+void eval(alg<gen>& ev, const alg<Alg>& alg) {
   eval_helper(ev, alg);
 }
 
 template <typename gen, typename Alg, typename O>
-constexpr void eval(alg<gen>& ev, const alg<Alg>& alg, const O&) {
+void eval(alg<gen>& ev, const alg<Alg>& alg, const O&) {
   eval_helper(ev, alg);
 }
 
 template <typename gen, typename Alg>
-constexpr void eval(alg<gen>& ev, const alg<Alg>& alg, typename gen::dynamics_data& i) {
+void eval(alg<gen>& ev, const alg<Alg>& alg, typename gen::dynamics_data& i) {
   i.d_.resize(ev.size());
   eval_helper(ev, alg);
 }

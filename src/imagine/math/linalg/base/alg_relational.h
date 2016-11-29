@@ -38,17 +38,17 @@ bool operator<(const alg<Lhs>& lhs, const alg<Rhs>& rhs) {
 }
 
 template <typename Lhs, typename Rhs>
-constexpr auto operator>(const alg<Lhs>& lhs, const alg<Rhs>& rhs) {
+auto operator>(const alg<Lhs>& lhs, const alg<Rhs>& rhs) {
   return rhs < lhs;
 }
 
 template <typename Lhs, typename Rhs>
-constexpr auto operator<=(const alg<Lhs>& lhs, const alg<Rhs>& rhs) {
+auto operator<=(const alg<Lhs>& lhs, const alg<Rhs>& rhs) {
   return !(lhs > rhs);
 }
 
 template <typename Lhs, typename Rhs>
-constexpr auto operator>=(const alg<Lhs>& lhs, const alg<Rhs>& rhs) {
+auto operator>=(const alg<Lhs>& lhs, const alg<Rhs>& rhs) {
   return !(lhs < rhs);
 }
 

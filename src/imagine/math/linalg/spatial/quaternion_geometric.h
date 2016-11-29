@@ -21,8 +21,8 @@
  SOFTWARE.
 */
 
-#ifndef IG_MATH_GEOMETRIC_H
-#define IG_MATH_GEOMETRIC_H
+#ifndef IG_MATH_QUATERNION_GEOMETRIC_H
+#define IG_MATH_QUATERNION_GEOMETRIC_H
 
 namespace ig     {
 namespace linalg {
@@ -70,4 +70,4 @@ auto rotate(const quaternion<T>& q, const alg<Alg>& v) {
 } // namespace linalg
 } // namespace ig
 
-#endif // IG_MATH_GEOMETRIC_H
+#endif // IG_MATH_QUATERNION_GEOMETRIC_H

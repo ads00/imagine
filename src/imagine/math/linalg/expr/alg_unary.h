@@ -60,16 +60,15 @@ constexpr auto operator-(const alg<Alg>& alg) {
 
 namespace linalg {
 
-struct conj_op {
+template <typename Fn>
+struct unary_fn {
   template <typename T>
-  constexpr auto operator()(const T& val) const { 
-    return std::conj(val); 
-  }
-};
+  constexpr auto operator()(const T& val) const { return fn_(val); }
+  Fn fn_; };
 
-template <typename Alg>
-constexpr auto conj(const alg<Alg>& alg) {
-  return unary_expr< Alg, conj_op >{alg.derived(), conj_op{}};
+template <typename Alg, typename Fn>
+constexpr auto apply(const alg<Alg>& alg, Fn&& fn) {
+  return unary_expr< Alg, unary_fn<Fn> >{alg.derived(), unary_fn<Fn>{fn}};
 }
 
 } // namespace linalg

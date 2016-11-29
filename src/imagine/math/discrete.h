@@ -61,7 +61,7 @@ constexpr auto sign(T x) {
     ? 1 
     : x < 0 
       ? -1 
-      : 0 
+      : 0;
 }
 
 template <typename T> constexpr auto degrees(T x) { return x * T(180.0) / pi<T>; }
