@@ -21,22 +21,44 @@
  SOFTWARE.
 */
 
-#include "imagine/math/geom/bbox.h"
+#ifndef IG_MATH_BV_H
+#define IG_MATH_BV_H
+
+#include "imagine/math/geom/projective.h"
 
 namespace ig {
 
-bbox::bbox(const vec3& min, const vec3& max)
-  : min_{min}
-  , max_{max}
-  , extent_{max_ - min_} {}
+class aabb;
+class convex;
 
-void bbox::expand(const vec3& point) {
-  min_ = std::min(min_, point), max_ = std::max(max_, point);
-  extent_ = max_ - min_;
-}
+class IG_API aabb {
+public:
+  aabb();
+  explicit aabb(const vec3& min, const vec3& max);
+  explicit aabb(const std::vector<vec3>& points);
 
-float bbox::surface_area() const {
-  return 2.f * (extent_[0] * extent_[2] + extent_[0] * extent_[1] + extent_[1] * extent_[2]);
-}
+  void expand(const vec3& point);
 
+  auto size() const         { return max_ - min_; }
+  auto volume() const       { return size().prod(); }
+  auto surface_area() const {
+    auto ext = size();
+    return 2.f * (ext[0] * ext[1] + ext[0] * ext[2] + ext[1] * ext[2]); }
+
+  auto centroid() const { return (min_ + max_) * 0.5f; }
+
+private:
+  vec3 min_, max_;
+};
+
+class bvh {};
+
+namespace bv {
+
+template <typename T, typename U> bool contain(const T& lhs, const U& rhs);
+template <typename T, typename U> bool intersect(const T& lhs, const U& rhs);
+
+} // namespace bv
 } // namespace ig
+
+#endif // IG_MATH_BV_H

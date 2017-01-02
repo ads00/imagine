@@ -21,25 +21,26 @@
  SOFTWARE.
 */
 
-#ifndef IG_MATH_BBOX_H
-#define IG_MATH_BBOX_H
-
-#include "imagine/math/geom/homogeneous.h"
+#include "imagine/math/geom/bv.h"
 
 namespace ig {
 
-class IG_API bbox {
-public:
-  bbox() = default;
-  explicit bbox(const vec3& min, const vec3& max);
+// axis-aligned bounding box
+aabb::aabb()
+  : min_{-std::numeric_limits<float>::infinity()}
+  , max_{ std::numeric_limits<float>::infinity()} {}
 
-  void expand(const vec3& point);
-  float surface_area() const;
+aabb::aabb(const vec3& min, const vec3& max)
+  : min_{min}
+  , max_{max} {}
 
-private:
-  vec3 min_, max_, extent_;
-};
+aabb::aabb(const std::vector<vec3>& points) : aabb{} {
+  for (auto& point : points)
+    expand(point);
+}
+
+void aabb::expand(const vec3& point) {
+  min_ = std::min(min_, point), max_ = std::max(max_, point);
+}
 
 } // namespace ig
-
-#endif // IG_MATH_BBOX_H

@@ -21,11 +21,11 @@
  SOFTWARE.
 */
 
-#include "imagine/math/geom/homogeneous.h"
+#include "imagine/math/geom/projective.h"
 
 namespace ig {
 
-vec3 mat4::transform(const vec3& v, bool unit) const {
+vec3 projective::transform(const vec3& v, bool unit) const {
   auto& s = *this;
   auto xp = s(0, 0) * v[0] + s(0, 1) * v[1] + s(0, 2) * v[2];
   auto yp = s(1, 0) * v[0] + s(1, 1) * v[1] + s(1, 2) * v[2];
@@ -40,14 +40,14 @@ vec3 mat4::transform(const vec3& v, bool unit) const {
   }
 }
 
-mat4 mat4::translating(const vec3& t) {
-  return mat4{1.f, 0.f, 0.f, t[0],
-              0.f, 1.f, 0.f, t[1],
-              0.f, 0.f, 1.f, t[2],
-              0.f, 0.f, 0.f, 1.f};
+projective projective::translating(const vec3& t) {
+  return projective{1.f, 0.f, 0.f, t[0],
+                    0.f, 1.f, 0.f, t[1],
+                    0.f, 0.f, 1.f, t[2],
+                    0.f, 0.f, 0.f, 1.f};
 }
 
-mat4 mat4::rotating(const quat& r) {
+projective projective::rotating(const quat& r) {
   auto& v = r.vec_;
   auto
     x = v[0] + v[0],
@@ -58,53 +58,54 @@ mat4 mat4::rotating(const quat& r) {
   auto yy = y * v[1], yz = z * v[1], zz = z * v[2];
   auto wx = x * r.sca_, wy = y * r.sca_, wz = z * r.sca_;
 
-  return mat4{1.f - (yy + zz), xy - wz,         xz + wy,         0.f,
-              xy + wz,         1.f - (xx + zz), yz - wx,         0.f,
-              xz - wy,         yz + wx,         1.f - (xx + yy), 0.f,
-              0.f,             0.f,             0.f,             1.f};
+  return projective{1.f - (yy + zz), xy - wz,         xz + wy,         0.f,
+                    xy + wz,         1.f - (xx + zz), yz - wx,         0.f,
+                    xz - wy,         yz + wx,         1.f - (xx + yy), 0.f,
+                    0.f,             0.f,             0.f,             1.f};
 }
 
-mat4 mat4::scaling(const vec3& s) {
-  return mat4{s[0], 0.f,  0.f,  0.f,
-              0.f,  s[1], 0.f,  0.f,
-              0.f,  0.f,  s[2], 0.f,
-              0.f,  0.f,  0.f,  1.f};
+projective projective::scaling(const vec3& s) {
+  return projective{s[0], 0.f,  0.f,  0.f,
+                    0.f,  s[1], 0.f,  0.f,
+                    0.f,  0.f,  s[2], 0.f,
+                    0.f,  0.f,  0.f,  1.f};
 }
 
-mat4 mat4::orthographic(size_t w, size_t h, float zn, float zf) {
+projective projective::orthographic(size_t w, size_t h, float zn, float zf) {
   auto zr = zf - zn;
-  return mat4{1.f / w, 0.f,      0.f,       0.f,
-              0.f,     1.f / h,  0.f,       0.f,
-              0.f,     0.f,     -1.f / zr, -zn / zr,
-              0.f,     0.f,      0.f,       1.f};
+  return projective{1.f / w, 0.f,      0.f,       0.f,
+                    0.f,     1.f / h,  0.f,       0.f,
+                    0.f,     0.f,     -1.f / zr, -zn / zr,
+                    0.f,     0.f,      0.f,       1.f};
 }
 
-mat4 mat4::perspective(float fovy, float asp, float zn, float zf) {
+projective projective::perspective(float fovy, float asp, float zn, float zf) {
   auto tanh = std::tan(fovy * 0.5f);
   auto ta = asp * tanh;
   auto zr = zf - zn;
 
-  return mat4{1.f / ta, 0.f,         0.f,      0.f,
-              0.f,      1.f / tanh,  0.f,      0.f,
-              0.f,      0.f,        -zf / zr, -(zf * zn) / zr,
-              0.f,      0.f,        -1.f,      0.f};
+  return projective{1.f / ta, 0.f,         0.f,      0.f,
+                    0.f,      1.f / tanh,  0.f,      0.f,
+                    0.f,      0.f,        -zf / zr, -(zf * zn) / zr,
+                    0.f,      0.f,        -1.f,      0.f};
 }
 
-mat4 mat4::look(const vec3& eye, const vec3& focus, const vec3& up) {
+projective projective::look(const vec3& eye, const vec3& focus, const vec3& up) {
   auto R2 = linalg::normalise(eye - focus);
   auto R0 = linalg::normalise(linalg::cross(up, R2));
   auto R1 = linalg::cross(R2, R0);
   auto neye = -eye;
 
-  return mat4{R0[0], R0[1], R0[2], linalg::dot(R0, neye),
-              R1[0], R1[1], R1[2], linalg::dot(R1, neye),
-              R2[0], R2[1], R2[2], linalg::dot(R2, neye),
-              0.f,   0.f,   0.f,   1.f};
+  return projective{R0[0], R0[1], R0[2], linalg::dot(R0, neye),
+                    R1[0], R1[1], R1[2], linalg::dot(R1, neye),
+                    R2[0], R2[1], R2[2], linalg::dot(R2, neye),
+                    0.f,   0.f,   0.f,   1.f};
 }
 
-const mat4 mat4::eye = mat4{1.f, 0.f, 0.f, 0.f,
-                            0.f, 1.f, 0.f, 0.f,
-                            0.f, 0.f, 1.f, 0.f,
-                            0.f, 0.f, 0.f, 1.f};
+const projective
+  projective::eye = projective{1.f, 0.f, 0.f, 0.f,
+                               0.f, 1.f, 0.f, 0.f,
+                               0.f, 0.f, 1.f, 0.f,
+                               0.f, 0.f, 0.f, 1.f};
 
 } // namespace ig

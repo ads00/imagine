@@ -73,7 +73,9 @@ public:
   template <typename iter, typename citer>
   class iterator : public std::iterator<std::random_access_iterator_tag, T> {
   public:
-    friend alg;
+    explicit iterator(citer& derived, size_t i) 
+      : derived_{derived}
+      , i_{i} {}
 
     auto operator=(const iterator& o) { i_ = o.i_; return *this; }
     auto operator++() { ++i_; return *this; }
@@ -85,8 +87,7 @@ public:
 
     iter operator*() const { return derived_[i_]; }
 
-  private:
-    explicit iterator(citer& derived, size_t i) : derived_{derived}, i_{i} {}
+  protected:
     citer& derived_; size_t i_;
   };
 

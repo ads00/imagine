@@ -21,43 +21,40 @@
  SOFTWARE.
 */
 
-#ifndef IG_MATH_TRANSFORM_H
-#define IG_MATH_TRANSFORM_H
+#ifndef IG_SIMULATE_CAMERA_H
+#define IG_SIMULATE_CAMERA_H
 
 #include "imagine/math/geom/projective.h"
 
 namespace ig {
 
-class IG_API transform {
+class IG_API camera {
 public:
-  explicit transform(const vec3& pos, const quat& ori, const vec3& sca);
-  virtual ~transform();
+  explicit camera(planar_proj planar, size_t w, size_t h);
+  explicit camera(planar_proj planar, size_t w, size_t h, const vec3& pos, const vec3& target, const vec3& up);
 
-  void positions(const vec3& pos, coordinate coord = coordinate::local);
-  void directs(const quat& ori, coordinate coord = coordinate::local);
-  void scales(const vec3& sca, coordinate coord = coordinate::local);
+  void extent(float fovy);
+  void clip(float zn, float zf);
 
-  transform& translate(const vec3& tra, coordinate coord = coordinate::local);
-  transform& rotate(const quat& rot, coordinate coord = coordinate::local);
-  transform& scale(const vec3& sca);
+  ray3 cast_ray(size_t x, size_t y) const;
 
-  void link(transform* parent);
-
-  const mat4& get_wt();
+  const mat4& view();
+  const mat4& proj();
 
 private:
-  void remove_child(const transform& tr);
-  void hierarchical_invalidate();
+  planar_proj projection_;
 
-private:
-  transform* parent_;
-  std::vector< std::reference_wrapper<transform> > children_;
+  size_t w_, h_;
+  vec3 pos_, target_, up_;
 
-  bool uwt_;
-  mat4 wt_;
-  vec3 pos_; quat ori_; vec3 sca_;
+  float zn_, zf_;
+  float fovy_;
+
+  bool uview_, uproj_;
+  mat4 view_, proj_,
+    iview_, iproj_;
 };
 
 } // namespace ig
 
-#endif // IG_MATH_TRANSFORM_H
+#endif // IG_SIMULATE_CAMERA_H

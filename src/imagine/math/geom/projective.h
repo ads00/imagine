@@ -21,8 +21,8 @@
  SOFTWARE.
 */
 
-#ifndef IG_MATH_HOMOGENEOUS_H
-#define IG_MATH_HOMOGENEOUS_H
+#ifndef IG_MATH_PROJECTIVE_H
+#define IG_MATH_PROJECTIVE_H
 
 #include "imagine/math/linalg/matrix.h"
 #include "imagine/math/linalg/analysis.h"
@@ -31,42 +31,45 @@
 
 namespace ig {
 
-using vec3 = colvec<float, 3>;
-using vec2 = colvec<float, 2>;
+class projective;
+using mat4 
+  = projective;
 
+using vec3 = colvec<float, 3>; using vec2 = colvec<float, 2>;
 using quat = quaternion<float>;
+
 using ray3 = ray<float, 3>;
 
-class IG_API mat4 : public matrix<float, 4> {
+class IG_API projective : public matrix<float, 4> {
 public:
-  using base_type = matrix<float, 4>;
+  using base_type 
+    = matrix<float, 4>;
 
-  mat4() = default;
+  projective() = default;
 
   template <typename... Args>
-  explicit mat4(T i, Args&&... args)
+  explicit projective(T i, Args&&... args)
     : base_type{i, std::forward<Args>(args)...} {}
 
   template <typename Alg> 
-  mat4(const alg<Alg>& o) 
-    : base_type{o} {}
+  projective(const alg<Alg>& o) : base_type{o} {}
 
   vec3 transform(const vec3& v, bool unit = false) const;
 
-  static mat4 translating(const vec3& t);
-  static mat4 rotating(const quat& r);
-  static mat4 scaling(const vec3& s);
+  static projective translating(const vec3& t);
+  static projective rotating(const quat& r);
+  static projective scaling(const vec3& s);
   
-  static mat4 orthographic(size_t w, size_t h, float zn, float zf);
-  static mat4 perspective(float fovy, float asp, float zn, float zf);
-  static mat4 look(const vec3& eye, const vec3& focus, const vec3& up);
+  static projective orthographic(size_t w, size_t h, float zn, float zf);
+  static projective perspective(float fovy, float asp, float zn, float zf);
+  static projective look(const vec3& eye, const vec3& focus, const vec3& up);
 
-  static const mat4 eye;
+  static const projective eye;
 };
 
-enum class projection { orthographic, perspective };
-enum class coordinate { local, world };
+enum class planar_proj { orthographic, perspective };
+enum class coordinate  { local, world };
 
 } // namespace ig
 
-#endif // IG_MATH_HOMOGENEOUS_H
+#endif // IG_MATH_PROJECTIVE_H

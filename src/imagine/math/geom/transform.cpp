@@ -27,8 +27,8 @@ namespace ig {
 
 transform::transform(const vec3& pos, const quat& ori, const vec3& sca)
   : parent_{nullptr}
-  , umatrix_{false}
-  , matrix_{mat4::eye}
+  , uwt_{false}
+  , wt_{mat4::eye}
   , pos_{pos}
   , ori_{ori}
   , sca_{sca} {}
@@ -140,20 +140,20 @@ void transform::link(transform* parent) {
 }
 
 const mat4& transform::get_wt() {
-  if (!umatrix_) {
+  if (!uwt_) {
     auto trs = mat4::translating(pos_) * mat4::rotating(ori_) * mat4::scaling(sca_);
     if (parent_) {
-      matrix_ = parent_->get_wt() * trs;
+      wt_ = parent_->get_wt() * trs;
     } else {
-      matrix_ = trs;
-    } umatrix_ = true;
+      wt_ = trs;
+    } uwt_ = true;
   }
-  return matrix_;
+  return wt_;
 }
 
 void transform::hierarchical_invalidate() {
-  if (umatrix_) {
-    umatrix_ = false;
+  if (uwt_) {
+    uwt_ = false;
     for (auto& child : children_)
       child.get().hierarchical_invalidate();
   }

@@ -60,7 +60,7 @@ auto normalise(const quaternion<T>& q) {
 
 template <typename T, typename Alg>
 auto rotate(const quaternion<T>& q, const alg<Alg>& v) {
-  assert(v.vector() && v.vecsize() == 3 && "Quaternion can only rotate vectors in three-dimensional space");
+  assert(v.vector() && v.vecsize() == 3 && "Quaternions can only rotate vectors in three-dimensional space");
 
   auto c1 = linalg::cross(q.vec_, v);
   auto c2 = linalg::cross(q.vec_, c1);

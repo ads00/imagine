@@ -48,7 +48,8 @@ struct alg_traits< matrix<T_, M_, N_> > {
 template <typename T, int32_t M = dynamic_sized, int32_t N = M>
 class matrix : public alg< matrix<T, M, N> > {
 public:
-  using base_type = alg< matrix<T, M, N> >;
+  using base_type 
+    = alg< matrix<T, M, N> >;
 
   static constexpr auto dynamic_rows = (M < 0);
   static constexpr auto dynamic_cols = (N < 0);
