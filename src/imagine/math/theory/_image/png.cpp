@@ -21,7 +21,7 @@
  SOFTWARE.
 */
 
-#include "imagine/math/bridge/impl_image/bridge_png.h"
+#include "imagine/math/theory/_image/png.h"
 #include "imagine/core/log.h"
 
 extern "C" 
@@ -30,8 +30,8 @@ extern "C"
 #include "png/zlib.h"
 }
 
-namespace ig   {
-namespace impl {
+namespace ig     {
+namespace detail {
 
 struct png_src { std::istream* stream; };
 struct png_dst { std::ostream* stream; };
@@ -193,5 +193,5 @@ void png_message(png_structp png_ptr, const char* msg) {
   LOG(info) << "(libpng): " << msg;
 }
 
-} // namespace impl
+} // namespace detail
 } // namespace ig

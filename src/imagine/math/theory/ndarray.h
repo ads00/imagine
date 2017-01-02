@@ -24,7 +24,7 @@
 #ifndef IG_MATH_NDARRAY_H
 #define IG_MATH_NDARRAY_H
 
-#include "imagine/math/bridge/bridge.h"
+#include "imagine/math/theory/detail/bridge.h"
 
 #include <array>
 #include <vector>

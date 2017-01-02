@@ -21,23 +21,21 @@
  SOFTWARE.
 */
 
-#ifndef IG_MATH_PNG_H
-#define IG_MATH_PNG_H
-
 #include "imagine/math/theory/ndarray.h"
-#include <sstream>
+#include "imagine/math/theory/_image/jpeg.h"
+#include "imagine/math/theory/_image/png.h"
 
-namespace ig   {
-namespace impl {
+namespace ig {
 
-bool png_validate(std::istream& stream);
-auto png_readp_uint8_t (std::istream& stream) -> std::unique_ptr< array2d<uint8_t> >;
-auto png_readp_uint16_t(std::istream& stream) -> std::unique_ptr< array2d<uint16_t> >;
+template <> // uchar images
+decltype(array2d<uint8_t>::bridge_table_) array2d<uint8_t>::bridge_table_ = {{
+  {static_cast<int32_t>(ndarray_format::jpeg), std::make_tuple(detail::jpeg_validate, detail::jpeg_readp_uint8_t, detail::jpeg_write_uint8_t)},
+  {static_cast<int32_t>(ndarray_format::png ), std::make_tuple( detail::png_validate,  detail::png_readp_uint8_t,  detail::png_write_uint8_t)}
+  }};
 
-bool png_write_uint8_t (std::ostream& stream, const array2d<uint8_t> & imag);
-bool png_write_uint16_t(std::ostream& stream, const array2d<uint16_t>& imag);
+template <> // uint images
+decltype(array2d<uint16_t>::bridge_table_) array2d<uint16_t>::bridge_table_ = {{
+  {static_cast<int32_t>(ndarray_format::png), std::make_tuple(detail::png_validate, detail::png_readp_uint16_t, detail::png_write_uint16_t)}
+  }};
 
-} // namespace impl
 } // namespace ig
-
-#endif // IG_MATH_PNG_H

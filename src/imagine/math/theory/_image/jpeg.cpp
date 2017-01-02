@@ -21,7 +21,7 @@
  SOFTWARE.
 */
 
-#include "imagine/math/bridge/impl_image/bridge_jpeg.h"
+#include "imagine/math/theory/_image/jpeg.h"
 #include "imagine/core/log.h"
 #include <cstring>
 
@@ -31,8 +31,8 @@ extern "C"
 #include "jpeg/jerror.h" 
 }
 
-namespace ig   {
-namespace impl {
+namespace ig     {
+namespace detail {
 
 constexpr uint32_t buffer_size = 4096;
 struct jpeg_src {
@@ -217,5 +217,5 @@ void jpeg_exit(j_common_ptr jpeg_ptr) {
   }
 }
 
-} // namespace impl
+} // namespace detail
 } // namespace ig

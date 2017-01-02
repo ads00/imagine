@@ -21,41 +21,23 @@
  SOFTWARE.
 */
 
-#ifndef IG_GRAPHICS_CAMERA_H
-#define IG_GRAPHICS_CAMERA_H
+#ifndef IG_MATH_PNG_H
+#define IG_MATH_PNG_H
 
-#include "imagine/math/geom/homogeneous.h"
+#include "imagine/math/theory/ndarray.h"
+#include <sstream>
 
-namespace ig {
+namespace ig     {
+namespace detail {
 
-class IG_API camera {
-public:
-  explicit camera(projection proj, size_t w, size_t h);
-  explicit camera(projection proj, size_t w, size_t h, const vec3& pos, const vec3& target, const vec3& up);
+bool png_validate(std::istream& stream);
+auto png_readp_uint8_t (std::istream& stream) -> std::unique_ptr< array2d<uint8_t> >;
+auto png_readp_uint16_t(std::istream& stream) -> std::unique_ptr< array2d<uint16_t> >;
 
-  void make_orthographic();
-  void make_perspective(float fovy);
-  void clip(float zn, float zf);
+bool png_write_uint8_t (std::ostream& stream, const array2d<uint8_t> & imag);
+bool png_write_uint16_t(std::ostream& stream, const array2d<uint16_t>& imag);
 
-  ray3 cast_ray(size_t x, size_t y) const;
-
-  const mat4& view();
-  const mat4& proj();
-
-private:
-  projection projection_;
-
-  size_t w_, h_;
-  vec3 pos_, target_, up_;
-
-  float zn_, zf_;
-  float fovy_;
-
-  bool uview_, uproj_;
-  mat4 view_, proj_,
-    iview_, iproj_;
-};
-
+} // namespace detail
 } // namespace ig
 
-#endif // IG_GRAPHICS_CAMERA_H
+#endif // IG_MATH_PNG_H

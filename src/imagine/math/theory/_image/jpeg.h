@@ -27,15 +27,15 @@
 #include "imagine/math/theory/ndarray.h"
 #include <sstream>
 
-namespace ig   {
-namespace impl {
+namespace ig     {
+namespace detail {
 
 bool jpeg_validate(std::istream& stream);
 
 auto jpeg_readp_uint8_t(std::istream& stream) -> std::unique_ptr< array2d<uint8_t> >;
 bool jpeg_write_uint8_t(std::ostream& stream, const array2d<uint8_t>& imag);
 
-} // namespace impl
+} // namespace detail
 } // namespace ig
 
 #endif // IG_MATH_JPEG_H
