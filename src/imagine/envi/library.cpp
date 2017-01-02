@@ -21,7 +21,7 @@
  SOFTWARE.
 */
 
-#include "imagine/envi/impl/library_impl.h"
+#include "imagine/envi/arch/library_impl.h"
 #include "imagine/envi/library.h"
 
 namespace ig {

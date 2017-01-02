@@ -21,28 +21,28 @@
  SOFTWARE.
 */
 
-#ifndef IG_ENVI_MOUSE_IMPL_H
-#define IG_ENVI_MOUSE_IMPL_H
+#ifndef IG_ENVI_WIDGET_IMPL_H
+#define IG_ENVI_WIDGET_IMPL_H
 
-#include "imagine/envi/input_mouse.h"
-#include "imagine/envi/impl/widget_impl.h"
-
-namespace ig    {
-namespace mouse {
-namespace impl  {
+#include "imagine/ig.h"
 
 #if defined(IG_WIN)
-auto get_buttons() -> buttons;
+ #undef UNICODE
+ #define ISOLATION_AWARE_ENABLED 1
+ #include <windows.h>
+ #include <commctrl.h>
 
-auto get_x(LPARAM lparam) -> int32_t;
-auto get_y(LPARAM lparam) -> int32_t;
-auto get_wheel_delta(WPARAM wparam) -> float;
-
-auto track(HWND window) -> bool;
+ #pragma comment(lib, "comctl32.lib")
+ #pragma comment(linker,"\"/manifestdependency:type='win32' \
+ name='Microsoft.Windows.Common-Controls' version='6.0.0.0' \
+ processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
 #endif
 
+namespace ig   {
+namespace impl {
+
+
 } // namespace impl
-} // namespace mouse
 } // namespace ig
 
-#endif // IG_ENVI_MOUSE_IMPL_H
+#endif // IG_ENVI_WIDGET_IMPL_H

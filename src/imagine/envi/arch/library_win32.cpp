@@ -21,27 +21,50 @@
  SOFTWARE.
 */
 
-#ifndef IG_ENVI_WIDGET_IMPL_H
-#define IG_ENVI_WIDGET_IMPL_H
-
-#include "imagine/ig.h"
-
-#if defined(IG_WIN)
- #define ISOLATION_AWARE_ENABLED 1
- #include <windows.h>
- #include <commctrl.h>
-
- #pragma comment(lib, "comctl32.lib")
- #pragma comment(linker,"\"/manifestdependency:type='win32' \
- name='Microsoft.Windows.Common-Controls' version='6.0.0.0' \
- processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
-#endif
+#include "imagine/envi/arch/library_impl.h"
+#include "imagine/envi/library.h"
 
 namespace ig   {
 namespace impl {
 
+library_native::library_native()
+  : path_{}
+  , handle_{nullptr} {}
+
+library_native::library_native(const std::string& path)
+  : path_{path}
+  , handle_{nullptr} {}
 
 } // namespace impl
-} // namespace ig
 
-#endif // IG_ENVI_WIDGET_IMPL_H
+auto library::resolve(const char* symbol) -> funcptr_type {
+  if (native_->handle_) {
+    auto proc = GetProcAddress(native_->handle_, symbol);
+    return reinterpret_cast<funcptr_type>(proc);
+  } else {
+    return nullptr;
+  }
+}
+
+bool library::open(const std::string& path) {
+  if (native_->handle_) {
+    if (native_->path_ != path) {
+      close();
+    } else {
+      return true;
+    }
+  }
+
+  native_->handle_ = LoadLibraryA(path.c_str());
+  native_->path_ = path;
+  return native_->handle_ != nullptr;
+}
+
+void library::close() {
+  if (native_->handle_) {
+    FreeLibrary(native_->handle_);
+    native_->handle_ = nullptr;
+  }
+}
+
+} // namespace ig

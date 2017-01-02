@@ -21,7 +21,7 @@
  SOFTWARE.
 */
 
-#include "imagine/envi/impl/dispatcher_impl.h"
+#include "imagine/envi/arch/dispatcher_impl.h"
 #include "imagine/envi/dispatcher.h"
 
 namespace ig {

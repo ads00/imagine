@@ -21,49 +21,43 @@
  SOFTWARE.
 */
 
-#include "imagine/envi/impl/mouse_impl.h"
+#ifndef IG_ENVI_WINDOW_IMPL_H
+#define IG_ENVI_WINDOW_IMPL_H
 
-namespace ig    {
-namespace mouse {
-namespace impl  {
+#include "imagine/envi/window.h"
+#include "imagine/envi/arch/widget_impl.h"
 
-auto get_buttons() -> buttons {
-  auto swap = GetSystemMetrics(SM_SWAPBUTTON);
+namespace ig   {
+namespace impl {
 
-  buttons buttons{button::none};
-  if (GetAsyncKeyState(VK_LBUTTON) < 0)
-    buttons |= swap 
-      ? button::right
-      : button::left;
-  if (GetAsyncKeyState(VK_RBUTTON) < 0)
-    buttons |= swap 
-      ? button::left
-      : button::right;
-  if (GetAsyncKeyState(VK_MBUTTON) < 0)
-    buttons |= button::middle;
-  return buttons;
-}
+class window_native {
+public:
+  window_native(const window& ref);
+  window_native(const window& ref, window::types_t types,  const std::string& caption, uint32_t w, uint32_t h);
+  ~window_native() = default;
 
-auto get_x(LPARAM lparam) -> int32_t {
-  return LOWORD(lparam);
-}
+  const window& ref_;
 
-auto get_y(LPARAM lparam) -> int32_t {
-  return HIWORD(lparam);
-}
+  window::types_t types_;
+  window_visibility visibility_;
 
-auto get_wheel_delta(WPARAM wparam) -> float {
-  return static_cast<float>(GET_WHEEL_DELTA_WPARAM(wparam)) / WHEEL_DELTA;
-}
+  std::string caption_;
+  uint32_t w_, h_;
+  int32_t  x_, y_;
 
-auto track(HWND window) -> bool {
-  TRACKMOUSEEVENT tme;
-  tme.cbSize = sizeof(TRACKMOUSEEVENT);
-  tme.dwFlags = TME_LEAVE;
-  tme.hwndTrack = window;
-  return TrackMouseEvent(&tme) == TRUE;
-}
+  bool mouse_tracked_;
 
-} // namespace impl
-} // namespace mouse
+  #if defined(IG_WIN)
+  LRESULT internal(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
+  static LRESULT CALLBACK proc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
+  static bool reg();
+
+  HWND handle_;
+  DWORD wstyle_;
+  #endif
+};
+
+} // namespace native
 } // namespace ig
+
+#endif // IG_ENVI_WINDOW_IMPL_H

@@ -21,7 +21,7 @@
  SOFTWARE.
 */
 
-#include "imagine/envi/impl/cursor_impl.h"
+#include "imagine/envi/arch/cursor_impl.h"
 #include "imagine/envi/cursor.h"
 
 namespace ig {

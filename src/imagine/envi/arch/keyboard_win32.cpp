@@ -21,7 +21,7 @@
  SOFTWARE.
 */
 
-#include "imagine/envi/impl/keyboard_impl.h"
+#include "imagine/envi/arch/keyboard_impl.h"
 
 namespace ig       {
 namespace keyboard {

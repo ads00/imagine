@@ -21,43 +21,26 @@
  SOFTWARE.
 */
 
-#ifndef IG_ENVI_WINDOW_IMPL_H
-#define IG_ENVI_WINDOW_IMPL_H
-
-#include "imagine/envi/window.h"
-#include "imagine/envi/impl/widget_impl.h"
+#include "imagine/envi/arch/dispatcher_impl.h"
+#include "imagine/envi/dispatcher.h"
 
 namespace ig   {
 namespace impl {
 
-class window_native {
-public:
-  window_native(const window& ref);
-  window_native(const window& ref, window::types_t types,  const std::string& caption, uint32_t w, uint32_t h);
-  ~window_native() = default;
+dispatcher_native::dispatcher_native()
+  : return_code_{-1}
+  , running_{false} {}
 
-  const window& ref_;
+} // namespace impl
 
-  window::types_t types_;
-  window_visibility visibility_;
+void dispatcher::process_events() {
+  MSG 
+    msg{};
+  while (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE)) {
+    TranslateMessage(&msg);
+    DispatchMessage(&msg);
+  }
+  handle();
+}
 
-  std::string caption_;
-  uint32_t w_, h_;
-  int32_t  x_, y_;
-
-  bool mouse_tracked_;
-
-  #if defined(IG_WIN)
-  LRESULT internal(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
-  static LRESULT CALLBACK proc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
-  static bool reg();
-
-  HWND handle_;
-  DWORD wstyle_;
-  #endif
-};
-
-} // namespace native
 } // namespace ig
-
-#endif // IG_ENVI_WINDOW_IMPL_H

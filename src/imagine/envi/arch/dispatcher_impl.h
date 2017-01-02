@@ -24,7 +24,7 @@
 #ifndef IG_ENVI_DISPATCHER_IMPL_H
 #define IG_ENVI_DISPATCHER_IMPL_H
 
-#include "imagine/envi/impl/widget_impl.h"
+#include "imagine/envi/arch/widget_impl.h"
 
 #include <atomic>
 

@@ -21,7 +21,7 @@
  SOFTWARE.
 */
 
-#include "imagine/envi/impl/window_impl.h"
+#include "imagine/envi/arch/window_impl.h"
 #include "imagine/envi/window.h"
 
 namespace ig {

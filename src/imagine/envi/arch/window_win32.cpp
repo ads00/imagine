@@ -21,10 +21,10 @@
  SOFTWARE.
 */
 
-#include "imagine/envi/impl/window_impl.h"
-#include "imagine/envi/impl/keyboard_impl.h"
-#include "imagine/envi/impl/mouse_impl.h"
-#include "imagine/envi/impl/cursor_impl.h"
+#include "imagine/envi/arch/window_impl.h"
+#include "imagine/envi/arch/keyboard_impl.h"
+#include "imagine/envi/arch/mouse_impl.h"
+#include "imagine/envi/arch/cursor_impl.h"
 
 #if defined(IG_WIN64)
 # define GCL_HCURSOR GCLP_HCURSOR
@@ -49,8 +49,8 @@ window_native::window_native(const window& ref)
   }
 
   handle_ = CreateWindowEx(0, ig_window_class.data(), "", 0,
-                           CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
-                           nullptr, nullptr, GetModuleHandle(nullptr), this);
+                            CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
+                            nullptr, nullptr, GetModuleHandle(nullptr), this);
 }
 
 window_native::window_native(const window& ref, window::types_t types, const std::string& caption, uint32_t w, uint32_t h)
@@ -82,8 +82,8 @@ window_native::window_native(const window& ref, window::types_t types, const std
   auto cx = (GetSystemMetrics(SM_CXSCREEN) - w) / 2;
   auto cy = (GetSystemMetrics(SM_CYSCREEN) - h) / 2;
   
-  handle_ = CreateWindowEx(0, ig_window_class.data(), caption.data(), wstyle_,
-                           cx, cy, cwidth, cheight, nullptr, nullptr, GetModuleHandle(nullptr), this);
+  handle_ = CreateWindowExA(0, ig_window_class.data(), caption.data(), wstyle_,
+                            cx, cy, cwidth, cheight, nullptr, nullptr, GetModuleHandle(nullptr), this);
 
   RECT clirect, winrect;
   GetClientRect(handle_, &clirect); GetWindowRect(handle_, &winrect);
@@ -231,24 +231,15 @@ LRESULT CALLBACK window_native::proc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
 }
 
 bool window_native::reg() {
-  WNDCLASSEX window_class;
+  WNDCLASSEX window_class {};
   if (GetClassInfoEx(GetModuleHandle(nullptr), ig_window_class.c_str(), &window_class))
     return true;
 
-  window_class = {
-    sizeof(WNDCLASSEX),             // UINT         cbSize;
-    CS_DBLCLKS,                     // UINT         style;
-    proc,                           // WNDPROC      lpfnWndProc;
-    0,                              // int          cbClsExtra;
-    0,                              // int          cbWndExtra;
-    GetModuleHandle(nullptr),       // HINSTANCE    hInstance;
-    nullptr,                        // HICON        hIcon;
-    nullptr,                        // HCURSOR      hCursor;
-    GetSysColorBrush(COLOR_WINDOW), // HBRUSH       hbrBackground;
-    nullptr,                        // LPCTSTR      lpszMenuName;
-    ig_window_class.data(),         // LPCTSTR      lpszClassName;
-    nullptr                         // HICON        hIconSm;
-  };
+  window_class.cbSize    = sizeof(WNDCLASSEX);
+  window_class.hInstance = GetModuleHandle(nullptr);
+    window_class.lpfnWndProc   = proc;
+    window_class.lpszClassName = ig_window_class.c_str();
+
   return RegisterClassEx(&window_class) != 0;
 }
 

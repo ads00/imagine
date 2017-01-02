@@ -21,23 +21,29 @@
  SOFTWARE.
 */
 
-#ifndef IG_ENVI_KEYBOARD_IMPL_H
-#define IG_ENVI_KEYBOARD_IMPL_H
+#ifndef IG_ENVI_CURSOR_IMPL_H
+#define IG_ENVI_CURSOR_IMPL_H
 
-#include "imagine/envi/input_keyboard.h"
-#include "imagine/envi/impl/widget_impl.h"
+#include "imagine/envi/cursor.h"
+#include "imagine/envi/arch/widget_impl.h"
 
-namespace ig       {
-namespace keyboard {
-namespace impl     {
+namespace ig   {
+namespace impl {
 
-#if defined(IG_WIN)
-auto get_modifiers()        -> modifiers;
-auto get_key(WPARAM wparam) -> key;
-#endif
+class cursor_native {
+public:
+  cursor_native(cursor_shape shape, int32_t x = 0, int32_t y = 0);
+  ~cursor_native();
+
+  cursor_shape shape_;
+  int32_t x_, y_;
+
+  #if defined(IG_WIN)
+  HCURSOR handle_;
+  #endif
+};
 
 } // namespace impl
-} // namespace keyboard
 } // namespace ig
 
-#endif // IG_ENVI_KEYBOARD_IMPL_H
+#endif // IG_ENVI_CURSOR_IMPL_H

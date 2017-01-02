@@ -21,50 +21,23 @@
  SOFTWARE.
 */
 
-#include "imagine/envi/impl/library_impl.h"
-#include "imagine/envi/library.h"
+#ifndef IG_ENVI_KEYBOARD_IMPL_H
+#define IG_ENVI_KEYBOARD_IMPL_H
 
-namespace ig   {
-namespace impl {
+#include "imagine/envi/input_keyboard.h"
+#include "imagine/envi/arch/widget_impl.h"
 
-library_native::library_native()
-  : path_{}
-  , handle_{nullptr} {}
+namespace ig       {
+namespace keyboard {
+namespace impl     {
 
-library_native::library_native(const std::string& path)
-  : path_{path}
-  , handle_{nullptr} {}
+#if defined(IG_WIN)
+auto get_modifiers()        -> modifiers;
+auto get_key(WPARAM wparam) -> key;
+#endif
 
 } // namespace impl
-
-auto library::resolve(const char* symbol) -> funcptr_type {
-  if (native_->handle_) {
-    auto proc = GetProcAddress(native_->handle_, symbol);
-    return reinterpret_cast<funcptr_type>(proc);
-  } else {
-    return nullptr;
-  }
-}
-
-bool library::open(const std::string& path) {
-  if (native_->handle_) {
-    if (native_->path_ != path) {
-      close();
-    } else {
-      return true;
-    }
-  }
-
-  native_->handle_ = LoadLibraryA(path.c_str());
-  native_->path_ = path;
-  return native_->handle_ != nullptr;
-}
-
-void library::close() {
-  if (native_->handle_) {
-    FreeLibrary(native_->handle_);
-    native_->handle_ = nullptr;
-  }
-}
-
+} // namespace keyboard
 } // namespace ig
+
+#endif // IG_ENVI_KEYBOARD_IMPL_H
