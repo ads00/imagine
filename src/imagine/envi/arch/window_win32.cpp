@@ -324,7 +324,7 @@ void window::set_parent(const window* parent) {
     : nullptr;
   native_->wstyle_ &= handle 
     ? ~WS_POPUP | WS_CHILD 
-    :  ~WS_CHILD;
+    : ~WS_CHILD;
 
   SetWindowLong(native_->handle_, GWL_STYLE, native_->wstyle_);
   SetParent(native_->handle_, handle);
