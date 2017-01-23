@@ -30,12 +30,17 @@
 namespace ig     {
 namespace detail {
 
-bool png_validate(std::istream& stream);
-auto png_readp_uint8_t (std::istream& stream) -> std::unique_ptr< array2d<uint8_t> >;
-auto png_readp_uint16_t(std::istream& stream) -> std::unique_ptr< array2d<uint16_t> >;
+template <typename T>
+using png_t = ndarray<T, 2>;
+using png_8 = ndarray<uint8_t, 2>;
+using png_16 = ndarray<uint16_t, 2>;
 
-bool png_write_uint8_t (std::ostream& stream, const array2d<uint8_t> & imag);
-bool png_write_uint16_t(std::ostream& stream, const array2d<uint16_t>& imag);
+bool png_validate(std::istream& stream);
+auto png_readp_uint8_t (std::istream& stream) -> std::unique_ptr<png_8>;
+auto png_readp_uint16_t(std::istream& stream) -> std::unique_ptr<png_16>;
+
+bool png_write_uint8_t (std::ostream& stream, const png_8&  imag);
+bool png_write_uint16_t(std::ostream& stream, const png_16& imag);
 
 } // namespace detail
 } // namespace ig

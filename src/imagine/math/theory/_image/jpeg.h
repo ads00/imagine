@@ -30,10 +30,11 @@
 namespace ig     {
 namespace detail {
 
-bool jpeg_validate(std::istream& stream);
+using jpeg_8 = ndarray<uint8_t, 2>;
 
-auto jpeg_readp_uint8_t(std::istream& stream) -> std::unique_ptr< array2d<uint8_t> >;
-bool jpeg_write_uint8_t(std::ostream& stream, const array2d<uint8_t>& imag);
+bool jpeg_validate(std::istream& stream);
+auto jpeg_readp_uint8_t(std::istream& stream) -> std::unique_ptr<jpeg_8>;
+bool jpeg_write_uint8_t(std::ostream& stream, const jpeg_8& imag);
 
 } // namespace detail
 } // namespace ig

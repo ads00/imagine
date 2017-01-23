@@ -55,7 +55,7 @@ bool png_validate(std::istream& stream) {
 }
 
 template <typename T>
-auto png_read(std::istream& stream) -> std::unique_ptr< array2d<T> > {
+auto png_read(std::istream& stream) -> std::unique_ptr< png_t<T> > {
   struct read_handle { 
     explicit read_handle(png_src& src) {
       png  = png_create_read_struct(PNG_LIBPNG_VER_STRING, nullptr, png_message, png_message);
@@ -88,8 +88,8 @@ auto png_read(std::istream& stream) -> std::unique_ptr< array2d<T> > {
       case 16: png_set_expand_16(png); break; }
 
       png_read_update_info(png, info);
-      return std::make_unique< array2d<T> >(
-        array2d<T>::shape_type{width, height}, png_get_channels(png, info));
+      return std::make_unique< png_t<T> >(
+        png_t<T>::shape_type{width, height}, png_get_channels(png, info));
     }
 
     png_structp png; png_infop info; 
@@ -111,7 +111,7 @@ auto png_read(std::istream& stream) -> std::unique_ptr< array2d<T> > {
 }
 
 template <typename T>
-bool png_write(std::ostream& stream, const array2d<T>& imag) {
+bool png_write(std::ostream& stream, const png_t<T>& imag) {
   struct write_handle {
     explicit write_handle(png_dst& dst) {
       png = png_create_write_struct(PNG_LIBPNG_VER_STRING, nullptr, png_message, png_message);
@@ -126,7 +126,7 @@ bool png_write(std::ostream& stream, const array2d<T>& imag) {
     ~write_handle() 
     { png_destroy_write_struct(&png, &info); }
 
-    bool adaptive_generation(const array2d<T>& imag) {
+    bool adaptive_generation(const png_t<T>& imag) {
       int colortype, bitdepth = sizeof(T) * std::numeric_limits<uint8_t>::digits;
       switch (imag.get_features()) {
       case 1: colortype = PNG_COLOR_TYPE_GRAY;       break;
@@ -168,11 +168,11 @@ bool png_write(std::ostream& stream, const array2d<T>& imag) {
   return true;
 }
 
-auto png_readp_uint8_t (std::istream& stream) -> std::unique_ptr< array2d<uint8_t> >  { return png_read<uint8_t>(stream); }
-auto png_readp_uint16_t(std::istream& stream) -> std::unique_ptr< array2d<uint16_t> > { return png_read<uint16_t>(stream); }
+auto png_readp_uint8_t (std::istream& stream) -> std::unique_ptr<png_8>  { return png_read<uint8_t>(stream); }
+auto png_readp_uint16_t(std::istream& stream) -> std::unique_ptr<png_16> { return png_read<uint16_t>(stream); }
 
-bool png_write_uint8_t (std::ostream& stream, const array2d<uint8_t> & imag) { return png_write<uint8_t>(stream, imag); }
-bool png_write_uint16_t(std::ostream& stream, const array2d<uint16_t>& imag) { return png_write<uint16_t>(stream, imag); }
+bool png_write_uint8_t (std::ostream& stream, const png_8&  imag) { return png_write<uint8_t>(stream, imag); }
+bool png_write_uint16_t(std::ostream& stream, const png_16& imag) { return png_write<uint16_t>(stream, imag); }
 
 void png_readproc(png_structp png_ptr, 
                   png_bytep data, 

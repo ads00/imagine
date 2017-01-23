@@ -27,51 +27,43 @@
 #include "imagine/ig.h"
 
 #include <functional>
-#include <array>
 #include <fstream>
+#include <unordered_map>
 
 namespace ig  {
 
 template <typename T>
-class bridge {
-public:
-  using gen_t = std::tuple<
-    std::function<bool(std::istream&)>, 
-    std::function<std::unique_ptr<T>(std::istream&)>, std::function<bool(std::ostream&, const T&)> >;
+using gen_t = std::tuple<
+  std::function<bool(std::istream&)>, // validate / readp / write
+  std::function<std::unique_ptr<T>(std::istream&)>, std::function<bool(std::ostream&, const T&)> >;
 
-  static auto load(const std::string& filename) 
-  { return table_load(T::bridge_table_, filename); }
+template <typename table>
+auto table_load(const table& table, const std::string& filename) {
+  std::ifstream in{filename, std::ios::binary};
+  if (!in.good())
+    throw std::ios::failure{"(Bridge): Failed to open file --" + filename + "--"};
 
-  template <typename F>
-  static bool save(const std::string& filename, F format, const T& data)
-  { return table_save(T::bridge_table_, filename, static_cast<int32_t>(format), data); }
+  for (auto& format_bridge : table)
+    if (std::get<0>(format_bridge.second)(in)) 
+      return std::get<1>(format_bridge.second)(in);
+  throw std::runtime_error
+    {"(Bridge): No available entry found in the bridge table"};
+}
 
-private:
-  template <typename table>
-  static auto table_load(table& tbl, const std::string& filename) -> std::unique_ptr<T> {
-    std::ifstream in{filename, std::ios::binary};
-    if (!in.good()) {
-      throw std::ios::failure{"(Bridge): Failed to open file --" + filename + "--"};
-    }
+template <typename T, typename F, typename table>
+bool table_save(const table& table, const std::string& filename, F format, const T& data) {
+  std::ofstream out{filename, std::ios::binary | std::ios::trunc};
+  return out.good()
+    ? std::get<2>(T::bridge_table_[format])(out, data)
+    : true;
+}
 
-    for (auto& format_bridge : tbl)
-      if (std::get<0>(format_bridge.second)(in)) return std::get<1>(format_bridge.second)(in);
-    throw std::runtime_error{"(Bridge): No available entry found in the bridge table"};
-  }
-
-  template <typename table>
-  static bool table_save(table& tbl, const std::string& filename, int32_t fi, const T& data) {
-    std::ofstream out{filename, std::ios::binary | std::ios::trunc};
-    return out.good()
-      ? std::get<2>(tbl[fi])(out, data)
-      : true;
-  }
-};
-
-enum class ndarray_format : int32_t { 
-  unknown = -1, 
-  jpeg, png, targa, bmp, pnm, hdr // images
-};
+template <typename T, typename F>
+struct bridge {
+  static auto load(const std::string& filename)                          { return table_load(table, filename); }
+  static bool save(const std::string& filename, F format, const T& data) { return table_save(table, filename, format, data); }
+  static std::unordered_map< F, typename gen_t<T> > 
+    table; };
 
 } // namespace ig
 

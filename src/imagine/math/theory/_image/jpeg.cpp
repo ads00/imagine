@@ -58,7 +58,7 @@ bool jpeg_validate(std::istream& stream) {
   return memcmp(jpeg_sig, sig, sizeof(jpeg_sig)) == 0;
 }
 
-auto jpeg_readp_uint8_t(std::istream& stream) -> std::unique_ptr< array2d<uint8_t> > {
+auto jpeg_readp_uint8_t(std::istream& stream) -> std::unique_ptr<jpeg_8> {
   jpeg_decompress_struct 
     jpeg_ptr{};
   jpeg_error_mgr 
@@ -104,8 +104,8 @@ auto jpeg_readp_uint8_t(std::istream& stream) -> std::unique_ptr< array2d<uint8_
   jpeg_read_header(&jpeg_ptr, true);
   jpeg_start_decompress(&jpeg_ptr);
 
-  auto imag = std::make_unique< array2d<uint8_t> >(
-    array2d<uint8_t>::shape_type{jpeg_ptr.output_width, jpeg_ptr.output_height}, jpeg_ptr.output_components);
+  auto imag = std::make_unique<jpeg_8>(
+    jpeg_8::shape_type{jpeg_ptr.output_width, jpeg_ptr.output_height}, jpeg_ptr.output_components);
 
   while (jpeg_ptr.output_scanline < jpeg_ptr.output_height) {
     auto r = imag->buffer() + (imag->get_shape().front() * imag->get_features() * jpeg_ptr.output_scanline);
@@ -117,7 +117,7 @@ auto jpeg_readp_uint8_t(std::istream& stream) -> std::unique_ptr< array2d<uint8_
   return imag;
 }
 
-bool jpeg_write_uint8_t(std::ostream& stream, const array2d<uint8_t>& imag) {
+bool jpeg_write_uint8_t(std::ostream& stream, const jpeg_8& imag) {
   jpeg_compress_struct 
     jpeg_ptr{};
   jpeg_error_mgr 

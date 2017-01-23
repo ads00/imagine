@@ -28,14 +28,14 @@
 namespace ig {
 
 template <> // uchar images
-decltype(array2d<uint8_t>::bridge_table_) array2d<uint8_t>::bridge_table_ = {{
-  {static_cast<int32_t>(ndarray_format::jpeg), std::make_tuple(detail::jpeg_validate, detail::jpeg_readp_uint8_t, detail::jpeg_write_uint8_t)},
-  {static_cast<int32_t>(ndarray_format::png ), std::make_tuple( detail::png_validate,  detail::png_readp_uint8_t,  detail::png_write_uint8_t)}
+decltype(image_bridge<uint8_t, 2>::table) image_bridge<uint8_t, 2>::table = {{
+  {image_format::jpeg, std::make_tuple(detail::jpeg_validate, detail::jpeg_readp_uint8_t, detail::jpeg_write_uint8_t)},
+  {image_format::png , std::make_tuple( detail::png_validate,  detail::png_readp_uint8_t,  detail::png_write_uint8_t)}
   }};
 
 template <> // uint images
-decltype(array2d<uint16_t>::bridge_table_) array2d<uint16_t>::bridge_table_ = {{
-  {static_cast<int32_t>(ndarray_format::png), std::make_tuple(detail::png_validate, detail::png_readp_uint16_t, detail::png_write_uint16_t)}
+decltype(image_bridge<uint16_t, 2>::table) image_bridge<uint16_t, 2>::table = {{
+  {image_format::png, std::make_tuple(detail::png_validate, detail::png_readp_uint16_t, detail::png_write_uint16_t)}
   }};
 
 } // namespace ig

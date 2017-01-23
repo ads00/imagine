@@ -28,7 +28,6 @@
 
 #include <array>
 #include <vector>
-#include <map>
 
 namespace ig {
 
@@ -66,9 +65,6 @@ protected:
   value_type buffer_;
   shape_type shape_;
   uint32_t features_, size_;
-
-  friend bridge<ndarray>;
-  IG_API static std::map<int32_t, typename bridge<ndarray>::gen_t> bridge_table_;
 };
 
 template <typename T, size_t N>
@@ -93,12 +89,13 @@ size_t ndarray<T, N>::index(shape_type s) const {
   return index * features_;
 }
 
-template <typename T, size_t N> 
-using tensor = 
-  ndarray<T, N>;
+enum class model_format { model };
+enum class image_format { jpeg, bmp, png, hdr, pam };
+enum class sound_format { flag, mp3, ogg, wav };
 
-template <typename T> using array1d = ndarray<T, 1>;
-template <typename T> using array2d = ndarray<T, 2>;
+template <typename T, size_t N> using model_bridge = bridge < ndarray<T, N>, model_format>;
+template <typename T, size_t N> using image_bridge = bridge < ndarray<T, N>, image_format>;
+template <typename T>           using sound_bridge = bridge < ndarray<T, 1>, sound_format>;
 
 } // namespace ig
 
