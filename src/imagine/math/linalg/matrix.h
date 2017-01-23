@@ -121,13 +121,13 @@ private:
 template <typename T, int32_t M, int32_t N>
 auto matrix<T, M, N>::operator()(size_t row, size_t col) const -> const T& {
   assert(row < rows() && col < cols() && "Invalid matrix subscript");
-  return data_.d[row * cols() + col];
+  return data_.d[col * rows() + row];
 }
 
 template <typename T, int32_t M, int32_t N>
 auto matrix<T, M, N>::operator()(size_t row, size_t col) -> T& {
   assert(row < rows() && col < cols() && "Invalid matrix subscript");
-  return data_.d[row * cols() + col];
+  return data_.d[col * rows() + row];
 }
 
 template <typename T, int32_t M, int32_t N>
@@ -146,7 +146,7 @@ auto matrix<T, M, N>::operator[](size_t n) -> T& {
 template <typename T, int32_t M, int32_t N>
 auto matrix<T, M, N>::make_eye() -> matrix& {
   size_t i = 0, stride = base_type::diagsize() + 1;
-  std::generate(base_type::begin(), base_type::end(), [&i, &stride, this]() { return !(i++ % stride); });
+  std::generate(base_type::begin(), base_type::end(), [this, &i, &stride]() { return !(i++ % stride); });
   return *this;
 }
 

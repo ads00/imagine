@@ -56,9 +56,9 @@ public:
 
 private:
   void eval_product(const Lhs& lhs, const Rhs& rhs) {
-    for (size_t i = 0; i < lhs.rows(); ++i)
+    for (size_t i = 0; i < lhs.cols(); ++i)
       for (size_t j = 0; j < rhs.cols(); ++j)
-        for (size_t k = 0; k < lhs.cols(); ++k) prod_(i, j) += lhs(i, k) * rhs(k, j);
+        for (size_t k = 0; k < lhs.rows(); ++k) prod_(k, j) += lhs(k, i) * rhs(i, j);
   }
 
   matrix_type prod_;

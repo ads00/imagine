@@ -35,7 +35,7 @@ class projective;
 using mat4 
   = projective;
 
-using vec3 = colvec<float, 3>; using vec2 = colvec<float, 2>;
+using vec4 = colvec<float, 4>; using vec3 = colvec<float, 3>; using vec2 = colvec<float, 2>;
 using quat = quaternion<float>;
 
 using ray3 = ray<float, 3>;
@@ -51,8 +51,7 @@ public:
   explicit projective(T i, Args&&... args)
     : base_type{i, std::forward<Args>(args)...} {}
 
-  template <typename Alg> 
-  projective(const alg<Alg>& o) : base_type{o} {}
+  template <typename Alg> projective(const alg<Alg>& o) : base_type{o} {}
 
   vec3 transform(const vec3& v, bool unit = false) const;
 

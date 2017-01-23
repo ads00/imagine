@@ -74,8 +74,8 @@ public:
   class iterator : public std::iterator<std::random_access_iterator_tag, T> {
   public:
     explicit iterator(citer& derived, size_t i) 
-      : derived_{derived}
-      , i_{i} {}
+      : i_{i}
+      , derived_{derived} {}
 
     auto operator=(const iterator& o) { i_ = o.i_; return *this; }
     auto operator++() { ++i_; return *this; }
@@ -88,7 +88,7 @@ public:
     iter operator*() const { return derived_[i_]; }
 
   protected:
-    citer& derived_; size_t i_;
+    size_t i_; citer& derived_;
   };
 
   auto begin() const { return iterator<U, const C>{derived(), 0}; }
@@ -107,8 +107,8 @@ public:
   auto cols() const { return derived().cols(); }
   auto size() const { return rows() * cols(); }
 
-  auto diagsize() const { return (std::min)(rows(), cols()); }
-  auto vecsize() const  { return (std::max)(rows(), cols()); }
+  auto diagsize() const { return std::min(rows(), cols()); }
+  auto vecsize() const  { return std::max(rows(), cols()); }
 
   auto head(size_t n) const { return alg_block<const C>{derived(), 0, n}; }
   auto head(size_t n)       { return alg_block<C>{derived(), 0, n}; }
@@ -185,8 +185,8 @@ void eval_helper(alg<gen>& ev, const alg<Alg>& alg) {
          && "Incoherent algebraic evaluation");
 
   auto evr = ev.rows(), evc = ev.cols();
-  for (size_t i = 0; i < evr; ++i)
-    for (size_t j = 0; j < evc; ++j) ev(i, j) = alg(i, j);
+  for (size_t i = 0; i < evc; ++i)
+    for (size_t j = 0; j < evr; ++j) ev(j, i) = alg(j, i);
 }
 
 template <typename gen, typename Alg>

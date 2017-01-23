@@ -41,10 +41,10 @@ vec3 projective::transform(const vec3& v, bool unit) const {
 }
 
 projective projective::translating(const vec3& t) {
-  return projective{1.f, 0.f, 0.f, t[0],
-                    0.f, 1.f, 0.f, t[1],
-                    0.f, 0.f, 1.f, t[2],
-                    0.f, 0.f, 0.f, 1.f};
+  return projective{1.f,  0.f,  0.f,  0.f,
+                    0.f,  1.f,  0.f,  0.f,
+                    0.f,  0.f,  1.f,  0.f,
+                    t[0], t[1], t[2], 1.f};
 }
 
 projective projective::rotating(const quat& r) {
@@ -58,9 +58,9 @@ projective projective::rotating(const quat& r) {
   auto yy = y * v[1], yz = z * v[1], zz = z * v[2];
   auto wx = x * r.sca_, wy = y * r.sca_, wz = z * r.sca_;
 
-  return projective{1.f - (yy + zz), xy - wz,         xz + wy,         0.f,
-                    xy + wz,         1.f - (xx + zz), yz - wx,         0.f,
-                    xz - wy,         yz + wx,         1.f - (xx + yy), 0.f,
+  return projective{1.f - (yy + zz), xy + wz,         xz - wy,         0.f,
+                    xy - wz,         1.f - (xx + zz), yz + wx,         0.f,
+                    xz + wy,         yz - wx,         1.f - (xx + yy), 0.f,
                     0.f,             0.f,             0.f,             1.f};
 }
 
@@ -73,10 +73,10 @@ projective projective::scaling(const vec3& s) {
 
 projective projective::orthographic(size_t w, size_t h, float zn, float zf) {
   auto zr = zf - zn;
-  return projective{1.f / w, 0.f,      0.f,       0.f,
-                    0.f,     1.f / h,  0.f,       0.f,
-                    0.f,     0.f,     -1.f / zr, -zn / zr,
-                    0.f,     0.f,      0.f,       1.f};
+  return projective{1.f / w, 0.f,      0.f,      0.f,
+                    0.f,     1.f / h,  0.f,      0.f,
+                    0.f,     0.f,     -1.f / zr, 0.f,
+                    0.f,     0.f,     -zn / zr,  1.f};
 }
 
 projective projective::perspective(float fovy, float asp, float zn, float zf) {
@@ -84,22 +84,23 @@ projective projective::perspective(float fovy, float asp, float zn, float zf) {
   auto ta = asp * tanh;
   auto zr = zf - zn;
 
-  return projective{1.f / ta, 0.f,         0.f,      0.f,
-                    0.f,      1.f / tanh,  0.f,      0.f,
-                    0.f,      0.f,        -zf / zr, -(zf * zn) / zr,
-                    0.f,      0.f,        -1.f,      0.f};
+  return projective{1.f / ta, 0.f,         0.f,             0.f,
+                    0.f,      1.f / tanh,  0.f,             0.f,
+                    0.f,      0.f,        -zf / zr,        -1.f,
+                    0.f,      0.f,        -(zf * zn) / zr,  0.f};
 }
 
 projective projective::look(const vec3& eye, const vec3& focus, const vec3& up) {
   auto R2 = linalg::normalise(eye - focus);
   auto R0 = linalg::normalise(linalg::cross(up, R2));
   auto R1 = linalg::cross(R2, R0);
-  auto neye = -eye;
+  auto n = -eye;
 
-  return projective{R0[0], R0[1], R0[2], linalg::dot(R0, neye),
-                    R1[0], R1[1], R1[2], linalg::dot(R1, neye),
-                    R2[0], R2[1], R2[2], linalg::dot(R2, neye),
-                    0.f,   0.f,   0.f,   1.f};
+  using linalg::dot;
+  return projective{R0[0],      R1[0],      R2[0],      0.f,
+                    R0[1],      R1[1],      R2[1],      0.f,
+                    R0[2],      R1[2],      R2[2],      0.f,
+                    dot(R0, n), dot(R1, n), dot(R2, n), 1.f};
 }
 
 const projective
