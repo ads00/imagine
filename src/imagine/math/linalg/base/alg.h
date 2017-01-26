@@ -164,9 +164,7 @@ public:
       , curr_{0} {}
 
     auto operator,(T val) {
-      if (col_ == alg_.cols()) {
-        row_++, col_ = 0;
-      } 
+      if (col_ == alg_.cols()) row_++, col_ = 0;
       alg_(row_, col_++) = val;
       curr_++; return *this;
     }

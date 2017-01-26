@@ -28,7 +28,7 @@ namespace ig {
 transform::transform(const vec3& pos, const quat& ori, const vec3& sca)
   : parent_{nullptr}
   , uwt_{false}
-  , wt_{mat4::eye}
+  , wt_{trf::eye()}
   , pos_{pos}
   , ori_{ori}
   , sca_{sca} {}
@@ -47,8 +47,8 @@ void transform::positions(const vec3& pos, coordinate coord) {
     pos_ = pos;
     break;
   case coordinate::world:
-    pos_ = parent_ 
-      ? [this]() -> mat4 { return linalg::inv(parent_->get_wt()); }().transform(pos)
+    pos_ = parent_
+      ? trf::transform(linalg::inv(parent_->get_wt()), pos)
       : pos;
     break;
   }
@@ -87,7 +87,7 @@ transform& transform::translate(const vec3& tra, coordinate coord) {
     break;
   case coordinate::world:
     pos_ += parent_ 
-      ? [this]() -> mat4 { return linalg::inv(parent_->get_wt()); }().transform(tra)
+      ? trf::transform(linalg::inv(parent_->get_wt()), tra)
       : tra;
     break;
   }
@@ -128,9 +128,8 @@ void transform::remove_child(const transform& tr) {
 
 void transform::link(transform* parent) {
   assert(parent != this && "Reflexive transform classes are not allowed");
-  if (parent_) {
+  if (parent_)
     parent_->remove_child(*this);
-  }
 
   parent_ = parent;
   hierarchical_invalidate();
@@ -141,7 +140,7 @@ void transform::link(transform* parent) {
 
 const mat4& transform::get_wt() {
   if (!uwt_) {
-    auto trs = mat4::translating(pos_) * mat4::rotating(ori_) * mat4::scaling(sca_);
+    auto trs = trf::translation(pos_) * trf::rotation(ori_) * trf::scale(sca_);
     if (parent_) {
       wt_ = parent_->get_wt() * trs;
     } else {

@@ -241,9 +241,7 @@ svd<Alg>::svd(const matrix_type& alg)
         }
 
         s_[j] = z2;
-        if (z2 != T(0)) {
-          c = f / z2, s = h2 / z2;
-        }
+        if (z2 != T(0)) c = f / z2, s = h2 / z2;
 
         f = c * g2 + s * y2;
         x = c * y2 - s * g2;

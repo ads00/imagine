@@ -21,7 +21,7 @@
  SOFTWARE.
 */
 
-#include "imagine/simulate/view/camera.h"
+#include "imagine/simu/view/camera.h"
 
 namespace ig {
 
@@ -52,23 +52,23 @@ ray3 camera::cast_ray(size_t x, size_t y) const {
   auto nx = x / static_cast<float>(w_) * 2.f - 1.f;
   auto ny = y / static_cast<float>(h_) * 2.f - 1.f;
 
-  auto raster = iproj_.transform(vec3{nx, ny, 0.f});
+  auto raster = trf::transform(iproj_, vec3{nx, ny, 0.f});
   vec3 
     wo{}, 
     wd{};
   if (projection_ == planar_proj::perspective) {
-    wo = iview_.transform(vec3{0.f});
-    wd = iview_.transform(raster, true);
+    wo = trf::transform(iview_, vec3{0.f});
+    wd = trf::transform(iview_, raster, true);
   } else {
-    wo = iview_.transform(raster);
-    wd = iview_.transform(vec3{0.f, 0.f, -1.f}, true);
+    wo = trf::transform(iview_, raster);
+    wd = trf::transform(iview_, vec3{0.f, 0.f, -1.f}, true);
   }
   return ray3{wo, linalg::normalise(wd)};
 }
 
 const mat4& camera::view() {
   if (!uview_) {
-    view_ = mat4::look(pos_, target_, up_), iview_ = linalg::inv(view_);
+    view_ = trf::look(pos_, target_, up_), iview_ = linalg::inv(view_);
     uview_ = true;
   }
   return view_;
@@ -78,10 +78,10 @@ const mat4& camera::proj() {
   if (!uproj_) {
     switch (projection_) {
     case planar_proj::orthographic:
-      proj_ = mat4::orthographic(1, 1, zn_, zf_);
+      proj_ = trf::orthographic(1, 1, zn_, zf_);
       break;
     case planar_proj::perspective:
-      proj_ = mat4::perspective(fovy_, static_cast<float>(w_ / h_), zn_, zf_);
+      proj_ = trf::perspective(fovy_, static_cast<float>(w_ / h_), zn_, zf_);
       break;
     }
     iproj_ = linalg::inv(proj_);

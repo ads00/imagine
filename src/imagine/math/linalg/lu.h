@@ -66,9 +66,8 @@ lu<Alg>::lu(const matrix_type& alg)
     auto pivot = T(0);
     for (size_t j = i; j < n_; ++j) {
       auto curr_elemt = std::abs(lu_(j, i));
-      if (curr_elemt > pivot) {
+      if (curr_elemt > pivot)
         pivot = curr_elemt, row = j;
-      }
     }
 
     if (pivot == T(0)) {

@@ -203,9 +203,8 @@ LRESULT window_native::internal(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
     ref_.process(event_status{event_status::closed});
     break;
   case WM_SETCURSOR:
-    if (LOWORD(lparam) == HTCLIENT) {
+    if (LOWORD(lparam) == HTCLIENT)
       ref_.cursor.refresh();
-    }
     break;
   default:
     break;

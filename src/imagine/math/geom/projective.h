@@ -31,44 +31,33 @@
 
 namespace ig {
 
-class projective;
-using mat4 
-  = projective;
-
+using mat4 = matrix<float, 4>;
 using vec4 = colvec<float, 4>; using vec3 = colvec<float, 3>; using vec2 = colvec<float, 2>;
 using quat = quaternion<float>;
 
 using ray3 = ray<float, 3>;
 
-class IG_API projective : public matrix<float, 4> {
-public:
-  using base_type 
-    = matrix<float, 4>;
-
-  projective() = default;
-
-  template <typename... Args>
-  explicit projective(T i, Args&&... args)
-    : base_type{i, std::forward<Args>(args)...} {}
-
-  template <typename Alg> projective(const alg<Alg>& o) : base_type{o} {}
-
-  vec3 transform(const vec3& v, bool unit = false) const;
-
-  static projective translating(const vec3& t);
-  static projective rotating(const quat& r);
-  static projective scaling(const vec3& s);
-  
-  static projective orthographic(size_t w, size_t h, float zn, float zf);
-  static projective perspective(float fovy, float asp, float zn, float zf);
-  static projective look(const vec3& eye, const vec3& focus, const vec3& up);
-
-  static const projective eye;
-};
-
 enum class planar_proj { orthographic, perspective };
 enum class coordinate  { local, world };
 
+namespace trf {
+
+mat4 translation(const vec3& t);
+mat4 rotation(const quat& r);
+mat4 scale(const vec3& s);
+
+mat4 look(const vec3& eye, const vec3& focus, const vec3& up);
+mat4 orthographic(size_t w, size_t h, float zn, float zf);
+mat4 perspective(float fovy, float asp, float zn, float zf);
+
+vec3 transform(const mat4& m, const vec3& v, bool unit = false);
+
+static auto eye() {
+  static auto eye = mat4::eye();
+  return eye;
+}
+
+} // namespace trf
 } // namespace ig
 
 #endif // IG_MATH_PROJECTIVE_H

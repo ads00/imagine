@@ -30,11 +30,12 @@
 #include <fstream>
 #include <unordered_map>
 
-namespace ig  {
+namespace ig     {
+namespace detail {
 
 template <typename T>
 using gen_t = std::tuple<
-  std::function<bool(std::istream&)>, // validate / readp / write
+  std::function<bool(std::istream&)>, // validate<0> / readp<1> / write<2>
   std::function<std::unique_ptr<T>(std::istream&)>, std::function<bool(std::ostream&, const T&)> >;
 
 template <typename table>
@@ -58,11 +59,13 @@ bool table_save(const table& table, const std::string& filename, F format, const
     : true;
 }
 
+} // namespace detail
+
 template <typename T, typename F>
 struct bridge {
-  static auto load(const std::string& filename)                          { return table_load(table, filename); }
-  static bool save(const std::string& filename, F format, const T& data) { return table_save(table, filename, format, data); }
-  static std::unordered_map< F, typename gen_t<T> > 
+  static auto load(const std::string& filename)                          { return detail::table_load(table, filename); }
+  static bool save(const std::string& filename, F format, const T& data) { return detail::table_save(table, filename, format, data); }
+  static std::unordered_map< F, typename detail::gen_t<T> >
     table; };
 
 } // namespace ig

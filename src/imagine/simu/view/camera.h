@@ -21,22 +21,40 @@
  SOFTWARE.
 */
 
-#ifndef IG_CORE_UTILITY_H
-#define IG_CORE_UTILITY_H
+#ifndef IG_SIMU_CAMERA_H
+#define IG_SIMU_CAMERA_H
+
+#include "imagine/math/geom/projective.h"
 
 namespace ig {
 
-template <typename InputIt>
-struct range_proxy {
-  explicit range_proxy(InputIt& first, InputIt last)
-    : f{first}, l{last} {}
+class IG_API camera {
+public:
+  explicit camera(planar_proj planar, size_t w, size_t h);
+  explicit camera(planar_proj planar, size_t w, size_t h, const vec3& pos, const vec3& target, const vec3& up);
 
-  auto begin() const { return f; }
-  auto end()         { return l; }
+  void extent(float fovy);
+  void clip(float zn, float zf);
 
-  InputIt f, l;
+  ray3 cast_ray(size_t x, size_t y) const;
+
+  const mat4& view();
+  const mat4& proj();
+
+private:
+  planar_proj projection_;
+
+  size_t w_, h_;
+  vec3 pos_, target_, up_;
+
+  float zn_, zf_;
+  float fovy_;
+
+  bool uview_, uproj_;
+  mat4 view_, proj_,
+    iview_, iproj_;
 };
 
 } // namespace ig
 
-#endif // IG_CORE_UTILITY_H
+#endif // IG_SIMU_CAMERA_H

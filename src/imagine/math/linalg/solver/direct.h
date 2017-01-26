@@ -78,9 +78,8 @@ void gauss_solve(alg<Alg>& lhs, alg<Vec>& rhs) {
     auto pivot = std::abs(lhs(i, i));
     for (size_t j = i + 1; j < n; ++j) {
       auto abscol = std::abs(lhs(j, i));
-      if (abscol > pivot) {
+      if (abscol > pivot)
         pivot = abscol, row = j;
-      }
     }
 
     if (pivot == alg_t<Alg>(0)) {
