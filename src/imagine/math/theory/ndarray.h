@@ -49,10 +49,10 @@ public:
   struct slice {
     explicit slice(T* s, ndarray& a) 
       : sbuffer{s}
-      , a{a} {}
-    const T& f(uint32_t i) const { assert(i < a.get_features() && "Invalid array slice subscript"); return *(sbuffer + i); }
-          T& f(uint32_t i)       { assert(i < a.get_features() && "Invalid array slice subscript"); return *(sbuffer + i); }
-    T* sbuffer; ndarray& a;
+      , array{a} {}
+    const T& f(uint32_t i) const { assert(i < array.get_features() && "Invalid array slice subscript"); return *(sbuffer + i); }
+          T& f(uint32_t i)       { assert(i < array.get_features() && "Invalid array slice subscript"); return *(sbuffer + i); }
+    T* sbuffer; ndarray& array;
   };
   
   const auto operator[](shape_type s) const { return slice{&buffer_[index(s)], *this}; }
@@ -89,11 +89,11 @@ size_t ndarray<T, N>::index(shape_type s) const {
   return index * features_;
 }
 
-enum class model_format { model };
+enum class training_format { };
 enum class image_format { jpeg, bmp, png, hdr, pam };
 enum class sound_format { flag, mp3, ogg, wav };
 
-template <typename T, size_t N> using model_bridge = bridge < ndarray<T, N>, model_format>;
+template <typename T, size_t N> using train_bridge = bridge < ndarray<T, N>, training_format>;
 template <typename T, size_t N> using image_bridge = bridge < ndarray<T, N>, image_format>;
 template <typename T>           using sound_bridge = bridge < ndarray<T, 1>, sound_format>;
 

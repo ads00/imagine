@@ -32,7 +32,10 @@ namespace ig {
 template <typename Lhs, typename Rhs>
 struct alg_traits< product_expr<Lhs, Rhs> > {
   using T = std::common_type_t< alg_t<Lhs>, alg_t<Rhs> >;
-  static constexpr auto M = Lhs::M, N = Rhs::N;
+  static constexpr auto D = 
+    Lhs::M == dynamic_sized ||
+    Rhs::N == dynamic_sized;
+  static constexpr auto M = D ? -1 : Lhs::M, N = D ? -1 : Rhs::N;
 };
 
 template <typename Lhs, typename Rhs>

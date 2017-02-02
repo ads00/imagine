@@ -26,27 +26,24 @@
 
 #include "imagine/ig.h"
 
-#include <functional>
 #include <fstream>
 #include <unordered_map>
 
 namespace ig     {
 namespace detail {
 
-template <typename T>
-using gen_t = std::tuple<
-  std::function<bool(std::istream&)>, // validate<0> / readp<1> / write<2>
-  std::function<std::unique_ptr<T>(std::istream&)>, std::function<bool(std::ostream&, const T&)> >;
-
 template <typename table>
 auto table_load(const table& table, const std::string& filename) {
   std::ifstream in{filename, std::ios::binary};
-  if (!in.good())
-    throw std::ios::failure{"(Bridge): Failed to open file --" + filename + "--"};
+  for (auto& format_bridge : table) {
+    auto& validate = std::get<0>(format_bridge.second);
+    auto& readp    = std::get<1>(format_bridge.second);
 
-  for (auto& format_bridge : table)
-    if (std::get<0>(format_bridge.second)(in)) 
-      return std::get<1>(format_bridge.second)(in);
+    auto ptr = validate(in)
+      ? readp(in)
+      : nullptr;
+    if (ptr) return ptr;
+  }
   throw std::runtime_error
     {"(Bridge): No available entry found in the bridge table"};
 }
@@ -54,8 +51,10 @@ auto table_load(const table& table, const std::string& filename) {
 template <typename T, typename F, typename table>
 bool table_save(const table& table, const std::string& filename, F format, const T& data) {
   std::ofstream out{filename, std::ios::binary | std::ios::trunc};
+
+  auto& write = std::get<2>(T::bridge_table_[format]);
   return out.good()
-    ? std::get<2>(T::bridge_table_[format])(out, data)
+    ? write(out, data)
     : true;
 }
 
@@ -63,9 +62,15 @@ bool table_save(const table& table, const std::string& filename, F format, const
 
 template <typename T, typename F>
 struct bridge {
+  using type = T;
+  using rptr = std::unique_ptr<T>;
+  using validate = bool (*)(std::istream&);
+  using readp    = rptr (*)(std::istream&);
+  using write    = bool (*)(std::ostream&, const T&);
+  
   static auto load(const std::string& filename)                          { return detail::table_load(table, filename); }
   static bool save(const std::string& filename, F format, const T& data) { return detail::table_save(table, filename, format, data); }
-  static std::unordered_map< F, typename detail::gen_t<T> >
+  static std::unordered_map< F, std::tuple<validate, readp, write> >
     table; };
 
 } // namespace ig

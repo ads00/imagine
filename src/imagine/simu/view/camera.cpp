@@ -77,11 +77,11 @@ const mat4& camera::view() {
 const mat4& camera::proj() {
   if (!uproj_) {
     switch (projection_) {
-    case planar_proj::orthographic:
-      proj_ = trf::orthographic(1, 1, zn_, zf_);
-      break;
     case planar_proj::perspective:
       proj_ = trf::perspective(fovy_, static_cast<float>(w_ / h_), zn_, zf_);
+      break;
+    case planar_proj::orthographic:
+      proj_ = trf::orthographic(0, static_cast<float>(w_), 0, static_cast<float>(h_), zn_, zf_);
       break;
     }
     iproj_ = linalg::inv(proj_);

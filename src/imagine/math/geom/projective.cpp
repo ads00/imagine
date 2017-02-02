@@ -58,7 +58,7 @@ mat4 scale(const vec3& s) {
 }
 
 mat4 look(const vec3& eye, const vec3& focus, const vec3& up) {
-  auto R2 = linalg::normalise(eye - focus);
+  auto R2 = linalg::normalise(focus - eye);
   auto R0 = linalg::normalise(linalg::cross(up, R2));
   auto R1 = linalg::cross(R2, R0);
   auto n = -eye;
@@ -70,23 +70,25 @@ mat4 look(const vec3& eye, const vec3& focus, const vec3& up) {
               dot(R0, n), dot(R1, n), dot(R2, n), 1.f};
 }
 
-mat4 orthographic(size_t w, size_t h, float zn, float zf) {
-  auto zr = zf - zn;
-  return mat4{1.f / w, 0.f,      0.f,      0.f,
-              0.f,     1.f / h,  0.f,      0.f,
-              0.f,     0.f,     -1.f / zr, 0.f,
-              0.f,     0.f,     -zn / zr,  1.f};
-}
-
 mat4 perspective(float fovy, float asp, float zn, float zf) {
   auto tanh = std::tan(fovy * 0.5f);
   auto ta = asp * tanh;
   auto zr = zf - zn;
 
-  return mat4{1.f / ta, 0.f,         0.f,             0.f,
-              0.f,      1.f / tanh,  0.f,             0.f,
-              0.f,      0.f,        -zf / zr,        -1.f,
-              0.f,      0.f,        -(zf * zn) / zr,  0.f};
+  return mat4{1.f / ta,  0.f,         0.f,            0.f,
+              0.f,       1.f / tanh,  0.f,            0.f,
+              0.f,       0.f,         zf / zr,        1.f,
+              0.f,       0.f,        -(zf * zn) / zr, 0.f};
+}
+
+mat4 orthographic(float l, float r, float b, float t, float zn, float zf) {
+  auto zr = zf - zn;
+  auto ws = r - l, hs = t - b;
+
+  return mat4{2.f / ws,      0.f,           0.f,      0.f,
+              0.f,           2.f / hs,      0.f,      0.f,
+              0.f,           0.f,           1.f / zr, 0.f,
+             -(r + l) / ws, -(t + b) / hs, -zn / zr,  1.f};
 }
 
 vec3 transform(const mat4& m, const vec3& v, bool unit) {

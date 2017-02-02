@@ -48,8 +48,8 @@ public:
       auto t = d * dn * i;
 
       m1_ += dn;
-      m4_ += t * ds * (size_ * size_ - 3 * size_ + 3) + 6 * ds * m2_ - 4 * dn * m3_;
-      m3_ += t * dn * (size_ - 2) - 3 * dn * m2_;
+      m4_ += t * ds * (size_ * size_ - 3.0 * size_ + 3.0) + 6.0 * ds * m2_ - 4.0 * dn * m3_;
+      m3_ += t * dn * (size_ - 2.0) - 3.0 * dn * m2_;
       m2_ += t;
     }
   }

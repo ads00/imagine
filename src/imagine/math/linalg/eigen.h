@@ -43,7 +43,7 @@ public:
   explicit eigen(const matrix_type& alg);
 
   auto& eigenvectors() const { return v_; }
-  auto& eigenvalues()  const { return d_; }
+  auto& eigenvalues() const  { return d_; }
 
 private:
   const size_t n_;

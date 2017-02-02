@@ -29,13 +29,8 @@ namespace ig {
 
 template <> // uchar images
 decltype(image_bridge<uint8_t, 2>::table) image_bridge<uint8_t, 2>::table = {{
-  {image_format::jpeg, std::make_tuple(detail::jpeg_validate, detail::jpeg_readp_uint8_t, detail::jpeg_write_uint8_t)},
-  {image_format::png , std::make_tuple( detail::png_validate,  detail::png_readp_uint8_t,  detail::png_write_uint8_t)}
-  }};
-
-template <> // uint images
-decltype(image_bridge<uint16_t, 2>::table) image_bridge<uint16_t, 2>::table = {{
-  {image_format::png, std::make_tuple(detail::png_validate, detail::png_readp_uint16_t, detail::png_write_uint16_t)}
+  {image_format::jpeg, std::make_tuple(detail::jpeg_validate, detail::jpeg_readp_impl, detail::jpeg_write_impl)},
+  {image_format::png , std::make_tuple(detail:: png_validate, detail:: png_readp_impl, detail:: png_write_impl)}
   }};
 
 } // namespace ig

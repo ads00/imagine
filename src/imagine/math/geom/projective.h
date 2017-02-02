@@ -37,7 +37,7 @@ using quat = quaternion<float>;
 
 using ray3 = ray<float, 3>;
 
-enum class planar_proj { orthographic, perspective };
+enum class planar_proj { perspective, orthographic };
 enum class coordinate  { local, world };
 
 namespace trf {
@@ -47,8 +47,8 @@ mat4 rotation(const quat& r);
 mat4 scale(const vec3& s);
 
 mat4 look(const vec3& eye, const vec3& focus, const vec3& up);
-mat4 orthographic(size_t w, size_t h, float zn, float zf);
 mat4 perspective(float fovy, float asp, float zn, float zf);
+mat4 orthographic(float l, float r, float t, float b, float zn, float zf);
 
 vec3 transform(const mat4& m, const vec3& v, bool unit = false);
 

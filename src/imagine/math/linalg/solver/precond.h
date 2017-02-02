@@ -46,7 +46,7 @@ public:
         : T(1);
   }
 
-  auto solve(const vector_type& b) const {
+  vector_type solve(const vector_type& b) const {
     return invdiag_ % b;
   }
 

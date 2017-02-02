@@ -30,10 +30,9 @@
 namespace ig     {
 namespace linalg {
 
-template <typename Alg, typename Rhs, typename Lhs, typename Precond>
-void cg(const alg<Alg>& A, const alg<Rhs>& b, alg<Lhs>& x, 
-        const Precond& precond, size_t iterations, double tolerance) {
-  using vector_type = Precond::vector_type;
+template <typename Alg, typename Rhs, typename Lhs, typename precond>
+void cg(const alg<Alg>& A, const alg<Rhs>& b, alg<Lhs>& x, const precond& precond, double tolerance = 1e-7) {
+  using vector_type = precond::vector_type;
 
   size_t n = A.diagsize();
   vector_type r = b - A * x;
@@ -43,15 +42,12 @@ void cg(const alg<Alg>& A, const alg<Rhs>& b, alg<Lhs>& x,
   auto ro = dot(r, p), no = dot(r, r);
 
   vector_type z{n}, v{n};
-  while (iterations-- != 0) {
+  while (dot(r, r) > threshold) {
     v = A * p;
     auto a = ro / dot(p, v);
     x += a * p;
     r -= a * v;
 
-    no = dot(r, r);
-    if (no < threshold)
-      break;
     z = precond.solve(r);
 
     auto rn = ro;
@@ -59,10 +55,9 @@ void cg(const alg<Alg>& A, const alg<Rhs>& b, alg<Lhs>& x,
   }
 }
 
-template <typename Alg, typename Rhs, typename Lhs, typename Precond>
-void bicgstab(const alg<Alg>& A, const alg<Rhs>& b, alg<Lhs>& x,
-              const Precond& precond, size_t iterations, double tolerance) {
-  using vector_type = Precond::vector_type;
+template <typename Alg, typename Rhs, typename Lhs, typename precond>
+void bicgstab(const alg<Alg>& A, const alg<Rhs>& b, alg<Lhs>& x, const precond& precond, double tolerance = 1e-7) {
+  using vector_type = precond::vector_type;
   using T = alg_t<Alg>;
 
   size_t n = A.diagsize();
@@ -76,7 +71,7 @@ void bicgstab(const alg<Alg>& A, const alg<Rhs>& b, alg<Lhs>& x,
   vector_type v{n}, p{n},
               y{n}, z{n}, s{n}, t{n};
 
-  while (dot(r, r) > std::numeric_limits<T>::epsilon() && iterations-- != 0) {
+  while (dot(r, r) > threshold) {
     auto nn = no;
     no = dot(rn, r);
     

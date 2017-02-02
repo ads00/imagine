@@ -68,43 +68,6 @@ void backward_solve(const alg<Alg>& lhs, alg<Vec>& rhs, bool unit = false) {
   }
 }
 
-template <typename Alg, typename Vec>
-void gauss_solve(alg<Alg>& lhs, alg<Vec>& rhs) {
-  assert(lhs.square() && "Gauss solver requires a square matrix");
-  assert(rhs.vector() && rhs.rows() == lhs.rows() && "Invalid b vector to solve");
-
-  auto n = lhs.diagsize();
-  for (size_t i = 0, row = i; i < n; ++i) {
-    auto pivot = std::abs(lhs(i, i));
-    for (size_t j = i + 1; j < n; ++j) {
-      auto abscol = std::abs(lhs(j, i));
-      if (abscol > pivot)
-        pivot = abscol, row = j;
-    }
-
-    if (pivot == alg_t<Alg>(0)) {
-      throw std::logic_error{"Gaussian elimination failed (Singular matrix)"};
-    }
-
-    for (size_t j = i; j < n; ++j) std::swap(lhs(row, j), lhs(i, j));
-    std::swap(rhs[row], rhs[i]);
-
-    for (size_t j = i + 1; j < n; ++j) {
-      auto g = -lhs(j, i) / lhs(i, i);
-      for (size_t k = i; k < n; ++k)
-        lhs(j, k) = i == k
-          ? alg_t<Alg>(0)
-          : g * lhs(i, k);
-      rhs[j] += g * rhs[i];
-    }
-  }
-
-  for (size_t i = n; i--> 0; ) {
-    rhs[i] /= lhs(i, i);
-    for (size_t j = i; j--> 0; ) rhs[j] -= lhs(j, i) * rhs[i];
-  }
-}
-
 } // namespace linalg
 } // namespace ig
 

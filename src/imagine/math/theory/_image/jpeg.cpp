@@ -49,7 +49,7 @@ boolean jpeg_writeproc(
   j_compress_ptr jpeg_ptr);
 void jpeg_message(j_common_ptr jpeg_ptr); void jpeg_exit(j_common_ptr jpeg_ptr);
 
-// Jpeg interface implementation  - validate - read - write
+// Jpeg interface implementation - validate - read - write
 bool jpeg_validate(std::istream& stream) {
   uint8_t jpeg_sig[] = {0xFF, 0xD8};
   uint8_t sig[2]     = {0, 0};
@@ -58,7 +58,7 @@ bool jpeg_validate(std::istream& stream) {
   return memcmp(jpeg_sig, sig, sizeof(jpeg_sig)) == 0;
 }
 
-auto jpeg_readp_uint8_t(std::istream& stream) -> std::unique_ptr<jpeg_8> {
+jptr jpeg_readp_impl(std::istream& stream) {
   jpeg_decompress_struct 
     jpeg_ptr{};
   jpeg_error_mgr 
@@ -104,8 +104,8 @@ auto jpeg_readp_uint8_t(std::istream& stream) -> std::unique_ptr<jpeg_8> {
   jpeg_read_header(&jpeg_ptr, true);
   jpeg_start_decompress(&jpeg_ptr);
 
-  auto imag = std::make_unique<jpeg_8>(
-    jpeg_8::shape_type{jpeg_ptr.output_width, jpeg_ptr.output_height}, jpeg_ptr.output_components);
+  auto imag = std::make_unique<jpeg_type>(
+    jpeg_type::shape_type{jpeg_ptr.output_width, jpeg_ptr.output_height}, jpeg_ptr.output_components);
 
   while (jpeg_ptr.output_scanline < jpeg_ptr.output_height) {
     auto r = imag->buffer() + (imag->get_shape().front() * imag->get_features() * jpeg_ptr.output_scanline);
@@ -117,7 +117,7 @@ auto jpeg_readp_uint8_t(std::istream& stream) -> std::unique_ptr<jpeg_8> {
   return imag;
 }
 
-bool jpeg_write_uint8_t(std::ostream& stream, const jpeg_8& imag) {
+bool jpeg_write_impl(std::ostream& stream, const jpeg_type& imag) {
   jpeg_compress_struct 
     jpeg_ptr{};
   jpeg_error_mgr 
