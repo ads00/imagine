@@ -35,7 +35,7 @@ camera::camera(planar_proj proj, size_t w, size_t h, const vec3& pos, const vec3
   , pos_{pos}
   , target_{target}
   , up_{up}
-  , zn_{1e-3f}, zf_{1e3f}, fovy_{1.57f}
+  , zn_{1e-3f}, zf_{1e3f}, fovy_{radians(60.f)}
   , uview_{false}, uproj_{false} {}
 
 void camera::extent(float fovy) {
@@ -52,15 +52,15 @@ ray3 camera::cast_ray(size_t x, size_t y) const {
   auto nx = x / static_cast<float>(w_) * 2.f - 1.f;
   auto ny = y / static_cast<float>(h_) * 2.f - 1.f;
 
-  auto raster = trf::transform(iproj_, vec3{nx, ny, 0.f});
+  auto raster = trf::transform(iproj_, vec3{nx, ny, 1.f});
   vec3 
     wo{}, 
     wd{};
   if (projection_ == planar_proj::perspective) {
-    wo = trf::transform(iview_, vec3{0.f});
+    wo = pos_;
     wd = trf::transform(iview_, raster, true);
   } else {
-    wo = trf::transform(iview_, raster);
+    wo = pos_ + vec3{nx, ny, 1.f};
     wd = trf::transform(iview_, vec3{0.f, 0.f, -1.f}, true);
   }
   return ray3{wo, linalg::normalise(wd)};

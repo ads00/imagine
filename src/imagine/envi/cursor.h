@@ -33,7 +33,7 @@ enum class cursor_shape
   : int32_t;
 
 class window;
-class IG_API cursor {
+class ig_api cursor {
 public:
   friend impl::window_native;
 

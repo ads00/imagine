@@ -28,7 +28,7 @@
 
 namespace ig {
 
-class IG_API transform {
+class ig_api transform {
 public:
   explicit transform(const vec3& pos, const quat& ori, const vec3& sca);
   virtual ~transform();

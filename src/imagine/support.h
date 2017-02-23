@@ -89,20 +89,20 @@ CLANG    - C++ front-end for the LLVM compiler
 # error "Imagine doesn't support this compiler"
 #endif
 
-#if defined(IG_SHARED) || !defined(IG_STATIC)
-# if defined(IG_STATIC)
-#  error "Both IG_SHARED and IG_STATIC defined, ambigous compilation"
+#if defined(ig_shared) || !defined(ig_static)
+# if defined(ig_static)
+#  error "Both ig_shared and ig_static defined, ambigous compilation"
 # endif
-# if !defined(IG_SHARED)
-#  define IG_SHARED
+# if !defined(ig_shared)
+#  define ig_shared
 # endif
-# if defined(IG_BUILD)
-#  define IG_API IG_EXPORT
+# if defined(ig_build)
+#  define ig_api IG_EXPORT
 # else
-#  define IG_API IG_IMPORT
+#  define ig_api IG_IMPORT
 # endif
 #else
-# define IG_API
+# define ig_api
 #endif
 
 #endif // IG_SUPPORT_H

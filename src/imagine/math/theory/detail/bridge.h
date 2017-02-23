@@ -52,10 +52,10 @@ template <typename T, typename F, typename table>
 bool table_save(const table& table, const std::string& filename, F format, const T& data) {
   std::ofstream out{filename, std::ios::binary | std::ios::trunc};
 
-  auto& write = std::get<2>(T::bridge_table_[format]);
+  auto& write = std::get<2>(table.at(format));
   return out.good()
     ? write(out, data)
-    : true;
+    : false;
 }
 
 } // namespace detail
@@ -70,7 +70,7 @@ struct bridge {
   
   static auto load(const std::string& filename)                          { return detail::table_load(table, filename); }
   static bool save(const std::string& filename, F format, const T& data) { return detail::table_save(table, filename, format, data); }
-  static std::unordered_map< F, std::tuple<validate, readp, write> >
+  static ig_api std::unordered_map< F, std::tuple<validate, readp, write> >
     table; };
 
 } // namespace ig

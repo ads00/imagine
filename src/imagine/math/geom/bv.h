@@ -31,7 +31,7 @@ namespace ig {
 class aabb;
 class convex;
 
-class IG_API aabb {
+class ig_api aabb {
 public:
   aabb();
   explicit aabb(const vec3& min, const vec3& max);

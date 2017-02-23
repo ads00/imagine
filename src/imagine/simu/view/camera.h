@@ -28,7 +28,7 @@
 
 namespace ig {
 
-class IG_API camera {
+class ig_api camera {
 public:
   explicit camera(planar_proj planar, size_t w, size_t h);
   explicit camera(planar_proj planar, size_t w, size_t h, const vec3& pos, const vec3& target, const vec3& up);

@@ -31,6 +31,7 @@
 #include "imagine/support.h"
 
 #include <memory>
+#include <iterator>
 #include <stdexcept>
 
 #include <cstddef>

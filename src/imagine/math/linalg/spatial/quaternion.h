@@ -34,17 +34,17 @@ public:
   using vector_type = colvec<T, 3>;
 
   quaternion() 
-    : sca_{1}
-    , vec_{} {}
+    : scalar{1}
+    , vector{} {}
   explicit quaternion(T sca, const vector_type& vec)
-    : sca_{sca}
-    , vec_{vec} {}
+    : scalar{sca}
+    , vector{vec} {}
 
   auto operator+=(const quaternion& q) -> quaternion&;
   auto operator*=(const quaternion& q) -> quaternion&;
 
-  auto operator/=(T scalar) -> quaternion&; 
-  auto operator*=(T scalar) -> quaternion&;
+  auto operator/=(T sca) -> quaternion&; 
+  auto operator*=(T sca) -> quaternion&;
 
   static auto axis(T angle, const vector_type& axis) {
     return quaternion{std::cos(angle / T(2)), axis * std::sin(angle / T(2))};
@@ -61,33 +61,33 @@ public:
                   cr * sp * cy - sr * cp * sy}};
   }
 
-  T sca_;
-  vector_type vec_;
+  T scalar;
+  vector_type vector;
 };
 
 template <typename T>
 auto quaternion<T>::operator+=(const quaternion& q) -> quaternion& {
-  sca_ += q.sca_; vec_ += q.vec_;
+  scalar += q.scalar; vector += q.vector;
   return *this;
 }
 
 template <typename T>
 auto quaternion<T>::operator*=(const quaternion& q) -> quaternion& {
   auto& s = *this;
-  sca_ = s.sca_ * q.sca_ - linalg::dot(s.vec_, q.vec_);
-  vec_ = s.sca_ * q.vec_ + q.sca_ * s.vec_ + linalg::cross(s.vec_, q.vec_);
+  scalar = s.scalar * q.scalar - linalg::dot(s.vector, q.vector);
+  vector = s.scalar * q.vector + q.scalar * s.vector + linalg::cross(s.vector, q.vector);
   return *this;
 }
 
 template <typename T>
-auto quaternion<T>::operator/=(T scalar) -> quaternion& {
-  sca_ /= scalar; vec_ /= scalar;
+auto quaternion<T>::operator/=(T sca) -> quaternion& {
+  scalar /= sca; vector /= sca;
   return *this;
 }
 
 template <typename T>
-auto quaternion<T>::operator*=(T scalar) -> quaternion& {
-  sca_ *= scalar; vec_ *= scalar;
+auto quaternion<T>::operator*=(T sca) -> quaternion& {
+  scalar *= sca; vector *= sca;
   return *this;
 }
 
@@ -127,13 +127,13 @@ inline std::ostream& operator<<(std::ostream& stream, const quaternion<T>& quat)
   }
 
   stream.precision(3); stream.setf(std::ios::fixed);
-  for (auto velemt : quat.vec_) {
+  for (auto velemt : quat.vector) {
     stream << std::endl;
     stream.width(width); stream << velemt;
   }
 
   stream << ' ';
-  stream.width(width); stream << quat.sca_ << std::endl;
+  stream.width(width); stream << quat.scalar << std::endl;
   stream.width(width); stream << std::right << "(Vec)" << ' ';
   stream.width(width); stream << std::right << "(Sca)";
   return stream;

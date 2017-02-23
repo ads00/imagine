@@ -29,7 +29,7 @@
 namespace ig   {
 namespace impl { class library_native; }
 
-class IG_API library {
+class ig_api library {
 public:
   using funcptr_type = void (*)();
 

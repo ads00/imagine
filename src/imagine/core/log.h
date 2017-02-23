@@ -37,7 +37,7 @@ enum log_t { dbg, info, warn, err };
 
 class log_context;
 class log_sink;
-class IG_API log {
+class ig_api log {
 public:
   using formatter_type = std::function<std::string(const log_context&)>;
   friend log_context;
@@ -62,7 +62,7 @@ private:
   static std::vector< std::shared_ptr<log_sink> > sinks_;
 };
 
-class IG_API log_context {
+class ig_api log_context {
 public:
   explicit log_context(log_t type, const char* func, const char* file, int32_t line);
   ~log_context();

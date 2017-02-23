@@ -31,7 +31,7 @@
 
 namespace ig {
 
-class IG_API threadpool {
+class ig_api threadpool {
 public:
   explicit threadpool(size_t workers = std::thread::hardware_concurrency());
   ~threadpool();

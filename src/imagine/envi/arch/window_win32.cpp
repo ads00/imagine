@@ -49,8 +49,8 @@ window_native::window_native(const window& ref)
   }
 
   handle_ = CreateWindowEx(0, ig_window_class.data(), "", 0,
-                            CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
-                            nullptr, nullptr, GetModuleHandle(nullptr), this);
+                           0, 0, 0, 0,
+                           nullptr, nullptr, GetModuleHandle(nullptr), this);
 }
 
 window_native::window_native(const window& ref, window::types_t types, const std::string& caption, uint32_t w, uint32_t h)

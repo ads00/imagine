@@ -35,7 +35,7 @@ enum class window_visibility { hidden, windowed, fullscreen };
 enum class window_gesture    { tap, pan, pinch, swipe };
 
 struct window_handle {};
-class IG_API window : public events {
+class ig_api window : public events {
 public:
   enum type_t : uint32_t {
     none     = 0x000, titlebar  = 0x001,

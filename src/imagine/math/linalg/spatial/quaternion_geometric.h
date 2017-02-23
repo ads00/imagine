@@ -29,7 +29,7 @@ namespace linalg {
 
 template <typename T>
 constexpr auto dot(const quaternion<T>& lhs, const quaternion<T>& rhs) {
-  return lhs.sca_ * rhs.sca_ + linalg::dot(lhs.vec_, rhs.vec_);
+  return lhs.scalar * rhs.scalar + linalg::dot(lhs.vector, rhs.vector);
 }
 
 template <typename T>
@@ -49,22 +49,22 @@ constexpr auto norm(const quaternion<T>& q) {
 
 template <typename T>
 constexpr auto conj(const quaternion<T>& q) {
-  return quaternion<T>{q.sca_, -q.vec_};
+  return quaternion<T>{q.scalar, -q.vector};
 }
 
 template <typename T>
 auto normalise(const quaternion<T>& q) {
   auto nrm = norm(q);
-  return quaternion<T>{q.sca_ / nrm, q.vec_ / nrm};
+  return quaternion<T>{q.scalar / nrm, q.vector / nrm};
 }
 
 template <typename T, typename Alg>
 auto rotate(const quaternion<T>& q, const alg<Alg>& v) {
   assert(v.vector() && v.vecsize() == 3 && "Quaternions can only rotate vectors in three-dimensional space");
 
-  auto c1 = linalg::cross(q.vec_, v);
-  auto c2 = linalg::cross(q.vec_, c1);
-  return v + T(2) * (c1 * q.sca_ + c2);
+  auto c1 = linalg::cross(q.vector, v);
+  auto c2 = linalg::cross(q.vector, c1);
+  return v + T(2) * (c1 * q.scalar + c2);
 }
 
 } // namespace linalg

@@ -34,7 +34,7 @@ mat4 translation(const vec3& t) {
 }
 
 mat4 rotation(const quat& r) {
-  auto& v = r.vec_;
+  auto& v = r.vector;
   auto
     x = v[0] + v[0],
     y = v[1] + v[1],
@@ -42,7 +42,7 @@ mat4 rotation(const quat& r) {
 
   auto xx = x * v[0], xy = y * v[0], xz = z * v[0];
   auto yy = y * v[1], yz = z * v[1], zz = z * v[2];
-  auto wx = x * r.sca_, wy = y * r.sca_, wz = z * r.sca_;
+  auto wx = x * r.scalar, wy = y * r.scalar, wz = z * r.scalar;
 
   return mat4{1.f - (yy + zz), xy + wz,         xz - wy,         0.f,
               xy - wz,         1.f - (xx + zz), yz + wx,         0.f,

@@ -82,18 +82,18 @@ template <typename T, size_t N>
 size_t ndarray<T, N>::index(shape_type s) const {
   size_t index = 0;
   auto   total = size_;
-  for (size_t i = 0; i < N; ++i) {
+  for (size_t i = N; i--> 0;) {
     total /= shape_[i];
     index += total * s[i];
   }
   return index * features_;
 }
 
-enum class training_format { };
+enum class dataset_format { };
 enum class image_format { jpeg, bmp, png, hdr, pam };
 enum class sound_format { flag, mp3, ogg, wav };
 
-template <typename T, size_t N> using train_bridge = bridge < ndarray<T, N>, training_format>;
+template <typename T, size_t N> using train_bridge = bridge < ndarray<T, N>, dataset_format>;
 template <typename T, size_t N> using image_bridge = bridge < ndarray<T, N>, image_format>;
 template <typename T>           using sound_bridge = bridge < ndarray<T, 1>, sound_format>;
 

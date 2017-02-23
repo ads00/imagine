@@ -35,16 +35,12 @@ public:
 
   ray() = default;
   explicit ray(const vector_type& ori, const vector_type& dir)
-    : ori_{ori}
-    , dir_{dir} {}
+    : origin{ori}
+    , direction{dir} {}
 
-  auto& origin() const    { return ori_; }
-  auto& direction() const { return dir_; }
+  auto operator()(T t) const { return origin + t * direction; }
 
-  auto operator()(T t) const { return ori_ + t * dir_; }
-
-private:
-  vector_type ori_, dir_;
+  vector_type origin, direction;
 };
 
 } // namespace ig

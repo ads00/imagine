@@ -57,7 +57,7 @@ public:
   #endif
 };
 
-} // namespace native
+} // namespace impl
 } // namespace ig
 
 #endif // IG_ENVI_WINDOW_IMPL_H
