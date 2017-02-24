@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2015, 2016
+ Copyright (c) 2017
         Hugo "hrkz" Frezat <hugo.frezat@gmail.com>
 
  Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -21,47 +21,53 @@
  SOFTWARE.
 */
 
-#ifndef IG_ENVI_INSTANCE_H
-#define IG_ENVI_INSTANCE_H
+#ifndef IG_ENVI_VK_DEVICE_H
+#define IG_ENVI_VK_DEVICE_H
 
-#include "imagine/envi/impl_hw/vulkan.h"
-
-#include <vector>
-#include <unordered_map>
+#include "imagine/envi/_vk/detail/wrapper.h"
+#include "imagine/envi/_vk/detail/physical.h"
 
 namespace ig {
+namespace vk {
 
-IG_API VkBool32 VKAPI_CALL vk_dbg_callback(VkDebugReportFlagsEXT flags, VkDebugReportObjectTypeEXT type,
-                                           uint64_t obj, size_t location, int32_t code, const char* prefix, const char* msg, void* udata);
-
-class IG_API instance : public VKObject<VkInstance>, public VKpfn {
+class dPfn;
+class memory_allocator;
+class ig_api device : public managed<VkDevice_T*> {
 public:
   friend vulkan;
-  friend class physical;
+  friend class queue;
 
-  explicit instance(bool validation = false);
-  virtual ~instance();
+  explicit device(const physical& physical, const std::vector<queue_capabilities>& rq);
+  virtual ~device();
 
-  bool dbg(decltype(vk_dbg_callback) callback = vk_dbg_callback);
-
+  bool wait() const;
   bool supported(const std::string& name) const;
 
-  auto& get_extensions() const { return extensions_; }
-  auto& get_layers() const     { return layers_; }
+  auto& get_allocator() const { return allocator_; }
+  auto& operator->() const    { return dpfn_; }
+
+  const physical& phys;
+  const instance& inst;
 
 private:
-  void configure();
-  void acquire_physicals();
+  virtual void pre_acquire() override;
 
 private:
-  std::vector<VkExtensionProperties> extensions_;
-  std::vector<VkLayerProperties>     layers_;
-  std::unordered_map<VkPhysicalDevice, VkPhysicalDeviceProperties> physicals_;
+  std::unique_ptr<memory_allocator> 
+    allocator_;
+  struct select {
+    std::vector< std::pair<uint32_t, uint32_t> > indices;     // indices[i]     -> family , index
+    std::vector< std::pair<uint32_t, uint32_t> > definitions; // definitions[i] -> family , count
+    void prepare(uint32_t family);
+    auto retrieve(uint32_t i) const { return i < indices.size() ? indices[i] : std::make_tuple(0, 0); }
+  } selects_;
 
-  bool validation_;
-  VkDebugReportCallbackEXT dbg_callback_;
+  struct impl;
+  std::unique_ptr<impl> impl_;
+  std::unique_ptr<dPfn> dpfn_;
 };
 
+} // namespace vk
 } // namespace ig
 
-#endif // IG_ENVI_INSTANCE_H
+#endif // IG_ENVI_VK_DEVICE_H

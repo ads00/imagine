@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2015, 2016
+ Copyright (c) 2017
         Hugo "hrkz" Frezat <hugo.frezat@gmail.com>
 
  Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -21,40 +21,39 @@
  SOFTWARE.
 */
 
-#ifndef IG_ENVI_SURFACE_H
-#define IG_ENVI_SURFACE_H
+#ifndef IG_ENVI_VK_RESOURCE_H
+#define IG_ENVI_VK_RESOURCE_H
 
-#include "imagine/envi/impl_hw/physical.h"
-#include "imagine/envi/impl_hw/queue.h"
-#include "imagine/envi/window.h"
-
-#include <vector>
+#include "imagine/envi/_vk/memory.h"
 
 namespace ig {
+namespace vk {
 
-class IG_API surface : public VKObject<VkSurfaceKHR>, public window {
+class ig_api resource {
 public:
-  friend swapchain;
-  friend class display;
+  friend memory_allocator;
+  using block_type = memory::block;
 
-  explicit surface(const physical& physical, types_t types, const std::string& caption, uint32_t w, uint32_t h);
-  virtual ~surface();
+  explicit resource(const device& device);
+  virtual ~resource();
 
-  queue::types_t queue() const;
+  bool map(uint64_t offset = 0, uint64_t size = ~0ull);
+  void unm();
+  // bool fill(const void* data, uint64_t offset = 0, uint64_t size = ~0ull);
 
-  auto& get_capabilities() const { return capabilities_; }
+  void* get_ptr() { return block_->mem.mapped_; }
 
-  const physical& phys;
-  const instance& inst;
-
-private:
-  void acquire_capabilities();
+  const device& devi;
 
 private:
-  VkSurfaceCapabilitiesKHR capabilities_;
-  std::vector<VkPresentModeKHR> present_modes_; std::vector<VkSurfaceFormatKHR> formats_;
+  virtual bool bind(std::unique_ptr<block_type> block) = 0;
+  virtual auto require(uint64_t& size, uint64_t& alignment) -> uint32_t = 0;
+
+protected:
+  std::unique_ptr<block_type> block_;
 };
 
+} // namespace vk
 } // namespace ig
 
-#endif // IG_ENVI_SURFACE_H
+#endif // IG_ENVI_VK_RESOURCE_H

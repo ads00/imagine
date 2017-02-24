@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2015, 2016
+ Copyright (c) 2017
         Hugo "hrkz" Frezat <hugo.frezat@gmail.com>
 
  Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -21,34 +21,31 @@
  SOFTWARE.
 */
 
-#include "imagine/envi/impl_hw/physical.h"
+#include "imagine/envi/_vk/resource.h"
+#include "imagine/envi/_vk/detail/vulkan.h"
 
 namespace ig {
+namespace vk {
 
-physical::physical(const instance& instance, type_t type, uint32_t i)
-  : inst{instance} {
+resource::resource(const device& device)
+  : devi{device} {}
 
-  auto it = std::find_if(inst.physicals_.begin(), inst.physicals_.end(), [&type, &i](auto& phys) {
-    return phys.second.deviceType == type && !i--;
-  });
-
-  std::tie(h_, properties_) = it != inst.physicals_.end() 
-    ? *it 
-    : *inst.physicals_.begin();
-  configure();
+resource::~resource() {
+  if (block_) { 
+    auto& mem = block_->mem; mem.coalesce(std::move(block_)); }
 }
 
-void physical::configure() {
-  inst.vkGetPhysicalDeviceFeatures(h_, &features_);
-
-  // Queue families
-  uint32_t family_count = 0;
-  inst.vkGetPhysicalDeviceQueueFamilyProperties(h_, &family_count, nullptr);
-
-  if (family_count > 0) {
-    queues_families_.resize(family_count);
-    inst.vkGetPhysicalDeviceQueueFamilyProperties(h_, &family_count, queues_families_.data());
-  }
+bool resource::map(uint64_t offset, uint64_t size) {
+  assert(block_ && "Resource not bound to device memory");
+  assert(!block_->mem.mapped_ && "Device memory already mapped");
+  return devi->vkMapMemory(
+    devi, block_->mem, block_->offset + offset, size, 0, &block_->mem.mapped_) == VK_SUCCESS;
 }
 
+void resource::unm() {
+  if (block_->mem.mapped_)
+    devi->vkUnmapMemory(devi, block_->mem); block_->mem.mapped_ = nullptr;
+}
+
+} // namespace vk
 } // namespace ig

@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2015, 2016
+ Copyright (c) 2017
         Hugo "hrkz" Frezat <hugo.frezat@gmail.com>
 
  Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -21,41 +21,47 @@
  SOFTWARE.
 */
 
-#ifndef IG_ENVI_PHYSICAL_H
-#define IG_ENVI_PHYSICAL_H
+#ifndef IG_ENVI_VK_PHYSICAL_H
+#define IG_ENVI_VK_PHYSICAL_H
 
-#include "imagine/envi/impl_hw/instance.h"
-
-#include <vector>
+#include "imagine/envi/_vk/detail/wrapper.h"
+#include "imagine/envi/_vk/detail/instance.h"
 
 namespace ig {
+namespace vk {
 
-class IG_API physical : public VKObject<VkPhysicalDevice> {
+class ig_api physical : public managed<VkPhysicalDevice_T*> {
 public:
-  friend device;
-  friend class surface;
+  explicit physical(const instance& instance, VkPhysicalDevice_T* physical);
+  virtual ~physical();
 
-  enum type_t {
-    other = 0,
-    integrated  = 1, discrete = 2,
-    virtualized = 3, cpu      = 4 };
-  
-  explicit physical(const instance& instance, type_t type, uint32_t i = 0);
+  int32_t select_heap(uint32_t type, memory_properties properties) const;
+  int32_t select_queue(queue_capabilities capabilities) const;
 
-  auto& get_features() const   { return features_; }
-  auto& get_properties() const { return properties_; }
+  // properties
+  uint32_t get_api_version() const;
+  uint32_t get_driver_version() const;
+  uint32_t get_id() const;
+  std::string get_name() const;
+
+  hardware get_type() const;
+  // limits
+  size_t get_ubo_alignment() const;
+  size_t get_ssbo_alignment() const;
+  // vulkan
+  auto get_features() const -> device_features;
 
   const instance& inst;
 
-private:
-  void configure();
+protected:
+  virtual void post_acquire() override;
 
 private:
-  VkPhysicalDeviceFeatures   features_;
-  VkPhysicalDeviceProperties properties_; 
-  std::vector<VkQueueFamilyProperties> queues_families_;
+  struct impl; 
+  std::unique_ptr<impl> impl_;
 };
 
+} // namespace vk
 } // namespace ig
 
-#endif // IG_ENVI_PHYSICAL_H
+#endif // IG_ENVI_VK_PHYSICAL_H

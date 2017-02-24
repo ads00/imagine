@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2015, 2016
+ Copyright (c) 2017
         Hugo "hrkz" Frezat <hugo.frezat@gmail.com>
 
  Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -21,31 +21,37 @@
  SOFTWARE.
 */
 
-#ifndef IG_ENVI_BUFFER_H
-#define IG_ENVI_BUFFER_H
+#ifndef IG_ENVI_VK_BUFFER_H
+#define IG_ENVI_VK_BUFFER_H
 
-#include "imagine/envi/impl_hw/memory.h"
+#include "imagine/envi/_vk/resource.h"
 
 namespace ig {
+namespace vk {
 
-enum class buffer_usage 
-  : uint32_t; using buffer_usages = flags<buffer_usage>;
 enum class index_type;
+enum class buffer_usage : uint32_t; using buffer_usages = flags<buffer_usage>;
 
-class IG_API buffer : public VKObject<VkBuffer>, public memory::resource {
+class ig_api buffer : public managed<VkBuffer_T*>, public resource {
 public:
-  using bview = VkBufferView;
-  friend memory_allocator;
+  using bview = VkBufferView_T*;
 
   explicit buffer(const device& device, uint64_t size, buffer_usages usages);
   virtual ~buffer();
 
-  const device& devi;
+  auto view(format format, uint64_t offset = 0, uint64_t range = ~0ull) 
+    -> bview&;
 
 private:
-  void bind(memory& memory, memory::block_iterator block, uint64_t aligned) override;
-  auto requirements(uint64_t& size, uint64_t& alignment) -> uint32_t override;
+  bool bind(std::unique_ptr<block_type> block) override;
+  auto require(uint64_t& size, uint64_t& alignment) -> uint32_t override;
+
+private:
+  std::unordered_map<format, bview> views_;
 };
+
+enum class index_type { 
+  uint16 = 0, uint32 = 1 };
 
 enum class buffer_usage : uint32_t {
   transfer_src  = 0x001, transfer_dst  = 0x002,
@@ -55,8 +61,7 @@ enum class buffer_usage : uint32_t {
   vertex        = 0x080,
   indirect      = 0x100 };
 
-enum class index_type { uint16, uint32 };
-
+} // namespace vk
 } // namespace ig
 
-#endif // IG_ENVI_BUFFER_H
+#endif // IG_ENVI_VK_BUFFER_H

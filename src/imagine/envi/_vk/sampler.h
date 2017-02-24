@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2015, 2016
+ Copyright (c) 2017
         Hugo "hrkz" Frezat <hugo.frezat@gmail.com>
 
  Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -21,42 +21,33 @@
  SOFTWARE.
 */
 
-#ifndef IG_ENVI_QUEUE_H
-#define IG_ENVI_QUEUE_H
+#ifndef IG_ENVI_VK_SAMPLER_H
+#define IG_ENVI_VK_SAMPLER_H
 
-#include "imagine/envi/impl_hw/vulkan.h"
-#include "imagine/envi/impl_hw/cmdbuffer.h"
-
-#include <vector>
+#include "imagine/envi/_vk/image.h"
 
 namespace ig {
+namespace vk {
 
-class IG_API queue : public VKObject<VkQueue> {
+enum class filter;
+enum class mipmap_mode;
+enum class address_mode;
+
+class ig_api image::sampler : public managed<VkSampler_T*> {
 public:
-  enum type_t 
-    : uint32_t; using types_t = flags<type_t>;
+  explicit sampler(const device& device, filter mag, filter min, address_mode mode, mipmap_mode mipmap, float anisotropy = 0.f);
+  virtual ~sampler();
 
-  explicit queue(const device& device, uint32_t i);
-  virtual ~queue();
+  const device& devi; };
 
-  bool wait() const;
+enum class filter      { nearest = 0, linear = 1, cubic = 1000015000 };
+enum class mipmap_mode { nearest = 0, linear = 1 };
 
-  auto& family() const  { return family_; }
-  auto& index() const   { return index_; }
-  auto& cmdpool() const { return cmdpool_; }
+enum class address_mode {
+  repeat     = 0, mirrored_repeat = 1, 
+  clamp_edge = 2, clamp_border    = 3, mirror_clamp_edge = 4 };
 
-  const device& device_;
-
-private:
-  uint32_t family_, index_;
-  VkCommandPool cmdpool_;
-};
-
-enum queue::type_t : uint32_t {
-  graphics = 0x001, compute = 0x002,
-  transfer = 0x004, sparse  = 0x008
-};
-
+} // namespace vk
 } // namespace ig
 
-#endif // IG_ENVI_QUEUE_H
+#endif // IG_ENVI_VK_SAMPLER_H

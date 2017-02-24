@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2015, 2016
+ Copyright (c) 2017
         Hugo "hrkz" Frezat <hugo.frezat@gmail.com>
 
  Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -21,37 +21,38 @@
  SOFTWARE.
 */
 
-#include "imagine/envi/impl_hw/queue.h"
-#include "imagine/envi/impl_hw/device.h"
+#include "imagine/envi/_vk/sampler.h"
+#include "imagine/envi/_vk/detail/vulkan.h"
 
 namespace ig {
+namespace vk {
 
-queue::queue(const device& device, uint32_t i) 
-  : device_{device}
-  , cmdpool_{nullptr} {
+image::sampler::sampler(const device& device, filter mag, filter min, address_mode mode, mipmap_mode mipmap, float anisotropy)
+  : devi{device} {
 
-  std::tie(family_, index_) = device_.queues_.indices[i];
-  VkCommandPoolCreateInfo commandpool_info = {
-    VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,      // VkStructureType             sType;
-    nullptr,                                         // const void*                 pNext;
-    VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT, // VkCommandPoolCreateFlags    flags;
-    family_                                          // uint32_t                    queueFamilyIndex;
-  };
+  VkSamplerCreateInfo sampler_info{};
+    sampler_info.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
+    sampler_info.flags = 0;
+    sampler_info.magFilter = static_cast<VkFilter>(mag);
+    sampler_info.minFilter = static_cast<VkFilter>(min);
+    sampler_info.addressModeU =
+    sampler_info.addressModeV =
+    sampler_info.addressModeW = static_cast<VkSamplerAddressMode>(mode);
+    sampler_info.mipmapMode   = static_cast<VkSamplerMipmapMode>(mipmap);
+      sampler_info.maxAnisotropy    = anisotropy;
+      sampler_info.anisotropyEnable = anisotropy > 0;
+      sampler_info.minLod = 0.0f;
+      sampler_info.maxLod = 0.25f;
 
-  auto res = device_.vkCreateCommandPool(device_, &commandpool_info, nullptr, &cmdpool_);
+  auto res = devi->vkCreateSampler(devi, &sampler_info, nullptr, &handle);
   if (res != VK_SUCCESS) {
-    throw std::runtime_error{"Failed to create commandpool : " + vulkan::to_string(res)};
-  } 
-  device_.vkGetDeviceQueue(device_, family_, index_, &h_);
+    throw std::runtime_error{ "Failed to create sampler : " + vulkan::to_string(res) };
+  }
 }
 
-queue::~queue() {
-  wait();
-  device_.vkDestroyCommandPool(device_, cmdpool_, nullptr);
+image::sampler::~sampler() {
+  devi->vkDestroySampler(devi, handle, nullptr);
 }
 
-bool queue::wait() const {
-  return device_.vkQueueWaitIdle(h_) == VK_SUCCESS;
-}
-
+} // namespace vk
 } // namespace ig
