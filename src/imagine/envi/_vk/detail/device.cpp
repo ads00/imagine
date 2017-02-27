@@ -31,16 +31,21 @@ namespace vk {
 
 struct device::impl {
   // Vulkan device extensions
-  // Registered and published KHR and EXT extensions supported
+  // Registered and published KHR(X) and EXT extensions supported
   // VK_KHR_swapchain rev. 68
   // VK_KHR_display_swapchain rev. 9 (draft)
   // VK_KHR_sampler_mirror_clamp_to_edge rev. 1 (final)
   // VK_KHR_shader_draw_parameters rev. 1 (complete)
   // VK_KHR_maintenance1 rev. 1 (draft)
+  // VK_KHR_push_descriptor rev. 1 (draft)
+  // VK_KHR_descriptor_update_template rev. 1 (in work)
   // VK_EXT_debug_marker rev. 4
+  // VK_KHX_multiview rev. 1 (draft)
+  // VK_KHX_device_group rev. 1 (draft)
   // VK_EXT_shader_subgroup_ballot rev. 1 (draft)
   // VK_EXT_shader_subgroup_vote rev. 1 (draft)
   // VK_EXT_display_control rev. 1
+  // VK_EXT_discard_rectangles rev. 1 (complete)
   std::vector<VkExtensionProperties> extensions; };
 
 device::device(const physical& physical, const std::vector<queue_capabilities>& rq)

@@ -61,7 +61,7 @@ protected:
   auto mapping_search(uint32_t size) {
     return mapping_insert(size + (1 << (fls(size) - layer_size_)) - 1); }
 
-  auto manage(size_t size, size_t offset, bool free) -> std::unique_ptr<block>&;
+  auto manage(uint64_t size, uint64_t offset, bool free) -> std::unique_ptr<block>&;
 
   static uint32_t ffs(uint32_t v);
   static uint32_t fls(uint32_t v);

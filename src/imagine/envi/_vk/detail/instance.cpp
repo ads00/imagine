@@ -35,7 +35,7 @@ struct instance::impl {
   VkDebugReportCallbackEXT dbg_callback;
 
   // Vulkan instance extensions
-  // Registered and published KHR and EXT extensions supported
+  // Registered and published KHR(X) and EXT extensions supported
   // VK_KHR_surface rev. 25
   // VK_KHR_display rev. 21
   // VK_KHR_xlib_surface rev. 6
@@ -46,7 +46,11 @@ struct instance::impl {
   // VK_KHR_win32_surface rev. 5
   // VK_EXT_debug_report rev. 5
   // VK_EXT_validation_flags rev. 1
+  // VK_NN_vi_surface rev. 1
+  // VK_KHX_device_group_creation rev. 1 (draft)
   // VK_EXT_direct_mode_display rev. 1
+  // VK_MVK_ios_surface rev. 2
+  // VK_MVK_macos_surface rev. 2
   std::vector<VkExtensionProperties> extensions;
 
   // Official Vulkan SDK layers

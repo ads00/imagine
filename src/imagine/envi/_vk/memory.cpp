@@ -132,7 +132,7 @@ void memory::coalesce(std::unique_ptr<block> block) {
     seg_list.end(), std::move(block));
 }
 
-auto memory::manage(size_t size, size_t offset, bool free) -> std::unique_ptr<block>& {
+auto memory::manage(uint64_t size, uint64_t offset, bool free) -> std::unique_ptr<block>& {
   auto mapping = mapping_insert(static_cast<uint32_t>(size));
   auto& seg_list = blocks_[mapping.first * (1 << layer_size_) + mapping.second];
 

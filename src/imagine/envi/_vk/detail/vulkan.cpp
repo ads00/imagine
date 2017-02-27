@@ -69,7 +69,6 @@ void vulkan::acquire(instance& i) {
   i->vkGetPhysicalDeviceSurfaceCapabilitiesKHR = reinterpret_cast<PFN_vkGetPhysicalDeviceSurfaceCapabilitiesKHR>(i->vkGetInstanceProcAddr(i, "vkGetPhysicalDeviceSurfaceCapabilitiesKHR"));
   i->vkGetPhysicalDeviceSurfaceFormatsKHR      = reinterpret_cast<PFN_vkGetPhysicalDeviceSurfaceFormatsKHR>     (i->vkGetInstanceProcAddr(i, "vkGetPhysicalDeviceSurfaceFormatsKHR"));
   i->vkGetPhysicalDeviceSurfacePresentModesKHR = reinterpret_cast<PFN_vkGetPhysicalDeviceSurfacePresentModesKHR>(i->vkGetInstanceProcAddr(i, "vkGetPhysicalDeviceSurfacePresentModesKHR"));
-
   // VK_KHR_display
   i->vkGetPhysicalDeviceDisplayPropertiesKHR      = reinterpret_cast<PFN_vkGetPhysicalDeviceDisplayPropertiesKHR>     (i->vkGetInstanceProcAddr(i, "vkGetPhysicalDeviceDisplayPropertiesKHR"));
   i->vkGetPhysicalDeviceDisplayPlanePropertiesKHR = reinterpret_cast<PFN_vkGetPhysicalDeviceDisplayPlanePropertiesKHR>(i->vkGetInstanceProcAddr(i, "vkGetPhysicalDeviceDisplayPlanePropertiesKHR"));
@@ -105,15 +104,28 @@ void vulkan::acquire(instance& i) {
   #endif
   #ifdef VK_USE_PLATFORM_WIN32_KHR
   // VK_KHR_win32_surface
-  i->vkCreateWin32SurfaceKHR                        = reinterpret_cast<PFN_vkCreateWin32SurfaceKHR>                         (i->vkGetInstanceProcAddr(i, "vkCreateWin32SurfaceKHR"));
-  i->vkGetPhysicalDeviceWin32PresentationSupportKHR = reinterpret_cast<PFN_vkGetPhysicalDeviceWin32PresentationSupportKHR>  (i->vkGetInstanceProcAddr(i, "vkGetPhysicalDeviceWin32PresentationSupportKHR"));
+  i->vkCreateWin32SurfaceKHR                        = reinterpret_cast<PFN_vkCreateWin32SurfaceKHR>                       (i->vkGetInstanceProcAddr(i, "vkCreateWin32SurfaceKHR"));
+  i->vkGetPhysicalDeviceWin32PresentationSupportKHR = reinterpret_cast<PFN_vkGetPhysicalDeviceWin32PresentationSupportKHR>(i->vkGetInstanceProcAddr(i, "vkGetPhysicalDeviceWin32PresentationSupportKHR"));
+  #endif
+  #if defined(VK_USE_PLATFORM_VI_NN)
+  // VK_NN_vi_surface
+  i->vkCreateViSurfaceNN = reinterpret_cast<PFN_vkCreateViSurfaceNN>(i->vkGetInstanceProcAddr(i, "vkCreateViSurfaceNN"));
+  #endif
+  #if defined(VK_USE_PLATFORM_IOS_MVK)
+  // VK_MVK_ios_surface
+  i->vkCreateIOSSurfaceMVK = reinterpret_cast<PFN_vkCreateIOSSurfaceMVK>(i->vkGetInstanceProcAddr(i, "vkCreateIOSSurfaceMVK"));
+  #endif
+  #if defined(VK_USE_PLATFORM_MACOS_MVK)
+  // VK_MVK_macos_surface
+  i->vkCreateMacOSSurfaceMVK = reinterpret_cast<PFN_vkCreateMacOSSurfaceMVK>(i->vkGetInstanceProcAddr(i, "vkCreateMacOSSurfaceMVK"));
   #endif
 
   // VK_EXT_debug_report
   i->vkCreateDebugReportCallbackEXT  = reinterpret_cast<PFN_vkCreateDebugReportCallbackEXT> (i->vkGetInstanceProcAddr(i, "vkCreateDebugReportCallbackEXT"));
   i->vkDestroyDebugReportCallbackEXT = reinterpret_cast<PFN_vkDestroyDebugReportCallbackEXT>(i->vkGetInstanceProcAddr(i, "vkDestroyDebugReportCallbackEXT"));
   i->vkDebugReportMessageEXT         = reinterpret_cast<PFN_vkDebugReportMessageEXT>        (i->vkGetInstanceProcAddr(i, "vkDebugReportMessageEXT"));
-
+  // VK_KHX_device_group_creation
+  i->vkEnumeratePhysicalDeviceGroupsKHX = reinterpret_cast<PFN_vkEnumeratePhysicalDeviceGroupsKHX>(i->vkGetInstanceProcAddr(i, "vkEnumeratePhysicalDeviceGroupsKHX"));
   // VK_EXT_direct_mode_display
   i->vkReleaseDisplayEXT = reinterpret_cast<PFN_vkReleaseDisplayEXT>(i->vkGetInstanceProcAddr(i, "vkReleaseDisplayEXT"));
 }
@@ -259,18 +271,40 @@ void vulkan::acquire(device& d) {
   d->vkGetSwapchainImagesKHR = reinterpret_cast<PFN_vkGetSwapchainImagesKHR>(d->vkGetDeviceProcAddr(d, "vkGetSwapchainImagesKHR"));
   d->vkAcquireNextImageKHR   = reinterpret_cast<PFN_vkAcquireNextImageKHR>  (d->vkGetDeviceProcAddr(d, "vkAcquireNextImageKHR"));
   d->vkQueuePresentKHR       = reinterpret_cast<PFN_vkQueuePresentKHR>      (d->vkGetDeviceProcAddr(d, "vkQueuePresentKHR"));
-
   // VK_KHR_display_swapchain
   d->vkCreateSharedSwapchainsKHR = reinterpret_cast<PFN_vkCreateSharedSwapchainsKHR>(d->vkGetDeviceProcAddr(d, "vkCreateSharedSwapchainsKHR"));
-
   // VK_KHR_maintenance1
   d->vkTrimCommandPoolKHR = reinterpret_cast<PFN_vkTrimCommandPoolKHR>(d->vkGetDeviceProcAddr(d, "vkTrimCommandPoolKHR"));
-
+  // VK_KHR_push_descriptor
+  d->vkCmdPushDescriptorSetKHR = reinterpret_cast<PFN_vkCmdPushDescriptorSetKHR>(d->vkGetDeviceProcAddr(d, "vkCmdPushDescriptorSetKHR"));
+  // VK_KHR_descriptor_update_template
+  d->vkCreateDescriptorUpdateTemplateKHR   = reinterpret_cast<PFN_vkCreateDescriptorUpdateTemplateKHR>  (d->vkGetDeviceProcAddr(d, "vkCreateDescriptorUpdateTemplateKHR"));
+  d->vkDestroyDescriptorUpdateTemplateKHR  = reinterpret_cast<PFN_vkDestroyDescriptorUpdateTemplateKHR> (d->vkGetDeviceProcAddr(d, "vkDestroyDescriptorUpdateTemplateKHR"));
+  d->vkUpdateDescriptorSetWithTemplateKHR  = reinterpret_cast<PFN_vkUpdateDescriptorSetWithTemplateKHR> (d->vkGetDeviceProcAddr(d, "vkUpdateDescriptorSetWithTemplateKHR"));
+  d->vkCmdPushDescriptorSetWithTemplateKHR = reinterpret_cast<PFN_vkCmdPushDescriptorSetWithTemplateKHR>(d->vkGetDeviceProcAddr(d, "vkCmdPushDescriptorSetWithTemplateKHR"));
+  // VK_EXT_debug_marker
+  d->vkDebugMarkerSetObjectTagEXT  = reinterpret_cast<PFN_vkDebugMarkerSetObjectTagEXT> (d->vkGetDeviceProcAddr(d, "vkDebugMarkerSetObjectTagEXT"));
+  d->vkDebugMarkerSetObjectNameEXT = reinterpret_cast<PFN_vkDebugMarkerSetObjectNameEXT>(d->vkGetDeviceProcAddr(d, "vkDebugMarkerSetObjectNameEXT"));
+  d->vkCmdDebugMarkerBeginEXT      = reinterpret_cast<PFN_vkCmdDebugMarkerBeginEXT>     (d->vkGetDeviceProcAddr(d, "vkCmdDebugMarkerBeginEXT"));
+  d->vkCmdDebugMarkerEndEXT        = reinterpret_cast<PFN_vkCmdDebugMarkerEndEXT>       (d->vkGetDeviceProcAddr(d, "vkCmdDebugMarkerEndEXT"));
+  d->vkCmdDebugMarkerInsertEXT     = reinterpret_cast<PFN_vkCmdDebugMarkerInsertEXT>    (d->vkGetDeviceProcAddr(d, "vkCmdDebugMarkerInsertEXT"));
+  // VK_KHX_device_group
+  d->vkGetDeviceGroupPeerMemoryFeaturesKHX   = reinterpret_cast<PFN_vkGetDeviceGroupPeerMemoryFeaturesKHX>   (d->vkGetDeviceProcAddr(d, "vkGetDeviceGroupPeerMemoryFeaturesKHX"));
+  d->vkBindBufferMemory2KHX                  = reinterpret_cast<PFN_vkBindBufferMemory2KHX>                  (d->vkGetDeviceProcAddr(d, "vkBindBufferMemory2KHX"));
+  d->vkBindImageMemory2KHX                   = reinterpret_cast<PFN_vkBindImageMemory2KHX>                   (d->vkGetDeviceProcAddr(d, "vkBindImageMemory2KHX"));
+  d->vkCmdSetDeviceMaskKHX                   = reinterpret_cast<PFN_vkCmdSetDeviceMaskKHX>                   (d->vkGetDeviceProcAddr(d, "vkCmdSetDeviceMaskKHX"));
+  d->vkGetDeviceGroupPresentCapabilitiesKHX  = reinterpret_cast<PFN_vkGetDeviceGroupPresentCapabilitiesKHX>  (d->vkGetDeviceProcAddr(d, "vkGetDeviceGroupPresentCapabilitiesKHX"));
+  d->vkGetDeviceGroupSurfacePresentModesKHX  = reinterpret_cast<PFN_vkGetDeviceGroupSurfacePresentModesKHX>  (d->vkGetDeviceProcAddr(d, "vkGetDeviceGroupSurfacePresentModesKHX"));
+  d->vkAcquireNextImage2KHX                  = reinterpret_cast<PFN_vkAcquireNextImage2KHX>                  (d->vkGetDeviceProcAddr(d, "vkAcquireNextImage2KHX"));
+  d->vkCmdDispatchBaseKHX                    = reinterpret_cast<PFN_vkCmdDispatchBaseKHX>                    (d->vkGetDeviceProcAddr(d, "vkCmdDispatchBaseKHX"));
+  d->vkGetPhysicalDevicePresentRectanglesKHX = reinterpret_cast<PFN_vkGetPhysicalDevicePresentRectanglesKHX> (d->vkGetDeviceProcAddr(d, "vkGetPhysicalDevicePresentRectanglesKHX"));
   // VK_EXT_display_control
   d->vkDisplayPowerControlEXT  = reinterpret_cast<PFN_vkDisplayPowerControlEXT> (d->vkGetDeviceProcAddr(d, "vkDisplayPowerControlEXT"));
   d->vkRegisterDeviceEventEXT  = reinterpret_cast<PFN_vkRegisterDeviceEventEXT> (d->vkGetDeviceProcAddr(d, "vkRegisterDeviceEventEXT"));
   d->vkRegisterDisplayEventEXT = reinterpret_cast<PFN_vkRegisterDisplayEventEXT>(d->vkGetDeviceProcAddr(d, "vkRegisterDisplayEventEXT"));
   d->vkGetSwapchainCounterEXT  = reinterpret_cast<PFN_vkGetSwapchainCounterEXT> (d->vkGetDeviceProcAddr(d, "vkGetSwapchainCounterEXT"));
+  // VK_EXT_discard_rectangles
+  d->vkCmdSetDiscardRectangleEXT = reinterpret_cast<PFN_vkCmdSetDiscardRectangleEXT>(d->vkGetDeviceProcAddr(d, "vkCmdSetDiscardRectangleEXT"));
 }
 
 std::string vulkan::to_string(VkResult res) {
