@@ -30,9 +30,9 @@
 namespace ig     {
 namespace detail {
 
-using jpeg_bridge = image_bridge<uint8_t, 2>;
-using jpeg_type = jpeg_bridge::type;
-using jptr      = jpeg_bridge::rptr;
+using jpeg_b = image_bridge<uint8_t, 2>;
+using jpeg_type = jpeg_b::type;
+using jptr      = jpeg_b::rptr;
 
 bool jpeg_validate(std::istream& stream);
 jptr jpeg_readp_impl(std::istream& stream);

@@ -30,9 +30,9 @@
 namespace ig     {
 namespace detail {
 
-using png_bridge = image_bridge<uint8_t, 2>;
-using png_type = png_bridge::type;
-using pptr     = png_bridge::rptr;
+using png_b = image_bridge<uint8_t, 2>;
+using png_type = png_b::type;
+using pptr     = png_b::rptr;
 
 bool png_validate(std::istream& stream);
 pptr png_readp_impl(std::istream& stream);
