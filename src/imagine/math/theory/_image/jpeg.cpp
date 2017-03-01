@@ -101,7 +101,7 @@ jptr jpeg_readp_impl(std::istream& stream) {
   src->jpeg.bytes_in_buffer = 0;
   src->jpeg.next_input_byte = nullptr;
 
-  jpeg_read_header(&jpeg_ptr, true);
+  jpeg_read_header(&jpeg_ptr, TRUE);
   jpeg_start_decompress(&jpeg_ptr);
 
   auto imag = std::make_unique<jpeg_type>(
@@ -171,9 +171,9 @@ bool jpeg_write_impl(std::ostream& stream, const jpeg_type& imag) {
   }
 
   jpeg_set_defaults(&jpeg_ptr);
-  jpeg_set_quality(&jpeg_ptr, 95, true);
+  jpeg_set_quality(&jpeg_ptr, 95, TRUE);
 
-  jpeg_start_compress(&jpeg_ptr, true);
+  jpeg_start_compress(&jpeg_ptr, TRUE);
 
   while (jpeg_ptr.next_scanline < jpeg_ptr.image_height) {
     auto r = imag.buffer() + (imag.get_shape().front() * imag.get_features() * jpeg_ptr.next_scanline);
@@ -192,7 +192,7 @@ boolean jpeg_readproc(
 
   src->jpeg.next_input_byte = src->buffer;
   src->jpeg.bytes_in_buffer = (size_t)src->stream->gcount();
-  return true;
+  return TRUE;
 }
 
 boolean jpeg_writeproc(
@@ -202,7 +202,7 @@ boolean jpeg_writeproc(
   
   dst->jpeg.next_output_byte = dst->buffer;
   dst->jpeg.free_in_buffer = buffer_size;
-  return true;
+  return TRUE;
 }
 
 void jpeg_message(j_common_ptr jpeg_ptr) {

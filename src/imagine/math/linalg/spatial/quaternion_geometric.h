@@ -38,6 +38,11 @@ constexpr auto between(const quaternion<T>& lhs, const quaternion<T>& rhs) {
 }
 
 template <typename T>
+constexpr auto conj(const quaternion<T>& q) {
+  return quaternion<T>{q.scalar, -q.vector};
+}
+
+template <typename T>
 constexpr auto inv(const quaternion<T>& q) {
   return conj(q) / dot(q, q);
 }
@@ -45,11 +50,6 @@ constexpr auto inv(const quaternion<T>& q) {
 template <typename T>
 constexpr auto norm(const quaternion<T>& q) {
   return std::sqrt(dot(q, q));
-}
-
-template <typename T>
-constexpr auto conj(const quaternion<T>& q) {
-  return quaternion<T>{q.scalar, -q.vector};
 }
 
 template <typename T>

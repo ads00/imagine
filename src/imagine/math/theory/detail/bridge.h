@@ -33,9 +33,9 @@ namespace ig     {
 namespace detail {
 
 template <typename table>
-auto table_load(const table& table, const std::string& filename) {
+auto table_load(const table& tbl, const std::string& filename) {
   std::ifstream in{filename, std::ios::binary};
-  for (auto& format_bridge : table) {
+  for (auto& format_bridge : tbl) {
     auto& validate = std::get<0>(format_bridge.second);
     auto& readp    = std::get<1>(format_bridge.second);
 
@@ -49,10 +49,10 @@ auto table_load(const table& table, const std::string& filename) {
 }
 
 template <typename T, typename F, typename table>
-bool table_save(const table& table, const std::string& filename, F format, const T& data) {
+bool table_save(const table& tbl, const std::string& filename, F format, const T& data) {
   std::ofstream out{filename, std::ios::binary | std::ios::trunc};
 
-  auto& write = std::get<2>(table.at(format));
+  auto& write = std::get<2>(tbl.at(format));
   return out.good()
     ? write(out, data)
     : false;

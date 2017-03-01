@@ -89,11 +89,11 @@ size_t ndarray<T, N>::index(shape_type s) const {
   return index * features_;
 }
 
-enum class dataset_format { };
+enum class set_format { };
 enum class image_format { jpeg, bmp, png, hdr, pam };
 enum class sound_format { flag, mp3, ogg, wav };
 
-template <typename T, size_t N> using train_bridge = bridge < ndarray<T, N>, dataset_format>;
+template <typename T, size_t N> using train_bridge = bridge < ndarray<T, N>, set_format>;
 template <typename T, size_t N> using image_bridge = bridge < ndarray<T, N>, image_format>;
 template <typename T>           using sound_bridge = bridge < ndarray<T, 1>, sound_format>;
 
