@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2015, 2016
+ Copyright (c) 2017
         Hugo "hrkz" Frezat <hugo.frezat@gmail.com>
 
  Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -21,32 +21,28 @@
  SOFTWARE.
 */
 
-#ifndef IG_MATH_TRIMESH_H
-#define IG_MATH_TRIMESH_H
+#ifndef IG_ENVI_DYNLIB_IMPL_H
+#define IG_ENVI_DYNLIB_IMPL_H
 
-#include "imagine/math/geom/homogeneous.h"
+#include "imagine/envi/arch/widget_impl.h"
 
-namespace ig {
+namespace ig   {
+namespace impl {
 
-class IG_API trimesh {
+class dynlib_native {
 public:
-  using face = std::array<size_t, 3>;
+  dynlib_native();
+  dynlib_native(const std::string& path);
+  ~dynlib_native() = default;
 
-  trimesh() = default;
-  explicit trimesh(const std::vector<face>& faces, const std::vector<vec3>& vertices,
-                   const std::vector<vec3>& normals = {}, const std::vector<vec2>& coords = {});
+  std::string path_;
 
-  static trimesh generate_box(size_t tess);
-  static trimesh generate_plane(size_t tess);
-  static trimesh generate_sphere(size_t tess);
-
-private:
-  std::vector<face> faces_;
-
-  std::vector<vec3> vertices_, normals_;
-  std::vector<vec2> coords_;
+  #if defined(IG_WIN)
+  HMODULE handle_;
+  #endif
 };
 
+} // namespace impl
 } // namespace ig
 
-#endif // IG_MATH_TRIMESH_H
+#endif // IG_ENVI_DYNLIB_IMPL_H

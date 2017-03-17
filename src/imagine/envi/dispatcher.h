@@ -51,7 +51,8 @@ public:
   dispatcher& operator=(const dispatcher&) = delete;
 
 private:
-  std::unique_ptr<impl::dispatcher_native> native_;
+  std::unique_ptr<impl::dispatcher_native> 
+    native_;
   func_type tick_ = [] {};
 
   static dispatcher* self_;

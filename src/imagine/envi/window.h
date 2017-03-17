@@ -82,7 +82,8 @@ public:
   cursor cursor;
 
 private:
-  std::unique_ptr<impl::window_native> native_;
+  std::unique_ptr<impl::window_native> 
+    native_;
 };
 
 } // namespace ig

@@ -21,28 +21,50 @@
  SOFTWARE.
 */
 
-#ifndef IG_ENVI_LIBRARY_IMPL_H
-#define IG_ENVI_LIBRARY_IMPL_H
-
-#include "imagine/envi/arch/widget_impl.h"
+#include "imagine/envi/arch/dynlib_impl.h"
+#include "imagine/envi/dynlib.h"
 
 namespace ig   {
 namespace impl {
 
-class library_native {
-public:
-  library_native();
-  library_native(const std::string& path);
-  ~library_native() = default;
+dynlib_native::dynlib_native()
+  : path_{}
+  , handle_{nullptr} {}
 
-  std::string path_;
-
-  #if defined(IG_WIN)
-  HMODULE handle_;
-  #endif
-};
+dynlib_native::dynlib_native(const std::string& path)
+  : path_{path}
+  , handle_{nullptr} {}
 
 } // namespace impl
-} // namespace ig
 
-#endif // IG_ENVI_LIBRARY_IMPL_H
+auto dynlib::resolve(const char* symbol) -> funcptr_type {
+  if (native_->handle_) {
+    auto proc = GetProcAddress(native_->handle_, symbol);
+    return reinterpret_cast<funcptr_type>(proc);
+  } else {
+    return nullptr;
+  }
+}
+
+bool dynlib::open(const std::string& path) {
+  if (native_->handle_) {
+    if (native_->path_ != path) {
+      close();
+    } else {
+      return true;
+    }
+  }
+
+  native_->handle_ = LoadLibraryA(path.c_str());
+  native_->path_ = path;
+  return native_->handle_ != nullptr;
+}
+
+void dynlib::close() {
+  if (native_->handle_) {
+    FreeLibrary(native_->handle_);
+    native_->handle_ = nullptr;
+  }
+}
+
+} // namespace ig

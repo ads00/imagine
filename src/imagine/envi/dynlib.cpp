@@ -21,17 +21,31 @@
  SOFTWARE.
 */
 
-#ifndef IG_CORE_TEST_H
-#define IG_CORE_TEST_H
+#include "imagine/envi/arch/dynlib_impl.h"
+#include "imagine/envi/dynlib.h"
 
-#include "imagine/ig.h"
+namespace ig {
 
-namespace ig   {
-namespace test {
+dynlib::dynlib()
+  : native_{std::make_unique<impl::dynlib_native>()} {}
 
-ig_api void backtrace(std::exception_ptr exception);
+dynlib::dynlib(const std::string& path)
+  : native_{std::make_unique<impl::dynlib_native>(path)}
+{ open(path);}
 
-} // namespace test
+dynlib::~dynlib() {
+  close();
+}
+
+bool dynlib::loaded() const {
+  return native_->handle_ != nullptr;
+}
+
+// Native implementations
+//
+
+// auto dynlib::resolve(const char* symbol) -> funcptr_type;
+// bool dynlib::open(const std::string& path);
+// void dynlib::close();
+
 } // namespace ig
-
-#endif // IG_CORE_TEST_H

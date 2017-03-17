@@ -21,50 +21,36 @@
  SOFTWARE.
 */
 
-#include "imagine/envi/arch/library_impl.h"
-#include "imagine/envi/library.h"
+#ifndef IG_ENVI_DYNLIB_H
+#define IG_ENVI_DYNLIB_H
+
+#include "imagine/ig.h"
 
 namespace ig   {
-namespace impl {
+namespace impl { class dynlib_native; }
 
-library_native::library_native()
-  : path_{}
-  , handle_{nullptr} {}
+class ig_api dynlib {
+public:
+  using funcptr_type = void (*)();
 
-library_native::library_native(const std::string& path)
-  : path_{path}
-  , handle_{nullptr} {}
+  dynlib();
+  explicit dynlib(const std::string& path);
+  virtual ~dynlib();
 
-} // namespace impl
+  auto resolve(const char* symbol) -> funcptr_type;
+  bool open(const std::string& path);
+  void close();
 
-auto library::resolve(const char* symbol) -> funcptr_type {
-  if (native_->handle_) {
-    auto proc = GetProcAddress(native_->handle_, symbol);
-    return reinterpret_cast<funcptr_type>(proc);
-  } else {
-    return nullptr;
-  }
-}
+  bool loaded() const;
 
-bool library::open(const std::string& path) {
-  if (native_->handle_) {
-    if (native_->path_ != path) {
-      close();
-    } else {
-      return true;
-    }
-  }
+  dynlib(const dynlib&) = delete;
+  dynlib& operator=(const dynlib&) = delete;
 
-  native_->handle_ = LoadLibraryA(path.c_str());
-  native_->path_ = path;
-  return native_->handle_ != nullptr;
-}
-
-void library::close() {
-  if (native_->handle_) {
-    FreeLibrary(native_->handle_);
-    native_->handle_ = nullptr;
-  }
-}
+private:
+  std::unique_ptr<impl::dynlib_native> 
+    native_;
+};
 
 } // namespace ig
+
+#endif // IG_ENVI_DYNLIB_H

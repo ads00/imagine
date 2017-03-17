@@ -21,11 +21,11 @@
  SOFTWARE.
 */
 
-#include "imagine/core/test.h"
+#include "imagine/core/unit.h"
 #include "imagine/core/log.h"
 
 namespace ig   {
-namespace test {
+namespace unit {
 
 void backtrace(std::exception_ptr exception) {
   try { 
@@ -43,5 +43,5 @@ void backtrace(std::exception_ptr exception) {
   } catch (...) {}
 }
 
-} // namespace test
+} // namespace unit
 } // namespace ig
