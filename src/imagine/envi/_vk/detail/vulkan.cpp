@@ -305,6 +305,8 @@ void vulkan::acquire(device& d) {
   d->vkGetSwapchainCounterEXT  = reinterpret_cast<PFN_vkGetSwapchainCounterEXT> (d->vkGetDeviceProcAddr(d, "vkGetSwapchainCounterEXT"));
   // VK_EXT_discard_rectangles
   d->vkCmdSetDiscardRectangleEXT = reinterpret_cast<PFN_vkCmdSetDiscardRectangleEXT>(d->vkGetDeviceProcAddr(d, "vkCmdSetDiscardRectangleEXT"));
+  // VK_EXT_hdr_metadata
+  d->vkSetHdrMetadata = reinterpret_cast<PFN_vkSetHdrMetadataEXT>(d->vkGetDeviceProcAddr(d, "vkSetHdrMetadataEXT"));
 }
 
 std::string vulkan::to_string(VkResult res) {
@@ -332,7 +334,7 @@ std::string vulkan::to_string(VkResult res) {
   default:         return "Unhandled Vulkan result"; }
 }
 
-library vulkan::vulkan_;
+dynlib vulkan::vulkan_;
 
 // VK_core
 PFN_vkGetInstanceProcAddr                  vkGetInstanceProcAddr = nullptr;

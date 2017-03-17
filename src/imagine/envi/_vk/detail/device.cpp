@@ -46,6 +46,7 @@ struct device::impl {
   // VK_EXT_shader_subgroup_vote rev. 1 (draft)
   // VK_EXT_display_control rev. 1
   // VK_EXT_discard_rectangles rev. 1 (complete)
+  // VK_EXT_hdr_metadata rev. 1
   std::vector<VkExtensionProperties> extensions; };
 
 device::device(const physical& physical, const std::vector<queue_capabilities>& rq)

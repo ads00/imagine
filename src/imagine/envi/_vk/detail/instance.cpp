@@ -40,7 +40,7 @@ struct instance::impl {
   // VK_KHR_display rev. 21
   // VK_KHR_xlib_surface rev. 6
   // VK_KHR_xcb_surface rev. 6
-  // VK_KHR_wayland_surface rev. 5
+  // VK_KHR_wayland_surface rev. 6
   // VK_KHR_mir_surface rev. 4
   // VK_KHR_android_surface rev. 6
   // VK_KHR_win32_surface rev. 5
@@ -63,7 +63,15 @@ struct instance::impl {
   // VK_LAYER_GOOGLE_unique_objects impl. 1
   std::vector<VkLayerProperties> layers; };
 
-static std::string ig_engine = "imagine_vk";
+static std::string ig_engine = 
+    "imagine_vk";
+static std::vector<std::string> meta_layers = {
+    "VK_LAYER_GOOGLE_threading",
+    "VK_LAYER_LUNARG_parameter_validation",
+    "VK_LAYER_LUNARG_object_tracker",
+    "VK_LAYER_LUNARG_core_validation",
+    "VK_LAYER_LUNARG_swapchain",
+    "VK_LAYER_GOOGLE_unique_objects" };
 
 VkBool32 vk_dbg_callback(VkDebugReportFlagsEXT flags, VkDebugReportObjectTypeEXT type,
                          uint64_t obj, size_t location, int32_t code, const char* prefix, const char* msg, void* udata) {
@@ -158,7 +166,7 @@ void instance::pre_acquire() {
       vkEnumerateInstanceLayerProperties(&layer_count, impl_->layers.data());
 
       impl_->layers.erase(std::remove_if(impl_->layers.begin(), impl_->layers.end(), [](auto& layer) {
-        return std::string{layer.layerName} != "VK_LAYER_LUNARG_standard_validation";
+        return std::find(meta_layers.begin(), meta_layers.end(), std::string{layer.layerName}) == meta_layers.end();
       }), impl_->layers.end()); }
   }
 }

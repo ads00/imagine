@@ -25,7 +25,7 @@
 #define IG_ENVI_VK_VULKAN_H
 
 #include "imagine/math/discrete.h"
-#include "imagine/envi/library.h"
+#include "imagine/envi/dynlib.h"
 #include "imagine/envi/arch/widget_impl.h"
 
 #if defined(IG_WIN)
@@ -53,7 +53,7 @@ public:
 
 protected:
   static void acquire(instance& i); static void acquire(device& d);
-  static library vulkan_;
+  static dynlib vulkan_;
 };
 
 // VK_core
@@ -324,6 +324,8 @@ public:
   PFN_vkGetSwapchainCounterEXT vkGetSwapchainCounterEXT = nullptr;
   // VK_EXT_discard_rectangles
   PFN_vkCmdSetDiscardRectangleEXT vkCmdSetDiscardRectangleEXT = nullptr;
+  // VK_EXT_hdr_metadata
+  PFN_vkSetHdrMetadataEXT vkSetHdrMetadata = nullptr;
 };
 
 } // namespace vk
