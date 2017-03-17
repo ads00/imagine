@@ -21,7 +21,7 @@
  SOFTWARE.
 */
 
-#include "imagine/math/geom/projective.h"
+#include "imagine/math/geometry/projective.h"
 
 namespace ig  {
 namespace trf {
@@ -58,12 +58,12 @@ mat4 scale(const vec3& s) {
 }
 
 mat4 look(const vec3& eye, const vec3& focus, const vec3& up) {
-  auto R2 = linalg::normalise(focus - eye);
-  auto R0 = linalg::normalise(linalg::cross(up, R2));
-  auto R1 = linalg::cross(R2, R0);
+  auto R2 = lin::normalise(focus - eye);
+  auto R0 = lin::normalise(lin::cross(up, R2));
+  auto R1 = lin::cross(R2, R0);
   auto n = -eye;
 
-  using linalg::dot;
+  using lin::dot;
   return mat4{R0[0],      R1[0],      R2[0],      0.f,
               R0[1],      R1[1],      R2[1],      0.f,
               R0[2],      R1[2],      R2[2],      0.f,

@@ -24,19 +24,19 @@
 #ifndef IG_MATH_BINARY_H
 #define IG_MATH_BINARY_H
 
-#include "imagine/math/linalg/base/alg.h"
+#include "imagine/math/linalg/base/lin.h"
 #include <functional>
 
 namespace ig {
 
 template <typename Lhs, typename Rhs, typename Op>
-struct alg_traits< binary_expr<Lhs, Rhs, Op> > {
-  using T = std::common_type_t< alg_t<Lhs>, alg_t<Rhs> >;
+struct lin_traits< binary_expr<Lhs, Rhs, Op> > {
+  using T = std::common_type_t< lin_t<Lhs>, lin_t<Rhs> >;
   static constexpr auto M = Lhs::M, N = Lhs::N;
 };
 
 template <typename Lhs, typename Rhs, typename Op>
-class binary_expr : public alg< binary_expr<Lhs, Rhs, Op> > {
+class binary_expr : public lin_base< binary_expr<Lhs, Rhs, Op> > {
 public:
   explicit binary_expr(const Lhs& lhs, const Rhs& rhs, const Op& op)
     : lhs_{lhs}
@@ -56,25 +56,25 @@ private:
 };
 
 template <typename Lhs, typename Rhs>
-constexpr auto operator+(const alg<Lhs>& lhs, const alg<Rhs>& rhs) {
+constexpr auto operator+(const lin_base<Lhs>& lhs, const lin_base<Rhs>& rhs) {
   assert(lhs.size() == rhs.size() && "Incoherent matrix-matrix addition");
   return binary_expr< Lhs, Rhs, std::plus<> >{lhs.derived(), rhs.derived(), std::plus<>{}};
 }
 
 template <typename Lhs, typename Rhs>
-constexpr auto operator-(const alg<Lhs>& lhs, const alg<Rhs>& rhs) {
+constexpr auto operator-(const lin_base<Lhs>& lhs, const lin_base<Rhs>& rhs) {
   assert(lhs.size() == rhs.size() && "Incoherent matrix-matrix subtraction");
   return binary_expr< Lhs, Rhs, std::minus<> >{lhs.derived(), rhs.derived(), std::minus<>{}};
 }
 
 template <typename Lhs, typename Rhs>
-constexpr auto operator/(const alg<Lhs>& lhs, const alg<Rhs>& rhs) {
+constexpr auto operator/(const lin_base<Lhs>& lhs, const lin_base<Rhs>& rhs) {
   assert(lhs.size() == rhs.size() && "Incoherent matrix-matrix division");
   return binary_expr< Lhs, Rhs, std::divides<> >{lhs.derived(), rhs.derived(), std::divides<>{}};
 }
 
 template <typename Lhs, typename Rhs>
-constexpr auto operator%(const alg<Lhs>& lhs, const alg<Rhs>& rhs) {
+constexpr auto operator%(const lin_base<Lhs>& lhs, const lin_base<Rhs>& rhs) {
   assert(lhs.size() == rhs.size() && "Incoherent matrix cwise multiplication");
   return binary_expr< Lhs, Rhs, std::multiplies<> >{lhs.derived(), rhs.derived(), std::multiplies<>{}};
 }

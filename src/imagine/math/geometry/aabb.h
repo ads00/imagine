@@ -21,49 +21,36 @@
  SOFTWARE.
 */
 
-#ifndef IG_MATH_ROW_H
-#define IG_MATH_ROW_H
+#ifndef IG_MATH_AABB_H
+#define IG_MATH_AABB_H
 
-#include "imagine/math/linalg/base/alg.h"
+#include "imagine/math/geometry/projective.h"
 
 namespace ig {
 
-template <typename Xpr>
-struct alg_traits< alg_row<Xpr> > : alg_traits<Xpr> {
-  using T = alg_t<Xpr>;
-  static constexpr auto M = 1, N = Xpr::N;
-};
+class aabb;
+class convex;
 
-template <typename Xpr>
-class alg_row : public alg< alg_row<Xpr> > {
+class ig_api aabb {
 public:
-  explicit alg_row(Xpr& xpr, size_t row)
-    : xpr_{xpr}
-    , row_{row} {}
+  aabb();
+  explicit aabb(const vec3& min, const vec3& max);
+  explicit aabb(const std::vector<vec3>& points);
 
-  auto rows() const { return 1; }
-  auto cols() const { return xpr_.cols(); }
+  void expand(const vec3& point);
 
-  auto operator()(size_t, size_t col) const { return xpr_(row_, col); }
-  auto& operator()(size_t, size_t col)      { return xpr_(row_, col); }
+  auto size() const         { return max_ - min_; }
+  auto volume() const       { return size().prod(); }
+  auto surface_area() const {
+    auto ext = size();
+    return 2.f * (ext[0] * ext[1] + ext[0] * ext[2] + ext[1] * ext[2]); }
 
-  auto operator[](size_t n) const { return xpr_(row_, n); }
-  auto& operator[](size_t n)      { return xpr_(row_, n); }
+  auto centroid() const { return (min_ + max_) * 0.5f; }
 
-  auto operator=(const alg_row& o) {
-    eval(*this, o); return *this;
-  }
-
-  template <typename Alg>
-  auto operator=(const alg<Alg>& o) {
-    eval(*this, o); return *this;
-  }
-
-private:
-  Xpr& xpr_;
-  size_t row_;
+//private:
+  vec3 min_, max_;
 };
 
 } // namespace ig
 
-#endif // IG_MATH_ROW_H
+#endif // IG_MATH_BV_H

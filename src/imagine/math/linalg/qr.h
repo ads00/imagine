@@ -28,16 +28,16 @@
 
 namespace ig {
 
-template <typename Alg>
+template <typename Lin>
 class qr {
 public:
-  using T = alg_t<Alg>;
+  using T = lin_t<Lin>;
   using matrix_type = matrix<T>;
   using vector_type = colvec<T>;
 
   static_assert(std::is_arithmetic<T>::value, "QR decomposition requires an arithmetic matrix");
 
-  explicit qr(const matrix_type& alg);
+  explicit qr(const matrix_type& lin);
 
   auto solve(const vector_type& b) -> vector_type;
 
@@ -51,11 +51,11 @@ private:
   vector_type tau_;
 };
 
-template <typename Alg>
-qr<Alg>::qr(const matrix_type& alg)
-  : m_{alg.rows()}
-  , n_{alg.cols()}
-  , qr_{alg}
+template <typename Lin>
+qr<Lin>::qr(const matrix_type& lin)
+  : m_{lin.rows()}
+  , n_{lin.cols()}
+  , qr_{lin}
   , tau_{n_} {
 
   for (size_t i = 0; i < n_; ++i) {
@@ -80,8 +80,8 @@ qr<Alg>::qr(const matrix_type& alg)
   }
 }
 
-template <typename Alg>
-auto qr<Alg>::solve(const vector_type& b) -> vector_type {
+template <typename Lin>
+auto qr<Lin>::solve(const vector_type& b) -> vector_type {
   // Compute y = Q^Tb
   auto y = b;
   for (size_t i = 0; i < n_; ++i) {
@@ -101,16 +101,16 @@ auto qr<Alg>::solve(const vector_type& b) -> vector_type {
   return x;
 }
 
-namespace linalg {
+namespace lin {
 
-template <typename Alg>
-constexpr auto qr_run(const alg<Alg>& alg) {
-  assert(alg.rows() >= alg.cols() && "QR decomposition requires a square or rectangular matrix"
+template <typename Lin>
+constexpr auto qr_run(const lin_base<Lin>& lin) {
+  assert(lin.rows() >= lin.cols() && "QR decomposition requires a square or rectangular matrix"
                                      " where m >= n");
-  return qr<Alg>{alg};
+  return qr<Lin>{lin};
 }
 
-} // namespace linalg
+} // namespace lin
 } // namespace ig
 
 #endif // IG_MATH_QR_H

@@ -74,8 +74,8 @@ auto quaternion<T>::operator+=(const quaternion& q) -> quaternion& {
 template <typename T>
 auto quaternion<T>::operator*=(const quaternion& q) -> quaternion& {
   auto& s = *this;
-  scalar = s.scalar * q.scalar - linalg::dot(s.vector, q.vector);
-  vector = s.scalar * q.vector + q.scalar * s.vector + linalg::cross(s.vector, q.vector);
+  scalar = s.scalar * q.scalar - lin::dot(s.vector, q.vector);
+  vector = s.scalar * q.vector + q.scalar * s.vector + lin::cross(s.vector, q.vector);
   return *this;
 }
 
@@ -144,7 +144,7 @@ using quaterniond = quaternion<double>;
 
 } // namespace ig
 
-#include "imagine/math/linalg/spatial/quaternion_geometric.h"
-#include "imagine/math/linalg/spatial/quaternion_interpolate.h"
+#include "imagine/math/geometry/spatial/quaternion_geometric.h"
+#include "imagine/math/geometry/spatial/quaternion_interpolate.h"
 
 #endif // IG_MATH_QUATERNION_H

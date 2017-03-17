@@ -24,32 +24,32 @@
 #ifndef IG_MATH_MATRIX_H
 #define IG_MATH_MATRIX_H
 
-#include "imagine/math/linalg/base/alg.h"
-#include "imagine/math/linalg/base/alg_block.h"
-#include "imagine/math/linalg/base/alg_col.h"
-#include "imagine/math/linalg/base/alg_row.h"
-#include "imagine/math/linalg/base/alg_diag.h"
-#include "imagine/math/linalg/base/alg_trans.h"
-#include "imagine/math/linalg/base/alg_relational.h"
+#include "imagine/math/linalg/base/lin.h"
+#include "imagine/math/linalg/base/lin_block.h"
+#include "imagine/math/linalg/base/lin_col.h"
+#include "imagine/math/linalg/base/lin_row.h"
+#include "imagine/math/linalg/base/lin_diag.h"
+#include "imagine/math/linalg/base/lin_trans.h"
+#include "imagine/math/linalg/base/lin_relational.h"
 
-#include "imagine/math/linalg/expr/alg_product.h"
-#include "imagine/math/linalg/expr/alg_unary.h"
-#include "imagine/math/linalg/expr/alg_scalar.h"
-#include "imagine/math/linalg/expr/alg_binary.h"
+#include "imagine/math/linalg/expr/lin_product.h"
+#include "imagine/math/linalg/expr/lin_unary.h"
+#include "imagine/math/linalg/expr/lin_scalar.h"
+#include "imagine/math/linalg/expr/lin_binary.h"
 
 namespace ig {
 
 template <typename T_, int32_t M_, int32_t N_>
-struct alg_traits< matrix<T_, M_, N_> > {
+struct lin_traits< matrix<T_, M_, N_> > {
   using T = T_;
   static constexpr auto M = M_, N = N_;
 };
 
 template <typename T, int32_t M = dynamic_sized, int32_t N = M>
-class matrix : public alg< matrix<T, M, N> > {
+class matrix : public lin_base< matrix<T, M, N> > {
 public:
   using base_type 
-    = alg< matrix<T, M, N> >;
+    = lin_base< matrix<T, M, N> >;
 
   static constexpr auto dynamic_rows = (M < 0);
   static constexpr auto dynamic_cols = (N < 0);
@@ -76,12 +76,12 @@ public:
   constexpr explicit matrix(size_t m, size_t n)
     : data_{m, n, std::vector<T>(m * n)} {}
 
-  template <typename Alg>
-  matrix(const alg<Alg>& o) : matrix{o, std::integral_constant<bool, immutable>{}} 
+  template <typename Lin>
+  matrix(const lin_base<Lin>& o) : matrix{o, std::integral_constant<bool, immutable>{}}
   { eval(*this, o, data_); }
 
-  template <typename Alg> matrix(const alg<Alg>& o, std::true_type) {}
-  template <typename Alg> matrix(const alg<Alg>& o, std::false_type)
+  template <typename Lin> matrix(const lin_base<Lin>& o, std::true_type) {}
+  template <typename Lin> matrix(const lin_base<Lin>& o, std::false_type)
     : data_{o.rows(), o.cols(), std::vector<T>(o.rows() * o.cols())} {}
 
   matrix(const base_type& o) : data_{o.derived().data_} {}
@@ -150,7 +150,7 @@ auto matrix<T, M, N>::make_eye() -> matrix& {
   return *this;
 }
 
-#define IG_ALG_USINGS(Type, TypeSuffix, Size) \
+#define IG_LIN_USINGS(Type, TypeSuffix, Size) \
 using matrix##Size##TypeSuffix = matrix<Type, Size, Size>; \
 using colvec##Size##TypeSuffix = matrix<Type, Size, 1>;    \
 using rowvec##Size##TypeSuffix = matrix<Type, 1, Size>;
@@ -159,9 +159,9 @@ using rowvec##Size##TypeSuffix = matrix<Type, 1, Size>;
 using matrix##TypeSuffix = matrix<Type, dynamic_sized, dynamic_sized>; \
 using colvec##TypeSuffix = matrix<Type, dynamic_sized, 1>;             \
 using rowvec##TypeSuffix = matrix<Type, 1, dynamic_sized>;             \
-IG_ALG_USINGS(Type, TypeSuffix, 2) \
-IG_ALG_USINGS(Type, TypeSuffix, 3) \
-IG_ALG_USINGS(Type, TypeSuffix, 4)
+IG_LIN_USINGS(Type, TypeSuffix, 2) \
+IG_LIN_USINGS(Type, TypeSuffix, 3) \
+IG_LIN_USINGS(Type, TypeSuffix, 4)
 
 IG_MATRIX_USINGS_SIZES(int, i)
 IG_MATRIX_USINGS_SIZES(float, f)
@@ -170,7 +170,7 @@ IG_MATRIX_USINGS_SIZES(std::complex<float>, cf)
 IG_MATRIX_USINGS_SIZES(std::complex<double>, cd)
 
 #undef IG_MATRIX_USINGS_SIZES
-#undef IG_ALG_USINGS
+#undef IG_LIN_USINGS
 
 } // namespace ig
 

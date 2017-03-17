@@ -21,43 +21,37 @@
  SOFTWARE.
 */
 
-#ifndef IG_MATH_PROJECTIVE_H
-#define IG_MATH_PROJECTIVE_H
+#ifndef IG_MATH_RELATIONAL_H
+#define IG_MATH_RELATIONAL_H
 
-#include "imagine/math/linalg/matrix.h"
-#include "imagine/math/linalg/analysis.h"
-#include "imagine/math/linalg/spatial/quaternion.h"
-#include "imagine/math/linalg/spatial/ray.h"
+#include "imagine/math/linalg/base/lin.h"
 
 namespace ig {
 
-using mat4 = matrix<float, 4>;
-using vec4 = colvec<float, 4>; using vec3 = colvec<float, 3>; using vec2 = colvec<float, 2>;
-using quat = quaternion<float>;
+template <typename Lhs, typename Rhs>
+bool operator<(const lin_base<Lhs>& lhs, const lin_base<Rhs>& rhs) {
+  assert(lhs.size() == rhs.size() && "Incoherent matrix comparison");
 
-using ray3 = ray<float, 3>;
-
-enum class planar_proj { perspective, orthographic };
-enum class coordinate  { local, world };
-
-namespace trf {
-
-ig_api mat4 translation(const vec3& t);
-ig_api mat4 rotation(const quat& r);
-ig_api mat4 scale(const vec3& s);
-
-ig_api mat4 look(const vec3& eye, const vec3& focus, const vec3& up);
-ig_api mat4 perspective(float fovy, float asp, float zn, float zf);
-ig_api mat4 orthographic(float l, float r, float t, float b, float zn, float zf);
-
-ig_api vec3 transform(const mat4& m, const vec3& v, bool unit = false);
-
-static auto eye() {
-  static auto eye = mat4::eye();
-  return eye;
+  auto pair = std::mismatch(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
+  return (pair.first == lhs.end() || 
+         *pair.first < *pair.second);
 }
 
-} // namespace trf
+template <typename Lhs, typename Rhs>
+auto operator>(const lin_base<Lhs>& lhs, const lin_base<Rhs>& rhs) {
+  return rhs < lhs;
+}
+
+template <typename Lhs, typename Rhs>
+auto operator<=(const lin_base<Lhs>& lhs, const lin_base<Rhs>& rhs) {
+  return !(lhs > rhs);
+}
+
+template <typename Lhs, typename Rhs>
+auto operator>=(const lin_base<Lhs>& lhs, const lin_base<Rhs>& rhs) {
+  return !(lhs < rhs);
+}
+
 } // namespace ig
 
-#endif // IG_MATH_PROJECTIVE_H
+#endif // IG_MATH_RELATIONAL_H

@@ -21,29 +21,26 @@
  SOFTWARE.
 */
 
-#ifndef IG_MATH_QUATERNION_INTERPOLATE_H
-#define IG_MATH_QUATERNION_INTERPOLATE_H
+#include "imagine/math/geometry/aabb.h"
 
-namespace ig     {
-namespace linalg {
+namespace ig {
 
-template <typename T>
-constexpr auto lerp(const quaternion<T>& lhs, const quaternion<T>& rhs, T t) {
-  return normalise(lhs * (T(1) - t) + rhs * t);
+// axis-aligned bounding box
+aabb::aabb()
+  : min_{ std::numeric_limits<float>::infinity()}
+  , max_{-std::numeric_limits<float>::infinity()} {}
+
+aabb::aabb(const vec3& min, const vec3& max)
+  : min_{min}
+  , max_{max} {}
+
+aabb::aabb(const std::vector<vec3>& points) : aabb{} {
+  for (auto& point : points)
+    expand(point);
 }
 
-template <typename T>
-auto slerp(const quaternion<T>& lhs, const quaternion<T>& rhs, T t) {
-  auto coshalf = dot(lhs, rhs);
-  if (std::abs(coshalf) >= T(1)) {
-    return lerp(lhs, rhs, t);
-  } else {
-    auto a = std::acos(coshalf);
-    return (lhs * std::sin((T(1) - t) * a) + rhs * std::sin(t * a)) / std::sin(a);
-  }
+void aabb::expand(const vec3& point) {
+  min_ = std::min(min_, point), max_ = std::max(max_, point);
 }
 
-} // namespace linalg
 } // namespace ig
-
-#endif // IG_MATH_QUATERNION_INTERPOLATE_H

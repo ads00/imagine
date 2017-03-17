@@ -28,39 +28,39 @@
 #include "imagine/math/linalg/operation.h"
 #include "imagine/math/linalg/lu.h"
 
-namespace ig     {
-namespace linalg {
+namespace ig  {
+namespace lin {
 
-template <typename Alg>
-constexpr auto norm(const alg<Alg>& alg) {
-  return std::sqrt(dot(alg, alg));
+template <typename Lin>
+constexpr auto norm(const lin_base<Lin>& lin) {
+  return std::sqrt(dot(lin, lin));
 }
 
-template <typename Alg>
-constexpr auto normalise(const alg<Alg>& alg) {
-  return alg / norm(alg);
+template <typename Lin>
+constexpr auto normalise(const lin_base<Lin>& lin) {
+  return lin / norm(lin);
 }
 
-template <typename Alg>
-constexpr auto trace(const alg<Alg>& alg) {
-  return alg.diag().sum();
+template <typename Lin>
+constexpr auto trace(const lin_base<Lin>& lin) {
+  return lin.diag().sum();
 }
 
 namespace detail {
 
-template <typename Alg, size_t size = Alg::N>
+template <typename Lin, size_t size = Lin::N>
 struct determinant {
-  static constexpr auto run(const alg<Alg>& alg) {
-    return lu_run(alg).det();
+  static constexpr auto run(const lin_base<Lin>& lin) {
+    return lu_run(lin).det();
   }
 };
 
-template <typename Alg>
-struct determinant<Alg, 4> {
-  static auto run(const alg<Alg>& alg) {
-    auto det_helper = [&alg](size_t a, size_t b, size_t c, size_t d) {
-      return (alg(a, 0) * alg(b, 1) - alg(b, 0) * alg(a, 1)) *
-             (alg(c, 2) * alg(d, 3) - alg(d, 2) * alg(c, 3));
+template <typename Lin>
+struct determinant<Lin, 4> {
+  static auto run(const lin_base<Lin>& lin) {
+    auto det_helper = [&lin](size_t a, size_t b, size_t c, size_t d) {
+      return (lin(a, 0) * lin(b, 1) - lin(b, 0) * lin(a, 1)) *
+             (lin(c, 2) * lin(d, 3) - lin(d, 2) * lin(c, 3));
     };
 
     return det_helper(0, 1, 2, 3) -
@@ -72,11 +72,11 @@ struct determinant<Alg, 4> {
   }
 };
 
-template <typename Alg>
-struct determinant<Alg, 3> {
-  static auto run(const alg<Alg>& alg) {
-    auto det_helper = [&alg](size_t a, size_t b, size_t c) {
-      return alg(0, a) * (alg(1, b) * alg(2, c) - alg(1, c) * alg(2, b));
+template <typename Lin>
+struct determinant<Lin, 3> {
+  static auto run(const lin_base<Lin>& lin) {
+    auto det_helper = [&lin](size_t a, size_t b, size_t c) {
+      return lin(0, a) * (lin(1, b) * lin(2, c) - lin(1, c) * lin(2, b));
     };
 
     return det_helper(0, 1, 2) -
@@ -85,27 +85,27 @@ struct determinant<Alg, 3> {
   }
 };
 
-template <typename Alg>
-struct determinant<Alg, 2> {
-  static auto run(const alg<Alg>& alg) {
-    return alg(0, 0) * alg(1, 1) - alg(1, 0) * alg(0, 1);
+template <typename Lin>
+struct determinant<Lin, 2> {
+  static auto run(const lin_base<Lin>& lin) {
+    return lin(0, 0) * lin(1, 1) - lin(1, 0) * lin(0, 1);
   }
 };
 
-template <typename Alg, size_t size = Alg::M>
+template <typename Lin, size_t size = Lin::M>
 struct inverse {
-  static constexpr auto run(const alg<Alg>& alg) {
-    return lu_run(alg).inv();
+  static constexpr auto run(const lin_base<Lin>& lin) {
+    return lu_run(lin).inv();
   }
 };
 
-template <typename Alg>
-struct inverse<Alg, 4> {
-  static auto run(const alg<Alg>& alg) {
-    auto cofactor = [&alg](size_t a, size_t b) {
-      auto det3_helper = [&alg](size_t a1, size_t a2, size_t a3,
+template <typename Lin>
+struct inverse<Lin, 4> {
+  static auto run(const lin_base<Lin>& lin) {
+    auto cofactor = [&lin](size_t a, size_t b) {
+      auto det3_helper = [&lin](size_t a1, size_t a2, size_t a3,
                                 size_t b1, size_t b2, size_t b3) {
-        return alg(a1, b1) * (alg(a2, b2) * alg(a3, b3) - alg(a2, b3) * alg(a3, b2));
+        return lin(a1, b1) * (lin(a2, b2) * lin(a3, b3) - lin(a2, b3) * lin(a3, b2));
       };
 
       auto a1 = (a + 1) % 4, a2 = (a + 2) % 4, a3 = (a + 3) % 4;
@@ -116,9 +116,9 @@ struct inverse<Alg, 4> {
              det3_helper(a3, a1, a2, b1, b2, b3);
     };
 
-    typename Alg::plain_type 
+    typename Lin::plain_type 
       inv{};
-    auto invdet = alg_t<Alg>(1) / determinant<Alg>::run(alg);
+    auto invdet = lin_t<Lin>(1) / determinant<Lin>::run(lin);
 
     inv(0, 0) =  cofactor(0, 0) * invdet; inv(1, 0) = -cofactor(0, 1) * invdet;
     inv(2, 0) =  cofactor(0, 2) * invdet; inv(3, 0) = -cofactor(0, 3) * invdet;
@@ -132,19 +132,19 @@ struct inverse<Alg, 4> {
   }
 };
 
-template <typename Alg>
-struct inverse<Alg, 3> {
-  static auto run(const alg<Alg>& alg) {
-    auto cofactor = [&alg](size_t a, size_t b) {
+template <typename Lin>
+struct inverse<Lin, 3> {
+  static auto run(const lin_base<Lin>& lin) {
+    auto cofactor = [&lin](size_t a, size_t b) {
       auto a1 = (a + 1) % 3, a2 = (a + 2) % 3;
       auto b1 = (b + 1) % 3, b2 = (b + 2) % 3;
 
-      return alg(a1, b1) * alg(a2, b2) - alg(a1, b2) * alg(a2, b1);
+      return lin(a1, b1) * lin(a2, b2) - lin(a1, b2) * lin(a2, b1);
     };
 
-    typename Alg::plain_type
+    typename Lin::plain_type
       inv{};
-    auto invdet = alg_t<Alg>(1) / determinant<Alg>::run(alg);
+    auto invdet = lin_t<Lin>(1) / determinant<Lin>::run(lin);
 
     inv(0, 0) = cofactor(0, 0) * invdet; inv(1, 0) = cofactor(0, 1) * invdet; inv(2, 0) = cofactor(0, 2) * invdet;
     inv(0, 1) = cofactor(1, 0) * invdet; inv(1, 1) = cofactor(1, 1) * invdet; inv(2, 1) = cofactor(1, 2) * invdet;
@@ -153,34 +153,34 @@ struct inverse<Alg, 3> {
   }
 };
 
-template <typename Alg>
-struct inverse<Alg, 2> {
-  static auto run(const alg<Alg>& alg) {
-    typename Alg::plain_type
+template <typename Lin>
+struct inverse<Lin, 2> {
+  static auto run(const lin_base<Lin>& lin) {
+    typename Lin::plain_type
       inv{};
-    auto invdet = alg_t<Alg>(1) / determinant<Alg>::run(alg);
+    auto invdet = lin_t<Lin>(1) / determinant<Lin>::run(lin);
 
-    inv(0, 0) =  alg(1, 1) * invdet; inv(1, 0) = -alg(1, 0) * invdet;
-    inv(0, 1) = -alg(0, 1) * invdet; inv(1, 1) =  alg(0, 0) * invdet;
+    inv(0, 0) =  lin(1, 1) * invdet; inv(1, 0) = -lin(1, 0) * invdet;
+    inv(0, 1) = -lin(0, 1) * invdet; inv(1, 1) =  lin(0, 0) * invdet;
     return inv;
   }
 };
 
 } // namespace detail
 
-template <typename Alg>
-constexpr auto det(const alg<Alg>& alg) {
-  assert(alg.square() && "Determinant exists only with square matrices");
-  return detail::determinant<Alg>::run(alg);
+template <typename Lin>
+constexpr auto det(const lin_base<Lin>& lin) {
+  assert(lin.square() && "Determinant exists only with square matrices");
+  return detail::determinant<Lin>::run(lin);
 }
 
-template <typename Alg>
-constexpr auto inv(const alg<Alg>& alg) {
-  assert(alg.square() && "Inverse exists only with square matrices");
-  return detail::inverse<Alg>::run(alg);
+template <typename Lin>
+constexpr auto inv(const lin_base<Lin>& lin) {
+  assert(lin.square() && "Inverse exists only with square matrices");
+  return detail::inverse<Lin>::run(lin);
 }
 
-} // namespace linalg
+} // namespace lin
 } // namespace ig
 
 #endif // IG_MATH_ANALYSIS_H

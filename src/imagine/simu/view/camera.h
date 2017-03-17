@@ -24,7 +24,7 @@
 #ifndef IG_SIMU_CAMERA_H
 #define IG_SIMU_CAMERA_H
 
-#include "imagine/math/geom/projective.h"
+#include "imagine/math/geometry/projective.h"
 
 namespace ig {
 
@@ -50,9 +50,10 @@ private:
   float zn_, zf_;
   float fovy_;
 
+  bool unit_;
   bool uview_, uproj_;
-  mat4 view_, proj_,
-    iview_, iproj_;
+  mat4  view_,  proj_,
+       iview_, iproj_;
 };
 
 } // namespace ig

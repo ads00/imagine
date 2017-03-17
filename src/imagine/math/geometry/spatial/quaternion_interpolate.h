@@ -21,43 +21,29 @@
  SOFTWARE.
 */
 
-#ifndef IG_MATH_TRANSFORM_H
-#define IG_MATH_TRANSFORM_H
+#ifndef IG_MATH_QUATERNION_INTERPOLATE_H
+#define IG_MATH_QUATERNION_INTERPOLATE_H
 
-#include "imagine/math/geom/projective.h"
+namespace ig  {
+namespace spt {
 
-namespace ig {
+template <typename T>
+constexpr auto lerp(const quaternion<T>& lhs, const quaternion<T>& rhs, T t) {
+  return normalise(lhs * (T(1) - t) + rhs * t);
+}
 
-class ig_api transform {
-public:
-  explicit transform(const vec3& pos, const quat& ori, const vec3& sca);
-  virtual ~transform();
+template <typename T>
+auto slerp(const quaternion<T>& lhs, const quaternion<T>& rhs, T t) {
+  auto coshalf = dot(lhs, rhs);
+  if (std::abs(coshalf) >= T(1)) {
+    return lerp(lhs, rhs, t);
+  } else {
+    auto a = std::acos(coshalf);
+    return (lhs * std::sin((T(1) - t) * a) + rhs * std::sin(t * a)) / std::sin(a);
+  }
+}
 
-  void positions(const vec3& pos, coordinate coord = coordinate::local);
-  void directs(const quat& ori, coordinate coord = coordinate::local);
-  void scales(const vec3& sca, coordinate coord = coordinate::local);
-
-  transform& translate(const vec3& tra, coordinate coord = coordinate::local);
-  transform& rotate(const quat& rot, coordinate coord = coordinate::local);
-  transform& scale(const vec3& sca);
-
-  void link(transform* parent);
-
-  const mat4& get_wt();
-
-private:
-  void remove_child(const transform& tr);
-  void hierarchical_invalidate();
-
-private:
-  transform* parent_;
-  std::vector< std::reference_wrapper<transform> > children_;
-
-  bool uwt_;
-  mat4 wt_;
-  vec3 pos_; quat ori_; vec3 sca_;
-};
-
+} // namespace spt
 } // namespace ig
 
-#endif // IG_MATH_TRANSFORM_H
+#endif // IG_MATH_QUATERNION_INTERPOLATE_H

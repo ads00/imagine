@@ -21,7 +21,7 @@
  SOFTWARE.
 */
 
-#include "imagine/math/geom/transform.h"
+#include "imagine/math/geometry/transform.h"
 
 namespace ig {
 
@@ -48,7 +48,7 @@ void transform::positions(const vec3& pos, coordinate coord) {
     break;
   case coordinate::world:
     pos_ = parent_
-      ? trf::transform(linalg::inv(parent_->get_wt()), pos)
+      ? trf::transform(lin::inv(parent_->get_wt()), pos)
       : pos;
     break;
   }
@@ -83,11 +83,11 @@ void transform::scales(const vec3& sca, coordinate coord) {
 transform& transform::translate(const vec3& tra, coordinate coord) {
   switch (coord) {
   case coordinate::local:
-    pos_ += linalg::rotate(ori_, tra);
+    pos_ += spt::rotate(ori_, tra);
     break;
   case coordinate::world:
     pos_ += parent_ 
-      ? trf::transform(linalg::inv(parent_->get_wt()), tra)
+      ? trf::transform(lin::inv(parent_->get_wt()), tra)
       : tra;
     break;
   }
@@ -98,7 +98,7 @@ transform& transform::translate(const vec3& tra, coordinate coord) {
 transform& transform::rotate(const quat& rot, coordinate coord) {
   switch (coord) {
   case coordinate::local:
-    ori_ = linalg::normalise(ori_ * rot);
+    ori_ = spt::normalise(ori_ * rot);
     break;
   case coordinate::world:
     auto into = parent_ 
@@ -106,8 +106,8 @@ transform& transform::rotate(const quat& rot, coordinate coord) {
       : ori_;
 
     ori_ = parent_ 
-      ? ori_ * linalg::inv(into) * rot * into 
-      : linalg::normalise(rot * into);
+      ? ori_ * spt::inv(into) * rot * into
+      : spt::normalise(rot * into);
     break;
   }
   hierarchical_invalidate();

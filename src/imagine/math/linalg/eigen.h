@@ -28,19 +28,19 @@
 
 namespace ig {
 
-template <typename Alg, bool Sym = false> class eigen;
+template <typename Lin, bool Sym = false> class eigen;
 
 // Symmetric eigendecomposition
-template <typename Alg>
-class eigen<Alg, true> {
+template <typename Lin>
+class eigen<Lin, true> {
 public:
-  using T = alg_t<Alg>;
+  using T = lin_t<Lin>;
   using matrix_type = matrix<T>;
   using vector_type = colvec<T>;
 
   static_assert(std::is_arithmetic<T>::value, "Eigendecomposition requires an arithmetic matrix");
 
-  explicit eigen(const matrix_type& alg);
+  explicit eigen(const matrix_type& lin);
 
   auto& eigenvectors() const { return v_; }
   auto& eigenvalues() const  { return d_; }
@@ -52,10 +52,10 @@ private:
   vector_type d_;
 };
 
-template <typename Alg>
-eigen<Alg, true>::eigen(const matrix_type& alg)
-  : n_{alg.diagsize()}
-  , v_{alg}
+template <typename Lin>
+eigen<Lin, true>::eigen(const matrix_type& lin)
+  : n_{lin.diagsize()}
+  , v_{lin}
   , d_{n_} {
 
   vector_type work{n_};
@@ -171,15 +171,15 @@ eigen<Alg, true>::eigen(const matrix_type& alg)
   }
 }
 
-namespace linalg {
+namespace lin {
 
-template <typename Alg>
-constexpr auto eig_sym_run(const alg<Alg>& alg) {
-  assert(alg.square() && "Eigendecomposition requires a square matrix");
-  return eigen<Alg, true>{alg};
+template <typename Lin>
+constexpr auto eig_sym_run(const lin_base<Lin>& lin) {
+  assert(lin.square() && "Eigendecomposition requires a square matrix");
+  return eigen<Lin, true>{lin};
 }
 
-} // namespace linalg
+} // namespace lin
 } // namespace ig
 
 #endif // IG_MATH_EIGEN_H

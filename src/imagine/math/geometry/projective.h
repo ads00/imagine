@@ -21,47 +21,43 @@
  SOFTWARE.
 */
 
-#ifndef IG_MATH_DIAG_H
-#define IG_MATH_DIAG_H
+#ifndef IG_MATH_PROJECTIVE_H
+#define IG_MATH_PROJECTIVE_H
 
-#include "imagine/math/linalg/base/alg.h"
+#include "imagine/math/linalg/matrix.h"
+#include "imagine/math/linalg/analysis.h"
+#include "imagine/math/geometry/spatial/quaternion.h"
+#include "imagine/math/geometry/spatial/ray.h"
 
 namespace ig {
 
-template <typename Xpr>
-struct alg_traits< alg_diag<Xpr> > : alg_traits<Xpr> {
-  using T = alg_t<Xpr>;
-  static constexpr auto M = Xpr::M, N = 1;
-};
+using mat4 = matrix<float, 4>;
+using vec4 = colvec<float, 4>; using vec3 = colvec<float, 3>; using vec2 = colvec<float, 2>;
+using quat = quaternion<float>;
 
-template <typename Xpr>
-class alg_diag : public alg< alg_diag<Xpr> > {
-public:
-  explicit alg_diag(Xpr& xpr)
-    : xpr_{xpr} {}
+using ray3 = ray<float, 3>;
 
-  auto rows() const { return xpr_.diagsize(); }
-  auto cols() const { return 1; }
+enum class planar_proj { perspective, orthographic };
+enum class coordinate  { local, world };
 
-  auto operator()(size_t row, size_t) const { return xpr_(row, row); }
-  auto& operator()(size_t row, size_t)      { return xpr_(row, row); }
+namespace trf {
 
-  auto operator[](size_t n) const { return xpr_(n, n); }
-  auto& operator[](size_t n)      { return xpr_(n, n); }
+ig_api mat4 translation(const vec3& t);
+ig_api mat4 rotation(const quat& r);
+ig_api mat4 scale(const vec3& s);
 
-  auto operator=(const alg_diag& o) {
-    eval(*this, o); return *this;
-  }
+ig_api mat4 look(const vec3& eye, const vec3& focus, const vec3& up);
+ig_api mat4 perspective(float fovy, float asp, float zn, float zf);
+ig_api mat4 orthographic(float l, float r, float t, float b, float zn, float zf);
 
-  template <typename Alg>
-  auto operator=(const alg<Alg>& o) {
-    eval(*this, o); return *this;
-  }
+ig_api vec3 transform(const mat4& m, const vec3& v, bool unit = false);
 
-private:
-  Xpr& xpr_;
-};
+static auto eye() {
+  static auto eye = mat4::eye();
+  return eye;
+}
 
+} // namespace trf
 } // namespace ig
 
-#endif // IG_MATH_DIAG_H
+#endif // IG_MATH_PROJECTIVE_H

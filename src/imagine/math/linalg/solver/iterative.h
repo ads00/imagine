@@ -27,11 +27,11 @@
 #include "imagine/math/linalg/matrix.h"
 #include "imagine/math/linalg/solver/precond.h"
 
-namespace ig     {
-namespace linalg {
+namespace ig  {
+namespace lin {
 
-template <typename Alg, typename Rhs, typename Lhs, typename precond>
-void cg(const alg<Alg>& A, const alg<Rhs>& b, alg<Lhs>& x, const precond& precond, double tolerance = 1e-7) {
+template <typename Lin, typename Rhs, typename Lhs, typename precond>
+void cg(const lin<Lin>& A, const lin_base<Rhs>& b, lin_base<Lhs>& x, const precond& precond, double tolerance = 1e-7) {
   using vector_type = precond::vector_type;
 
   size_t n = A.diagsize();
@@ -55,10 +55,10 @@ void cg(const alg<Alg>& A, const alg<Rhs>& b, alg<Lhs>& x, const precond& precon
   }
 }
 
-template <typename Alg, typename Rhs, typename Lhs, typename precond>
-void bicgstab(const alg<Alg>& A, const alg<Rhs>& b, alg<Lhs>& x, const precond& precond, double tolerance = 1e-7) {
+template <typename Lin, typename Rhs, typename Lhs, typename precond>
+void bicgstab(const lin<Lin>& A, const lin_base<Rhs>& b, lin_base<Lhs>& x, const precond& precond, double tolerance = 1e-7) {
   using vector_type = precond::vector_type;
-  using T = alg_t<Alg>;
+  using T = lin_t<Lin>;
 
   size_t n = A.diagsize();
   vector_type r = b - A * x;
@@ -102,7 +102,7 @@ void bicgstab(const alg<Alg>& A, const alg<Rhs>& b, alg<Lhs>& x, const precond& 
   }
 }
 
-} // namespace linalg
+} // namespace lin
 } // namespace ig
 
 #endif // IG_MATH_ITERATIVE_H

@@ -29,10 +29,10 @@
 
 namespace ig {
 
-template <typename Alg>
+template <typename Lin>
 class cholesky {
 public:
-  using T = alg_t<Alg>;
+  using T = lin_t<Lin>;
   using matrix_type = matrix<T>;
   using vector_type = colvec<T>;
 
@@ -51,10 +51,10 @@ private:
   matrix_type llt_;
 };
 
-template <typename Alg>
-cholesky<Alg>::cholesky(const matrix_type& alg)
-  : n_{alg.diagsize()}
-  , llt_{alg} {
+template <typename Lin>
+cholesky<Lin>::cholesky(const matrix_type& lin)
+  : n_{lin.diagsize()}
+  , llt_{lin} {
 
   for (size_t i = 0; i < n_; ++i) {
     for (size_t j = i; j < n_; ++j) {
@@ -75,37 +75,37 @@ cholesky<Alg>::cholesky(const matrix_type& alg)
   }
 }
 
-template <typename Alg>
-auto cholesky<Alg>::det() const -> T {
+template <typename Lin>
+auto cholesky<Lin>::det() const -> T {
   return std::pow(llt_.diag().prod(), 2);
 }
 
-template <typename Alg>
-auto cholesky<Alg>::inv() const -> matrix_type {
+template <typename Lin>
+auto cholesky<Lin>::inv() const -> matrix_type {
   // Forward L-1
   auto inv = matrix_type::eye(n_);
   for (size_t i = 0; i < b_; ++i)
-    linalg::forward_solve(llt_, inv.col(i));
+    lin::forward_solve(llt_, inv.col(i));
   return inv.t() * inv;
 }
 
-template <typename Alg>
-auto cholesky<Alg>::solve(const vector_type& b) const -> vector_type {
+template <typename Lin>
+auto cholesky<Lin>::solve(const vector_type& b) const -> vector_type {
   vector_type x{b};
-  linalg::forward_solve (llt_, x);
-  linalg::backward_solve(llt_.t(), x);
+  lin::forward_solve (llt_, x);
+  lin::backward_solve(llt_.t(), x);
   return x;
 }
 
-namespace linalg {
+namespace lin {
 
-template <typename Alg>
-constexpr auto chol_run(const alg<Alg>& alg) {
-  assert(alg.square() && "Cholesky decomposition requires a square matrix");
-  return cholesky<Alg>{alg};
+template <typename Lin>
+constexpr auto chol_run(const lin_base<Lin>& lin) {
+  assert(lin.square() && "Cholesky decomposition requires a square matrix");
+  return cholesky<Lin>{lin};
 }
 
-} // namespace linalg
+} // namespace lin
 } // namespace ig
 
 #endif // IG_MATH_CHOLESKY_H

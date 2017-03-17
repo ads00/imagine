@@ -21,37 +21,43 @@
  SOFTWARE.
 */
 
-#ifndef IG_MATH_RELATIONAL_H
-#define IG_MATH_RELATIONAL_H
+#ifndef IG_MATH_TRANSFORM_H
+#define IG_MATH_TRANSFORM_H
 
-#include "imagine/math/linalg/base/alg.h"
+#include "imagine/math/geometry/projective.h"
 
 namespace ig {
 
-template <typename Lhs, typename Rhs>
-bool operator<(const alg<Lhs>& lhs, const alg<Rhs>& rhs) {
-  assert(lhs.size() == rhs.size() && "Incoherent matrix comparison");
+class ig_api transform {
+public:
+  explicit transform(const vec3& pos, const quat& ori, const vec3& sca);
+  virtual ~transform();
 
-  auto pair = std::mismatch(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
-  return (pair.first == lhs.end() || 
-         *pair.first < *pair.second);
-}
+  void positions(const vec3& pos, coordinate coord = coordinate::local);
+  void directs(const quat& ori, coordinate coord = coordinate::local);
+  void scales(const vec3& sca, coordinate coord = coordinate::local);
 
-template <typename Lhs, typename Rhs>
-auto operator>(const alg<Lhs>& lhs, const alg<Rhs>& rhs) {
-  return rhs < lhs;
-}
+  transform& translate(const vec3& tra, coordinate coord = coordinate::local);
+  transform& rotate(const quat& rot, coordinate coord = coordinate::local);
+  transform& scale(const vec3& sca);
 
-template <typename Lhs, typename Rhs>
-auto operator<=(const alg<Lhs>& lhs, const alg<Rhs>& rhs) {
-  return !(lhs > rhs);
-}
+  void link(transform* parent);
 
-template <typename Lhs, typename Rhs>
-auto operator>=(const alg<Lhs>& lhs, const alg<Rhs>& rhs) {
-  return !(lhs < rhs);
-}
+  const mat4& get_wt();
+
+private:
+  void remove_child(const transform& tr);
+  void hierarchical_invalidate();
+
+private:
+  transform* parent_;
+  std::vector< std::reference_wrapper<transform> > children_;
+
+  bool uwt_;
+  mat4 wt_;
+  vec3 pos_; quat ori_; vec3 sca_;
+};
 
 } // namespace ig
 
-#endif // IG_MATH_RELATIONAL_H
+#endif // IG_MATH_TRANSFORM_H

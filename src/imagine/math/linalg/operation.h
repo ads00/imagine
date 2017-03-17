@@ -26,17 +26,17 @@
 
 #include "imagine/math/linalg/matrix.h"
 
-namespace ig     {
-namespace linalg {
+namespace ig  {
+namespace lin {
 
 template <typename Lhs, typename Rhs>
-constexpr auto dot(const alg<Lhs>& lhs, const alg<Rhs>& rhs) {
+constexpr auto dot(const lin_base<Lhs>& lhs, const lin_base<Rhs>& rhs) {
   return (lhs % rhs).sum();
 }
 
 template <typename Lhs, typename Rhs>
-constexpr auto cross(const alg<Lhs>& lhs, const alg<Rhs>& rhs) {
-  using vec_type = colvec<std::common_type_t< alg_t<Lhs>, alg_t<Rhs> >, 3>;
+constexpr auto cross(const lin_base<Lhs>& lhs, const lin_base<Rhs>& rhs) {
+  using vec_type = colvec<std::common_type_t< lin_t<Lhs>, lin_t<Rhs> >, 3>;
   assert(lhs.vector() && lhs.vecsize() == 3 && "Cross exists only in three-dimensional space");
   assert(rhs.vector() && rhs.vecsize() == 3 && "Cross exists only in three-dimensional space");
 
@@ -45,7 +45,7 @@ constexpr auto cross(const alg<Lhs>& lhs, const alg<Rhs>& rhs) {
                   lhs[0] * rhs[1] - lhs[1] * rhs[0]};
 }
 
-} // namespace linalg
+} // namespace lin
 } // namespace ig
 
 #endif // IG_MATH_OPERATION_H

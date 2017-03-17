@@ -21,26 +21,49 @@
  SOFTWARE.
 */
 
-#include "imagine/math/geom/bv.h"
+#ifndef IG_MATH_ROW_H
+#define IG_MATH_ROW_H
+
+#include "imagine/math/linalg/base/lin.h"
 
 namespace ig {
 
-// axis-aligned bounding box
-aabb::aabb()
-  : min_{-std::numeric_limits<float>::infinity()}
-  , max_{ std::numeric_limits<float>::infinity()} {}
+template <typename Xpr>
+struct lin_traits< lin_row<Xpr> > : lin_traits<Xpr> {
+  using T = lin_t<Xpr>;
+  static constexpr auto M = 1, N = Xpr::N;
+};
 
-aabb::aabb(const vec3& min, const vec3& max)
-  : min_{min}
-  , max_{max} {}
+template <typename Xpr>
+class lin_row : public lin_base< lin_row<Xpr> > {
+public:
+  explicit lin_row(Xpr& xpr, size_t row)
+    : xpr_{xpr}
+    , row_{row} {}
 
-aabb::aabb(const std::vector<vec3>& points) : aabb{} {
-  for (auto& point : points)
-    expand(point);
-}
+  auto rows() const { return 1; }
+  auto cols() const { return xpr_.cols(); }
 
-void aabb::expand(const vec3& point) {
-  min_ = std::min(min_, point), max_ = std::max(max_, point);
-}
+  auto operator()(size_t, size_t col) const { return xpr_(row_, col); }
+  auto& operator()(size_t, size_t col)      { return xpr_(row_, col); }
+
+  auto operator[](size_t n) const { return xpr_(row_, n); }
+  auto& operator[](size_t n)      { return xpr_(row_, n); }
+
+  auto operator=(const lin_row& o) {
+    eval(*this, o); return *this;
+  }
+
+  template <typename Lin>
+  auto operator=(const lin_base<Lin>& o) {
+    eval(*this, o); return *this;
+  }
+
+private:
+  Xpr& xpr_;
+  size_t row_;
+};
 
 } // namespace ig
+
+#endif // IG_MATH_ROW_H

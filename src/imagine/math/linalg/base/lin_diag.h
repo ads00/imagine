@@ -21,44 +21,47 @@
  SOFTWARE.
 */
 
-#ifndef IG_MATH_BV_H
-#define IG_MATH_BV_H
+#ifndef IG_MATH_DIAG_H
+#define IG_MATH_DIAG_H
 
-#include "imagine/math/geom/projective.h"
+#include "imagine/math/linalg/base/lin.h"
 
 namespace ig {
 
-class aabb;
-class convex;
-
-class ig_api aabb {
-public:
-  aabb();
-  explicit aabb(const vec3& min, const vec3& max);
-  explicit aabb(const std::vector<vec3>& points);
-
-  void expand(const vec3& point);
-
-  auto size() const         { return max_ - min_; }
-  auto volume() const       { return size().prod(); }
-  auto surface_area() const {
-    auto ext = size();
-    return 2.f * (ext[0] * ext[1] + ext[0] * ext[2] + ext[1] * ext[2]); }
-
-  auto centroid() const { return (min_ + max_) * 0.5f; }
-
-private:
-  vec3 min_, max_;
+template <typename Xpr>
+struct lin_traits< lin_diag<Xpr> > : lin_traits<Xpr> {
+  using T = lin_t<Xpr>;
+  static constexpr auto M = Xpr::M, N = 1;
 };
 
-class bvh {};
+template <typename Xpr>
+class lin_diag : public lin_base< lin_diag<Xpr> > {
+public:
+  explicit lin_diag(Xpr& xpr)
+    : xpr_{xpr} {}
 
-namespace bv {
+  auto rows() const { return xpr_.diagsize(); }
+  auto cols() const { return 1; }
 
-template <typename T, typename U> bool contain(const T& lhs, const U& rhs);
-template <typename T, typename U> bool intersect(const T& lhs, const U& rhs);
+  auto operator()(size_t row, size_t) const { return xpr_(row, row); }
+  auto& operator()(size_t row, size_t)      { return xpr_(row, row); }
 
-} // namespace bv
+  auto operator[](size_t n) const { return xpr_(n, n); }
+  auto& operator[](size_t n)      { return xpr_(n, n); }
+
+  auto operator=(const lin_diag& o) {
+    eval(*this, o); return *this;
+  }
+
+  template <typename Lin>
+  auto operator=(const lin_base<Lin>& o) {
+    eval(*this, o); return *this;
+  }
+
+private:
+  Xpr& xpr_;
+};
+
 } // namespace ig
 
-#endif // IG_MATH_BV_H
+#endif // IG_MATH_DIAG_H

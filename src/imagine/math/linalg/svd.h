@@ -29,16 +29,16 @@
 
 namespace ig {
 
-template <typename Alg>
+template <typename Lin>
 class svd {
 public:
-  using T = alg_t<Alg>;
+  using T = lin_t<Lin>;
   using matrix_type = matrix<T>;
   using vector_type = colvec<T>;
 
   static_assert(std::is_arithmetic<T>::value, "Singular value decomposition requires an arithmetic matrix");
 
-  explicit svd(const matrix_type& alg);
+  explicit svd(const matrix_type& lin);
 
   size_t rank() const;
   auto pinv() const -> matrix_type;
@@ -57,12 +57,12 @@ private:
   vector_type s_;
 };
 
-template <typename Alg>
-svd<Alg>::svd(const matrix_type& alg)
-  : m_{alg.rows()}
-  , n_{alg.cols()}
+template <typename Lin>
+svd<Lin>::svd(const matrix_type& lin)
+  : m_{lin.rows()}
+  , n_{lin.cols()}
   , threshold_{T(0)}
-  , u_{alg}
+  , u_{lin}
   , v_{n_, n_}
   , s_{n_} {
 
@@ -258,8 +258,8 @@ svd<Alg>::svd(const matrix_type& alg)
   }
 }
 
-template <typename Alg>
-size_t svd<Alg>::rank() const {
+template <typename Lin>
+size_t svd<Lin>::rank() const {
   // Lookup for singular values > threshold 
   size_t r = 0;
   for (size_t i = 0; i < n_; ++i)
@@ -267,8 +267,8 @@ size_t svd<Alg>::rank() const {
   return r;
 }
 
-template <typename Alg>
-auto svd<Alg>::pinv() const -> matrix_type {
+template <typename Lin>
+auto svd<Lin>::pinv() const -> matrix_type {
   // Compute w = VS+
   matrix_type w{n_, n_};
   for (size_t i = 0; i < n_; ++i)
@@ -278,8 +278,8 @@ auto svd<Alg>::pinv() const -> matrix_type {
   return w * u_.t();
 }
 
-template <typename Alg>
-auto svd<Alg>::solve(const vector_type& b) -> vector_type {
+template <typename Lin>
+auto svd<Lin>::solve(const vector_type& b) -> vector_type {
   // Compute w = U^Tb
   vector_type w{u_.t() * b};
 
@@ -295,14 +295,14 @@ auto svd<Alg>::solve(const vector_type& b) -> vector_type {
   return v_ * w;
 }
 
-namespace linalg {
+namespace lin {
 
-template <typename Alg>
-constexpr auto svd_run(const alg<Alg>& alg) {
-  return svd<Alg>{alg};
+template <typename Lin>
+constexpr auto svd_run(const lin_base<Lin>& lin) {
+  return svd<Lin>{lin};
 }
 
-} // namespace linalg
+} // namespace lin
 } // namespace ig
 
 #endif // IG_MATH_SVD_H

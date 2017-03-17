@@ -29,16 +29,16 @@
 
 namespace ig {
 
-template <typename Alg>
+template <typename Lin>
 class lu {
 public:
-  using T = alg_t<Alg>;
+  using T = lin_t<Lin>;
   using matrix_type = matrix<T>;
   using vector_type = colvec<T>;
 
   static_assert(std::is_arithmetic<T>::value, "LU decomposition requires an arithmetic matrix");
 
-  explicit lu(const matrix_type& alg);
+  explicit lu(const matrix_type& lin);
 
   auto det() const -> T;
   auto inv() const -> matrix_type;
@@ -54,11 +54,11 @@ private:
   matrix_type lu_, p_;
 };
 
-template <typename Alg>
-lu<Alg>::lu(const matrix_type& alg)
-  : n_{alg.diagsize()}
+template <typename Lin>
+lu<Lin>::lu(const matrix_type& lin)
+  : n_{lin.diagsize()}
   , permutations_{0}
-  , lu_{alg}
+  , lu_{lin}
   , p_{matrix_type::eye(n_)} {
 
   for (size_t i = 0, row = i; i < n_; ++i) {
@@ -91,41 +91,41 @@ lu<Alg>::lu(const matrix_type& alg)
   }
 }
 
-template <typename Alg>
-auto lu<Alg>::det() const -> T {
+template <typename Lin>
+auto lu<Lin>::det() const -> T {
   auto detsign = (permutations_ % 2) 
     ? -1 
     :  1;
   return detsign * lu_.diag().prod();
 }
 
-template <typename Alg>
-auto lu<Alg>::inv() const -> matrix_type {
+template <typename Lin>
+auto lu<Lin>::inv() const -> matrix_type {
   // Solve for each column on eye matrix
   auto inv = p_;
   for (size_t i = 0; i < n_; ++i)
-    linalg::forward_solve (lu_, inv.col(i), true),
-    linalg::backward_solve(lu_, inv.col(i));
+    lin::forward_solve (lu_, inv.col(i), true),
+    lin::backward_solve(lu_, inv.col(i));
   return inv;
 }
 
-template <typename Alg>
-auto lu<Alg>::solve(const vector_type& b) const -> vector_type {
+template <typename Lin>
+auto lu<Lin>::solve(const vector_type& b) const -> vector_type {
   vector_type x{p_ * b};
-  linalg::forward_solve (lu_, x, true);
-  linalg::backward_solve(lu_, x);
+  lin::forward_solve (lu_, x, true);
+  lin::backward_solve(lu_, x);
   return x;
 }
 
-namespace linalg {
+namespace lin {
 
-template <typename Alg>
-constexpr auto lu_run(const alg<Alg>& alg) {
-  assert(alg.square() && "LU decomposition requires a square matrix");
-  return lu<Alg>{alg};
+template <typename Lin>
+constexpr auto lu_run(const lin_base<Lin>& lin) {
+  assert(lin.square() && "LU decomposition requires a square matrix");
+  return lu<Lin>{lin};
 }
 
-} // namespace linalg
+} // namespace lin
 } // namespace ig
 
 #endif // IG_MATH_LU_H

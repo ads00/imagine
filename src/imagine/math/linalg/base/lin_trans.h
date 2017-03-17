@@ -21,49 +21,38 @@
  SOFTWARE.
 */
 
-#ifndef IG_MATH_COL_H
-#define IG_MATH_COL_H
+#ifndef IG_MATH_TRANS_H
+#define IG_MATH_TRANS_H
 
-#include "imagine/math/linalg/base/alg.h"
+#include "imagine/math/linalg/base/lin.h"
 
 namespace ig {
 
 template <typename Xpr>
-struct alg_traits< alg_col<Xpr> > : alg_traits<Xpr> {
-  using T = alg_t<Xpr>;
-  static constexpr auto M = Xpr::M, N = 1;
+struct lin_traits< lin_trans<Xpr> > {
+  using T = lin_t<Xpr>;
+  static constexpr auto M = Xpr::N, N = Xpr::M;
 };
 
 template <typename Xpr>
-class alg_col : public alg< alg_col<Xpr> > {
+class lin_trans : public lin_base< lin_trans<Xpr> > {
 public:
-  explicit alg_col(Xpr& xpr, size_t col)
-    : xpr_{xpr}
-    , col_{col} {}
+  explicit lin_trans(Xpr& xpr)
+    : xpr_{xpr} {}
 
-  auto rows() const { return xpr_.rows(); }
-  auto cols() const { return 1; }
+  auto rows() const { return xpr_.cols(); }
+  auto cols() const { return xpr_.rows(); }
 
-  auto operator()(size_t row, size_t) const { return xpr_(row, col_); }
-  auto& operator()(size_t row, size_t)      { return xpr_(row, col_); }
+  auto operator()(size_t row, size_t col) const { return xpr_(col, row); }
+  auto& operator()(size_t row, size_t col)      { return xpr_(col, row); }
 
-  auto operator[](size_t n) const { return xpr_(n, col_); }
-  auto& operator[](size_t n)      { return xpr_(n, col_); }
-
-  auto operator=(const alg_col& o) {
-    eval(*this, o); return *this;
-  }
-
-  template <typename Alg>
-  auto operator=(const alg<Alg>& o) {
-    eval(*this, o); return *this;
-  }
+  auto operator[](size_t) const = delete;
+  auto& operator[](size_t)      = delete;
 
 private:
   Xpr& xpr_;
-  size_t col_;
 };
 
 } // namespace ig
 
-#endif // IG_MATH_COL_H
+#endif // IG_MATH_TRANS_H

@@ -24,14 +24,14 @@
 #ifndef IG_MATH_PRODUCT_H
 #define IG_MATH_PRODUCT_H
 
-#include "imagine/math/linalg/base/alg.h"
+#include "imagine/math/linalg/base/lin.h"
 #include "imagine/math/linalg/operation.h"
 
 namespace ig {
 
 template <typename Lhs, typename Rhs>
-struct alg_traits< product_expr<Lhs, Rhs> > {
-  using T = std::common_type_t< alg_t<Lhs>, alg_t<Rhs> >;
+struct lin_traits< product_expr<Lhs, Rhs> > {
+  using T = std::common_type_t< lin_t<Lhs>, lin_t<Rhs> >;
   static constexpr auto D = 
     Lhs::M == dynamic_sized ||
     Rhs::N == dynamic_sized;
@@ -39,7 +39,7 @@ struct alg_traits< product_expr<Lhs, Rhs> > {
 };
 
 template <typename Lhs, typename Rhs>
-class product_expr : public alg< product_expr<Lhs, Rhs> > {
+class product_expr : public lin_base< product_expr<Lhs, Rhs> > {
 public:
   using matrix_type = typename product_expr::plain_type;
 
@@ -68,7 +68,7 @@ private:
 };
 
 template <typename Lhs, typename Rhs>
-constexpr auto operator*(const alg<Lhs>& lhs, const alg<Rhs>& rhs) {
+constexpr auto operator*(const lin_base<Lhs>& lhs, const lin_base<Rhs>& rhs) {
   assert(lhs.cols() == rhs.rows() && "Incoherent matrix-matrix multiplication");
   return product_expr<Lhs, Rhs>{lhs.derived(), rhs.derived()};
 }

@@ -24,20 +24,20 @@
 #ifndef IG_MATH_BLOCK_H
 #define IG_MATH_BLOCK_H
 
-#include "imagine/math/linalg/base/alg.h"
+#include "imagine/math/linalg/base/lin.h"
 
 namespace ig {
 
 template <typename Xpr>
-struct alg_traits< alg_block<Xpr> > : alg_traits<Xpr> {
-  using T = alg_t<Xpr>;
+struct lin_traits< lin_block<Xpr> > : lin_traits<Xpr> {
+  using T = lin_t<Xpr>;
   static constexpr auto M = Xpr::M, N = Xpr::N;
 };
 
 template <typename Xpr>
-class alg_block : public alg< alg_block<Xpr> > {
+class lin_block : public lin_base< lin_block<Xpr> > {
 public:
-  explicit alg_block(Xpr& xpr, size_t row, size_t col, size_t nr, size_t nc)
+  explicit lin_block(Xpr& xpr, size_t row, size_t col, size_t nr, size_t nc)
     : xpr_{xpr}
     , colvec_{false}
     , rowvec_{false}
@@ -46,7 +46,7 @@ public:
     , nr_{nr}
     , nc_{nc} {}
 
-  explicit alg_block(Xpr& xpr, size_t start, size_t n)
+  explicit lin_block(Xpr& xpr, size_t start, size_t n)
     : xpr_{xpr}
     , colvec_{xpr_.cols() == 1}
     , rowvec_{xpr_.rows() == 1}
@@ -64,12 +64,12 @@ public:
   auto operator[](size_t n) const = delete;
   auto& operator[](size_t n)      = delete;
 
-  auto operator=(const alg_block& o) {
+  auto operator=(const lin_block& o) {
     eval(*this, o); return *this;
   }
 
-  template <typename Alg>
-  auto operator=(const alg<Alg>& o) {
+  template <typename Lin>
+  auto operator=(const lin_base<Lin>& o) {
     eval(*this, o); return *this;
   }
 

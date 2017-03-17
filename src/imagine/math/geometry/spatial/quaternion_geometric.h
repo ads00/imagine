@@ -24,12 +24,12 @@
 #ifndef IG_MATH_QUATERNION_GEOMETRIC_H
 #define IG_MATH_QUATERNION_GEOMETRIC_H
 
-namespace ig     {
-namespace linalg {
+namespace ig  {
+namespace spt {
 
 template <typename T>
 constexpr auto dot(const quaternion<T>& lhs, const quaternion<T>& rhs) {
-  return lhs.scalar * rhs.scalar + linalg::dot(lhs.vector, rhs.vector);
+  return lhs.scalar * rhs.scalar + lin::dot(lhs.vector, rhs.vector);
 }
 
 template <typename T>
@@ -58,16 +58,16 @@ auto normalise(const quaternion<T>& q) {
   return quaternion<T>{q.scalar / nrm, q.vector / nrm};
 }
 
-template <typename T, typename Alg>
-auto rotate(const quaternion<T>& q, const alg<Alg>& v) {
+template <typename T, typename Lin>
+auto rotate(const quaternion<T>& q, const lin_base<Lin>& v) {
   assert(v.vector() && v.vecsize() == 3 && "Quaternions can only rotate vectors in three-dimensional space");
 
-  auto c1 = linalg::cross(q.vector, v);
-  auto c2 = linalg::cross(q.vector, c1);
+  auto c1 = lin::cross(q.vector, v);
+  auto c2 = lin::cross(q.vector, c1);
   return v + T(2) * (c1 * q.scalar + c2);
 }
 
-} // namespace linalg
+} // namespace spt
 } // namespace ig
 
 #endif // IG_MATH_QUATERNION_GEOMETRIC_H

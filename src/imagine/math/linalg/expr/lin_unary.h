@@ -24,41 +24,41 @@
 #ifndef IG_MATH_UNARY_H
 #define IG_MATH_UNARY_H
 
-#include "imagine/math/linalg/base/alg.h"
+#include "imagine/math/linalg/base/lin.h"
 #include <functional>
 
 namespace ig {
 
-template <typename Alg, typename Op>
-struct alg_traits< unary_expr<Alg, Op> > {
-  using T = alg_t<Alg>;
-  static constexpr auto M = Alg::M, N = Alg::N;
+template <typename Lin, typename Op>
+struct lin_traits< unary_expr<Lin, Op> > {
+  using T = lin_t<Lin>;
+  static constexpr auto M = Lin::M, N = Lin::N;
 };
 
-template <typename Alg, typename Op>
-class unary_expr : public alg< unary_expr<Alg, Op> > {
+template <typename Lin, typename Op>
+class unary_expr : public lin_base< unary_expr<Lin, Op> > {
 public:
-  explicit unary_expr(const Alg& alg, const Op& op)
-    : alg_{alg}
+  explicit unary_expr(const Lin& lin, const Op& op)
+    : lin_{lin}
     , op_{op} {}
 
-  auto rows() const { return alg_.rows(); }
-  auto cols() const { return alg_.cols(); }
+  auto rows() const { return lin_.rows(); }
+  auto cols() const { return lin_.cols(); }
 
-  auto operator()(size_t row, size_t col) const { return op_(alg_(row, col)); }
-  auto operator[](size_t n) const               { return op_(alg_[n]); }
+  auto operator()(size_t row, size_t col) const { return op_(lin_(row, col)); }
+  auto operator[](size_t n) const               { return op_(lin_[n]); }
 
 private:
-  const Alg alg_;
+  const Lin lin_;
   const Op op_;
 };
 
-template <typename Alg>
-constexpr auto operator-(const alg<Alg>& alg) {
-  return unary_expr< Alg, std::negate<> >{alg.derived(), std::negate<>{}};
+template <typename Lin>
+constexpr auto operator-(const lin_base<Lin>& lin) {
+  return unary_expr< Lin, std::negate<> >{lin.derived(), std::negate<>{}};
 }
 
-namespace linalg {
+namespace lin {
 
 template <typename Fn>
 struct unary_fn {
@@ -66,12 +66,12 @@ struct unary_fn {
   constexpr auto operator()(const T& val) const { return fn_(val); }
   Fn fn_; };
 
-template <typename Alg, typename Fn>
-constexpr auto apply(const alg<Alg>& alg, Fn&& fn) {
-  return unary_expr< Alg, unary_fn<Fn> >{alg.derived(), unary_fn<Fn>{fn}};
+template <typename Lin, typename Fn>
+constexpr auto apply(const lin_base<Lin>& lin, Fn&& fn) {
+  return unary_expr< Lin, unary_fn<Fn> >{lin.derived(), unary_fn<Fn>{fn}};
 }
 
-} // namespace linalg
+} // namespace lin
 } // namespace ig
 
 #endif // IG_MATH_UNARY_H
