@@ -32,15 +32,15 @@ namespace ig {
 template <typename Lin>
 class cholesky {
 public:
-  using T = lin_t<Lin>;
-  using matrix_type = matrix<T>;
-  using vector_type = colvec<T>;
+  using type = lin_t<Lin>;
+  using matrix_type = matrix<type>;
+  using vector_type = colvec<type>;
 
-  static_assert(std::is_arithmetic<T>::value, "Cholesky decomposition requires an arithmetic matrix");
+  static_assert(std::is_arithmetic<type>::value, "Cholesky decomposition requires an arithmetic matrix");
 
   explicit cholesky(const matrix_type& mat);
 
-  auto det() const -> T;
+  auto det() const -> type;
   auto inv() const -> matrix_type;
   auto solve(const vector_type& b) const -> vector_type;
 
@@ -63,20 +63,20 @@ cholesky<Lin>::cholesky(const matrix_type& lin)
 
       if (i == j) {
         // Diagonal square root
-        if (s <= std::numeric_limits<T>::epsilon()) {
+        if (s <= std::numeric_limits<type>::epsilon()) {
           throw std::logic_error{"Cholesky decomposition failed (Not positive-definite)"};
         }
         llt_(i, i) = std::sqrt(s);
       } else {
         llt_(j, i) = s / llt_(i, i);
-        llt_(i, j) = T(0);
+        llt_(i, j) = 0;
       }
     }
   }
 }
 
 template <typename Lin>
-auto cholesky<Lin>::det() const -> T {
+auto cholesky<Lin>::det() const -> type {
   return std::pow(llt_.diag().prod(), 2);
 }
 

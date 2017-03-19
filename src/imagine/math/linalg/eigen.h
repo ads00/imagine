@@ -34,11 +34,11 @@ template <typename Lin, bool Sym = false> class eigen;
 template <typename Lin>
 class eigen<Lin, true> {
 public:
-  using T = lin_t<Lin>;
-  using matrix_type = matrix<T>;
-  using vector_type = colvec<T>;
+  using type = lin_t<Lin>;
+  using matrix_type = matrix<type>;
+  using vector_type = colvec<type>;
 
-  static_assert(std::is_arithmetic<T>::value, "Eigendecomposition requires an arithmetic matrix");
+  static_assert(std::is_arithmetic<type>::value, "Eigendecomposition requires an arithmetic matrix");
 
   explicit eigen(const matrix_type& lin);
 
@@ -61,7 +61,7 @@ eigen<Lin, true>::eigen(const matrix_type& lin)
   vector_type work{n_};
   // Symmetric Householder reduction to tridiagonal form
   for (size_t i = n_; i--> 1; ) {
-    auto h = T(0);
+    type h = 0;
     if (i - 1 > 0) {
       // Generate Householder vector
       for (size_t j = 0; j < i; ++j) h += v_(i, j) * v_(i, j);
@@ -73,13 +73,13 @@ eigen<Lin, true>::eigen(const matrix_type& lin)
       h -= f * g;
 
       v_(i, i - 1) = f - g;
-      f = T(0);
+      f = 0;
 
       // Apply similarity transformation to remaining columns
       for (size_t j = 0; j < i; ++j) {
         v_(j, i) = v_(i, j) / h;
 
-        g = T(0);
+        g = 0;
         for (size_t k = 0; k < j + 1; ++k) g += v_(j, k) * v_(i, k);
         for (size_t k = j + 1; k < i; ++k) g += v_(k, j) * v_(i, k);
 
@@ -98,21 +98,21 @@ eigen<Lin, true>::eigen(const matrix_type& lin)
     d_[i] = h;
   }
 
-  d_[0] = T(0), work[0] = T(0);
+  d_[0] = work[0] = 0;
 
   // Accumulate transformations
   for (size_t i = 0; i < n_; ++i) {
-    if (d_[i] != T(0)) {
+    if (d_[i] != 0) {
       for (size_t j = 0; j < i; ++j) {
-        auto g = T(0);
+        type g = 0;
         for (size_t k = 0; k < i; ++k) g += v_(i, k) * v_(k, j);
         for (size_t k = 0; k < i; ++k) v_(k, j) -= g * v_(k, i);
       }
     }
 
     d_[i] = v_(i, i);
-    v_(i, i) = T(1);
-    for (size_t j = 0; j < i; ++j) v_(j, i) = v_(i, j) = T(0);
+    v_(i, i) = 1;
+    for (size_t j = 0; j < i; ++j) v_(j, i) = v_(i, j) = 0;
   }
   
   for (size_t i = 1; i < n_; ++i) work[i - 1] = work[i];
@@ -124,7 +124,7 @@ eigen<Lin, true>::eigen(const matrix_type& lin)
       // Find smallest subdiagonal element
       for (m = l; m < n_ - 1; ++m) {
         auto s = std::abs(d_[m]) + std::abs(d_[m + 1]);
-        if (std::abs(work[m]) <= std::numeric_limits<T>::epsilon() * s)
+        if (std::abs(work[m]) <= std::numeric_limits<type>::epsilon() * s)
           break;
       }
 
@@ -136,9 +136,9 @@ eigen<Lin, true>::eigen(const matrix_type& lin)
       }
 
       // Compute implicit shift
-      auto d = (d_[l + 1] - d_[l]) / (T(2) * work[l]);
-      auto g = (d_[m] - d_[l]) + work[l] / (d + sign(d) * std::hypot(d, T(1)));
-      auto c = T(1), s = T(1), p = T(0);
+      auto d = (d_[l + 1] - d_[l]) / (2 * work[l]);
+      auto g = (d_[m] - d_[l]) + work[l] / (d + sign(d) * std::hypot(d, 1));
+      type c = 1, s = 1, p = 0;
 
       // Implicit QL transformation
       for (size_t i = m; i--> l; ) {
@@ -146,15 +146,15 @@ eigen<Lin, true>::eigen(const matrix_type& lin)
         auto f = s * work[i];
         auto r = work[i + 1] = std::hypot(f, g);
 
-        if (r == T(0)) {
-          d_[i + 1] -= p, work[m] = T(0);
+        if (r == 0) {
+          d_[i + 1] -= p, work[m] = 0;
           break;
         }
 
         s = f / r;
         c = g / r;
         g = d_[i + 1] - p;
-        r = (d_[i] - g) * s + T(2) * c * b;
+        r = (d_[i] - g) * s + 2 * c * b;
         d_[i + 1] = g + (p = s * r);
         g = c * r - b;
 
@@ -166,7 +166,7 @@ eigen<Lin, true>::eigen(const matrix_type& lin)
       }
 
       d_[l] -= p;
-      work[l] = g, work[m] = T(0);
+      work[l] = g, work[m] = 0;
     }
   }
 }

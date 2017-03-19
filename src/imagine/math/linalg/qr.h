@@ -31,11 +31,11 @@ namespace ig {
 template <typename Lin>
 class qr {
 public:
-  using T = lin_t<Lin>;
-  using matrix_type = matrix<T>;
-  using vector_type = colvec<T>;
+  using type = lin_t<Lin>;
+  using matrix_type = matrix<type>;
+  using vector_type = colvec<type>;
 
-  static_assert(std::is_arithmetic<T>::value, "QR decomposition requires an arithmetic matrix");
+  static_assert(std::is_arithmetic<type>::value, "QR decomposition requires an arithmetic matrix");
 
   explicit qr(const matrix_type& lin);
 
@@ -59,18 +59,18 @@ qr<Lin>::qr(const matrix_type& lin)
   , tau_{n_} {
 
   for (size_t i = 0; i < n_; ++i) {
-    auto norm = T(0);
+    type norm = 0;
     for (size_t j = i; j < m_; ++j) norm = std::hypot(norm, qr_(j, i));
 
-    if (norm != T(0)) {
+    if (norm != 0) {
       // Householder i-th reflector
       tau_[i] = -norm * sign(qr_(i, i));
       for (size_t j = i; j < m_; ++j) qr_(j, i) /= -tau_[i];
 
       // Transform remaining columns
-      qr_(i, i) += T(1);
+      qr_(i, i) += 1;
       for (size_t j = i + 1; j < n_; ++j) {
-        auto s = T(0);
+        type s = 0;
         for (size_t k = i; k < m_; ++k) s += qr_(k, i) * qr_(k, j);
 
         s = -s / qr_(i, i);
@@ -85,7 +85,7 @@ auto qr<Lin>::solve(const vector_type& b) -> vector_type {
   // Compute y = Q^Tb
   auto y = b;
   for (size_t i = 0; i < n_; ++i) {
-    auto s = T(0);
+    type s = 0;
     for (size_t j = i; j < m_; ++j) s += qr_(j, i) * y[j];
 
     s = -s / qr_(i, i);

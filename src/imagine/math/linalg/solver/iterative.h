@@ -31,7 +31,7 @@ namespace ig  {
 namespace lin {
 
 template <typename Lin, typename Rhs, typename Lhs, typename precond>
-void cg(const lin<Lin>& A, const lin_base<Rhs>& b, lin_base<Lhs>& x, const precond& precond, double tolerance = 1e-7) {
+void cg(const lin_base<Lin>& A, const lin_base<Rhs>& b, lin_base<Lhs>& x, const precond& precond, double tolerance = 1e-7) {
   using vector_type = precond::vector_type;
 
   size_t n = A.diagsize();
@@ -56,9 +56,9 @@ void cg(const lin<Lin>& A, const lin_base<Rhs>& b, lin_base<Lhs>& x, const preco
 }
 
 template <typename Lin, typename Rhs, typename Lhs, typename precond>
-void bicgstab(const lin<Lin>& A, const lin_base<Rhs>& b, lin_base<Lhs>& x, const precond& precond, double tolerance = 1e-7) {
+void bicgstab(const lin_base<Lin>& A, const lin_base<Rhs>& b, lin_base<Lhs>& x, const precond& precond, double tolerance = 1e-7) {
   using vector_type = precond::vector_type;
-  using T = lin_t<Lin>;
+  using type = lin_t<Lin>;
 
   size_t n = A.diagsize();
   vector_type r = b - A * x;
@@ -66,7 +66,7 @@ void bicgstab(const lin<Lin>& A, const lin_base<Rhs>& b, lin_base<Lhs>& x, const
 
   auto threshold = tolerance * tolerance * dot(b, b);
   auto ro = dot(r, r);
-  auto no = T(1), a = T(1), w = T(1);
+  type no = 1, a = 1, w = 1;
 
   vector_type v{n}, p{n},
               y{n}, z{n}, s{n}, t{n};
@@ -75,7 +75,7 @@ void bicgstab(const lin<Lin>& A, const lin_base<Rhs>& b, lin_base<Lhs>& x, const
     auto nn = no;
     no = dot(rn, r);
     
-    if (std::abs(no) < std::numeric_limits<T>::epsilon() * ro) {
+    if (std::abs(no) < std::numeric_limits<type>::epsilon() * ro) {
       r = b - A * x;
       rn = r, no = ro = dot(r, r);
     }
@@ -93,9 +93,9 @@ void bicgstab(const lin<Lin>& A, const lin_base<Rhs>& b, lin_base<Lhs>& x, const
     t = A * z;
 
     auto tt = dot(t, t);
-    w = tt > T(0)
+    w = tt > 0
       ? dot(t, s) / tt
-      : T(0);
+      : 0;
 
     x += a * y + w * z;
     r = s - w * t;

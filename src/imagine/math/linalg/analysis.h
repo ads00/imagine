@@ -118,7 +118,7 @@ struct inverse<Lin, 4> {
 
     typename Lin::plain_type 
       inv{};
-    auto invdet = lin_t<Lin>(1) / determinant<Lin>::run(lin);
+    auto invdet = 1 / determinant<Lin>::run(lin);
 
     inv(0, 0) =  cofactor(0, 0) * invdet; inv(1, 0) = -cofactor(0, 1) * invdet;
     inv(2, 0) =  cofactor(0, 2) * invdet; inv(3, 0) = -cofactor(0, 3) * invdet;
@@ -144,7 +144,7 @@ struct inverse<Lin, 3> {
 
     typename Lin::plain_type
       inv{};
-    auto invdet = lin_t<Lin>(1) / determinant<Lin>::run(lin);
+    auto invdet = 1 / determinant<Lin>::run(lin);
 
     inv(0, 0) = cofactor(0, 0) * invdet; inv(1, 0) = cofactor(0, 1) * invdet; inv(2, 0) = cofactor(0, 2) * invdet;
     inv(0, 1) = cofactor(1, 0) * invdet; inv(1, 1) = cofactor(1, 1) * invdet; inv(2, 1) = cofactor(1, 2) * invdet;
@@ -158,7 +158,7 @@ struct inverse<Lin, 2> {
   static auto run(const lin_base<Lin>& lin) {
     typename Lin::plain_type
       inv{};
-    auto invdet = lin_t<Lin>(1) / determinant<Lin>::run(lin);
+    auto invdet = 1 / determinant<Lin>::run(lin);
 
     inv(0, 0) =  lin(1, 1) * invdet; inv(1, 0) = -lin(1, 0) * invdet;
     inv(0, 1) = -lin(0, 1) * invdet; inv(1, 1) =  lin(0, 0) * invdet;

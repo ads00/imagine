@@ -69,8 +69,8 @@ constexpr auto align(T x, T alignment) {
   return x + alignment - 1 &~(alignment - 1);
 }
 
-template <typename T> constexpr auto degrees(T x) { return x * T(180.0) / pi<T>; }
-template <typename T> constexpr auto radians(T x) { return x * pi<T> / T(180.0); }
+template <typename T> constexpr auto degrees(T x) { return x * 180 / pi<T>; }
+template <typename T> constexpr auto radians(T x) { return x * pi<T> / 180; }
 
 } // namespace ig
 

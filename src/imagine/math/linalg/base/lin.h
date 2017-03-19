@@ -46,7 +46,6 @@ template <typename Lin> class lin_trans;
 template <typename Lin> class lin_triang;
 
 template <typename Lin, typename Op> class unary_expr;
-template <typename Lin, typename Op> class scalar_expr;
 template <typename Lhs, typename Rhs> class product_expr;
 template <typename Lhs, typename Rhs, typename Op> class binary_expr;
 

@@ -32,15 +32,15 @@ namespace integrate {
 template <typename T, typename Fn>
 auto adaptive_simpson(Fn&& fn, T a, T b, T tolerance = 1e-10) {
   auto adapt = [&fn](auto& l, auto a, auto b, auto fa, auto fm, auto fb, auto is) -> T {
-    auto m = (a + b) / 2.0;
-    auto h = (b - a) / 4.0;
+    auto m = (a + b) / 2;
+    auto h = (b - a) / 4;
     auto fml = fn(a + h);
     auto fmr = fn(b - h);
-    auto i = h / 3.0 * (fa + 4.0 * (fml + fmr) + 2.0 * fm + fb);
+    auto i = h / 3 * (fa + 4 * (fml + fmr) + 2 * fm + fb);
     auto j = 
-      (16.0 * i - 
-        h / 1.5 * (fa + 4.0 * fm + fb)
-      ) / 15.0;
+      (T(16) * i - 
+        h / T(1.5) * (fa + T(4) * fm + fb)
+      ) / T(15);
 
     return std::abs(j - i) <= std::abs(is) || (m <= a) || (b <= m)
       ? j
@@ -50,9 +50,11 @@ auto adaptive_simpson(Fn&& fn, T a, T b, T tolerance = 1e-10) {
   auto ba = b - a;
   auto fa = fn(a);
   auto fb = fn(b);
-  auto fm = fn((a + b) / 2.0);
+  auto fm = fn((a + b) / 2);
 
-  auto is = ba / 8.0 * (fa + fb + fm + fn(a + 0.9501 * ba) + fn(a + 0.2311 * ba) + fn(a + 0.6068 * ba) + fn(a + 0.4860 * ba) + fn(a + 0.8913 * ba));
+  auto is = 
+    ba / 8 * 
+    (fa + fb + fm + fn(a + T(0.9501) * ba) + fn(a + T(0.2311) * ba) + fn(a + T(0.6068) * ba) + fn(a + T(0.4860) * ba) + fn(a + T(0.8913) * ba));
   auto ri = is == 0
     ? b - a
     : is * tolerance;

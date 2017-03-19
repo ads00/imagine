@@ -35,6 +35,12 @@ struct lin_traits< unary_expr<Lin, Op> > {
   static constexpr auto M = Lin::M, N = Lin::N;
 };
 
+template <typename Fn>
+struct unary_fn {
+  template <typename T> constexpr auto operator()(const T& val) const { return fn_(val); }
+  Fn fn_;
+};
+
 template <typename Lin, typename Op>
 class unary_expr : public lin_base< unary_expr<Lin, Op> > {
 public:
@@ -58,20 +64,39 @@ constexpr auto operator-(const lin_base<Lin>& lin) {
   return unary_expr< Lin, std::negate<> >{lin.derived(), std::negate<>{}};
 }
 
-namespace lin {
-
-template <typename Fn>
-struct unary_fn {
-  template <typename T>
-  constexpr auto operator()(const T& val) const { return fn_(val); }
-  Fn fn_; };
-
+// Unary lambda-based function applier
 template <typename Lin, typename Fn>
-constexpr auto apply(const lin_base<Lin>& lin, Fn&& fn) {
-  return unary_expr< Lin, unary_fn<Fn> >{lin.derived(), unary_fn<Fn>{fn}};
-}
+constexpr auto apply_fn(const lin_base<Lin>& lin, Fn&& fn) 
+{ return unary_expr< Lin, unary_fn<Fn> >{lin.derived(), unary_fn<Fn>{fn}}; }
 
-} // namespace lin
+template <typename Lin>
+constexpr auto operator+(const lin_base<Lin>& lin, lin_t<Lin> scalar) 
+{ return apply_fn(lin, [scalar](auto& val) { return val + scalar; }); }
+
+template <typename Lin>
+constexpr auto operator-(const lin_base<Lin>& lin, lin_t<Lin> scalar) 
+{ return apply_fn(lin, [scalar](auto& val) { return val - scalar; }); }
+
+template <typename Lin>
+constexpr auto operator-(lin_t<Lin> scalar, const lin_base<Lin>& lin) 
+{ return apply_fn(lin, [scalar](auto& val) { return scalar - val; }); }
+
+template <typename Lin>
+constexpr auto operator/(const lin_base<Lin>& lin, lin_t<Lin> scalar) 
+{ return apply_fn(lin, [scalar](auto& val) { return val / scalar; }); }
+
+template <typename Lin>
+constexpr auto operator/(lin_t<Lin> scalar, const lin_base<Lin>& lin) 
+{ return apply_fn(lin, [scalar](auto& val) { return scalar / val; }); }
+
+template <typename Lin>
+constexpr auto operator*(const lin_base<Lin>& lin, lin_t<Lin> scalar) 
+{ return apply_fn(lin, [scalar](auto& val) { return val * scalar; }); }
+
+template <typename Lin>
+constexpr auto operator*(lin_t<Lin> scalar, const lin_base<Lin>& lin) 
+{ return apply_fn(lin, [scalar](auto& val) { return scalar * val; }); }
+
 } // namespace ig
 
 #endif // IG_MATH_UNARY_H

@@ -32,11 +32,11 @@ namespace ig {
 template <typename Lin>
 class svd {
 public:
-  using T = lin_t<Lin>;
-  using matrix_type = matrix<T>;
-  using vector_type = colvec<T>;
+  using type = lin_t<Lin>;
+  using matrix_type = matrix<type>;
+  using vector_type = colvec<type>;
 
-  static_assert(std::is_arithmetic<T>::value, "Singular value decomposition requires an arithmetic matrix");
+  static_assert(std::is_arithmetic<type>::value, "Singular value decomposition requires an arithmetic matrix");
 
   explicit svd(const matrix_type& lin);
 
@@ -51,7 +51,7 @@ public:
 private:
   const size_t m_, n_;
 
-  T threshold_;
+  type threshold_;
 
   matrix_type u_, v_;
   vector_type s_;
@@ -61,22 +61,22 @@ template <typename Lin>
 svd<Lin>::svd(const matrix_type& lin)
   : m_{lin.rows()}
   , n_{lin.cols()}
-  , threshold_{T(0)}
+  , threshold_{0}
   , u_{lin}
   , v_{n_, n_}
   , s_{n_} {
 
   vector_type work{n_};
-  auto g = T(0);
+  type g = 0;
   // Householder's reduction to bidiagonal form
   for (size_t i = 0; i < n_; ++i) {
     auto l = i + 1;
     work[i] = g;
 
-    auto s1 = T(0);
+    type s1 = 0;
     for (size_t j = i; j < m_; ++j) s1 += u_(j, i) * u_(j, i);
 
-    if (s1 > std::numeric_limits<T>::epsilon()) {
+    if (s1 > std::numeric_limits<type>::epsilon()) {
       auto f = u_(i, i);
       g = -sign(f) * std::sqrt(s1);
 
@@ -84,22 +84,22 @@ svd<Lin>::svd(const matrix_type& lin)
       u_(i, i) = f - g;
 
       for (size_t j = l; j < n_; ++j) {
-        auto s = T(0);
+        auto s = 0;
         for (size_t k = i; k < m_; ++k) s += u_(k, i) * u_(k, j);
 
         f = s / h;
         for (size_t k = i; k < m_; ++k) u_(k, j) += f * u_(k, i);
       }
-    } else g = T(0);
+    } else g = 0;
 
     s_[i] = g;
     if (i >= m_) 
       continue;
 
-    auto s2 = T(0);
+    type s2 = 0;
     for (size_t j = l; j < n_; ++j) s2 += u_(i, j) * u_(i, j);
 
-    if (s2 > std::numeric_limits<T>::epsilon()) {
+    if (s2 > std::numeric_limits<type>::epsilon()) {
       auto f = u_(i, l);
       g = -sign(f) * std::sqrt(s2);
 
@@ -107,40 +107,40 @@ svd<Lin>::svd(const matrix_type& lin)
       u_(i, l) = f - g;
       for (size_t j = l; j < n_; ++j) work[j] = u_(i, j) / h;
       for (size_t j = l; j < m_; ++j) {
-        auto s = T(0);
+        type s = 0;
         for (size_t k = l; k < n_; ++k) s += u_(j, k) * u_(i, k);
         for (size_t k = l; k < n_; ++k) u_(j, k) += s * work[k];
       }
-    } else g = T(0);
+    } else g = 0;
   }
 
   // Accumulation of right hand transformations
   for (size_t i = n_; i--> 0; ) {
-    if (g != T(0)) {
+    if (g != 0) {
       auto h = g * u_(i, i + 1);
       for (size_t j = i + 1; j < n_; ++j) v_(j, i) = u_(i, j) / h;
       for (size_t j = i + 1; j < n_; ++j) {
-        auto s = T(0);
+        type s = 0;
         for (size_t k = i + 1; k < n_; ++k) s += u_(i, k) * v_(k, j);
         for (size_t k = i + 1; k < n_; ++k) v_(k, j) += s * v_(k, i);
       }
     }
 
-    for (size_t j = i + 1; j < n_; ++j) v_(i, j) = v_(j, i) = T(0);
+    for (size_t j = i + 1; j < n_; ++j) v_(i, j) = v_(j, i) = 0;
 
-    v_(i, i) = T(1);
+    v_(i, i) = 1;
     g = work[i];
   }
 
   // Accumulation of left hand transformations
   for (size_t i = std::min(m_, n_); i--> 0; ) {
     auto l = i + 1;
-    for (size_t j = l; j < n_; ++j) u_(i, j) = T(0);
+    for (size_t j = l; j < n_; ++j) u_(i, j) = 0;
 
-    if (s_[i] != T(0)) {
+    if (s_[i] != 0) {
       auto h = u_(i, i) * s_[i];
       for (size_t j = l; j < n_; ++j) {
-        auto s = T(0);
+        type s = 0;
         for (size_t k = l; k < m_; ++k) s += u_(k, i) * u_(k, j);
 
         auto f = s / h;
@@ -149,7 +149,7 @@ svd<Lin>::svd(const matrix_type& lin)
 
       for (size_t j = i; j < m_; ++j) u_(j, i) /= s_[i];
     } else {
-      for (size_t j = i; j < m_; ++j) u_(j, i) = T(0);
+      for (size_t j = i; j < m_; ++j) u_(j, i) = 0;
     }
 
     u_(i, i)++;
@@ -175,7 +175,7 @@ svd<Lin>::svd(const matrix_type& lin)
       }
 
       if (split) {
-        auto c = T(0), s = T(1);
+        type c = 0, s = 1;
         for (size_t j = l; j < i + 1; ++j) {
           auto f = s * work[j];
           if (std::abs(f) <= threshold_) 
@@ -198,7 +198,7 @@ svd<Lin>::svd(const matrix_type& lin)
       auto z = s_[i];
       // Convergence
       if (l == i) { 
-        if (z < T(0)) {
+        if (z < 0) {
           s_[i] = -z;
           for (size_t j = 0; j < n_; ++j) v_(j, i) = -v_(j, i);
         } break;
@@ -215,11 +215,11 @@ svd<Lin>::svd(const matrix_type& lin)
       auto g = work[i - 1];
 
       auto x = s_[l];
-      auto f = ((y - z) * (y + z) + (g - h) * (g + h)) / (T(2) * h * y);
-      g = std::hypot(f, T(1));
+      auto f = ((y - z) * (y + z) + (g - h) * (g + h)) / (2 * h * y);
+      g = std::hypot(f, 1);
       f = ((x - z) * (x + z) + h * ((y / (f + sign(f) * g)) - h)) / x;
 
-      auto c = T(1), s = T(1);
+      type c = 1, s = 1;
 
       // Next QR transformation
       for (size_t j = l; j < i; ++j) {
@@ -241,7 +241,7 @@ svd<Lin>::svd(const matrix_type& lin)
         }
 
         s_[j] = z2;
-        if (z2 != T(0)) c = f / z2, s = h2 / z2;
+        if (z2 != 0) c = f / z2, s = h2 / z2;
 
         f = c * g2 + s * y2;
         x = c * y2 - s * g2;
@@ -252,7 +252,7 @@ svd<Lin>::svd(const matrix_type& lin)
         }
       }
 
-      work[l] = T(0), work[i] = f;
+      work[l] = 0, work[i] = f;
       s_[i] = x;
     }
   }
@@ -273,7 +273,7 @@ auto svd<Lin>::pinv() const -> matrix_type {
   matrix_type w{n_, n_};
   for (size_t i = 0; i < n_; ++i)
     for (size_t j = 0; j < n_; ++j)
-      if (std::abs(s_[j]) > threshold_) w(i, j) = v_(i, j) * (T(1) / s_[j]);
+      if (std::abs(s_[j]) > threshold_) w(i, j) = v_(i, j) * (1 / s_[j]);
   // Compute inv = wU^T
   return w * u_.t();
 }
@@ -287,7 +287,7 @@ auto svd<Lin>::solve(const vector_type& b) -> vector_type {
   for (size_t i = 0; i < n_; ++i) {
     auto sv = s_[i];
     auto alpha = (std::abs(sv) > threshold_) 
-      ? T(1) / sv 
+      ? 1 / sv 
       : sv;
     w[i] *= alpha;
   }

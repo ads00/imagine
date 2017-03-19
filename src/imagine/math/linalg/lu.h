@@ -32,15 +32,15 @@ namespace ig {
 template <typename Lin>
 class lu {
 public:
-  using T = lin_t<Lin>;
-  using matrix_type = matrix<T>;
-  using vector_type = colvec<T>;
+  using type = lin_t<Lin>;
+  using matrix_type = matrix<type>;
+  using vector_type = colvec<type>;
 
-  static_assert(std::is_arithmetic<T>::value, "LU decomposition requires an arithmetic matrix");
+  static_assert(std::is_arithmetic<type>::value, "LU decomposition requires an arithmetic matrix");
 
   explicit lu(const matrix_type& lin);
 
-  auto det() const -> T;
+  auto det() const -> type;
   auto inv() const -> matrix_type;
   auto solve(const vector_type& b) const -> vector_type;
 
@@ -63,14 +63,14 @@ lu<Lin>::lu(const matrix_type& lin)
 
   for (size_t i = 0, row = i; i < n_; ++i) {
     // Find largest pivot element
-    auto pivot = T(0);
+    type pivot = 0;
     for (size_t j = i; j < n_; ++j) {
       auto curr_elemt = std::abs(lu_(j, i));
       if (curr_elemt > pivot)
         pivot = curr_elemt, row = j;
     }
 
-    if (pivot == T(0)) {
+    if (pivot == 0) {
       throw std::logic_error{"LU decomposition failed (Singular matrix)"};
     }
 
@@ -92,7 +92,7 @@ lu<Lin>::lu(const matrix_type& lin)
 }
 
 template <typename Lin>
-auto lu<Lin>::det() const -> T {
+auto lu<Lin>::det() const -> type {
   auto detsign = (permutations_ % 2) 
     ? -1 
     :  1;

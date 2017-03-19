@@ -34,7 +34,6 @@
 
 #include "imagine/math/linalg/expr/lin_product.h"
 #include "imagine/math/linalg/expr/lin_unary.h"
-#include "imagine/math/linalg/expr/lin_scalar.h"
 #include "imagine/math/linalg/expr/lin_binary.h"
 
 namespace ig {

@@ -39,8 +39,8 @@ public:
   template <typename Fn, typename... Args>
   auto work(Fn&& fn, Args&&... args) {
     using return_type = decltype(fn(args...));
-    auto task = std::make_shared<
-      std::packaged_task<return_type()> >
+    auto task = 
+      std::make_shared<std::packaged_task<return_type()> >
       (std::bind(std::forward<Fn>(fn), std::forward<Args>(args)...));
 
     auto res = task->get_future();

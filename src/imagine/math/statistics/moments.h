@@ -41,27 +41,26 @@ public:
 
   template <typename InputIt>
   void process(InputIt first, InputIt last) {
-    for (size_t i = size_; first != last; ++first, ++i) {
+    for (size_t i = c_; first != last; ++first, ++i) {
       auto d = *first - m1_;
-      auto dn = d / ++size_;
+      auto dn = d / ++c_;
       auto ds = dn * dn;
       auto t = d * dn * i;
 
       m1_ += dn;
-      m4_ += t * ds * (size_ * size_ - 3.0 * size_ + 3.0) + 6.0 * ds * m2_ - 4.0 * dn * m3_;
-      m3_ += t * dn * (size_ - 2.0) - 3.0 * dn * m2_;
+      m4_ += t * ds * (c_ * c_ - 3 * c_ + 3) + 6 * ds * m2_ - 4 * dn * m3_;
+      m3_ += t * dn * (c_ - 2) - 3 * dn * m2_;
       m2_ += t;
     }
   }
 
   constexpr auto mean() const     { return m1_; }
-  constexpr auto variance() const { return m2_ / (size_ - 1); }
-  constexpr auto sd() const       { return std::sqrt(variance()); }
-  constexpr auto skewness() const { return std::sqrt(size_) * m3_ / std::pow(m2_, 1.5); }
-  constexpr auto kurtosis() const { return size_ * m4_ / (m2_ * m2_) - 3; }
+  constexpr auto variance() const { return m2_ / (c_ - T(1)); }
+  constexpr auto skewness() const { return std::sqrt(c_) * m3_ / std::pow(m2_, T(1.5)); }
+  constexpr auto kurtosis() const { return c_ * m4_ / (m2_ * m2_) - T(3); }
 
 private:
-  size_t size_;
+  size_t c_;
   T m1_, m2_, m3_, m4_;
 };
 
