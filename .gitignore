@@ -1,2 +1,53 @@
-build/
-src/third_party/
+# Codeblocks
+build/**/*.cbp
+build/**/*.cbTemp
+build/**/*.cscope_file_list
+build/**/*.depend
+build/**/*.layout
+build/**/*.workspace
+
+# CodeLite
+build/**/*.project
+
+# GMake
+build/**/*.make
+build/**/*.d
+
+# Visual Studio
+build/**/*.pdb
+build/**/*.filters
+build/**/*.vcxproj
+build/**/*.tlog
+build/**/*.sln
+build/**/*.suo
+build/**/*.exp
+build/**/*.ilk
+build/**/*.ipch
+build/**/*.VC.opendb
+build/**/*.VC.db*
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app

@@ -17,7 +17,7 @@ Technology    | for
 
 * Computational mathematics
   * Expression template library for linear algebra (matrices / vectors and numerical solvers)
-  * Geometric primitives, projective transformations and triangle meshes manipulation
+  * Projective transformations, ray tracing and triangle meshes manipulation
   * Machine learning including neural nets, regression, classification, clustering and reinforcement
 * Interactive environment
   * Cross-platform windowing and events handling

@@ -1,0 +1,42 @@
+workspace "imagine"
+  language "c++"
+  architecture "x64"
+  configurations {"debug", "release"}
+  
+  targetdir "bin"
+  includedirs {
+      "../src",
+      "../src/third_party"}
+  objdir "obj/%{prj.name}/%{cfg.buildcfg}"
+  
+  flags "c++14"
+  filter "configurations:debug"
+    targetsuffix "-d"
+  filter "configurations:release"
+    optimize "speed"
+    
+  filter "action:vs*" defines "_CRT_SECURE_NO_WARNINGS"
+  
+  -- Imagine library
+  project "imagine"
+    kind "sharedlib"
+    defines "ig_build"
+    
+    files {
+      "../src/**.h",
+      "../src/**.c",
+      "../src/**.cpp"}
+      
+    filter "system:windows" excludes {"../src/**_posix.cpp"}
+    filter "system:linux"   excludes {"../src/**_win32.cpp"} links {"dl", "pthread"}
+  
+  -- Imagine examples, demonstrations
+  project "hello_imagine"
+    kind "consoleapp"
+    
+    files {
+      "../apps/**.cpp",
+      "../apps/**.h"
+    }
+    links {"imagine"}
+
