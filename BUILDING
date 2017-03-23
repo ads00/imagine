@@ -3,12 +3,13 @@ workspace "imagine"
   architecture "x64"
   configurations {"debug", "release"}
   
-  targetdir "bin"
+  location "build"
+  targetdir "%{prj.location}/bin"
+  objdir    "%{prj.location}/obj/%{prj.name}/%{cfg.buildcfg}"
   includedirs {
-      "../src",
-      "../src/third_party"}
-  objdir "obj/%{prj.name}/%{cfg.buildcfg}"
-  
+      ".",
+      "third_party"}
+      
   flags "c++14"
   filter "configurations:debug"
     targetsuffix "-d"
@@ -23,20 +24,19 @@ workspace "imagine"
     defines "ig_build"
     
     files {
-      "../src/**.h",
-      "../src/**.c",
-      "../src/**.cpp"}
+      "imagine/**.h",
+      "imagine/**.cpp",
+      "third_party/**.h",
+      "third_party/**.c"}
       
-    filter "system:windows" excludes {"../src/**_posix.cpp"}
-    filter "system:linux"   excludes {"../src/**_win32.cpp"} links {"dl", "pthread"}
-  
+    filter "system:windows" excludes {"imagine/**_posix.cpp"}
+    filter "system:linux"   excludes {"imagine/**_win32.cpp"} links {"dl", "pthread"}
+    
   -- Imagine examples, demonstrations
   project "hello_imagine"
     kind "consoleapp"
-    
     files {
-      "../apps/**.cpp",
-      "../apps/**.h"
-    }
+      "examples/hello_imagine/**.cpp",
+      "examples/hello_imagine/**.h"}
     links {"imagine"}
-
+    

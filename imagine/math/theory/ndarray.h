@@ -31,11 +31,11 @@
 
 namespace ig {
 
-template <typename T, size_t N>
+template <typename T>
 class ndarray {
 public:
-  using shape_type = std::array<uint32_t, N>;
   using value_type = std::vector<T>;
+  using shape_type = std::vector<uint32_t>;
 
   ndarray() = default;
   explicit ndarray(shape_type shape, uint32_t features = 1);
@@ -46,18 +46,6 @@ public:
   auto& get_shape() const    { return shape_; }
   auto& get_features() const { return features_; }
 
-  struct slice {
-    explicit slice(T* s, ndarray& a) 
-      : sbuffer{s}
-      , array{a} {}
-    const T& f(uint32_t i) const { assert(i < array.get_features() && "Invalid array slice subscript"); return *(sbuffer + i); }
-          T& f(uint32_t i)       { assert(i < array.get_features() && "Invalid array slice subscript"); return *(sbuffer + i); }
-    T* sbuffer; ndarray& array;
-  };
-  
-  const auto operator[](shape_type s) const { return slice{&buffer_[index(s)], *this}; }
-        auto operator[](shape_type s)       { return slice{&buffer_[index(s)], *this}; }
-
 protected:
   size_t index(shape_type s) const;
 
@@ -67,8 +55,8 @@ protected:
   uint32_t features_, size_;
 };
 
-template <typename T, size_t N>
-ndarray<T, N>::ndarray(shape_type shape, uint32_t features)
+template <typename T>
+ndarray<T>::ndarray(shape_type shape, uint32_t features)
   : shape_{shape}
   , features_{features}
   , size_{1} {
@@ -78,11 +66,13 @@ ndarray<T, N>::ndarray(shape_type shape, uint32_t features)
   buffer_.resize(size_ * features_);
 }
 
-template <typename T, size_t N>
-size_t ndarray<T, N>::index(shape_type s) const {
+template <typename T>
+size_t ndarray<T>::index(shape_type s) const {
+  assert(shape_.size() == s.size() && "Incoherent array shape");
+
   size_t index = 0;
   auto   total = size_;
-  for (size_t i = N; i--> 0;) {
+  for (size_t i = shape_.size(); i--> 0;) {
     total /= shape_[i];
     index += total * s[i];
   }
@@ -93,9 +83,9 @@ enum class set_format { };
 enum class image_format { jpeg, bmp, png, hdr, pam };
 enum class sound_format { flag, mp3, ogg, wav };
 
-template <typename T, size_t N> using train_bridge = bridge < ndarray<T, N>, set_format>;
-template <typename T, size_t N> using image_bridge = bridge < ndarray<T, N>, image_format>;
-template <typename T>           using sound_bridge = bridge < ndarray<T, 1>, sound_format>;
+template <typename T> using train_bridge = bridge < ndarray<T>, set_format>;
+template <typename T> using image_bridge = bridge < ndarray<T>, image_format>;
+template <typename T> using sound_bridge = bridge < ndarray<T>, sound_format>;
 
 } // namespace ig
 

@@ -2,7 +2,6 @@
 #include <imagine/core/log.h>
 
 int main(int argc, char* argv[]) {
-  LOG(ig::dbg) << "Hello w-imagine";
+  LOG(ig::info) << "Hello -world- imagine";
   return 0;
 }
-

@@ -21,24 +21,16 @@
  SOFTWARE.
 */
 
-#ifndef IG_MATH_JPEG_H
-#define IG_MATH_JPEG_H
-
 #include "imagine/math/theory/ndarray.h"
-#include <sstream>
+#include "imagine/math/theory/_image/jpeg.h"
+#include "imagine/math/theory/_image/png.h"
 
-namespace ig     {
-namespace detail {
+namespace ig {
 
-using jpeg_b = image_bridge<uint8_t, 2>;
-using jpeg_type = jpeg_b::type;
-using jptr      = jpeg_b::rptr;
+template <> // uchar images
+decltype(image_bridge<uint8_t>::table) image_bridge<uint8_t>::table = {{
+  {image_format::jpeg, std::make_tuple(detail::jpeg_validate, detail::jpeg_readp_impl, detail::jpeg_write_impl)},
+  {image_format::png , std::make_tuple(detail:: png_validate, detail:: png_readp_impl, detail:: png_write_impl)}
+  }};
 
-bool jpeg_validate(std::istream& stream);
-jptr jpeg_readp_impl(std::istream& stream);
-bool jpeg_write_impl(std::ostream& stream, const jpeg_type& imag);
-
-} // namespace detail
 } // namespace ig
-
-#endif // IG_MATH_JPEG_H
