@@ -42,24 +42,23 @@ public:
   using formatter_type = std::function<std::string(const log_context&)>;
   friend log_context;
   
-  static void add_sink(const std::shared_ptr<log_sink>& sink);
-  static void remove_sink(const std::shared_ptr<log_sink>& sink);
+  log& add_sink(const std::shared_ptr<log_sink>& sink);
+  void remove_sink(const std::shared_ptr<log_sink>& sink);
 
   log(const log&) = delete;
   log& operator=(const log&) = delete;
 
+  static log& get();
   static formatter_type default_format;
   static std::shared_ptr<log_sink> default_sink;
 
 private:
   log() = default;
-
   void push(const log_context& ctx);
-  static log& get();
 
 private:
-  static std::mutex mutex_;
-  static std::vector< std::shared_ptr<log_sink> > sinks_;
+  std::mutex mutex_;
+  std::vector< std::shared_ptr<log_sink> > sinks_;
 };
 
 class ig_api log_context {

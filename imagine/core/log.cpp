@@ -32,11 +32,12 @@ namespace ig {
 // log
 log& log::get() {
   static log l; 
-  return l;
+  return l.add_sink(default_sink);
 }
 
-void log::add_sink(const std::shared_ptr<log_sink>& sink) {
+log& log::add_sink(const std::shared_ptr<log_sink>& sink) {
   sinks_.push_back(sink); 
+  return *this;
 }
 
 void log::remove_sink(const std::shared_ptr<log_sink>& sink) {
@@ -79,8 +80,6 @@ log_context::~log_context() {
   log::get().push(*this);
 }
 
-decltype(log::default_sink) log::default_sink = std::make_shared<log_sink>(std::cout);
-decltype(log::sinks_)       log::sinks_       = {log::default_sink};
-decltype(log::mutex_)       log::mutex_;
+std::shared_ptr<log_sink> log::default_sink = std::make_shared<log_sink>(std::cout);
 
 } // namespace ig
