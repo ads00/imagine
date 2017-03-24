@@ -24,6 +24,7 @@
 #ifndef IG_ENVI_WINDOW_H
 #define IG_ENVI_WINDOW_H
 
+#include "imagine/envi/dispatch.h"
 #include "imagine/envi/events.h"
 #include "imagine/envi/cursor.h"
 #include "imagine/core/flags.h"
@@ -43,10 +44,8 @@ public:
     interactive = closable | resizable | titlebar
   }; using types_t = flags<type_t>;
 
-  friend cursor;
-
   window();
-  explicit window(types_t types, const std::string& caption, uint32_t w, uint32_t h);
+  explicit window(const dispatch& dsp, types_t types, const std::string& caption, uint32_t w, uint32_t h);
   virtual ~window();
 
   void close();
@@ -84,6 +83,7 @@ public:
 private:
   std::unique_ptr<impl::window_native> 
     native_;
+  dispatch::func_type link_;
 };
 
 } // namespace ig

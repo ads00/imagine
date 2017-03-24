@@ -21,21 +21,17 @@
  SOFTWARE.
 */
 
-#include "imagine/envi/arch/dispatcher_impl.h"
-#include "imagine/envi/dispatcher.h"
+#include "imagine/envi/arch/dispatch_impl.h"
+#include "imagine/envi/dispatch.h"
 
 namespace ig {
 
-dispatcher::dispatcher()
-  : native_{std::make_unique<impl::dispatcher_native>()} {
+dispatch::dispatch()
+  : native_{std::make_unique<impl::dispatch_native>()} {}
 
-  assert(self_ != this && "Dispatcher must be unique");
-  self_ = this;
-}
+dispatch::~dispatch() = default;
 
-dispatcher::~dispatcher() = default;
-
-int32_t dispatcher::run() {
+int32_t dispatch::run() {
   assert(!native_->running_ && "Dispatcher already running");
   native_->running_ = true;
 
@@ -44,24 +40,18 @@ int32_t dispatcher::run() {
   return native_->return_code_;
 }
 
-void dispatcher::exit(int32_t return_code) {
+void dispatch::exit(int32_t return_code) {
   native_->return_code_ = return_code;
   native_->running_     = false;
 }
 
-void dispatcher::handle() const {
-  tick_();
-}
-
-void dispatcher::tick(const func_type& fn) {
+void dispatch::tick(const func_type& fn) {
   tick_ = fn;
 }
-
-dispatcher* dispatcher::self_ = nullptr;
 
 // Native implementations
 //
 
-// void dispatcher::process_events();
+// void dispatch::process_events();
 
 } // namespace ig

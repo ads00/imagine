@@ -33,7 +33,7 @@ namespace impl {
 class window_native {
 public:
   window_native(const window& ref);
-  window_native(const window& ref, window::types_t types,  const std::string& caption, uint32_t w, uint32_t h);
+  window_native(const window& ref, window::types_t types, const std::string& caption, uint32_t w, uint32_t h);
   ~window_native() = default;
 
   const window& ref_;

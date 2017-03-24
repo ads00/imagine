@@ -24,8 +24,8 @@
 #ifndef IG_ENVI_EVENTS_H
 #define IG_ENVI_EVENTS_H
 
-#include "imagine/envi/input_keyboard.h"
-#include "imagine/envi/input_mouse.h"
+#include "imagine/envi/keyboard.h"
+#include "imagine/envi/mouse.h"
 
 #include <functional>
 

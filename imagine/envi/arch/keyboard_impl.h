@@ -24,7 +24,7 @@
 #ifndef IG_ENVI_KEYBOARD_IMPL_H
 #define IG_ENVI_KEYBOARD_IMPL_H
 
-#include "imagine/envi/input_keyboard.h"
+#include "imagine/envi/keyboard.h"
 #include "imagine/envi/arch/widget_impl.h"
 
 namespace ig       {

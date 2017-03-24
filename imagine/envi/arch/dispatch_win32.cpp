@@ -21,43 +21,29 @@
  SOFTWARE.
 */
 
-#ifndef IG_ENVI_DISPATCHER_H
-#define IG_ENVI_DISPATCHER_H
-
-#include "imagine/ig.h"
-
-#include <functional>
+#include "imagine/envi/arch/dispatch_impl.h"
+#include "imagine/envi/dispatch.h"
 
 namespace ig   {
-namespace impl { class dispatcher_native; }
+namespace impl {
 
-class ig_api dispatcher {
-public:
-  using func_type = std::function<void()>;
+dispatch_native::dispatch_native()
+  : return_code_{-1}
+  , running_{false} {}
 
-  dispatcher();
-  virtual ~dispatcher();
+} // namespace impl
 
-  virtual int32_t run();
-  virtual void exit(int32_t return_code);
+void dispatch::process_events() {
+  for (auto& window : native_->windows_)
+    ;
 
-  virtual void process_events();
-  virtual void handle() const;
-  virtual void tick(const func_type& fn);
-
-  static auto* get() { return self_; };
-
-  dispatcher(const dispatcher&) = delete;
-  dispatcher& operator=(const dispatcher&) = delete;
-
-private:
-  std::unique_ptr<impl::dispatcher_native> 
-    native_;
-  func_type tick_ = [] {};
-
-  static dispatcher* self_;
-};
+  MSG 
+    msg{};
+  while (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE)) {
+    TranslateMessage(&msg);
+    DispatchMessage(&msg);
+  }
+  tick_();
+}
 
 } // namespace ig
-
-#endif // IG_ENVI_DISPATCHER_H

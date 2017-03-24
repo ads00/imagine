@@ -22,7 +22,10 @@
 */
 
 #include "imagine/envi/arch/window_impl.h"
+#include "imagine/envi/arch/dispatch_impl.h"
 #include "imagine/envi/window.h"
+
+#include <algorithm>
 
 namespace ig {
 
@@ -30,12 +33,22 @@ window::window()
   : native_{std::make_unique<impl::window_native>(*this)}
   , cursor{cursor_shape::none} {}
 
-window::window(types_t types, const std::string& caption, uint32_t w, uint32_t h)
+window::window(const dispatch& dsp, types_t types, const std::string& caption, uint32_t w, uint32_t h)
   : native_{std::make_unique<impl::window_native>(*this, types, caption, w, h)}
-  , cursor{cursor_shape::arrow} {}
+  , cursor{cursor_shape::arrow} { 
+
+  link_ = [this, &windows = dsp.native_->windows_]() {
+    auto it = std::remove_if(windows.begin(), windows.end(), [this](auto& win) {
+      return win == native_.get(); });
+    it != windows.end()
+      ? windows.erase(it, windows.end())
+      : windows.emplace_back(native_.get());
+  }; link_();
+}
 
 window::~window() {
   close();
+  if (link_) link_();
 }
 
 uint32_t window::get_width() const {

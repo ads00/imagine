@@ -21,26 +21,29 @@
  SOFTWARE.
 */
 
-#ifndef IG_ENVI_DISPATCHER_IMPL_H
-#define IG_ENVI_DISPATCHER_IMPL_H
+#ifndef IG_ENVI_DISPATCH_IMPL_H
+#define IG_ENVI_DISPATCH_IMPL_H
 
 #include "imagine/envi/arch/widget_impl.h"
 
 #include <atomic>
+#include <vector>
 
 namespace ig   {
 namespace impl {
 
-class dispatcher_native {
+class window_native;
+class dispatch_native {
 public:
-  dispatcher_native();
-  ~dispatcher_native() = default;
+  dispatch_native();
+  ~dispatch_native() = default;
 
   std::atomic_int return_code_;
   std::atomic_bool running_;
+  std::vector< window_native* > windows_;
 };
 
 } // namespace impl
 } // namespace ig
 
-#endif // IG_ENVI_DISPATCHER_IMPL_H
+#endif // IG_ENVI_DISPATCH_IMPL_H

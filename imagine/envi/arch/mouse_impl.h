@@ -24,7 +24,7 @@
 #ifndef IG_ENVI_MOUSE_IMPL_H
 #define IG_ENVI_MOUSE_IMPL_H
 
-#include "imagine/envi/input_mouse.h"
+#include "imagine/envi/mouse.h"
 #include "imagine/envi/arch/widget_impl.h"
 
 namespace ig    {
