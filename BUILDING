@@ -3,7 +3,7 @@ workspace "imagine"
   architecture "x64"
   configurations {"debug", "release"}
   
-  location "build"
+  location "work"
   targetdir "%{prj.location}/bin"
   objdir    "%{prj.location}/obj/%{prj.name}/%{cfg.buildcfg}"
   includedirs {
