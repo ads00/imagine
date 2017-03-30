@@ -32,6 +32,8 @@
 namespace ig   {
 namespace impl {
 
+static std::string ig_window_class = "ig_winclass";
+
 class window_native;
 class dispatch_native {
 public:
@@ -40,7 +42,12 @@ public:
 
   std::atomic_int return_code_;
   std::atomic_bool running_;
-  std::vector< window_native* > windows_;
+  std::vector<window_native*> windows_;
+
+  #if defined(IG_WIN)
+  static LRESULT CALLBACK proc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
+  static HINSTANCE reg();
+  #endif
 };
 
 } // namespace impl

@@ -50,7 +50,8 @@ void png_message(png_structp png_ptr, const char* msg);
 bool png_validate(std::istream& stream) {
   png_byte png_sig[8];
 
-  stream.read(reinterpret_cast<char*>(png_sig), 8); stream.seekg(0, std::ios::beg);
+  stream.read(reinterpret_cast<char*>(png_sig), 8); 
+  stream.seekg(0, std::ios::beg);
   return !png_sig_cmp(png_sig, 0, 8);
 }
 
@@ -70,43 +71,43 @@ pptr png_readp_impl(std::istream& stream) {
   png_set_scale_16(png_ptr);
 
   png_read_update_info(png_ptr, info_ptr);
-  auto imag = std::make_unique<png_type>(
-    png_type::shape_type{width, height}, png_get_channels(png_ptr, info_ptr));
+  auto imag = std::make_unique<png_t>(
+    png_t::shape_type{width, height}, png_get_channels(png_ptr, info_ptr));
 
-  auto rowptrs = std::vector<png_bytep>(height * sizeof(png_bytepp));
   for (png_uint_32 j = 0; j < height; ++j)
-    rowptrs[j] = reinterpret_cast<uint8_t*>(
-      imag->buffer() + (imag->get_shape().front() * imag->get_features() * j));
+    png_read_row(png_ptr, reinterpret_cast<uint8_t*>(
+      imag->buffer() + (imag->get_shape().front() * imag->get_features() * j)), nullptr);
 
-  png_set_benign_errors(png_ptr, 1);
-  png_read_image(png_ptr, rowptrs.data()); png_read_end(png_ptr, info_ptr);
+  png_read_end(png_ptr, info_ptr);
   png_destroy_read_struct(&png_ptr, &info_ptr, nullptr);
   return imag;
 }
 
-bool png_write_impl(std::ostream& stream, const png_type& imag) {
+bool png_write_impl(std::ostream& stream, const png_t& imag) {
   png_dst dst{&stream};
 
   png_structp png_ptr  = png_create_write_struct(PNG_LIBPNG_VER_STRING, nullptr, png_message, png_message);
   png_infop   info_ptr = png_create_info_struct(png_ptr);
 
-  int colortype, bitdepth = std::numeric_limits<uint8_t>::digits;
+  int colortype;
   switch (imag.get_features()) {
-  case 1: colortype = PNG_COLOR_TYPE_GRAY; break; case 2: colortype = PNG_COLOR_TYPE_GRAY_ALPHA; break;
-  case 3: colortype = PNG_COLOR_TYPE_RGB;  break; case 4: colortype = PNG_COLOR_TYPE_RGBA;       break; }
+  case 1: colortype = PNG_COLOR_TYPE_GRAY;       break; 
+  case 2: colortype = PNG_COLOR_TYPE_GRAY_ALPHA; break;
+  case 3: colortype = PNG_COLOR_TYPE_RGB;        break; 
+  case 4: colortype = PNG_COLOR_TYPE_RGBA;       break; }
 
   png_set_compression_level(png_ptr, 6);
-  if (imag.get_features() * bitdepth >= 16) {
+  if (imag.get_features() >= 2) {
     png_set_compression_strategy(png_ptr, Z_FILTERED);
     png_set_filter(png_ptr, 0, PNG_FILTER_NONE | PNG_FILTER_SUB | PNG_FILTER_PAETH);
   } else {
     png_set_compression_strategy(png_ptr, Z_DEFAULT_STRATEGY);
   }
 
-  png_set_IHDR(
-    png_ptr, info_ptr, imag.get_shape()[0], imag.get_shape()[1], bitdepth, colortype, 
-    PNG_INTERLACE_NONE,
-    PNG_COMPRESSION_TYPE_BASE, PNG_FILTER_TYPE_BASE);
+  png_set_IHDR(png_ptr, info_ptr, imag.get_shape()[0], imag.get_shape()[1], std::numeric_limits<uint8_t>::digits, colortype,
+               PNG_INTERLACE_NONE,
+               PNG_COMPRESSION_TYPE_BASE, 
+               PNG_FILTER_TYPE_BASE);
 
   png_set_write_fn(png_ptr, &dst, png_writeproc, png_flushproc);
   png_write_info(png_ptr, info_ptr);

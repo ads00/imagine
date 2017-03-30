@@ -32,7 +32,7 @@ namespace ig {
 // log
 log& log::get() {
   static log l; 
-  return l.add_sink(default_sink);
+  return l;
 }
 
 log& log::add_sink(const std::shared_ptr<log_sink>& sink) {

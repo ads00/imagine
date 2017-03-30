@@ -27,10 +27,13 @@
 
 namespace ig {
 
-template <> // uchar images
-decltype(image_bridge<uint8_t>::table) image_bridge<uint8_t>::table = {{
+template <>
+image_bridge::table& image_bridge::tbl() {
+  static image_bridge::table tbl = 
+  {{
   {image_format::jpeg, std::make_tuple(detail::jpeg_validate, detail::jpeg_readp_impl, detail::jpeg_write_impl)},
   {image_format::png , std::make_tuple(detail:: png_validate, detail:: png_readp_impl, detail:: png_write_impl)}
-  }};
+  }}; return tbl;
+}
 
 } // namespace ig

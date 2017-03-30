@@ -68,10 +68,12 @@ struct bridge {
   using readp    = rptr (*)(std::istream&);
   using write    = bool (*)(std::ostream&, const T&);
   
-  static auto load(const std::string& filename)                          { return detail::table_load(table, filename); }
-  static bool save(const std::string& filename, F format, const T& data) { return detail::table_save(table, filename, format, data); }
-  static ig_api std::unordered_map< F, std::tuple<validate, readp, write> >
-    table; };
+  static auto load(const std::string& filename)                          { return detail::table_load(tbl(), filename); }
+  static bool save(const std::string& filename, F format, const T& data) { return detail::table_save(tbl(), filename, format, data); }
+
+  using table = std::unordered_map< F, std::tuple<validate, readp, write> >;
+  static ig_api table& tbl(); 
+};
 
 } // namespace ig
 

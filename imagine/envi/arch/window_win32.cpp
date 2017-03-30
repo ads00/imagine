@@ -22,35 +22,30 @@
 */
 
 #include "imagine/envi/arch/window_impl.h"
+#include "imagine/envi/arch/dispatch_impl.h"
 #include "imagine/envi/arch/keyboard_impl.h"
 #include "imagine/envi/arch/mouse_impl.h"
 #include "imagine/envi/arch/cursor_impl.h"
 
-#if defined(IG_WIN64)
-# define GCL_HCURSOR GCLP_HCURSOR
-# define GWL_USERDATA GWLP_USERDATA
-#endif
-
 namespace ig   {
 namespace impl {
-
-static std::string ig_window_class = "ig_winclass";
 
 window_native::window_native(const window& ref)
   : ref_{ref}
   , types_{window::type_t::none}
   , visibility_{window_visibility::hidden}
   , mouse_tracked_{false}
-  , handle_{nullptr}
-  , wstyle_{0} {
+  , wstyle_{0}
+  , instance_{dispatch_native::reg()}
+  , handle_{nullptr} {
 
-  if (!reg()) {
+  if (!instance_) {
     throw std::runtime_error{"Failed to register wndclass instance"};
   }
 
   handle_ = CreateWindowEx(0, ig_window_class.data(), "", 0,
                            0, 0, 0, 0,
-                           nullptr, nullptr, GetModuleHandle(nullptr), this);
+                           nullptr, nullptr, instance_, this);
 }
 
 window_native::window_native(const window& ref, window::types_t types, const std::string& caption, uint32_t w, uint32_t h)
@@ -59,10 +54,11 @@ window_native::window_native(const window& ref, window::types_t types, const std
   , visibility_{window_visibility::windowed}
   , caption_{caption}
   , mouse_tracked_{false}
-  , handle_{nullptr}
-  , wstyle_{0} {
+  , wstyle_{0}
+  , instance_{dispatch_native::reg()}
+  , handle_{nullptr} {
 
-  if (!reg()) {
+  if (!instance_) {
     throw std::runtime_error{"Failed to register wndclass instance"};
   }
 
@@ -83,7 +79,7 @@ window_native::window_native(const window& ref, window::types_t types, const std
   auto cy = (GetSystemMetrics(SM_CYSCREEN) - h) / 2;
   
   handle_ = CreateWindowExA(0, ig_window_class.data(), caption.data(), wstyle_,
-                            cx, cy, cwidth, cheight, nullptr, nullptr, GetModuleHandle(nullptr), this);
+                            cx, cy, cwidth, cheight, nullptr, nullptr, instance_, this);
 
   RECT clirect, winrect;
   GetClientRect(handle_, &clirect); GetWindowRect(handle_, &winrect);
@@ -210,36 +206,6 @@ LRESULT window_native::internal(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
     break;
   }
   return DefWindowProc(hwnd, msg, wparam, lparam);
-}
-
-LRESULT CALLBACK window_native::proc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
-  window_native* callback = nullptr;
-  if (msg == WM_NCCREATE) {
-    auto cs = reinterpret_cast<CREATESTRUCT*>(lparam);
-    callback = reinterpret_cast<window_native*>(cs->lpCreateParams);
-    SetWindowLongPtr(hwnd, GWL_USERDATA, reinterpret_cast<LONG_PTR>(callback));
-  } else {
-    callback = reinterpret_cast<window_native*>(GetWindowLongPtr(hwnd, GWL_USERDATA));
-  }
-
-  if (callback) {
-    return callback->internal(hwnd, msg, wparam, lparam);
-  } else {
-    return DefWindowProc(hwnd, msg, wparam, lparam);
-  }
-}
-
-bool window_native::reg() {
-  WNDCLASSEX window_class {};
-  if (GetClassInfoEx(GetModuleHandle(nullptr), ig_window_class.c_str(), &window_class))
-    return true;
-
-  window_class.cbSize    = sizeof(WNDCLASSEX);
-  window_class.hInstance = GetModuleHandle(nullptr);
-    window_class.lpfnWndProc   = proc;
-    window_class.lpszClassName = ig_window_class.c_str();
-
-  return RegisterClassEx(&window_class) != 0;
 }
 
 } // namespace impl

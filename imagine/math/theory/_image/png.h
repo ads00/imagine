@@ -30,13 +30,12 @@
 namespace ig     {
 namespace detail {
 
-using png_b = image_bridge<uint8_t>;
-using png_type = png_b::type;
-using pptr     = png_b::rptr;
+using png_t = image_bridge::type;
+using pptr  = image_bridge::rptr;
 
 bool png_validate(std::istream& stream);
 pptr png_readp_impl(std::istream& stream);
-bool png_write_impl(std::ostream& stream, const png_type& imag);
+bool png_write_impl(std::ostream& stream, const png_t& imag);
 
 } // namespace detail
 } // namespace ig

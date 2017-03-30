@@ -54,7 +54,8 @@ bool jpeg_validate(std::istream& stream) {
   uint8_t jpeg_sig[] = {0xFF, 0xD8};
   uint8_t sig[2]     = {0, 0};
 
-  stream.read(reinterpret_cast<char*>(sig), sizeof(jpeg_sig)); stream.seekg(0, std::ios::beg);
+  stream.read(reinterpret_cast<char*>(sig), sizeof(jpeg_sig)); 
+  stream.seekg(0, std::ios::beg);
   return memcmp(jpeg_sig, sig, sizeof(jpeg_sig)) == 0;
 }
 
@@ -104,8 +105,8 @@ jptr jpeg_readp_impl(std::istream& stream) {
   jpeg_read_header(&jpeg_ptr, TRUE);
   jpeg_start_decompress(&jpeg_ptr);
 
-  auto imag = std::make_unique<jpeg_type>(
-    jpeg_type::shape_type{jpeg_ptr.output_width, jpeg_ptr.output_height}, jpeg_ptr.output_components);
+  auto imag = std::make_unique<jpeg_t>(
+    jpeg_t::shape_type{jpeg_ptr.output_width, jpeg_ptr.output_height}, jpeg_ptr.output_components);
 
   while (jpeg_ptr.output_scanline < jpeg_ptr.output_height) {
     auto r = imag->buffer() + (imag->get_shape().front() * imag->get_features() * jpeg_ptr.output_scanline);
@@ -117,7 +118,7 @@ jptr jpeg_readp_impl(std::istream& stream) {
   return imag;
 }
 
-bool jpeg_write_impl(std::ostream& stream, const jpeg_type& imag) {
+bool jpeg_write_impl(std::ostream& stream, const jpeg_t& imag) {
   jpeg_compress_struct 
     jpeg_ptr{};
   jpeg_error_mgr 

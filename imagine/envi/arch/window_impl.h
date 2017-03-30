@@ -49,11 +49,10 @@ public:
 
   #if defined(IG_WIN)
   LRESULT internal(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
-  static LRESULT CALLBACK proc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
-  static bool reg();
 
-  HWND handle_;
   DWORD wstyle_;
+  HINSTANCE instance_;
+  HWND handle_;
   #endif
 };
 

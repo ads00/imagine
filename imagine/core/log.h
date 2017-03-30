@@ -58,7 +58,7 @@ private:
 
 private:
   std::mutex mutex_;
-  std::vector< std::shared_ptr<log_sink> > sinks_;
+  std::vector< std::shared_ptr<log_sink> > sinks_{default_sink};
 };
 
 class ig_api log_context {
@@ -76,6 +76,8 @@ public:
   explicit log_sink(std::ostream& stream, const log::formatter_type& format = log::default_format)
     : stream_{stream}
     , formatter_{format} {}
+  virtual ~log_sink() = default;
+
   virtual void consume(const log_context& ctx) { stream_ << formatter_(ctx); }
 
 protected:
