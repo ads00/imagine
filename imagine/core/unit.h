@@ -29,8 +29,6 @@
 namespace ig   {
 namespace unit {
 
-ig_api void backtrace(std::exception_ptr exception);
-
 } // namespace unit
 } // namespace ig
 
