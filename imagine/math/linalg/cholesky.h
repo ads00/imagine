@@ -24,15 +24,15 @@
 #ifndef IG_MATH_CHOLESKY_H
 #define IG_MATH_CHOLESKY_H
 
-#include "imagine/math/linalg/matrix.h"
+#include "imagine/math/theory/matrix.h"
 #include "imagine/math/linalg/solver/direct.h"
 
 namespace ig {
 
-template <typename Lin>
+template <typename Mat>
 class cholesky {
 public:
-  using type = lin_t<Lin>;
+  using type = mat_t<Mat>;
   using matrix_type = matrix<type>;
   using vector_type = colvec<type>;
 
@@ -51,10 +51,10 @@ private:
   matrix_type llt_;
 };
 
-template <typename Lin>
-cholesky<Lin>::cholesky(const matrix_type& lin)
-  : n_{lin.diagsize()}
-  , llt_{lin} {
+template <typename Mat>
+cholesky<Mat>::cholesky(const matrix_type& mat)
+  : n_{mat.diagsize()}
+  , llt_{mat} {
 
   for (size_t i = 0; i < n_; ++i) {
     for (size_t j = i; j < n_; ++j) {
@@ -75,13 +75,13 @@ cholesky<Lin>::cholesky(const matrix_type& lin)
   }
 }
 
-template <typename Lin>
-auto cholesky<Lin>::det() const -> type {
+template <typename Mat>
+auto cholesky<Mat>::det() const -> type {
   return std::pow(llt_.diag().prod(), 2);
 }
 
-template <typename Lin>
-auto cholesky<Lin>::inv() const -> matrix_type {
+template <typename Mat>
+auto cholesky<Mat>::inv() const -> matrix_type {
   // Forward L-1
   auto inv = matrix_type::eye(n_);
   for (size_t i = 0; i < b_; ++i)
@@ -89,8 +89,8 @@ auto cholesky<Lin>::inv() const -> matrix_type {
   return inv.t() * inv;
 }
 
-template <typename Lin>
-auto cholesky<Lin>::solve(const vector_type& b) const -> vector_type {
+template <typename Mat>
+auto cholesky<Mat>::solve(const vector_type& b) const -> vector_type {
   vector_type x{b};
   lin::forward_solve (llt_, x);
   lin::backward_solve(llt_.t(), x);
@@ -99,10 +99,10 @@ auto cholesky<Lin>::solve(const vector_type& b) const -> vector_type {
 
 namespace lin {
 
-template <typename Lin>
-constexpr auto chol_run(const lin_base<Lin>& lin) {
-  assert(lin.square() && "Cholesky decomposition requires a square matrix");
-  return cholesky<Lin>{lin};
+template <typename Mat>
+constexpr auto chol_run(const matrix_base<Mat>& mat) {
+  assert(mat.square() && "Cholesky decomposition requires a square matrix");
+  return cholesky<Mat>{mat};
 }
 
 } // namespace lin

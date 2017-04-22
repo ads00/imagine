@@ -21,23 +21,36 @@
  SOFTWARE.
 */
 
-#ifndef IG_MATH_PNG_H
-#define IG_MATH_PNG_H
+#ifndef IG_MATH_AABB_H
+#define IG_MATH_AABB_H
 
-#include "imagine/math/theory/tensor.h"
-#include <sstream>
+#include "imagine/math/geom/proj.h"
 
-namespace ig     {
-namespace detail {
+namespace ig {
 
-using png_t = image_bridge::type;
-using pptr  = image_bridge::rptr;
+class aabb;
+class convex;
 
-bool png_validate(std::istream& stream);
-pptr png_readp_impl(std::istream& stream);
-bool png_write_impl(std::ostream& stream, const png_t& imag);
+class ig_api aabb {
+public:
+  aabb();
+  explicit aabb(const vec3& min, const vec3& max);
+  explicit aabb(const std::vector<vec3>& points);
 
-} // namespace detail
+  void expand(const vec3& point);
+
+  auto size() const         { return max_ - min_; }
+  auto volume() const       { return size().prod(); }
+  auto surface_area() const {
+    auto ext = size();
+    return 2.f * (ext[0] * ext[1] + ext[0] * ext[2] + ext[1] * ext[2]); }
+
+  auto centroid() const { return (min_ + max_) * 0.5f; }
+
+//private:
+  vec3 min_, max_;
+};
+
 } // namespace ig
 
-#endif // IG_MATH_PNG_H
+#endif // IG_MATH_BV_H

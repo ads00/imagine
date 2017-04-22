@@ -21,23 +21,38 @@
  SOFTWARE.
 */
 
-#ifndef IG_MATH_PNG_H
-#define IG_MATH_PNG_H
+#ifndef IG_MATH_TRANS_H
+#define IG_MATH_TRANS_H
 
-#include "imagine/math/theory/tensor.h"
-#include <sstream>
+#include "imagine/math/theory/detail/matrix/base.h"
 
-namespace ig     {
-namespace detail {
+namespace ig {
 
-using png_t = image_bridge::type;
-using pptr  = image_bridge::rptr;
+template <typename Xpr>
+struct mat_traits< mat_trans<Xpr> > {
+  using type = mat_t<Xpr>;
+  static constexpr auto n_rows = Xpr::n_cols, n_cols = Xpr::n_rows;
+};
 
-bool png_validate(std::istream& stream);
-pptr png_readp_impl(std::istream& stream);
-bool png_write_impl(std::ostream& stream, const png_t& imag);
+template <typename Xpr>
+class mat_trans : public matrix_base< mat_trans<Xpr> > {
+public:
+  explicit mat_trans(Xpr& xpr)
+    : xpr_{xpr} {}
 
-} // namespace detail
+  auto rows() const { return xpr_.cols(); }
+  auto cols() const { return xpr_.rows(); }
+
+  auto operator()(size_t row, size_t col) const { return xpr_(col, row); }
+  auto& operator()(size_t row, size_t col)      { return xpr_(col, row); }
+
+  auto operator[](size_t) const = delete;
+  auto& operator[](size_t)      = delete;
+
+private:
+  Xpr& xpr_;
+};
+
 } // namespace ig
 
-#endif // IG_MATH_PNG_H
+#endif // IG_MATH_TRANS_H

@@ -24,23 +24,23 @@
 #ifndef IG_MATH_EIGEN_H
 #define IG_MATH_EIGEN_H
 
-#include "imagine/math/linalg/matrix.h"
+#include "imagine/math/theory/matrix.h"
 
 namespace ig {
 
-template <typename Lin, bool Sym = false> class eigen;
+template <typename Mat, bool Sym = false> class eigen;
 
 // Symmetric eigendecomposition
-template <typename Lin>
-class eigen<Lin, true> {
+template <typename Mat>
+class eigen<Mat, true> {
 public:
-  using type = lin_t<Lin>;
+  using type = mat_t<Mat>;
   using matrix_type = matrix<type>;
   using vector_type = colvec<type>;
 
   static_assert(std::is_arithmetic<type>::value, "Eigendecomposition requires an arithmetic matrix");
 
-  explicit eigen(const matrix_type& lin);
+  explicit eigen(const matrix_type& mat);
 
   auto& eigenvectors() const { return v_; }
   auto& eigenvalues() const  { return d_; }
@@ -52,10 +52,10 @@ private:
   vector_type d_;
 };
 
-template <typename Lin>
-eigen<Lin, true>::eigen(const matrix_type& lin)
-  : n_{lin.diagsize()}
-  , v_{lin}
+template <typename Mat>
+eigen<Mat, true>::eigen(const matrix_type& mat)
+  : n_{mat.diagsize()}
+  , v_{mat}
   , d_{n_} {
 
   vector_type work{n_};
@@ -173,10 +173,10 @@ eigen<Lin, true>::eigen(const matrix_type& lin)
 
 namespace lin {
 
-template <typename Lin>
-constexpr auto eig_sym_run(const lin_base<Lin>& lin) {
-  assert(lin.square() && "Eigendecomposition requires a square matrix");
-  return eigen<Lin, true>{lin};
+template <typename Mat>
+constexpr auto eig_sym_run(const matrix_base<Mat>& mat) {
+  assert(mat.square() && "Eigendecomposition requires a square matrix");
+  return eigen<Mat, true>{mat};
 }
 
 } // namespace lin

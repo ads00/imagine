@@ -21,23 +21,38 @@
  SOFTWARE.
 */
 
-#ifndef IG_MATH_PNG_H
-#define IG_MATH_PNG_H
+#ifndef IG_MATH_PROJ_H
+#define IG_MATH_PROJ_H
 
-#include "imagine/math/theory/tensor.h"
-#include <sstream>
+#include "imagine/math/theory/matrix.h"
+#include "imagine/math/linalg/analysis.h"
+#include "imagine/math/geom/spatial/quaternion.h"
+#include "imagine/math/geom/spatial/ray.h"
 
-namespace ig     {
-namespace detail {
+namespace ig {
 
-using png_t = image_bridge::type;
-using pptr  = image_bridge::rptr;
+using mat4 = matrix<float, 4>;
+using vec4 = colvec<float, 4>; using vec3 = colvec<float, 3>; using vec2 = colvec<float, 2>;
+using quat = quaternion<float>;
 
-bool png_validate(std::istream& stream);
-pptr png_readp_impl(std::istream& stream);
-bool png_write_impl(std::ostream& stream, const png_t& imag);
+using ray3 = ray<float, 3>;
 
-} // namespace detail
+enum class planar_proj { perspective, orthographic };
+enum class coordinate  { local, world };
+
+namespace trf {
+
+ig_api mat4 translation(const vec3& t);
+ig_api mat4 rotation(const quat& r);
+ig_api mat4 scale(const vec3& s);
+
+ig_api mat4 look(const vec3& eye, const vec3& focus, const vec3& up);
+ig_api mat4 perspective(float fovy, float asp, float zn, float zf);
+ig_api mat4 orthographic(float l, float r, float t, float b, float zn, float zf);
+
+ig_api vec3 transform(const mat4& m, const vec3& v, bool unit = false);
+
+} // namespace trf
 } // namespace ig
 
-#endif // IG_MATH_PNG_H
+#endif // IG_MATH_PROJ_H

@@ -24,7 +24,7 @@
 #ifndef IG_MATH_JPEG_H
 #define IG_MATH_JPEG_H
 
-#include "imagine/math/theory/ndarray.h"
+#include "imagine/math/theory/tensor.h"
 #include <sstream>
 
 namespace ig     {

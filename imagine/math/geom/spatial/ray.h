@@ -21,23 +21,28 @@
  SOFTWARE.
 */
 
-#ifndef IG_MATH_PNG_H
-#define IG_MATH_PNG_H
+#ifndef IG_MATH_RAY_H
+#define IG_MATH_RAY_H
 
-#include "imagine/math/theory/tensor.h"
-#include <sstream>
+#include "imagine/math/theory/matrix.h"
 
-namespace ig     {
-namespace detail {
+namespace ig {
 
-using png_t = image_bridge::type;
-using pptr  = image_bridge::rptr;
+template <typename T, size_t N>
+class ray {
+public:
+  using vector_type = colvec<T, N>;
 
-bool png_validate(std::istream& stream);
-pptr png_readp_impl(std::istream& stream);
-bool png_write_impl(std::ostream& stream, const png_t& imag);
+  ray() = default;
+  explicit ray(const vector_type& ori, const vector_type& dir)
+    : origin{ori}
+    , direction{dir} {}
 
-} // namespace detail
+  auto operator()(T t) const { return origin + t * direction; }
+
+  vector_type origin, direction;
+};
+
 } // namespace ig
 
-#endif // IG_MATH_PNG_H
+#endif // IG_MATH_RAY_H

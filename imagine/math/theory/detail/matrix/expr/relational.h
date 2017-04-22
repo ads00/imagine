@@ -21,23 +21,37 @@
  SOFTWARE.
 */
 
-#ifndef IG_MATH_PNG_H
-#define IG_MATH_PNG_H
+#ifndef IG_MATH_RELATIONAL_H
+#define IG_MATH_RELATIONAL_H
 
-#include "imagine/math/theory/tensor.h"
-#include <sstream>
+#include "imagine/math/theory/detail/matrix/base.h"
 
-namespace ig     {
-namespace detail {
+namespace ig {
 
-using png_t = image_bridge::type;
-using pptr  = image_bridge::rptr;
+template <typename Lhs, typename Rhs>
+bool operator<(const matrix_base<Lhs>& lhs, const matrix_base<Rhs>& rhs) {
+  assert(lhs.size() == rhs.size() && "Incoherent matrix comparison");
 
-bool png_validate(std::istream& stream);
-pptr png_readp_impl(std::istream& stream);
-bool png_write_impl(std::ostream& stream, const png_t& imag);
+  auto pair = std::mismatch(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
+  return (pair.first == lhs.end() || 
+         *pair.first < *pair.second);
+}
 
-} // namespace detail
+template <typename Lhs, typename Rhs>
+auto operator>(const matrix_base<Lhs>& lhs, const matrix_base<Rhs>& rhs) {
+  return rhs < lhs;
+}
+
+template <typename Lhs, typename Rhs>
+auto operator<=(const matrix_base<Lhs>& lhs, const matrix_base<Rhs>& rhs) {
+  return !(lhs > rhs);
+}
+
+template <typename Lhs, typename Rhs>
+auto operator>=(const matrix_base<Lhs>& lhs, const matrix_base<Rhs>& rhs) {
+  return !(lhs < rhs);
+}
+
 } // namespace ig
 
-#endif // IG_MATH_PNG_H
+#endif // IG_MATH_RELATIONAL_H

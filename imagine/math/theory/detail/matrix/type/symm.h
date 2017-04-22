@@ -21,23 +21,11 @@
  SOFTWARE.
 */
 
-#ifndef IG_MATH_PNG_H
-#define IG_MATH_PNG_H
+#ifndef IG_MATH_SYMM_H
+#define IG_MATH_SYMM_H
 
-#include "imagine/math/theory/tensor.h"
-#include <sstream>
+namespace ig {
 
-namespace ig     {
-namespace detail {
-
-using png_t = image_bridge::type;
-using pptr  = image_bridge::rptr;
-
-bool png_validate(std::istream& stream);
-pptr png_readp_impl(std::istream& stream);
-bool png_write_impl(std::ostream& stream, const png_t& imag);
-
-} // namespace detail
 } // namespace ig
 
-#endif // IG_MATH_PNG_H
+#endif // IG_MATH_SYMM_H

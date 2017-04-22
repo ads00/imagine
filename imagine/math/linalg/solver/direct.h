@@ -24,13 +24,13 @@
 #ifndef IG_MATH_DIRECT_H
 #define IG_MATH_DIRECT_H
 
-#include "imagine/math/linalg/matrix.h"
+#include "imagine/math/theory/matrix.h"
 
 namespace ig  {
 namespace lin {
 
-template <typename Lin, typename Vec>
-void forward_solve(const lin_base<Lin>& lhs, lin_base<Vec>& rhs, bool unit = false) {
+template <typename Mat, typename Vec>
+void forward_solve(const matrix_base<Mat>& lhs, matrix_base<Vec>& rhs, bool unit = false) {
   assert(lhs.square() && "Forward solver requires a square matrix");
   assert(rhs.vector() && rhs.rows() == lhs.rows() && "Invalid b vector to solve");
 
@@ -48,8 +48,8 @@ void forward_solve(const lin_base<Lin>& lhs, lin_base<Vec>& rhs, bool unit = fal
   }
 }
 
-template <typename Lin, typename Vec>
-void backward_solve(const lin_base<Lin>& lhs, lin_base<Vec>& rhs, bool unit = false) {
+template <typename Mat, typename Vec>
+void backward_solve(const matrix_base<Mat>& lhs, matrix_base<Vec>& rhs, bool unit = false) {
   assert(lhs.square() && "Backward solver requires a square matrix");
   assert(rhs.vector() && rhs.rows() == lhs.rows() && "Invalid b vector to solve");
 

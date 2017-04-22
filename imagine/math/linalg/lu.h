@@ -24,21 +24,21 @@
 #ifndef IG_MATH_LU_H
 #define IG_MATH_LU_H
 
-#include "imagine/math/linalg/matrix.h"
+#include "imagine/math/theory/matrix.h"
 #include "imagine/math/linalg/solver/direct.h"
 
 namespace ig {
 
-template <typename Lin>
+template <typename Mat>
 class lu {
 public:
-  using type = lin_t<Lin>;
+  using type = mat_t<Mat>;
   using matrix_type = matrix<type>;
   using vector_type = colvec<type>;
 
   static_assert(std::is_arithmetic<type>::value, "LU decomposition requires an arithmetic matrix");
 
-  explicit lu(const matrix_type& lin);
+  explicit lu(const matrix_type& mat);
 
   auto det() const -> type;
   auto inv() const -> matrix_type;
@@ -54,11 +54,11 @@ private:
   matrix_type lu_, p_;
 };
 
-template <typename Lin>
-lu<Lin>::lu(const matrix_type& lin)
-  : n_{lin.diagsize()}
+template <typename Mat>
+lu<Mat>::lu(const matrix_type& mat)
+  : n_{mat.diagsize()}
   , permutations_{0}
-  , lu_{lin}
+  , lu_{mat}
   , p_{matrix_type::eye(n_)} {
 
   for (size_t i = 0, row = i; i < n_; ++i) {
@@ -91,16 +91,16 @@ lu<Lin>::lu(const matrix_type& lin)
   }
 }
 
-template <typename Lin>
-auto lu<Lin>::det() const -> type {
+template <typename Mat>
+auto lu<Mat>::det() const -> type {
   auto detsign = (permutations_ % 2) 
     ? -1 
     :  1;
   return detsign * lu_.diag().prod();
 }
 
-template <typename Lin>
-auto lu<Lin>::inv() const -> matrix_type {
+template <typename Mat>
+auto lu<Mat>::inv() const -> matrix_type {
   // Solve for each column on eye matrix
   auto inv = p_;
   for (size_t i = 0; i < n_; ++i)
@@ -109,8 +109,8 @@ auto lu<Lin>::inv() const -> matrix_type {
   return inv;
 }
 
-template <typename Lin>
-auto lu<Lin>::solve(const vector_type& b) const -> vector_type {
+template <typename Mat>
+auto lu<Mat>::solve(const vector_type& b) const -> vector_type {
   vector_type x{p_ * b};
   lin::forward_solve (lu_, x, true);
   lin::backward_solve(lu_, x);
@@ -119,10 +119,10 @@ auto lu<Lin>::solve(const vector_type& b) const -> vector_type {
 
 namespace lin {
 
-template <typename Lin>
-constexpr auto lu_run(const lin_base<Lin>& lin) {
-  assert(lin.square() && "LU decomposition requires a square matrix");
-  return lu<Lin>{lin};
+template <typename Mat>
+constexpr auto lu_run(const matrix_base<Mat>& mat) {
+  assert(mat.square() && "LU decomposition requires a square matrix");
+  return lu<Mat>{mat};
 }
 
 } // namespace lin

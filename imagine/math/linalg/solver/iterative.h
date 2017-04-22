@@ -24,14 +24,14 @@
 #ifndef IG_MATH_ITERATIVE_H
 #define IG_MATH_ITERATIVE_H
 
-#include "imagine/math/linalg/matrix.h"
+#include "imagine/math/theory/matrix.h"
 #include "imagine/math/linalg/solver/precond.h"
 
 namespace ig  {
 namespace lin {
 
-template <typename Lin, typename Rhs, typename Lhs, typename precond>
-void cg(const lin_base<Lin>& A, const lin_base<Rhs>& b, lin_base<Lhs>& x, const precond& precond, double tolerance = 1e-7) {
+template <typename Mat, typename Rhs, typename Lhs, typename precond>
+void cg(const matrix_base<Mat>& A, const matrix_base<Rhs>& b, matrix_base<Lhs>& x, const precond& precond, double tolerance = 1e-7) {
   using vector_type = precond::vector_type;
 
   size_t n = A.diagsize();
@@ -55,10 +55,10 @@ void cg(const lin_base<Lin>& A, const lin_base<Rhs>& b, lin_base<Lhs>& x, const 
   }
 }
 
-template <typename Lin, typename Rhs, typename Lhs, typename precond>
-void bicgstab(const lin_base<Lin>& A, const lin_base<Rhs>& b, lin_base<Lhs>& x, const precond& precond, double tolerance = 1e-7) {
+template <typename Mat, typename Rhs, typename Lhs, typename precond>
+void bicgstab(const matrix_base<Mat>& A, const matrix_base<Rhs>& b, matrix_base<Lhs>& x, const precond& precond, double tolerance = 1e-7) {
   using vector_type = precond::vector_type;
-  using type = lin_t<Lin>;
+  using type = mat_t<Mat>;
 
   size_t n = A.diagsize();
   vector_type r = b - A * x;

@@ -21,23 +21,23 @@
  SOFTWARE.
 */
 
-#ifndef IG_MATH_PNG_H
-#define IG_MATH_PNG_H
+#ifndef IG_MATH_ACTIVATION_H
+#define IG_MATH_ACTIVATION_H
 
-#include "imagine/math/theory/tensor.h"
-#include <sstream>
+#include "imagine/ig.h"
 
-namespace ig     {
-namespace detail {
+namespace ig {
 
-using png_t = image_bridge::type;
-using pptr  = image_bridge::rptr;
+template <typename T> constexpr auto logistic_fn(T x, T L = 1, T k = 1) { return L / (1 + std::exp(-k * x)); }
+template <typename T> constexpr auto softplus_fn(T x)                   { return std::log(1 + std::exp(x)); }
+template <typename T> constexpr auto relu_fn(T x)                       { return std::max(x, T(0)); }
+template <typename T> constexpr auto elu_fn(T x, T k = 1)               { return x < 0 ? k * (std::exp(x) - 1) : x; }
 
-bool png_validate(std::istream& stream);
-pptr png_readp_impl(std::istream& stream);
-bool png_write_impl(std::ostream& stream, const png_t& imag);
+// Radial basis functions
+template <typename T> constexpr auto gaussian_fn(T x, T k = 1)       { return std::exp(-std::pow(k * x, 2)); }
+template <typename T> constexpr auto multiquadratic_fn(T x, T k = 1) { return std::sqrt(1 + std::pow(k * x, 2)); }
+template <typename T> constexpr auto polyharmonic_fn(T x, T k = 1)   { return r < 1 ? std::pow(x, k - 1) * std::log(std::pow(x, x)) : std::pow(x, k) * std::log(x); }
 
-} // namespace detail
 } // namespace ig
 
-#endif // IG_MATH_PNG_H
+#endif // IG_MATH_ACTIVATION_H

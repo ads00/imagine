@@ -21,23 +21,49 @@
  SOFTWARE.
 */
 
-#ifndef IG_MATH_PNG_H
-#define IG_MATH_PNG_H
+#ifndef IG_MATH_COL_H
+#define IG_MATH_COL_H
 
-#include "imagine/math/theory/tensor.h"
-#include <sstream>
+#include "imagine/math/theory/detail/matrix/base.h"
 
-namespace ig     {
-namespace detail {
+namespace ig {
 
-using png_t = image_bridge::type;
-using pptr  = image_bridge::rptr;
+template <typename Xpr>
+struct mat_traits< mat_col<Xpr> > : mat_traits<Xpr> {
+  using type = mat_t<Xpr>;
+  static constexpr auto n_rows = Xpr::n_rows, n_cols = 1;
+};
 
-bool png_validate(std::istream& stream);
-pptr png_readp_impl(std::istream& stream);
-bool png_write_impl(std::ostream& stream, const png_t& imag);
+template <typename Xpr>
+class mat_col : public matrix_base< mat_col<Xpr> > {
+public:
+  explicit mat_col(Xpr& xpr, size_t col)
+    : xpr_{xpr}
+    , col_{col} {}
 
-} // namespace detail
+  auto rows() const { return xpr_.rows(); }
+  auto cols() const { return 1; }
+
+  auto operator()(size_t row, size_t) const { return xpr_(row, col_); }
+  auto& operator()(size_t row, size_t)      { return xpr_(row, col_); }
+
+  auto operator[](size_t n) const { return xpr_(n, col_); }
+  auto& operator[](size_t n)      { return xpr_(n, col_); }
+
+  auto operator=(const mat_col& o) {
+    eval(*this, o); return *this;
+  }
+
+  template <typename Mat>
+  auto operator=(const matrix_base<Mat>& o) {
+    eval(*this, o); return *this;
+  }
+
+private:
+  Xpr& xpr_;
+  size_t col_;
+};
+
 } // namespace ig
 
-#endif // IG_MATH_PNG_H
+#endif // IG_MATH_COL_H

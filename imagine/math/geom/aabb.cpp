@@ -21,23 +21,26 @@
  SOFTWARE.
 */
 
-#ifndef IG_MATH_PNG_H
-#define IG_MATH_PNG_H
+#include "imagine/math/geom/aabb.h"
 
-#include "imagine/math/theory/tensor.h"
-#include <sstream>
+namespace ig {
 
-namespace ig     {
-namespace detail {
+// axis-aligned bounding box
+aabb::aabb()
+  : min_{ std::numeric_limits<float>::infinity()}
+  , max_{-std::numeric_limits<float>::infinity()} {}
 
-using png_t = image_bridge::type;
-using pptr  = image_bridge::rptr;
+aabb::aabb(const vec3& min, const vec3& max)
+  : min_{min}
+  , max_{max} {}
 
-bool png_validate(std::istream& stream);
-pptr png_readp_impl(std::istream& stream);
-bool png_write_impl(std::ostream& stream, const png_t& imag);
+aabb::aabb(const std::vector<vec3>& points) : aabb{} {
+  for (auto& point : points)
+    expand(point);
+}
 
-} // namespace detail
+void aabb::expand(const vec3& point) {
+  min_ = std::min(min_, point), max_ = std::max(max_, point);
+}
+
 } // namespace ig
-
-#endif // IG_MATH_PNG_H

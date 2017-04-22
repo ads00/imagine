@@ -24,7 +24,7 @@
 #ifndef IG_MATH_PRECOND_H
 #define IG_MATH_PRECOND_H
 
-#include "imagine/math/linalg/matrix.h"
+#include "imagine/math/theory/matrix.h"
 
 namespace ig {
 

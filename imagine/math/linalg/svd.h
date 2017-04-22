@@ -24,21 +24,21 @@
 #ifndef IG_MATH_SVD_H
 #define IG_MATH_SVD_H
 
-#include "imagine/math/linalg/matrix.h"
+#include "imagine/math/theory/matrix.h"
 #include "imagine/math/linalg/solver/direct.h"
 
 namespace ig {
 
-template <typename Lin>
+template <typename Mat>
 class svd {
 public:
-  using type = lin_t<Lin>;
+  using type = mat_t<Mat>;
   using matrix_type = matrix<type>;
   using vector_type = colvec<type>;
 
   static_assert(std::is_arithmetic<type>::value, "Singular value decomposition requires an arithmetic matrix");
 
-  explicit svd(const matrix_type& lin);
+  explicit svd(const matrix_type& mat);
 
   size_t rank() const;
   auto pinv() const -> matrix_type;
@@ -57,12 +57,12 @@ private:
   vector_type s_;
 };
 
-template <typename Lin>
-svd<Lin>::svd(const matrix_type& lin)
-  : m_{lin.rows()}
-  , n_{lin.cols()}
+template <typename Mat>
+svd<Mat>::svd(const matrix_type& mat)
+  : m_{mat.rows()}
+  , n_{mat.cols()}
   , threshold_{0}
-  , u_{lin}
+  , u_{mat}
   , v_{n_, n_}
   , s_{n_} {
 
@@ -258,8 +258,8 @@ svd<Lin>::svd(const matrix_type& lin)
   }
 }
 
-template <typename Lin>
-size_t svd<Lin>::rank() const {
+template <typename Mat>
+size_t svd<Mat>::rank() const {
   // Lookup for singular values > threshold 
   size_t r = 0;
   for (size_t i = 0; i < n_; ++i)
@@ -267,8 +267,8 @@ size_t svd<Lin>::rank() const {
   return r;
 }
 
-template <typename Lin>
-auto svd<Lin>::pinv() const -> matrix_type {
+template <typename Mat>
+auto svd<Mat>::pinv() const -> matrix_type {
   // Compute w = VS+
   matrix_type w{n_, n_};
   for (size_t i = 0; i < n_; ++i)
@@ -278,8 +278,8 @@ auto svd<Lin>::pinv() const -> matrix_type {
   return w * u_.t();
 }
 
-template <typename Lin>
-auto svd<Lin>::solve(const vector_type& b) -> vector_type {
+template <typename Mat>
+auto svd<Mat>::solve(const vector_type& b) -> vector_type {
   // Compute w = U^Tb
   vector_type w{u_.t() * b};
 
@@ -297,9 +297,9 @@ auto svd<Lin>::solve(const vector_type& b) -> vector_type {
 
 namespace lin {
 
-template <typename Lin>
-constexpr auto svd_run(const lin_base<Lin>& lin) {
-  return svd<Lin>{lin};
+template <typename Mat>
+constexpr auto svd_run(const matrix_base<Mat>& mat) {
+  return svd<Mat>{mat};
 }
 
 } // namespace lin

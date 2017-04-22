@@ -21,7 +21,7 @@
  SOFTWARE.
 */
 
-#include "imagine/math/theory/ndarray.h"
+#include "imagine/math/theory/tensor.h"
 #include "imagine/math/theory/_image/jpeg.h"
 #include "imagine/math/theory/_image/png.h"
 

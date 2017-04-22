@@ -24,19 +24,19 @@
 #ifndef IG_MATH_OPERATION_H
 #define IG_MATH_OPERATION_H
 
-#include "imagine/math/linalg/matrix.h"
+#include "imagine/math/theory/matrix.h"
 
 namespace ig  {
 namespace lin {
 
 template <typename Lhs, typename Rhs>
-constexpr auto dot(const lin_base<Lhs>& lhs, const lin_base<Rhs>& rhs) {
+constexpr auto dot(const matrix_base<Lhs>& lhs, const matrix_base<Rhs>& rhs) {
   return (lhs % rhs).sum();
 }
 
 template <typename Lhs, typename Rhs>
-constexpr auto cross(const lin_base<Lhs>& lhs, const lin_base<Rhs>& rhs) {
-  using vec_type = colvec<std::common_type_t< lin_t<Lhs>, lin_t<Rhs> >, 3>;
+constexpr auto cross(const matrix_base<Lhs>& lhs, const matrix_base<Rhs>& rhs) {
+  using vec_type = colvec<std::common_type_t< mat_t<Lhs>, mat_t<Rhs> >, 3>;
   assert(lhs.vector() && lhs.vecsize() == 3 && "Cross exists only in three-dimensional space");
   assert(rhs.vector() && rhs.vecsize() == 3 && "Cross exists only in three-dimensional space");
 

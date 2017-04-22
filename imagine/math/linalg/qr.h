@@ -24,20 +24,20 @@
 #ifndef IG_MATH_QR_H
 #define IG_MATH_QR_H
 
-#include "imagine/math/linalg/matrix.h"
+#include "imagine/math/theory/matrix.h"
 
 namespace ig {
 
-template <typename Lin>
+template <typename Mat>
 class qr {
 public:
-  using type = lin_t<Lin>;
+  using type = mat_t<Mat>;
   using matrix_type = matrix<type>;
   using vector_type = colvec<type>;
 
   static_assert(std::is_arithmetic<type>::value, "QR decomposition requires an arithmetic matrix");
 
-  explicit qr(const matrix_type& lin);
+  explicit qr(const matrix_type& mat);
 
   auto solve(const vector_type& b) -> vector_type;
 
@@ -51,11 +51,11 @@ private:
   vector_type tau_;
 };
 
-template <typename Lin>
-qr<Lin>::qr(const matrix_type& lin)
-  : m_{lin.rows()}
-  , n_{lin.cols()}
-  , qr_{lin}
+template <typename Mat>
+qr<Mat>::qr(const matrix_type& mat)
+  : m_{mat.rows()}
+  , n_{mat.cols()}
+  , qr_{mat}
   , tau_{n_} {
 
   for (size_t i = 0; i < n_; ++i) {
@@ -80,8 +80,8 @@ qr<Lin>::qr(const matrix_type& lin)
   }
 }
 
-template <typename Lin>
-auto qr<Lin>::solve(const vector_type& b) -> vector_type {
+template <typename Mat>
+auto qr<Mat>::solve(const vector_type& b) -> vector_type {
   // Compute y = Q^Tb
   auto y = b;
   for (size_t i = 0; i < n_; ++i) {
@@ -103,11 +103,11 @@ auto qr<Lin>::solve(const vector_type& b) -> vector_type {
 
 namespace lin {
 
-template <typename Lin>
-constexpr auto qr_run(const lin_base<Lin>& lin) {
-  assert(lin.rows() >= lin.cols() && "QR decomposition requires a square or rectangular matrix"
+template <typename Mat>
+constexpr auto qr_run(const matrix_base<Mat>& mat) {
+  assert(mat.rows() >= mat.cols() && "QR decomposition requires a square or rectangular matrix"
                                      " where m >= n");
-  return qr<Lin>{lin};
+  return qr<Mat>{mat};
 }
 
 } // namespace lin

@@ -21,23 +21,41 @@
  SOFTWARE.
 */
 
-#ifndef IG_MATH_PNG_H
-#define IG_MATH_PNG_H
+#ifndef IG_SIMU_CAMERA_H
+#define IG_SIMU_CAMERA_H
 
-#include "imagine/math/theory/tensor.h"
-#include <sstream>
+#include "imagine/math/geom/proj.h"
 
-namespace ig     {
-namespace detail {
+namespace ig {
 
-using png_t = image_bridge::type;
-using pptr  = image_bridge::rptr;
+class ig_api camera {
+public:
+  explicit camera(planar_proj planar, size_t w, size_t h);
+  explicit camera(planar_proj planar, size_t w, size_t h, const vec3& pos, const vec3& target, const vec3& up);
 
-bool png_validate(std::istream& stream);
-pptr png_readp_impl(std::istream& stream);
-bool png_write_impl(std::ostream& stream, const png_t& imag);
+  void extent(float fovy);
+  void clip(float zn, float zf);
 
-} // namespace detail
+  ray3 cast_ray(size_t x, size_t y) const;
+
+  const mat4& view();
+  const mat4& proj();
+
+private:
+  planar_proj projection_;
+
+  size_t w_, h_;
+  vec3 pos_, target_, up_;
+
+  float zn_, zf_;
+  float fovy_;
+
+  bool unit_;
+  bool uview_, uproj_;
+  mat4  view_,  proj_,
+       iview_, iproj_;
+};
+
 } // namespace ig
 
-#endif // IG_MATH_PNG_H
+#endif // IG_SIMU_CAMERA_H
