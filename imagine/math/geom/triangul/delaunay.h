@@ -21,8 +21,11 @@
  SOFTWARE.
 */
 
-#include "imagine/math/geom/frustum.h"
+#ifndef IG_MATH_DELAUNAY_H
+#define IG_MATH_DELAUNAY_H
 
 namespace ig {
 
 } // namespace ig
+
+#endif // IG_MATH_DELAUNAY_H
