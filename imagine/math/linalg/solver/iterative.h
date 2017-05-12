@@ -25,7 +25,7 @@
 #define IG_MATH_ITERATIVE_H
 
 #include "imagine/math/theory/matrix.h"
-#include "imagine/math/linalg/solver/precond.h"
+#include "imagine/math/linalg/solver/precondition.h"
 
 namespace ig  {
 namespace lin {

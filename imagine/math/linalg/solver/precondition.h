@@ -21,13 +21,39 @@
  SOFTWARE.
 */
 
-#ifndef IG_MATH_KERNEL_H
-#define IG_MATH_KERNEL_H
+#ifndef IG_MATH_PRECONDITION_H
+#define IG_MATH_PRECONDITION_H
 
-namespace ig  {
-namespace lin {
+#include "imagine/math/theory/matrix.h"
 
-} // namespace lin
+namespace ig {
+
+template <typename T>
+class jacobi_preconditioner {
+public:
+  using matrix_type = matrix<T>;
+  using vector_type = colvec<T>;
+
+  static_assert(std::is_arithmetic<T>::value,
+                "Jacobi preconditioner requires an arithmetic matrix");
+
+  explicit jacobi_preconditioner(const matrix_type& mat)
+    : invdiag_{mat.diagsize()} {
+
+    for (size_t i = 0; i < mat.diagsize(); ++i)
+      invdiag_[i] = mat(i, i) != 0 
+        ? T(1) / mat(i, i) 
+        : T(1);
+  }
+
+  vector_type solve(const vector_type& b) const {
+    return invdiag_ % b;
+  }
+
+private:
+  vector_type invdiag_;
+};
+
 } // namespace ig
 
-#endif // IG_MATH_KERNEL_H
+#endif // IG_MATH_PRECONDITION_H

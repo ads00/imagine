@@ -84,7 +84,7 @@ svd<Mat>::svd(const matrix_type& mat)
       u_(i, i) = f - g;
 
       for (size_t j = l; j < n_; ++j) {
-        auto s = 0;
+        type s = 0;
         for (size_t k = i; k < m_; ++k) s += u_(k, i) * u_(k, j);
 
         f = s / h;
@@ -156,7 +156,7 @@ svd<Mat>::svd(const matrix_type& mat)
   }
 
   size_t sweeps = 75;
-  threshold_ = std::numeric_limits<T>::epsilon() * std::max(m_, n_) * std::abs(s_[0]);
+  threshold_ = std::numeric_limits<type>::epsilon() * std::max(m_, n_) * std::abs(s_[0]);
 
   // Diagonalization of the bidiagonal form
   for (size_t i = n_; i--> 0; ) {
@@ -216,7 +216,7 @@ svd<Mat>::svd(const matrix_type& mat)
 
       auto x = s_[l];
       auto f = ((y - z) * (y + z) + (g - h) * (g + h)) / (2 * h * y);
-      g = std::hypot(f, 1);
+      g = std::hypot(f, type(1));
       f = ((x - z) * (x + z) + h * ((y / (f + sign(f) * g)) - h)) / x;
 
       type c = 1, s = 1;
