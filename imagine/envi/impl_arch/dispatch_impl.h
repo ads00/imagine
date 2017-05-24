@@ -21,37 +21,36 @@
  SOFTWARE.
 */
 
-#include "imagine/envi/impl_arch/dispatch_impl.h"
-#include "imagine/envi/dispatch.h"
+#ifndef IG_ENVI_DISPATCH_IMPL_H
+#define IG_ENVI_DISPATCH_IMPL_H
 
-namespace ig {
+#include "imagine/envi/impl_arch/widget_impl.h"
 
-dispatch::dispatch()
-  : native_{std::make_unique<impl::dispatch_native>()} {}
+#include <atomic>
+#include <vector>
 
-dispatch::~dispatch() = default;
+namespace ig   {
+namespace impl {
 
-int32_t dispatch::run() {
-  assert(!native_->running_ && "Dispatcher already running");
-  native_->running_ = true;
+static std::string ig_window_class = "ig_winclass";
 
-  while (native_->running_)
-    process_events();
-  return native_->return_code_;
-}
+class window_native;
+class dispatch_native {
+public:
+  dispatch_native();
+  ~dispatch_native() = default;
 
-void dispatch::exit(int32_t return_code) {
-  native_->return_code_ = return_code;
-  native_->running_     = false;
-}
+  std::atomic_int return_code_;
+  std::atomic_bool running_;
+  std::vector<window_native*> windows_;
 
-void dispatch::tick(const func_type& fn) {
-  tick_ = fn;
-}
+  #if defined(IG_WIN)
+  static HINSTANCE reg();
+  static LRESULT CALLBACK proc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
+  #endif
+};
 
-// Native implementations
-//
-
-// void dispatch::process_events();
-
+} // namespace impl
 } // namespace ig
+
+#endif // IG_ENVI_DISPATCH_IMPL_H

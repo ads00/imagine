@@ -21,37 +21,33 @@
  SOFTWARE.
 */
 
-#include "imagine/envi/impl_arch/dispatch_impl.h"
-#include "imagine/envi/dispatch.h"
+#ifndef IG_ENVI_VK_SAMPLER_H
+#define IG_ENVI_VK_SAMPLER_H
+
+#include "imagine/envi/impl_vk/image.h"
 
 namespace ig {
+namespace vk {
 
-dispatch::dispatch()
-  : native_{std::make_unique<impl::dispatch_native>()} {}
+enum class filter;
+enum class mipmap_mode;
+enum class address_mode;
 
-dispatch::~dispatch() = default;
+class ig_api image::sampler : public managed<VkSampler_T*> {
+public:
+  explicit sampler(const device& device, filter mag, filter min, address_mode mode, mipmap_mode mipmap, float anisotropy = 0.f);
+  virtual ~sampler();
 
-int32_t dispatch::run() {
-  assert(!native_->running_ && "Dispatcher already running");
-  native_->running_ = true;
+  const device& devi; };
 
-  while (native_->running_)
-    process_events();
-  return native_->return_code_;
-}
+enum class filter      { nearest = 0, linear = 1, cubic = 1000015000 };
+enum class mipmap_mode { nearest = 0, linear = 1 };
 
-void dispatch::exit(int32_t return_code) {
-  native_->return_code_ = return_code;
-  native_->running_     = false;
-}
+enum class address_mode {
+  repeat     = 0, mirrored_repeat = 1, 
+  clamp_edge = 2, clamp_border    = 3, mirror_clamp_edge = 4 };
 
-void dispatch::tick(const func_type& fn) {
-  tick_ = fn;
-}
-
-// Native implementations
-//
-
-// void dispatch::process_events();
-
+} // namespace vk
 } // namespace ig
+
+#endif // IG_ENVI_VK_SAMPLER_H

@@ -21,37 +21,47 @@
  SOFTWARE.
 */
 
-#include "imagine/envi/impl_arch/dispatch_impl.h"
-#include "imagine/envi/dispatch.h"
+#ifndef IG_ENVI_VK_BUFFER_H
+#define IG_ENVI_VK_BUFFER_H
+
+#include "imagine/envi/impl_vk/resource.h"
 
 namespace ig {
+namespace vk {
 
-dispatch::dispatch()
-  : native_{std::make_unique<impl::dispatch_native>()} {}
+enum class index_type;
+enum class buffer_usage : uint32_t; using buffer_usages = flags<buffer_usage>;
 
-dispatch::~dispatch() = default;
+class ig_api buffer : public managed<VkBuffer_T*>, public resource {
+public:
+  using bview = VkBufferView_T*;
 
-int32_t dispatch::run() {
-  assert(!native_->running_ && "Dispatcher already running");
-  native_->running_ = true;
+  explicit buffer(const device& device, uint64_t size, buffer_usages usages);
+  virtual ~buffer();
 
-  while (native_->running_)
-    process_events();
-  return native_->return_code_;
-}
+  auto view(format format, uint64_t offset = 0, uint64_t range = ~0ull) 
+    -> bview&;
 
-void dispatch::exit(int32_t return_code) {
-  native_->return_code_ = return_code;
-  native_->running_     = false;
-}
+private:
+  bool bind(std::unique_ptr<block_type> block) override;
+  auto require(uint64_t& size, uint64_t& alignment) -> uint32_t override;
 
-void dispatch::tick(const func_type& fn) {
-  tick_ = fn;
-}
+private:
+  std::unordered_map<format, bview> views_;
+};
 
-// Native implementations
-//
+enum class index_type { 
+  uint16 = 0, uint32 = 1 };
 
-// void dispatch::process_events();
+enum class buffer_usage : uint32_t {
+  transfer_src  = 0x001, transfer_dst  = 0x002,
+  uniform_texel = 0x004, storage_texel = 0x008,
+  uniform       = 0x010, storage       = 0x020,
+  index         = 0x040,
+  vertex        = 0x080,
+  indirect      = 0x100 };
 
+} // namespace vk
 } // namespace ig
+
+#endif // IG_ENVI_VK_BUFFER_H

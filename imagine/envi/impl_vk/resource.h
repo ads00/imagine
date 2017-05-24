@@ -21,37 +21,39 @@
  SOFTWARE.
 */
 
-#include "imagine/envi/impl_arch/dispatch_impl.h"
-#include "imagine/envi/dispatch.h"
+#ifndef IG_ENVI_VK_RESOURCE_H
+#define IG_ENVI_VK_RESOURCE_H
+
+#include "imagine/envi/impl_vk/memory.h"
 
 namespace ig {
+namespace vk {
 
-dispatch::dispatch()
-  : native_{std::make_unique<impl::dispatch_native>()} {}
+class ig_api resource {
+public:
+  friend memory_allocator;
+  using block_type = memory::block;
 
-dispatch::~dispatch() = default;
+  explicit resource(const device& device);
+  virtual ~resource();
 
-int32_t dispatch::run() {
-  assert(!native_->running_ && "Dispatcher already running");
-  native_->running_ = true;
+  bool map(uint64_t offset = 0, uint64_t size = ~0ull);
+  void unm();
+  // bool fill(const void* data, uint64_t offset = 0, uint64_t size = ~0ull);
 
-  while (native_->running_)
-    process_events();
-  return native_->return_code_;
-}
+  void* get_ptr() { return block_->mem.mapped_; }
 
-void dispatch::exit(int32_t return_code) {
-  native_->return_code_ = return_code;
-  native_->running_     = false;
-}
+  const device& devi;
 
-void dispatch::tick(const func_type& fn) {
-  tick_ = fn;
-}
+private:
+  virtual bool bind(std::unique_ptr<block_type> block) = 0;
+  virtual auto require(uint64_t& size, uint64_t& alignment) -> uint32_t = 0;
 
-// Native implementations
-//
+protected:
+  std::unique_ptr<block_type> block_;
+};
 
-// void dispatch::process_events();
-
+} // namespace vk
 } // namespace ig
+
+#endif // IG_ENVI_VK_RESOURCE_H

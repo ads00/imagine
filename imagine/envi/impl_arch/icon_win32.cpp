@@ -21,37 +21,15 @@
  SOFTWARE.
 */
 
-#include "imagine/envi/impl_arch/dispatch_impl.h"
-#include "imagine/envi/dispatch.h"
+#include "imagine/envi/impl_arch/icon_impl.h"
 
-namespace ig {
+namespace ig   {
+namespace impl {
 
-dispatch::dispatch()
-  : native_{std::make_unique<impl::dispatch_native>()} {}
 
-dispatch::~dispatch() = default;
 
-int32_t dispatch::run() {
-  assert(!native_->running_ && "Dispatcher already running");
-  native_->running_ = true;
+} // namespace impl
 
-  while (native_->running_)
-    process_events();
-  return native_->return_code_;
-}
 
-void dispatch::exit(int32_t return_code) {
-  native_->return_code_ = return_code;
-  native_->running_     = false;
-}
-
-void dispatch::tick(const func_type& fn) {
-  tick_ = fn;
-}
-
-// Native implementations
-//
-
-// void dispatch::process_events();
 
 } // namespace ig

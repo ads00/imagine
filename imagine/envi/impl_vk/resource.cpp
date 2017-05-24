@@ -21,37 +21,31 @@
  SOFTWARE.
 */
 
-#include "imagine/envi/impl_arch/dispatch_impl.h"
-#include "imagine/envi/dispatch.h"
+#include "imagine/envi/impl_vk/resource.h"
+#include "imagine/envi/impl_vk/detail/vulkan.h"
 
 namespace ig {
+namespace vk {
 
-dispatch::dispatch()
-  : native_{std::make_unique<impl::dispatch_native>()} {}
+resource::resource(const device& device)
+  : devi{device} {}
 
-dispatch::~dispatch() = default;
-
-int32_t dispatch::run() {
-  assert(!native_->running_ && "Dispatcher already running");
-  native_->running_ = true;
-
-  while (native_->running_)
-    process_events();
-  return native_->return_code_;
+resource::~resource() {
+  if (block_) { 
+    auto& mem = block_->mem; mem.coalesce(std::move(block_)); }
 }
 
-void dispatch::exit(int32_t return_code) {
-  native_->return_code_ = return_code;
-  native_->running_     = false;
+bool resource::map(uint64_t offset, uint64_t size) {
+  assert(block_ && "Resource not bound to device memory");
+  assert(!block_->mem.mapped_ && "Device memory already mapped");
+  return devi->vkMapMemory(
+    devi, block_->mem, block_->offset + offset, size, 0, &block_->mem.mapped_) == VK_SUCCESS;
 }
 
-void dispatch::tick(const func_type& fn) {
-  tick_ = fn;
+void resource::unm() {
+  if (block_->mem.mapped_)
+    devi->vkUnmapMemory(devi, block_->mem); block_->mem.mapped_ = nullptr;
 }
 
-// Native implementations
-//
-
-// void dispatch::process_events();
-
+} // namespace vk
 } // namespace ig

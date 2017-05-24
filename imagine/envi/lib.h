@@ -21,37 +21,36 @@
  SOFTWARE.
 */
 
-#include "imagine/envi/impl_arch/dispatch_impl.h"
-#include "imagine/envi/dispatch.h"
+#ifndef IG_ENVI_LIB_H
+#define IG_ENVI_LIB_H
 
-namespace ig {
+#include "imagine/ig.h"
 
-dispatch::dispatch()
-  : native_{std::make_unique<impl::dispatch_native>()} {}
+namespace ig   {
+namespace impl { class lib_native; }
 
-dispatch::~dispatch() = default;
+class ig_api lib {
+public:
+  using funcptr_type = void (*)();
 
-int32_t dispatch::run() {
-  assert(!native_->running_ && "Dispatcher already running");
-  native_->running_ = true;
+  lib();
+  explicit lib(const std::string& path);
+  virtual ~lib();
 
-  while (native_->running_)
-    process_events();
-  return native_->return_code_;
-}
+  auto resolve(const char* symbol) -> funcptr_type;
+  bool open(const std::string& path);
+  void close();
 
-void dispatch::exit(int32_t return_code) {
-  native_->return_code_ = return_code;
-  native_->running_     = false;
-}
+  bool loaded() const;
 
-void dispatch::tick(const func_type& fn) {
-  tick_ = fn;
-}
+  lib(const lib&) = delete;
+  lib& operator=(const lib&) = delete;
 
-// Native implementations
-//
-
-// void dispatch::process_events();
+private:
+  std::unique_ptr<impl::lib_native> 
+    native_;
+};
 
 } // namespace ig
+
+#endif // IG_ENVI_LIB_H

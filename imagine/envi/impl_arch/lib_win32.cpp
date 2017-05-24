@@ -21,37 +21,50 @@
  SOFTWARE.
 */
 
-#include "imagine/envi/impl_arch/dispatch_impl.h"
-#include "imagine/envi/dispatch.h"
+#include "imagine/envi/impl_arch/lib_impl.h"
+#include "imagine/envi/lib.h"
 
-namespace ig {
+namespace ig   {
+namespace impl {
 
-dispatch::dispatch()
-  : native_{std::make_unique<impl::dispatch_native>()} {}
+lib_native::lib_native()
+  : path_{}
+  , handle_{nullptr} {}
 
-dispatch::~dispatch() = default;
+lib_native::lib_native(const std::string& path)
+  : path_{path}
+  , handle_{nullptr} {}
 
-int32_t dispatch::run() {
-  assert(!native_->running_ && "Dispatcher already running");
-  native_->running_ = true;
+} // namespace impl
 
-  while (native_->running_)
-    process_events();
-  return native_->return_code_;
+auto lib::resolve(const char* symbol) -> funcptr_type {
+  if (native_->handle_) {
+    auto proc = GetProcAddress(native_->handle_, symbol);
+    return reinterpret_cast<funcptr_type>(proc);
+  } else {
+    return nullptr;
+  }
 }
 
-void dispatch::exit(int32_t return_code) {
-  native_->return_code_ = return_code;
-  native_->running_     = false;
+bool lib::open(const std::string& path) {
+  if (native_->handle_) {
+    if (native_->path_ != path) {
+      close();
+    } else {
+      return true;
+    }
+  }
+
+  native_->handle_ = LoadLibraryA(path.c_str());
+  native_->path_ = path;
+  return native_->handle_ != nullptr;
 }
 
-void dispatch::tick(const func_type& fn) {
-  tick_ = fn;
+void lib::close() {
+  if (native_->handle_) {
+    FreeLibrary(native_->handle_);
+    native_->handle_ = nullptr;
+  }
 }
-
-// Native implementations
-//
-
-// void dispatch::process_events();
 
 } // namespace ig

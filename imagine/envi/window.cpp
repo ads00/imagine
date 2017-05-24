@@ -21,8 +21,8 @@
  SOFTWARE.
 */
 
-#include "imagine/envi/arch/window_impl.h"
-#include "imagine/envi/arch/dispatch_impl.h"
+#include "imagine/envi/impl_arch/window_impl.h"
+#include "imagine/envi/impl_arch/dispatch_impl.h"
 #include "imagine/envi/window.h"
 
 #include <algorithm>
@@ -37,12 +37,11 @@ window::window(const dispatch& dsp, types_t types, const std::string& caption, u
   : native_{std::make_unique<impl::window_native>(*this, types, caption, w, h)}
   , cursor{cursor_shape::arrow} { 
 
-  link_ = [this, &windows = dsp.native_->windows_]() {
-    auto it = std::remove_if(windows.begin(), windows.end(), [this](auto& win) {
-      return win == native_.get(); });
-    it != windows.end()
-      ? windows.erase(it, windows.end())
-      : windows.emplace_back(native_.get());
+  link_ = [this, &wins = dsp.native_->windows_]() {
+    auto it = std::remove_if(wins.begin(), wins.end(), [this](auto& w) { return w == native_.get(); });
+    it != wins.end()
+      ? wins.erase(it, wins.end())
+      : wins.emplace_back(native_.get());
   }; link_();
 }
 

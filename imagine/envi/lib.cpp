@@ -21,37 +21,31 @@
  SOFTWARE.
 */
 
-#include "imagine/envi/impl_arch/dispatch_impl.h"
-#include "imagine/envi/dispatch.h"
+#include "imagine/envi/impl_arch/lib_impl.h"
+#include "imagine/envi/lib.h"
 
 namespace ig {
 
-dispatch::dispatch()
-  : native_{std::make_unique<impl::dispatch_native>()} {}
+lib::lib()
+  : native_{std::make_unique<impl::lib_native>()} {}
 
-dispatch::~dispatch() = default;
+lib::lib(const std::string& path)
+  : native_{std::make_unique<impl::lib_native>(path)}
+{ open(path);}
 
-int32_t dispatch::run() {
-  assert(!native_->running_ && "Dispatcher already running");
-  native_->running_ = true;
-
-  while (native_->running_)
-    process_events();
-  return native_->return_code_;
+lib::~lib() {
+  close();
 }
 
-void dispatch::exit(int32_t return_code) {
-  native_->return_code_ = return_code;
-  native_->running_     = false;
-}
-
-void dispatch::tick(const func_type& fn) {
-  tick_ = fn;
+bool lib::loaded() const {
+  return native_->handle_ != nullptr;
 }
 
 // Native implementations
 //
 
-// void dispatch::process_events();
+// auto lib::resolve(const char* symbol) -> funcptr_type;
+// bool lib::open(const std::string& path);
+// void lib::close();
 
 } // namespace ig

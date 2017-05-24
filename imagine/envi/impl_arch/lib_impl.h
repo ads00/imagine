@@ -21,37 +21,28 @@
  SOFTWARE.
 */
 
-#include "imagine/envi/impl_arch/dispatch_impl.h"
-#include "imagine/envi/dispatch.h"
+#ifndef IG_ENVI_LIB_IMPL_H
+#define IG_ENVI_LIB_IMPL_H
 
-namespace ig {
+#include "imagine/envi/impl_arch/widget_impl.h"
 
-dispatch::dispatch()
-  : native_{std::make_unique<impl::dispatch_native>()} {}
+namespace ig   {
+namespace impl {
 
-dispatch::~dispatch() = default;
+class lib_native {
+public:
+  lib_native();
+  lib_native(const std::string& path);
+  ~lib_native() = default;
 
-int32_t dispatch::run() {
-  assert(!native_->running_ && "Dispatcher already running");
-  native_->running_ = true;
+  std::string path_;
 
-  while (native_->running_)
-    process_events();
-  return native_->return_code_;
-}
+  #if defined(IG_WIN)
+  HMODULE handle_;
+  #endif
+};
 
-void dispatch::exit(int32_t return_code) {
-  native_->return_code_ = return_code;
-  native_->running_     = false;
-}
-
-void dispatch::tick(const func_type& fn) {
-  tick_ = fn;
-}
-
-// Native implementations
-//
-
-// void dispatch::process_events();
-
+} // namespace impl
 } // namespace ig
+
+#endif // IG_ENVI_LIB_IMPL_H

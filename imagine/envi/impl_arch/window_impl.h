@@ -21,37 +21,42 @@
  SOFTWARE.
 */
 
-#include "imagine/envi/impl_arch/dispatch_impl.h"
-#include "imagine/envi/dispatch.h"
+#ifndef IG_ENVI_WINDOW_IMPL_H
+#define IG_ENVI_WINDOW_IMPL_H
 
-namespace ig {
+#include "imagine/envi/window.h"
+#include "imagine/envi/impl_arch/widget_impl.h"
 
-dispatch::dispatch()
-  : native_{std::make_unique<impl::dispatch_native>()} {}
+namespace ig   {
+namespace impl {
 
-dispatch::~dispatch() = default;
+class window_native {
+public:
+  window_native(const window& ref);
+  window_native(const window& ref, window::types_t types, const std::string& caption, uint32_t w, uint32_t h);
+  ~window_native() = default;
 
-int32_t dispatch::run() {
-  assert(!native_->running_ && "Dispatcher already running");
-  native_->running_ = true;
+  const window& ref_;
 
-  while (native_->running_)
-    process_events();
-  return native_->return_code_;
-}
+  window::types_t types_;
+  window_visibility visibility_;
 
-void dispatch::exit(int32_t return_code) {
-  native_->return_code_ = return_code;
-  native_->running_     = false;
-}
+  std::string caption_;
+  uint32_t w_, h_;
+  int32_t  x_, y_;
 
-void dispatch::tick(const func_type& fn) {
-  tick_ = fn;
-}
+  bool mouse_tracked_;
 
-// Native implementations
-//
+  #if defined(IG_WIN)
+  LRESULT internal(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 
-// void dispatch::process_events();
+  DWORD wstyle_;
+  HINSTANCE instance_;
+  HWND handle_;
+  #endif
+};
 
+} // namespace impl
 } // namespace ig
+
+#endif // IG_ENVI_WINDOW_IMPL_H

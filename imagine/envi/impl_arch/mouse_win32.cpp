@@ -21,37 +21,49 @@
  SOFTWARE.
 */
 
-#include "imagine/envi/impl_arch/dispatch_impl.h"
-#include "imagine/envi/dispatch.h"
+#include "imagine/envi/impl_arch/mouse_impl.h"
 
-namespace ig {
+namespace ig    {
+namespace mouse {
+namespace impl  {
 
-dispatch::dispatch()
-  : native_{std::make_unique<impl::dispatch_native>()} {}
+auto get_buttons() -> buttons {
+  auto swap = GetSystemMetrics(SM_SWAPBUTTON);
 
-dispatch::~dispatch() = default;
-
-int32_t dispatch::run() {
-  assert(!native_->running_ && "Dispatcher already running");
-  native_->running_ = true;
-
-  while (native_->running_)
-    process_events();
-  return native_->return_code_;
+  buttons buttons{button::none};
+  if (GetAsyncKeyState(VK_LBUTTON) < 0)
+    buttons |= swap 
+      ? button::right
+      : button::left;
+  if (GetAsyncKeyState(VK_RBUTTON) < 0)
+    buttons |= swap 
+      ? button::left
+      : button::right;
+  if (GetAsyncKeyState(VK_MBUTTON) < 0)
+    buttons |= button::middle;
+  return buttons;
 }
 
-void dispatch::exit(int32_t return_code) {
-  native_->return_code_ = return_code;
-  native_->running_     = false;
+auto get_x(LPARAM lparam) -> int32_t {
+  return LOWORD(lparam);
 }
 
-void dispatch::tick(const func_type& fn) {
-  tick_ = fn;
+auto get_y(LPARAM lparam) -> int32_t {
+  return HIWORD(lparam);
 }
 
-// Native implementations
-//
+auto get_wheel_delta(WPARAM wparam) -> float {
+  return static_cast<float>(GET_WHEEL_DELTA_WPARAM(wparam)) / WHEEL_DELTA;
+}
 
-// void dispatch::process_events();
+auto track(HWND window) -> bool {
+  TRACKMOUSEEVENT tme;
+  tme.cbSize = sizeof(TRACKMOUSEEVENT);
+  tme.dwFlags = TME_LEAVE;
+  tme.hwndTrack = window;
+  return TrackMouseEvent(&tme) == TRUE;
+}
 
+} // namespace impl
+} // namespace mouse
 } // namespace ig

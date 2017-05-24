@@ -21,37 +21,47 @@
  SOFTWARE.
 */
 
-#include "imagine/envi/impl_arch/dispatch_impl.h"
-#include "imagine/envi/dispatch.h"
+#ifndef IG_ENVI_VK_PHYSICAL_H
+#define IG_ENVI_VK_PHYSICAL_H
+
+#include "imagine/envi/impl_vk/detail/wrapper.h"
+#include "imagine/envi/impl_vk/detail/instance.h"
 
 namespace ig {
+namespace vk {
 
-dispatch::dispatch()
-  : native_{std::make_unique<impl::dispatch_native>()} {}
+class ig_api physical : public managed<VkPhysicalDevice_T*> {
+public:
+  explicit physical(const instance& instance, VkPhysicalDevice_T* physical);
+  virtual ~physical();
 
-dispatch::~dispatch() = default;
+  int32_t select_heap(uint32_t type, memory_properties properties) const;
+  int32_t select_queue(queue_capabilities capabilities) const;
 
-int32_t dispatch::run() {
-  assert(!native_->running_ && "Dispatcher already running");
-  native_->running_ = true;
+  // properties
+  uint32_t get_api_version() const;
+  uint32_t get_driver_version() const;
+  uint32_t get_id() const;
+  std::string get_name() const;
 
-  while (native_->running_)
-    process_events();
-  return native_->return_code_;
-}
+  hardware get_type() const;
+  // limits
+  size_t get_ubo_alignment() const;
+  size_t get_ssbo_alignment() const;
+  // vulkan
+  auto get_features() const -> device_features;
 
-void dispatch::exit(int32_t return_code) {
-  native_->return_code_ = return_code;
-  native_->running_     = false;
-}
+  const instance& inst;
 
-void dispatch::tick(const func_type& fn) {
-  tick_ = fn;
-}
+protected:
+  virtual void post_acquire() override;
 
-// Native implementations
-//
+private:
+  struct impl; 
+  std::unique_ptr<impl> impl_;
+};
 
-// void dispatch::process_events();
-
+} // namespace vk
 } // namespace ig
+
+#endif // IG_ENVI_VK_PHYSICAL_H

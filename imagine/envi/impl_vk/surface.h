@@ -21,37 +21,45 @@
  SOFTWARE.
 */
 
-#include "imagine/envi/impl_arch/dispatch_impl.h"
-#include "imagine/envi/dispatch.h"
+#ifndef IG_ENVI_VK_SURFACE_H
+#define IG_ENVI_VK_SURFACE_H
+
+#include "imagine/envi/window.h"
+#include "imagine/envi/impl_vk/detail/physical.h"
 
 namespace ig {
+namespace vk {
 
-dispatch::dispatch()
-  : native_{std::make_unique<impl::dispatch_native>()} {}
+enum class present_mode { immediate = 0, mailbox = 1, fifo = 2, fifo_relaxed = 3 };
 
-dispatch::~dispatch() = default;
+class display;
+class ig_api surface : public managed<VkSurfaceKHR_T*> {
+public:
+  friend class swapchain;
 
-int32_t dispatch::run() {
-  assert(!native_->running_ && "Dispatcher already running");
-  native_->running_ = true;
+  explicit surface(const physical& physical, const window& window);
+  virtual ~surface();
 
-  while (native_->running_)
-    process_events();
-  return native_->return_code_;
-}
+  int32_t get_queue() const;
+  // vulkan
+  auto get_capabilities() const -> surface_capabilities;
 
-void dispatch::exit(int32_t return_code) {
-  native_->return_code_ = return_code;
-  native_->running_     = false;
-}
+  const physical& phys;
+  const instance& inst;
+  const window&   wind;
 
-void dispatch::tick(const func_type& fn) {
-  tick_ = fn;
-}
+protected:
+  auto support_format(format fmt) const -> format;
+  auto support_present_mode(present_mode present) const -> present_mode;
 
-// Native implementations
-//
+  virtual void post_acquire() override;
 
-// void dispatch::process_events();
+private:
+  struct impl; 
+  std::unique_ptr<impl> impl_;
+};
 
+} // namespace vk
 } // namespace ig
+
+#endif // IG_ENVI_VK_SURFACE_H
