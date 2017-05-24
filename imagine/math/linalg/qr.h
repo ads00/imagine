@@ -39,13 +39,16 @@ public:
 
   explicit qr(const matrix_type& mat);
 
-  auto solve(const vector_type& b) -> vector_type;
+  bool fullrank() const;
+  auto solve(const vector_type& b) const -> vector_type;
 
   auto& mat() const { return qr_; }
   auto& tau() const { return tau_; }
 
 private:
   const size_t m_, n_;
+
+  type threshold_;
 
   matrix_type qr_;
   vector_type tau_;
@@ -55,6 +58,7 @@ template <typename Mat>
 qr<Mat>::qr(const matrix_type& mat)
   : m_{mat.rows()}
   , n_{mat.cols()}
+  , threshold_{std::numeric_limits<type>::epsilon() * m_}
   , qr_{mat}
   , tau_{n_} {
 
@@ -72,7 +76,6 @@ qr<Mat>::qr(const matrix_type& mat)
       for (size_t j = i + 1; j < n_; ++j) {
         type s = 0;
         for (size_t k = i; k < m_; ++k) s += qr_(k, i) * qr_(k, j);
-
         s = -s / qr_(i, i);
         for (size_t k = i; k < m_; ++k) qr_(k, j) += s * qr_(k, i);
       }
@@ -81,13 +84,18 @@ qr<Mat>::qr(const matrix_type& mat)
 }
 
 template <typename Mat>
-auto qr<Mat>::solve(const vector_type& b) -> vector_type {
+bool qr<Mat>::fullrank() const {
+  return std::find_if(tau_.begin(), tau_.end(), 
+  [this](auto v) { return std::abs(v) < threshold_; }) == tau_.end();
+}
+
+template <typename Mat>
+auto qr<Mat>::solve(const vector_type& b) const -> vector_type {
   // Compute y = Q^Tb
   auto y = b;
   for (size_t i = 0; i < n_; ++i) {
     type s = 0;
     for (size_t j = i; j < m_; ++j) s += qr_(j, i) * y[j];
-
     s = -s / qr_(i, i);
     for (size_t j = i; j < m_; ++j) y[j] += s * qr_(j, i);
   }

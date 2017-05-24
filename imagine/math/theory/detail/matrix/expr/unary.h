@@ -32,7 +32,8 @@ namespace ig {
 template <typename Mat, typename Op>
 struct mat_traits< unary_expr<Mat, Op> > {
   using type = mat_t<Mat>;
-  static constexpr auto n_rows = Mat::n_rows, n_cols = Mat::n_cols;
+  static constexpr auto n_rows = mat_traits<Mat>::n_rows, 
+                        n_cols = mat_traits<Mat>::n_cols;
 };
 
 template <typename Fn>

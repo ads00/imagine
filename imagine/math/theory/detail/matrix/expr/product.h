@@ -32,18 +32,18 @@ template <typename Lhs, typename Rhs>
 struct mat_traits< product_expr<Lhs, Rhs> > {
   using type = std::common_type_t< mat_t<Lhs>, mat_t<Rhs> >;
   static constexpr auto D = 
-    Lhs::n_rows == dynamic_sized ||
-    Rhs::n_cols == dynamic_sized;
-  static constexpr auto n_rows = D ? -1 : Lhs::n_rows, n_cols = D ? -1 : Rhs::n_cols;
+    mat_traits<Lhs>::n_rows == dynamic_sized ||
+    mat_traits<Rhs>::n_cols == dynamic_sized;
+  static constexpr auto n_rows = D ? -1 : mat_traits<Lhs>::n_rows, 
+                        n_cols = D ? -1 : mat_traits<Rhs>::n_cols;
 };
 
 template <typename Lhs, typename Rhs>
 class product_expr : public matrix_base< product_expr<Lhs, Rhs> > {
 public:
-  using matrix_type = typename product_expr::plain_type;
+  using matrix_type = concrete_mat_t<product_expr>;
   explicit product_expr(const Lhs& lhs, const Rhs& rhs)
-    : product_expr{lhs, rhs, 
-                   std::integral_constant<bool, matrix_type::immutable>{}}
+    : product_expr{lhs, rhs, std::integral_constant<bool, matrix_type::immutable>{}}
   { eval_product(lhs, rhs); }
 
   product_expr(const Lhs& lhs, const Rhs& rhs, std::true_type)  : prod_{} {}

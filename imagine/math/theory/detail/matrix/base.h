@@ -56,35 +56,52 @@ template <typename Xpr> struct mat_traits;
 template <typename Xpr> struct mat_traits<const Xpr> : mat_traits<Xpr> {};
 
 // _t alias like
-template <typename Mat> using mat_t = typename Mat::type;
+template <typename Mat> using mat_t = typename mat_traits<Mat>::type;
+template <typename Mat> using concrete_mat_t = 
+  matrix
+  <
+    mat_t<Mat>,
+    mat_traits<Mat>::n_rows, mat_traits<Mat>::n_cols
+  >;
 
 template <typename C>
 class matrix_base {
 public:
   using type = typename mat_traits<C>::type;
-  static constexpr auto n_rows = mat_traits<C>::n_rows;
-  static constexpr auto n_cols = mat_traits<C>::n_cols;
-
-  using plain_type = matrix<type, n_rows, n_cols>;
-  using cdti_type = std::conditional_t<std::is_same<C, plain_type>::value, const type&, type>;
+  using cdti_type = std::conditional_t
+    < std::is_same<C, concrete_mat_t<C> >::value, const type&, type>;
 
   auto& derived() const { return static_cast<const C&>(*this); }
   auto& derived()       { return static_cast<C&>(*this); }
 
   template <typename iter, typename citer>
-  class iterator : public std::iterator<std::random_access_iterator_tag, type> {
+  class iterator : public std::iterator<std::random_access_iterator_tag, 
+                                        type,
+                                        type,
+                                        type*,
+                                        type&> {
   public:
     explicit iterator(citer& derived, size_t i) 
       : i_{i}
       , derived_{derived} {}
 
     auto operator=(const iterator& o) { i_ = o.i_; return *this; }
+
     auto operator++() { ++i_; return *this; }
     auto operator--() { --i_; return *this; }
 
-    bool operator==(const iterator& o) { return i_ == o.i_; }
-    bool operator!=(const iterator& o) { return i_ != o.i_; }
-    bool operator<(const iterator& o) { return i_ < o.i_; }
+    auto operator+(const iterator& o) 
+    { return i_ + o.i_; }
+    auto operator-(const iterator& o) 
+    { return i_ - o.i_; }
+
+    bool operator==(const iterator& o) 
+    { return i_ == o.i_; }
+    bool operator!=(const iterator& o) 
+    { return i_ != o.i_; }
+    bool operator<(const iterator& o) 
+    { return i_ < o.i_; }
+    
     iter operator*() const { return derived_[i_]; }
 
   protected:

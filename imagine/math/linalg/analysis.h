@@ -48,7 +48,7 @@ constexpr auto trace(const matrix_base<Mat>& mat) {
 
 namespace detail {
 
-template <typename Mat, size_t size = Mat::n_cols>
+template <typename Mat, size_t size = mat_traits<Mat>::n_cols>
 struct determinant {
   static constexpr auto run(const matrix_base<Mat>& mat) {
     return lu_run(mat).det();
@@ -92,7 +92,7 @@ struct determinant<Mat, 2> {
   }
 };
 
-template <typename Mat, size_t size = Mat::n_rows>
+template <typename Mat, size_t size = mat_traits<Mat>::n_rows>
 struct inverse {
   static constexpr auto run(const matrix_base<Mat>& mat) {
     return lu_run(mat).inv();
@@ -116,7 +116,7 @@ struct inverse<Mat, 4> {
              det3_helper(a3, a1, a2, b1, b2, b3);
     };
 
-    typename Mat::plain_type 
+    concrete_mat_t<Mat>
       inv{};
     auto invdet = 1 / determinant<Mat>::run(mat);
 
@@ -142,7 +142,7 @@ struct inverse<Mat, 3> {
       return mat(a1, b1) * mat(a2, b2) - mat(a1, b2) * mat(a2, b1);
     };
 
-    typename Mat::plain_type
+    concrete_mat_t<Mat>
       inv{};
     auto invdet = 1 / determinant<Mat>::run(mat);
 
@@ -156,7 +156,7 @@ struct inverse<Mat, 3> {
 template <typename Mat>
 struct inverse<Mat, 2> {
   static auto run(const matrix_base<Mat>& mat) {
-    typename Mat::plain_type
+    concrete_mat_t<Mat>
       inv{};
     auto invdet = 1 / determinant<Mat>::run(mat);
 

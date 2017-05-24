@@ -68,35 +68,28 @@ namespace lin {
 
 template <typename T>
 auto jacobi(T x, T y, T z) {
-  auto tau = (x - z) / std::abs(y) * 2;
+  auto tau = (x - z) / (std::abs(y) * 2);
   auto w = std::sqrt(tau * tau + 1);
   auto t = tau > 0
     ? 1 / (tau + w)
     : 1 / (tau - w);
 
-  auto sign_t = t > 0
-    ?  1
-    : -1;
   auto n = 1 / std::sqrt(t * t + 1);
-  return planerot<T>{n, -sign_t * (y / std::abs(y)) * std::abs(t) * n};
+  return planerot<T>{n, -sign(t) * (y / std::abs(y)) * std::abs(t) * n};
 }
 
 template <typename T>
 auto givens(T p, T q) {
-  if      (q == 0) return std::make_pair(planerot<T>{p < 0 ? T(-1) : T(1), T(0)}, std::abs(p));
-  else if (p == 0) return std::make_pair(planerot<T>{T(0), q < 0 ? T(1) : T(-1)}, std::abs(q));
+  if      (q == 0) return std::make_pair(planerot<T>{sign(p),  T(0)}, std::abs(p));
+  else if (p == 0) return std::make_pair(planerot<T>{T(0), -sign(q)}, std::abs(q));
   else if (std::abs(p) > std::abs(q)) {
     auto t = q / p;
-    auto u = p < 0
-      ? -std::sqrt(t * t + 1)
-      :  std::sqrt(t * t + 1);
+    auto u = sign(p) * std::sqrt(t * t + 1);
     auto c = 1 / u;
     return std::make_pair(planerot<T>{c, -t * c}, p * u);
   } else {
     auto t = p / q;
-    auto u = q < 0
-      ? -std::sqrt(t * t + 1)
-      :  std::sqrt(t * t + 1);
+    auto u = sign(q) * std::sqrt(t * t + 1);
     auto s = -1 / u;
     return std::make_pair(planerot<T>{-t * s, s}, q * u);
   }

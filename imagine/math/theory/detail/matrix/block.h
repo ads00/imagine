@@ -31,7 +31,8 @@ namespace ig {
 template <typename Xpr>
 struct mat_traits< mat_block<Xpr> > : mat_traits<Xpr> {
   using type = mat_t<Xpr>;
-  static constexpr auto n_rows = Xpr::n_rows, n_cols = Xpr::n_cols;
+  static constexpr auto n_rows = mat_traits<Xpr>::n_rows, 
+                        n_cols = mat_traits<Xpr>::n_cols;
 };
 
 template <typename Xpr>

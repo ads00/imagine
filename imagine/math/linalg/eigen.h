@@ -42,8 +42,8 @@ public:
 
   explicit eigen(const matrix_type& mat);
 
-  auto& eigenvectors() const { return v_; }
-  auto& eigenvalues() const  { return d_; }
+  auto& evt() const { return v_; }
+  auto& evl() const { return d_; }
 
 private:
   const size_t n_;
@@ -58,7 +58,7 @@ eigen<Mat, true>::eigen(const matrix_type& mat)
   , v_{mat}
   , d_{n_} {
 
-  vector_type work{n_};
+  vector_type e{n_};
   // Symmetric Householder reduction to tridiagonal form
   for (size_t i = n_; i--> 1; ) {
     type h = 0;
@@ -69,7 +69,7 @@ eigen<Mat, true>::eigen(const matrix_type& mat)
       auto f = v_(i, i - 1);
       auto g = sign(f) * std::sqrt(h);
 
-      work[i] = g;
+      e[i] = g;
       h -= f * g;
 
       v_(i, i - 1) = f - g;
@@ -78,27 +78,26 @@ eigen<Mat, true>::eigen(const matrix_type& mat)
       // Apply similarity transformation to remaining columns
       for (size_t j = 0; j < i; ++j) {
         v_(j, i) = v_(i, j) / h;
-
         g = 0;
         for (size_t k = 0; k < j + 1; ++k) g += v_(j, k) * v_(i, k);
         for (size_t k = j + 1; k < i; ++k) g += v_(k, j) * v_(i, k);
 
-        work[j] = g / h;
-        f += work[j] * v_(i, j);
+        e[j] = g / h;
+        f += e[j] * v_(i, j);
       }
 
       auto hh = f / (h + h);
       for (size_t j = 0; j < i; ++j) {
         f = v_(i, j);
-        g = work[j] -= hh * f;
-        for (size_t k = 0; k < j + 1; ++k) v_(j, k) -= f * work[k] + g * v_(i, k);
+        g = e[j] -= hh * f;
+        for (size_t k = 0; k < j + 1; ++k) v_(j, k) -= f * e[k] + g * v_(i, k);
       }
-    } else work[i] = v_(i, i - 1);
+    } else e[i] = v_(i, i - 1);
 
     d_[i] = h;
   }
 
-  d_[0] = work[0] = 0;
+  d_[0] = e[0] = 0;
 
   // Accumulate transformations
   for (size_t i = 0; i < n_; ++i) {
@@ -115,41 +114,40 @@ eigen<Mat, true>::eigen(const matrix_type& mat)
     for (size_t j = 0; j < i; ++j) v_(j, i) = v_(i, j) = 0;
   }
   
-  for (size_t i = 1; i < n_; ++i) work[i - 1] = work[i];
+  for (size_t i = 1; i < n_; ++i) e[i - 1] = e[i];
 
   // Symmetric tridiagonal QL algorithm
   size_t sweeps = 40;
   for (size_t l = 0, m = 0; l < n_; ++l) {
-    for (size_t it = 0; it <= sweeps; ++it) {
+    for (size_t iter = 0; iter <= sweeps; ++iter) {
       // Find smallest subdiagonal element
       for (m = l; m < n_ - 1; ++m) {
         auto s = std::abs(d_[m]) + std::abs(d_[m + 1]);
-        if (std::abs(work[m]) <= std::numeric_limits<type>::epsilon() * s)
+        if (std::abs(e[m]) <= std::numeric_limits<type>::epsilon() * s)
           break;
       }
 
       // Check for convergence
       if (m == l) 
         break;
-      if (it == sweeps) {
+      if (iter == sweeps) {
         throw std::logic_error{"Eigendecomposition failed (No convergence)"};
       }
 
       // Compute implicit shift
-      auto d = (d_[l + 1] - d_[l]) / (2 * work[l]);
-      auto g = (d_[m] - d_[l]) + work[l] / (d + sign(d) * std::hypot(d, 1));
+      auto d = (d_[l + 1] - d_[l]) / (2 * e[l]);
+      auto g = (d_[m] - d_[l]) + e[l] / (d + sign(d) * std::hypot(d, 1));
       type c = 1, s = 1, p = 0;
 
       // Implicit QL transformation
       for (size_t i = m; i--> l; ) {
-        auto b = c * work[i];
-        auto f = s * work[i];
-        auto r = work[i + 1] = std::hypot(f, g);
+        auto b = c * e[i];
+        auto f = s * e[i];
+        auto r = e[i + 1] = std::hypot(f, g);
 
         if (r == 0) {
-          d_[i + 1] -= p, work[m] = 0;
-          break;
-        }
+          d_[i + 1] -= p, e[m] = 0;
+          break; }
 
         s = f / r;
         c = g / r;
@@ -161,12 +159,12 @@ eigen<Mat, true>::eigen(const matrix_type& mat)
         // Accumulate transformation
         for (size_t k = 0; k < n_; ++k) {
           f = v_(k, i + 1);
-          v_(k, i + 1) = s * v_(k, i) + c * f, v_(k, i) = c * v_(k, i) - s * f;
-        }
+          v_(k, i + 1) = s * v_(k, i) + c * f, v_(k, i) = c * v_(k, i) - s * f; }
       }
 
+      e[m] = 0;
+      e[l] = g;
       d_[l] -= p;
-      work[l] = g, work[m] = 0;
     }
   }
 }
@@ -174,7 +172,7 @@ eigen<Mat, true>::eigen(const matrix_type& mat)
 namespace lin {
 
 template <typename Mat>
-constexpr auto eig_sym_run(const matrix_base<Mat>& mat) {
+constexpr auto eigs_run(const matrix_base<Mat>& mat) {
   assert(mat.square() && "Eigendecomposition requires a square matrix");
   return eigen<Mat, true>{mat};
 }

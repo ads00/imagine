@@ -56,12 +56,12 @@ template <typename T> constexpr T boltzmann   = T(1.3806488e-23);   // Boltzmann
 template <typename T> constexpr T avogadro    = T(6.02214129e23);   // Avogadro's number in mol-1
 
 template <typename T>
-constexpr auto sign(T x) { 
+constexpr T sign(T x) { 
   return x > 0 
     ? 1 
     : x < 0 
       ? -1 
-      : 0;
+      :  0;
 }
 
 template <typename T>

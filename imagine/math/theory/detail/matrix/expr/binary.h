@@ -32,7 +32,8 @@ namespace ig {
 template <typename Lhs, typename Rhs, typename Op>
 struct mat_traits< binary_expr<Lhs, Rhs, Op> > {
   using type = std::common_type_t< mat_t<Lhs>, mat_t<Rhs> >;
-  static constexpr auto n_rows = Lhs::n_rows, n_cols = Lhs::n_cols;
+  static constexpr auto n_rows = mat_traits<Lhs>::n_rows, 
+                        n_cols = mat_traits<Lhs>::n_cols;
 };
 
 template <typename Lhs, typename Rhs, typename Op>
