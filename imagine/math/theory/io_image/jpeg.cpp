@@ -21,7 +21,7 @@
  SOFTWARE.
 */
 
-#include "imagine/math/theory/_image/jpeg.h"
+#include "imagine/math/theory/io_image/jpeg.h"
 #include "imagine/core/log.h"
 #include <cstring>
 

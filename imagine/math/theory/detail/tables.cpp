@@ -22,8 +22,8 @@
 */
 
 #include "imagine/math/theory/tensor.h"
-#include "imagine/math/theory/_image/jpeg.h"
-#include "imagine/math/theory/_image/png.h"
+#include "imagine/math/theory/io_image/jpeg.h"
+#include "imagine/math/theory/io_image/png.h"
 
 namespace ig {
 

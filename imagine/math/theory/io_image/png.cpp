@@ -21,7 +21,7 @@
  SOFTWARE.
 */
 
-#include "imagine/math/theory/_image/png.h"
+#include "imagine/math/theory/io_image/png.h"
 #include "imagine/core/log.h"
 
 extern "C" 
