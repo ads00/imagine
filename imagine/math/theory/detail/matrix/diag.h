@@ -44,20 +44,17 @@ public:
   auto rows() const { return xpr_.diagsize(); }
   auto cols() const { return 1; }
 
-  auto operator()(size_t row, size_t) const { return xpr_(row, row); }
-  auto& operator()(size_t row, size_t)      { return xpr_(row, row); }
+  decltype(auto) operator()(size_t row, size_t) const { return xpr_(row, row); }
+  decltype(auto) operator()(size_t row, size_t)       { return xpr_(row, row); }
 
-  auto operator[](size_t n) const { return xpr_(n, n); }
-  auto& operator[](size_t n)      { return xpr_(n, n); }
+  decltype(auto) operator[](size_t n) const { return xpr_(n, n); }
+  decltype(auto) operator[](size_t n)       { return xpr_(n, n); }
 
-  auto operator=(const mat_diag& o) {
-    eval(*this, o); return *this;
-  }
+  auto operator=(const mat_diag& o) 
+  { eval(*this, o); return *this; }
 
   template <typename Mat>
-  auto operator=(const matrix_base<Mat>& o) {
-    eval(*this, o); return *this;
-  }
+  auto operator=(const matrix_base<Mat>& o) { eval(*this, o); return *this; }
 
 private:
   Xpr& xpr_;

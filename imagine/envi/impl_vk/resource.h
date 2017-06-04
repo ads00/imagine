@@ -37,9 +37,9 @@ public:
   explicit resource(const device& device);
   virtual ~resource();
 
-  bool map(uint64_t offset = 0, uint64_t size = ~0ull);
+  bool map(uint64_t offset = 0, uint64_t size = ~0);
   void unm();
-  // bool fill(const void* data, uint64_t offset = 0, uint64_t size = ~0ull);
+  // bool fill(const void* data, uint64_t offset = 0, uint64_t size = ~0);
 
   void* get_ptr() { return block_->mem.mapped_; }
 

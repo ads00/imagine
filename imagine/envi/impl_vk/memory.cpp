@@ -182,7 +182,7 @@ void memory_allocator::bind(resource& resource, memory_properties properties) {
 void memory_allocator::allocate(uint32_t log2size, uint32_t index) {
   VkMemoryAllocateInfo memalloc_info {};
     memalloc_info.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-    memalloc_info.allocationSize  = 1ull << log2size;
+    memalloc_info.allocationSize  = uint64_t(1) << log2size;
     memalloc_info.memoryTypeIndex = index;
 
   auto mmr = std::make_unique<memory>(*this, log2size, log2_layers);

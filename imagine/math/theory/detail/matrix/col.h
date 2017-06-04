@@ -43,22 +43,19 @@ public:
     , col_{col} {}
 
   auto rows() const { return xpr_.rows(); }
-  auto cols() const { return 1; }
+  auto cols() const { return size_t(1); }
 
-  auto operator()(size_t row, size_t) const { return xpr_(row, col_); }
-  auto& operator()(size_t row, size_t)      { return xpr_(row, col_); }
+  decltype(auto) operator()(size_t row, size_t) const { return xpr_(row, col_); }
+  decltype(auto) operator()(size_t row, size_t)       { return xpr_(row, col_); }
 
-  auto operator[](size_t n) const { return xpr_(n, col_); }
-  auto& operator[](size_t n)      { return xpr_(n, col_); }
+  decltype(auto) operator[](size_t n) const { return xpr_(n, col_); }
+  decltype(auto) operator[](size_t n)       { return xpr_(n, col_); }
 
-  auto operator=(const mat_col& o) {
-    eval(*this, o); return *this;
-  }
+  auto operator=(const mat_col& o) 
+  { eval(*this, o); return *this; }
 
   template <typename Mat>
-  auto operator=(const matrix_base<Mat>& o) {
-    eval(*this, o); return *this;
-  }
+  auto operator=(const matrix_base<Mat>& o) {  eval(*this, o); return *this; }
 
 private:
   Xpr& xpr_;

@@ -68,27 +68,22 @@ template <typename C>
 class matrix_base {
 public:
   using type = typename mat_traits<C>::type;
-  using cdti_type = std::conditional_t
-    < std::is_same<C, concrete_mat_t<C> >::value, const type&, type>;
 
   auto& derived() const { return static_cast<const C&>(*this); }
   auto& derived()       { return static_cast<C&>(*this); }
 
-  template <typename iter, typename citer>
+  template <typename iter>
   class iterator : public std::iterator<std::random_access_iterator_tag, 
-                                        type,
-                                        type,
-                                        type*,
-                                        type&> {
+                                        type> {
   public:
-    explicit iterator(citer& derived, size_t i) 
+    explicit iterator(iter& derived, size_t i) 
       : i_{i}
       , derived_{derived} {}
 
-    auto operator=(const iterator& o) { i_ = o.i_; return *this; }
+    auto& operator=(const iterator& o) { i_ = o.i_; return *this; }
 
-    auto operator++() { ++i_; return *this; }
-    auto operator--() { --i_; return *this; }
+    auto& operator++() { ++i_; return *this; }
+    auto& operator--() { --i_; return *this; }
 
     auto operator+(const iterator& o) 
     { return i_ + o.i_; }
@@ -102,16 +97,17 @@ public:
     bool operator<(const iterator& o) 
     { return i_ < o.i_; }
     
-    iter operator*() const { return derived_[i_]; }
+    auto operator*() const -> decltype(auto) 
+    { return derived_[i_]; }
 
   protected:
-    size_t i_; citer& derived_;
+    size_t i_; iter& derived_;
   };
 
-  auto begin() const { return iterator<cdti_type, const C>{derived(), 0}; }
-  auto begin()       { return iterator<type&, C>{derived(), 0}; }
-  auto end() const   { return iterator<cdti_type, const C>{derived(), size()}; }
-  auto end()         { return iterator<type&, C>{derived(), size()}; }
+  auto begin() const { return iterator<const C>{derived(), 0}; }
+  auto begin()       { return iterator<C>{derived(), 0}; }
+  auto end() const   { return iterator<const C>{derived(), size()}; }
+  auto end()         { return iterator<C>{derived(), size()}; }
 
   auto sum() const -> type;
   auto prod() const -> type;
@@ -143,11 +139,11 @@ public:
   auto t() const { return mat_trans<const C>{derived()}; }
   auto t()       { return mat_trans<C>{derived()}; }
 
-  auto operator()(size_t row, size_t col) const { return derived()(row, col); }
-  auto& operator()(size_t row, size_t col)      { return derived()(row, col); }
+  auto operator()(size_t row, size_t col) const -> decltype(auto) { return derived()(row, col); }
+  auto operator()(size_t row, size_t col)       -> decltype(auto) { return derived()(row, col); }
 
-  auto operator[](size_t index) const { return derived()[index]; }
-  auto& operator[](size_t index)      { return derived()[index]; }
+  auto operator[](size_t index) const -> decltype(auto) { return derived()[index]; }
+  auto operator[](size_t index)       -> decltype(auto) { return derived()[index]; }
 
   auto& operator+=(type scalar) { return derived() = std::move(*this) + scalar; }
   auto& operator-=(type scalar) { return derived() = std::move(*this) - scalar; }

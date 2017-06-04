@@ -59,20 +59,17 @@ public:
   auto rows() const { return nr_; }
   auto cols() const { return nc_; }
 
-  auto operator()(size_t row, size_t col) const { return xpr_(row_ + row, col_ + col); }
-  auto& operator()(size_t row, size_t col)      { return xpr_(row_ + row, col_ + col); }
+  decltype(auto) operator()(size_t row, size_t col) const { return xpr_(row_ + row, col_ + col); }
+  decltype(auto) operator()(size_t row, size_t col)       { return xpr_(row_ + row, col_ + col); }
 
-  auto operator[](size_t n) const = delete;
-  auto& operator[](size_t n)      = delete;
+  decltype(auto) operator[](size_t n) const = delete;
+  decltype(auto) operator[](size_t n)       = delete;
 
-  auto operator=(const mat_block& o) {
-    eval(*this, o); return *this;
-  }
+  auto operator=(const mat_block& o) 
+  { eval(*this, o); return *this; }
 
   template <typename Mat>
-  auto operator=(const matrix_base<Mat>& o) {
-    eval(*this, o); return *this;
-  }
+  auto operator=(const matrix_base<Mat>& o) { eval(*this, o); return *this; }
 
 private:
   Xpr& xpr_;

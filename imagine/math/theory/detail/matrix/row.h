@@ -42,23 +42,20 @@ public:
     : xpr_{xpr}
     , row_{row} {}
 
-  auto rows() const { return 1; }
+  auto rows() const { return size_t(1); }
   auto cols() const { return xpr_.cols(); }
 
-  auto operator()(size_t, size_t col) const { return xpr_(row_, col); }
-  auto& operator()(size_t, size_t col)      { return xpr_(row_, col); }
+  decltype(auto) operator()(size_t, size_t col) const { return xpr_(row_, col); }
+  decltype(auto) operator()(size_t, size_t col)       { return xpr_(row_, col); }
 
-  auto operator[](size_t n) const { return xpr_(row_, n); }
-  auto& operator[](size_t n)      { return xpr_(row_, n); }
+  decltype(auto) operator[](size_t n) const { return xpr_(row_, n); }
+  decltype(auto) operator[](size_t n)       { return xpr_(row_, n); }
 
-  auto operator=(const mat_row& o) {
-    eval(*this, o); return *this;
-  }
+  auto operator=(const mat_row& o) 
+  { eval(*this, o); return *this; }
 
   template <typename Mat>
-  auto operator=(const matrix_base<Mat>& o) {
-    eval(*this, o); return *this;
-  }
+  auto operator=(const matrix_base<Mat>& o) { eval(*this, o); return *this; }
 
 private:
   Xpr& xpr_;
