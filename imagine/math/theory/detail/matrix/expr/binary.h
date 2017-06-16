@@ -59,25 +59,41 @@ private:
 template <typename Lhs, typename Rhs>
 constexpr auto operator+(const matrix_base<Lhs>& lhs, const matrix_base<Rhs>& rhs) {
   assert(lhs.size() == rhs.size() && "Incoherent matrix-matrix addition");
-  return binary_expr< Lhs, Rhs, std::plus<> >{lhs.derived(), rhs.derived(), std::plus<>{}};
+  return binary_expr
+    < Lhs, 
+      Rhs, 
+      std::plus<> 
+    >{lhs.derived(), rhs.derived(), std::plus<>{}};
 }
 
 template <typename Lhs, typename Rhs>
 constexpr auto operator-(const matrix_base<Lhs>& lhs, const matrix_base<Rhs>& rhs) {
   assert(lhs.size() == rhs.size() && "Incoherent matrix-matrix subtraction");
-  return binary_expr< Lhs, Rhs, std::minus<> >{lhs.derived(), rhs.derived(), std::minus<>{}};
+  return binary_expr
+    < Lhs, 
+      Rhs, 
+      std::minus<> 
+    >{lhs.derived(), rhs.derived(), std::minus<>{}};
 }
 
 template <typename Lhs, typename Rhs>
 constexpr auto operator/(const matrix_base<Lhs>& lhs, const matrix_base<Rhs>& rhs) {
   assert(lhs.size() == rhs.size() && "Incoherent matrix-matrix division");
-  return binary_expr< Lhs, Rhs, std::divides<> >{lhs.derived(), rhs.derived(), std::divides<>{}};
+  return binary_expr
+    < Lhs, 
+      Rhs, 
+      std::divides<> 
+    >{lhs.derived(), rhs.derived(), std::divides<>{}};
 }
 
 template <typename Lhs, typename Rhs>
 constexpr auto operator%(const matrix_base<Lhs>& lhs, const matrix_base<Rhs>& rhs) {
   assert(lhs.size() == rhs.size() && "Incoherent matrix cwise multiplication");
-  return binary_expr< Lhs, Rhs, std::multiplies<> >{lhs.derived(), rhs.derived(), std::multiplies<>{}};
+  return binary_expr
+    < Lhs, 
+      Rhs, 
+      std::multiplies<> 
+    >{lhs.derived(), rhs.derived(), std::multiplies<>{}};
 }
 
 } // namespace ig

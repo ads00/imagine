@@ -26,11 +26,11 @@
 namespace ig  {
 namespace trf {
 
-mat4 translation(const vec3& t) {
-  return mat4{1.f,  0.f,  0.f,  0.f,
-              0.f,  1.f,  0.f,  0.f,
-              0.f,  0.f,  1.f,  0.f,
-              t[0], t[1], t[2], 1.f};
+mat4 scale(const vec3& s) {
+  return mat4{s[0], 0.f,  0.f,  0.f,
+              0.f,  s[1], 0.f,  0.f,
+              0.f,  0.f,  s[2], 0.f,
+              0.f,  0.f,  0.f,  1.f};
 }
 
 mat4 rotation(const quat& r) {
@@ -50,11 +50,11 @@ mat4 rotation(const quat& r) {
               0.f,             0.f,             0.f,             1.f};
 }
 
-mat4 scale(const vec3& s) {
-  return mat4{s[0], 0.f,  0.f,  0.f,
-              0.f,  s[1], 0.f,  0.f,
-              0.f,  0.f,  s[2], 0.f,
-              0.f,  0.f,  0.f,  1.f};
+mat4 translation(const vec3& t) {
+  return mat4{1.f,  0.f,  0.f,  0.f,
+              0.f,  1.f,  0.f,  0.f,
+              0.f,  0.f,  1.f,  0.f,
+              t[0], t[1], t[2], 1.f};
 }
 
 mat4 look(const vec3& eye, const vec3& focus, const vec3& up) {

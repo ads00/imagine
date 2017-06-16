@@ -67,12 +67,20 @@ constexpr auto operator-(const matrix_base<Mat>& mat) {
 
 // Unary lambda-based function applier
 template <typename Mat, typename Fn>
-constexpr auto apply_fn(const matrix_base<Mat>& mat, Fn&& fn) 
-{ return unary_expr< Mat, unary_fn<Fn> >{mat.derived(), unary_fn<Fn>{fn}}; }
+constexpr auto apply_fn(const matrix_base<Mat>& mat, Fn&& fn) { 
+  return unary_expr
+    < Mat, 
+      unary_fn<Fn> 
+    >{mat.derived(), unary_fn<Fn>{fn}}; 
+}
 
 template <typename Mat>
 constexpr auto operator+(const matrix_base<Mat>& mat, mat_t<Mat> scalar) 
 { return apply_fn(mat, [scalar](auto& val) { return val + scalar; }); }
+
+template <typename Mat>
+constexpr auto operator+(mat_t<Mat> scalar, const matrix_base<Mat>& mat)
+{ return apply_fn(mat, [scalar](auto& val) { return scalar + val; }); }
 
 template <typename Mat>
 constexpr auto operator-(const matrix_base<Mat>& mat, mat_t<Mat> scalar) 

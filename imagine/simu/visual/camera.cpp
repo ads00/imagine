@@ -35,7 +35,7 @@ camera::camera(planar_proj proj, size_t w, size_t h, const vec3& pos, const vec3
   , pos_{pos}
   , target_{target}
   , up_{up}
-  , zn_{1e-3f}, zf_{1e3f}, fovy_{radians(70.f)}
+  , zn_{1e-3f}, zf_{1e3f}, fovy_{1.5f}
   , unit_{true}, uview_{false}, uproj_{false} {}
 
 void camera::extent(float fovy) {
@@ -81,7 +81,7 @@ const mat4& camera::proj() {
       unit_ = false;
       break;
     case planar_proj::orthographic:
-      proj_ = trf::orthographic(0, static_cast<float>(w_), 0, static_cast<float>(h_), zn_, zf_);
+      proj_ = trf::orthographic(-static_cast<float>(w_) / h_, static_cast<float>(w_) / h_, -1.f, 1.f, zn_, zf_);
       unit_ = true;
       break;
     }

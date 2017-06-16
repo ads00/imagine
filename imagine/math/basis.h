@@ -27,25 +27,38 @@
 #include "imagine/ig.h"
 
 #include <cmath>
-#include <limits>
-#include <complex>
+#include <sstream>
 
 namespace ig {
 
-template <typename T> constexpr T pi          = T(3.141592653589793);
-template <typename T> constexpr T two_pi      = T(6.283185307179586);
-template <typename T> constexpr T half_pi     = T(1.570796326794897);
-template <typename T> constexpr T sqrt_two_pi = T(2.506628274631000);
-template <typename T> constexpr T tau         = T(6.283185307179586);
-template <typename T> constexpr T elog        = T(2.718281828459045);
-template <typename T> constexpr T sqrt2       = T(1.414213562373095);
-template <typename T> constexpr T golden      = T(1.618033988749894);
-template <typename T> constexpr T omega       = T(0.567143290409783);
-
 // Mathematical constants
-template <typename T> constexpr T euler   = T(2.718281828459045);
-template <typename T> constexpr T apery   = T(1.202056903159594);
-template <typename T> constexpr T conway  = T(1.303577269034296);
+template <typename T = double> constexpr T pi         = T(3.141592653589793);
+template <typename T = double> constexpr T two_pi     = T(6.283185307179586);
+template <typename T = double> constexpr T e          = T(2.718281828459045);
+template <typename T = double> constexpr T sqrt2      = T(1.414213562373095);
+template <typename T = double> constexpr T sqrt3      = T(1.732050807568877);
+template <typename T = double> constexpr T euler      = T(0.577215664901532);
+template <typename T = double> constexpr T golden     = T(1.618033988749894);
+template <typename T = double> constexpr T mertens    = T(0.261497212847642);
+template <typename T = double> constexpr T bernstein  = T(0.280169499023869);
+template <typename T = double> constexpr T omega      = T(0.567143290409783);
+template <typename T = double> constexpr T cahen      = T(0.643410546288338);
+template <typename T = double> constexpr T laplace    = T(0.662743419349181);
+template <typename T = double> constexpr T landau     = T(0.764223653589220);
+template <typename T = double> constexpr T catalan    = T(0.915965594177219);
+template <typename T = double> constexpr T lengyel    = T(1.098685805525187);
+template <typename T = double> constexpr T apery      = T(1.202056903159594);
+template <typename T = double> constexpr T conway     = T(1.303577269034296);
+template <typename T = double> constexpr T mills      = T(1.306377883863080);
+template <typename T = double> constexpr T plastic    = T(1.324717957244746);
+template <typename T = double> constexpr T soldner    = T(1.451369234883381);
+template <typename T = double> constexpr T backhouse  = T(1.456074948582689);
+template <typename T = double> constexpr T lieb       = T(1.539600717839002);
+template <typename T = double> constexpr T niven      = T(1.705211140105367);
+template <typename T = double> constexpr T parabolic  = T(2.295587149392638);
+template <typename T = double> constexpr T sierpinski = T(2.584981759579253);
+template <typename T = double> constexpr T khinchin   = T(2.685452001065306);
+template <typename T = double> constexpr T levy       = T(3.275822918721811);
 
 // Physical constants
 template <typename T> constexpr T light_speed = T(299792458);       // speed of light in vaccum in m.s^-1
@@ -53,7 +66,7 @@ template <typename T> constexpr T atomic_mass = T(1.660538921e-27); // atomic ma
 template <typename T> constexpr T gravity     = T(6.67384e-11);     // Newtonian constant of gravitation in m^3.kg^-1.s^-2
 template <typename T> constexpr T planck      = T(6.62606957e-34);  // Planck constant in J.s
 template <typename T> constexpr T boltzmann   = T(1.3806488e-23);   // Boltzmann constant in J.K-1
-template <typename T> constexpr T avogadro    = T(6.02214129e23);   // Avogadro's number in mol-1
+template <typename T> constexpr T avogadro    = T(6.02214129e+23);  // Avogadro's number in mol-1
 
 template <typename T>
 constexpr T sign(T x) { 
@@ -65,12 +78,7 @@ constexpr T sign(T x) {
 }
 
 template <typename T>
-constexpr auto align(T x, T alignment) {
-  return x + alignment - 1 &~(alignment - 1);
-}
-
-template <typename T> constexpr auto degrees(T x) { return x * 180 / pi<T>; }
-template <typename T> constexpr auto radians(T x) { return x * pi<T> / 180; }
+constexpr auto align(T x, T alignment) { return x + alignment - 1 &~(alignment - 1); }
 
 } // namespace ig
 

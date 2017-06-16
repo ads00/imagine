@@ -42,15 +42,17 @@ enum class coordinate  { local, world };
 
 namespace trf {
 
-ig_api mat4 translation(const vec3& t);
-ig_api mat4 rotation(const quat& r);
 ig_api mat4 scale(const vec3& s);
+ig_api mat4 rotation(const quat& r);
+ig_api mat4 translation(const vec3& t);
 
 ig_api mat4 look(const vec3& eye, const vec3& focus, const vec3& up);
 ig_api mat4 perspective(float fovy, float asp, float zn, float zf);
 ig_api mat4 orthographic(float l, float r, float t, float b, float zn, float zf);
 
-ig_api vec3 transform(const mat4& m, const vec3& v, bool unit = false);
+ig_api vec3 transform(const mat4& m,
+                      const vec3& v,
+                      bool unit = false);
 
 } // namespace trf
 } // namespace ig

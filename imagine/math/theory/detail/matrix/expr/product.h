@@ -68,7 +68,10 @@ private:
 template <typename Lhs, typename Rhs>
 constexpr auto operator*(const matrix_base<Lhs>& lhs, const matrix_base<Rhs>& rhs) {
   assert(lhs.cols() == rhs.rows() && "Incoherent matrix-matrix multiplication");
-  return product_expr<Lhs, Rhs>{lhs.derived(), rhs.derived()};
+  return product_expr
+    < Lhs, 
+      Rhs
+    >{lhs.derived(), rhs.derived()};
 }
 
 } // namespace ig
