@@ -38,7 +38,9 @@ struct device::impl {
   // VK_KHR_shader_draw_parameters rev. 1 (complete)
   // VK_KHR_maintenance1 rev. 1 (draft)
   // VK_KHR_push_descriptor rev. 1 (draft)
+  // VK_KHR_incremental_present rev. 1
   // VK_KHR_descriptor_update_template rev. 1 (in work)
+  // VK_KHR_shared_presentable_image rev. 1
   // VK_EXT_debug_marker rev. 4
   // VK_KHX_multiview rev. 1 (draft)
   // VK_KHX_device_group rev. 1 (draft)
@@ -49,14 +51,14 @@ struct device::impl {
   // VK_EXT_hdr_metadata rev. 1
   std::vector<VkExtensionProperties> extensions; };
 
-device::device(const physical& physical, const std::vector<queue_capabilities>& rq)
+device::device(const physical& physical, const std::vector<capabilities>& rq)
   : phys{physical}
   , inst{phys.inst}
   , impl_{std::make_unique<impl>()}
   , dpfn_{std::make_unique<dPfn>()} {
 
   for (auto& request : rq)
-    (request & queue_capability::present) != 0
+    (request & capability::present) != 0
       ? selects_.prepare(surface{phys, window{}}.get_queue())
       : selects_.prepare(phys.select_queue(request));
 

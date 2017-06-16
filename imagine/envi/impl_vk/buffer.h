@@ -39,7 +39,7 @@ public:
   explicit buffer(const device& device, uint64_t size, buffer_usages usages);
   virtual ~buffer();
 
-  auto view(format format, uint64_t offset = 0, uint64_t range = ~0ull) 
+  auto view(format format, uint64_t offset = 0, uint64_t range = ~0)
     -> bview&;
 
 private:

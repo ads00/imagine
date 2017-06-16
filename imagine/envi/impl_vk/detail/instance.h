@@ -34,8 +34,9 @@ namespace ig {
 namespace vk {
 
 enum class hardware;
-enum class queue_capability : uint32_t; using queue_capabilities = flags<queue_capability>;
 enum class memory_property  : uint32_t; using memory_properties  = flags<memory_property>;
+enum capability : uint32_t; 
+using capabilities = flags<capability>;
 
 class iPfn;
 class physical;
@@ -50,15 +51,8 @@ public:
   bool dbg();
   bool supported(const std::string& name) const;
 
-  template <size_t... Is>
-  auto gen_context_queues(std::unique_ptr<device>& devi, std::index_sequence<Is...>) const {
-    return std::make_tuple(
-      std::move([&devi](uint32_t i) { return std::make_unique<queue>(*devi, i); }(Is))...);
-  }
-
-  template <int32_t q, int32_t p = 0>
-  auto make_context(hardware unit, const std::vector<queue_capabilities>& rq) const {
-    auto id = p;
+  template <capability... caps>
+  auto make_context(hardware unit, uint32_t id = 0) const {
     auto it = std::find_if(physicals_.begin(), physicals_.end(), [&unit, &id](auto& phys) {
       return phys->get_type() == unit && !id--;
     });
@@ -66,8 +60,15 @@ public:
       ? *it
       : *physicals_.begin();
 
-    auto devi = std::make_unique<device>(*phys, rq);
-    return std::tuple_cat(std::make_tuple(phys, std::move(devi)), std::move(gen_context_queues(devi, std::make_index_sequence<q>{})));
+    struct context {
+    context(std::shared_ptr<physical>& dev) 
+      : phys{dev}
+      , devi{std::make_unique<device>(*phys, std::vector<capabilities>{caps...})} {}
+
+    std::shared_ptr<physical> phys;
+    std::unique_ptr<device> 
+      devi; 
+    }; return context{phys};
   }
 
   auto& operator->() const { return ipfn_; }
@@ -89,10 +90,6 @@ private:
 enum class hardware {
   other = 0,
   integrated = 1, discrete = 2, virtualized = 3, cpu = 4 };
-
-enum class queue_capability : uint32_t {
-  graphics = 0x001, compute = 0x002,
-  transfer = 0x004, sparse  = 0x008, present = 0x010, universal = graphics | compute | transfer };
 
 enum class memory_property : uint32_t {
   device_local = 0x001,
@@ -116,6 +113,10 @@ enum class format {
 
   d16_unorm  = 124,
   d32_sfloat = 126, d16_unorm_s8_uint = 128, d24_unorm_s8_uint = 129, d32_sfloat_s8_uint = 130 };
+
+enum capability : uint32_t {
+  graphics = 0x001, compute = 0x002,
+  transfer = 0x004, sparse  = 0x008, present = 0x010, universal = graphics | compute | transfer };
 
 } // namespace vk
 } // namespace ig

@@ -66,13 +66,13 @@ int32_t physical::select_heap(uint32_t type, memory_properties properties) const
   return -1;
 }
 
-int32_t physical::select_queue(queue_capabilities capabilities) const {
+int32_t physical::select_queue(capabilities caps) const {
   int32_t fit = -1, candidate = -1;
   for (uint32_t i = 0; i < impl_->queues_families.size() && fit < 0; ++i) {
     auto& family = impl_->queues_families[i];
-    capabilities == family.queueFlags
+    caps == family.queueFlags
       ? fit = i
-      : (family.queueFlags & capabilities) == capabilities
+      : (family.queueFlags & caps) == caps
         ? candidate = i
         : fit = fit;
   }

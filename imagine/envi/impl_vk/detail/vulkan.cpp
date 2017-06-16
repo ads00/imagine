@@ -282,6 +282,8 @@ void vulkan::acquire(device& d) {
   d->vkDestroyDescriptorUpdateTemplateKHR  = reinterpret_cast<PFN_vkDestroyDescriptorUpdateTemplateKHR> (d->vkGetDeviceProcAddr(d, "vkDestroyDescriptorUpdateTemplateKHR"));
   d->vkUpdateDescriptorSetWithTemplateKHR  = reinterpret_cast<PFN_vkUpdateDescriptorSetWithTemplateKHR> (d->vkGetDeviceProcAddr(d, "vkUpdateDescriptorSetWithTemplateKHR"));
   d->vkCmdPushDescriptorSetWithTemplateKHR = reinterpret_cast<PFN_vkCmdPushDescriptorSetWithTemplateKHR>(d->vkGetDeviceProcAddr(d, "vkCmdPushDescriptorSetWithTemplateKHR"));
+  // VK_KHR_shared_presentable_image
+  d->vkGetSwapchainStatusKHR = reinterpret_cast<PFN_vkGetSwapchainStatusKHR>(d->vkGetDeviceProcAddr(d, "vkGetSwapchainStatusKHR"));
   // VK_EXT_debug_marker
   d->vkDebugMarkerSetObjectTagEXT  = reinterpret_cast<PFN_vkDebugMarkerSetObjectTagEXT> (d->vkGetDeviceProcAddr(d, "vkDebugMarkerSetObjectTagEXT"));
   d->vkDebugMarkerSetObjectNameEXT = reinterpret_cast<PFN_vkDebugMarkerSetObjectNameEXT>(d->vkGetDeviceProcAddr(d, "vkDebugMarkerSetObjectNameEXT"));

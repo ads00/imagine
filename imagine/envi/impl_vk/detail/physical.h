@@ -36,7 +36,7 @@ public:
   virtual ~physical();
 
   int32_t select_heap(uint32_t type, memory_properties properties) const;
-  int32_t select_queue(queue_capabilities capabilities) const;
+  int32_t select_queue(capabilities caps) const;
 
   // properties
   uint32_t get_api_version() const;

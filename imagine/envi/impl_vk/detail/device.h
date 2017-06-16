@@ -37,11 +37,19 @@ public:
   friend vulkan;
   friend class queue;
 
-  explicit device(const physical& physical, const std::vector<queue_capabilities>& rq);
+  explicit device(const physical& physical, const std::vector<capabilities>& rq);
   virtual ~device();
 
   bool wait() const;
   bool supported(const std::string& name) const;
+
+  template <size_t S>
+  auto get_queues() const { return gen_context_queues(std::make_index_sequence<S>{}); }
+  template <size_t... Is>
+  auto gen_context_queues(std::index_sequence<Is...>) const {
+    return std::make_tuple(
+      std::move([this](uint32_t i) { return std::make_unique<queue>(*this, i); }(Is))...);
+  }
 
   auto& get_allocator() const { return allocator_; }
   auto& operator->() const    { return dpfn_; }
@@ -59,7 +67,7 @@ private:
     std::vector< std::pair<uint32_t, uint32_t> > indices;     // indices[i]     -> family , index
     std::vector< std::pair<uint32_t, uint32_t> > definitions; // definitions[i] -> family , count
     void prepare(uint32_t family);
-    auto retrieve(uint32_t i) const { return i < indices.size() ? indices[i] : std::make_tuple(0, 0); }
+    auto retrieve(uint32_t i) const { return i < indices.size() ? indices[i] : std::make_pair(0, 0); }
   } selects_;
 
   struct impl;

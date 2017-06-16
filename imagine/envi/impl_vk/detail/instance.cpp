@@ -43,8 +43,8 @@ struct instance::impl {
   // VK_KHR_wayland_surface rev. 6
   // VK_KHR_mir_surface rev. 4
   // VK_KHR_android_surface rev. 6
-  // VK_KHR_win32_surface rev. 5
-  // VK_EXT_debug_report rev. 5
+  // VK_KHR_win32_surface rev. 6
+  // VK_EXT_debug_report rev. 8
   // VK_EXT_validation_flags rev. 1
   // VK_NN_vi_surface rev. 1
   // VK_KHX_device_group_creation rev. 1 (draft)
@@ -70,7 +70,6 @@ static std::vector<std::string> meta_layers = {
     "VK_LAYER_LUNARG_parameter_validation",
     "VK_LAYER_LUNARG_object_tracker",
     "VK_LAYER_LUNARG_core_validation",
-    "VK_LAYER_LUNARG_swapchain",
     "VK_LAYER_GOOGLE_unique_objects" };
 
 VkBool32 vk_dbg_callback(VkDebugReportFlagsEXT flags, VkDebugReportObjectTypeEXT type,
