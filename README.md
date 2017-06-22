@@ -1,33 +1,29 @@
-[![Imagine](https://github.com/hrkz/imagine/blob/gh-pages/images/imagine.jpg)](https://imagine.github.io)
+[![Imagine](https://github.com/hrkz/imagine/blob/gh-pages/images/imagine_render_100.png)](http://imagine-research.org)
 =======================
 
-[![Join the chat at https://gitter.im/hrkz/imagine](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/hrkz/imagine?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Join the chat at https://gitter.im/hrkz/imagine](https://img.shields.io/gitter/room/nwjs/nw.js.svg?style=flat-square)](https://gitter.im/hrkz/imagine)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](LICENSE)
 
-Imagine is a graphics framework made with performances and modularity in mind.
-It aims towards research and development.
+Imagine is a research-oriented simulation library based on computational graphs that provides many algorithms for light transport, fluids and rigid body dynamics.
 
-Imagine will always use the newest features from both its core language and the third party libraries its using.
-It is currently planned to use Vulkan for rendering and Lua for scripting later on.
-
-Technology    | for
---------------|---------
-**C++14**     | Modern and effective C++ for the framework core
-**Vulkan**    | Multithreaded rendering, shading 
+It's written in modern c++17 with performance and modularity in mind. 
 
 ## Features
 
-This is a list of the CURRENTLY implemented features. 
-The development will be focused on the renderer as soon as Vulkan comes out.
+* :globe_with_meridians: **Computational mathematics**
+  * Expression template linear algebra (dense linear solvers and decompositions)
+  * Projective transformations, meshes manipulations, surface triangulations and space partitioning
+  * Ordinary differential equations solvers for implicit, explicit and symplectic systems
+  * Linear and non-linear optimization (stochastic gradient descent, quasi-newton, levenberg-marquardt)
+* :video_game: **Interactive cross-platform environment**
+  * Real-time physically based viewport using vulkan with built-in voxel cone tracing, temporal antialiasing and many post-process techniques (bloom, color correction, motion blur, etc)
+  * Virtual and augmented reality using openxr, including an advanced pose compositor, stereo rendering and monoscopic far field optimization
+* :high_brightness: **Light transport**
+* :wavy_dash: **Fluids and rigid body dynamics**
 
-A learning module may be developed in parallel.
-
-* Computational mathematics
-  * Expression template library for linear algebra (matrices / vectors and numerical solvers)
-  * Ray tracing, geometric primitives and triangle meshes manipulation
-* Interactive environment
-  * Cross-platform windowing and easy events handling with lambdas functions
-
+At the moment, the development is focused on a physically correct (spectral) renderer .
+Next step will be to implement modern rendering techniques for the viewport in order to produces interesting results.
+  
 ## License
 
 Imagine is released under the [MIT](LICENSE) licence.
