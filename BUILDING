@@ -4,7 +4,7 @@ workspace "imagine"
   configurations {"debug", "release"}
   
   location "work"
-  targetdir "%{prj.location}/bin"
+  targetdir "%{prj.location}"
   objdir    "%{prj.location}/obj/%{prj.name}/%{cfg.buildcfg}"
   includedirs {
       ".",
