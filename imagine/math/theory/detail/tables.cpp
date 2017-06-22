@@ -25,14 +25,19 @@
 #include "imagine/math/theory/io_image/jpeg.h"
 #include "imagine/math/theory/io_image/png.h"
 
+#include <tuple>
+
 namespace ig {
 
 template <>
 image_bridge::table& image_bridge::tbl() {
   static image_bridge::table tbl = 
   {{
-  {image_format::jpeg, std::make_tuple(detail::jpeg_validate, detail::jpeg_readp_impl, detail::jpeg_write_impl)},
-  {image_format::png , std::make_tuple(detail:: png_validate, detail:: png_readp_impl, detail:: png_write_impl)}
+  {std::make_tuple(detail::jpeg_validate, detail::jpeg_readp_impl, detail::jpeg_write_impl)}, // jpeg
+  {std::make_tuple(nullptr, nullptr, nullptr)},                                               // bmp
+  {std::make_tuple(detail:: png_validate, detail:: png_readp_impl, detail:: png_write_impl)}, // png
+  {std::make_tuple(nullptr, nullptr, nullptr)},                                               // pam
+  {std::make_tuple(nullptr, nullptr, nullptr)}                                                // hdr
   }}; return tbl;
 }
 

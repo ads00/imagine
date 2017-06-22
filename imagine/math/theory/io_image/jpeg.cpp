@@ -207,8 +207,8 @@ boolean jpeg_writeproc(
 }
 
 void jpeg_message(j_common_ptr jpeg_ptr) {
-  char buffer[JMSG_LENGTH_MAX];
-  jpeg_ptr->err->format_message(jpeg_ptr, buffer); LOG(info) << "(libjpeg): " << buffer;
+  char msg[JMSG_LENGTH_MAX];
+  jpeg_ptr->err->format_message(jpeg_ptr, msg); LOG(info) << "(libjpeg): " << msg;
 }
 
 void jpeg_exit(j_common_ptr jpeg_ptr) {

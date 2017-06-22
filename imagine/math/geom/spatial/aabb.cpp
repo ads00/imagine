@@ -21,7 +21,7 @@
  SOFTWARE.
 */
 
-#include "imagine/math/geom/aabb.h"
+#include "imagine/math/geom/spatial/aabb.h"
 
 namespace ig {
 
@@ -40,7 +40,7 @@ aabb::aabb(const std::vector<vec3>& points) : aabb{} {
 }
 
 void aabb::expand(const vec3& point) {
-  min_ = std::min(min_, point), max_ = std::max(max_, point);
+  for (uint32_t i = 0; i < 3; ++i) min_[i] = std::min(min_[i], point[i]), max_[i] = std::max(max_[i], point[i]);
 }
 
 } // namespace ig

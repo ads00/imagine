@@ -63,12 +63,15 @@ private:
 
 class ig_api log_context {
 public:
-  explicit log_context(log_t type, const char* func, const char* file, int32_t line);
-  ~log_context();
+  explicit log_context(log_t type, const char* func, const char* file, int32_t line)
+    : type{type}
+    , func{func}
+    , file{file}
+    , line{line} {}
+  ~log_context() { log::get().push(*this); }
 
   log_t type;
-  std::stringstream stream;
-  const char* func, * file; int32_t line;
+  const char* func, * file; int32_t line; std::stringstream stream;
 };
 
 class log_sink {

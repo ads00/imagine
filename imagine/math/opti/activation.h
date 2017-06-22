@@ -36,7 +36,6 @@ template <typename T> constexpr auto elu_fn(T x, T k = 1)               { return
 // Radial basis functions
 template <typename T> constexpr auto gaussian_fn(T x, T k = 1)       { return std::exp(-std::pow(k * x, 2)); }
 template <typename T> constexpr auto multiquadratic_fn(T x, T k = 1) { return std::sqrt(1 + std::pow(k * x, 2)); }
-template <typename T> constexpr auto polyharmonic_fn(T x, T k = 1)   { return r < 1 ? std::pow(x, k - 1) * std::log(std::pow(x, x)) : std::pow(x, k) * std::log(x); }
 
 } // namespace ig
 

@@ -21,15 +21,15 @@
  SOFTWARE.
 */
 
-#ifndef IG_CORE_UNIT_H
-#define IG_CORE_UNIT_H
+#ifndef IG_CORE_UTILS_H
+#define IG_CORE_UTILS_H
 
 #include "imagine/ig.h"
 
-namespace ig   {
-namespace unit {
+namespace ig    {
+namespace utils {
 
-} // namespace unit
+} // namespace utils
 } // namespace ig
 
-#endif // IG_CORE_UNIT_H
+#endif // IG_CORE_UTILS_H

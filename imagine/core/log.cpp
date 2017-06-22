@@ -29,7 +29,6 @@
 
 namespace ig {
 
-// log
 log& log::get() {
   static log l; 
   return l;
@@ -68,17 +67,6 @@ log::formatter_type log::default_format = [](const log_context& c) {
   ss << c.stream.str() << std::endl;
   return ss.str();
 };
-
-// log_context
-log_context::log_context(log_t type, const char* func, const char* file, int32_t line)
-  : type{type}
-  , func{func}
-  , file{file}
-  , line{line} {}
-
-log_context::~log_context() {
-  log::get().push(*this);
-}
 
 std::shared_ptr<log_sink> log::default_sink = std::make_shared<log_sink>(std::cout);
 

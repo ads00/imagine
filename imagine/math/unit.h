@@ -247,38 +247,38 @@ template <typename T = double> constexpr unit<activity_of_a_nuclide_d, T> curie 
 template <typename T = double> constexpr T                                degree   { pi<T> / T(180) };
 template <typename T = double> constexpr unit<exposure_d, T>              roentgen { T(2.58e-4) * coulomb<T> / kilogram<T> };
 
-constexpr auto operator ""_m(long double x)   { return metre<>(x); }     constexpr auto operator ""_m(unsigned long long x)   { return metre<>(x); }
-constexpr auto operator ""_kg(long double x)  { return kilogram<>(x); }  constexpr auto operator ""_kg(unsigned long long x)  { return kilogram<>(x); }
-constexpr auto operator ""_s(long double x)   { return second<>(x); }    constexpr auto operator ""_s(unsigned long long x)   { return second<>(x); }
-constexpr auto operator ""_A(long double x)   { return ampere<>(x); }    constexpr auto operator ""_A(unsigned long long x)   { return ampere<>(x); }
-constexpr auto operator ""_K(long double x)   { return kelvin<>(x); }    constexpr auto operator ""_K(unsigned long long x)   { return kelvin<>(x); }
-constexpr auto operator ""_mol(long double x) { return mole<>(x); }      constexpr auto operator ""_mol(unsigned long long x) { return mole<>(x); }
-constexpr auto operator ""_cd(long double x)  { return candela<>(x); }   constexpr auto operator ""_cd(unsigned long long x)  { return candela<>(x); }
-constexpr auto operator ""_Hz(long double x)  { return hertz<>(x); }     constexpr auto operator ""_Hz(unsigned long long x)  { return hertz<>(x); }
-constexpr auto operator ""_N(long double x)   { return newton<>(x); }    constexpr auto operator ""_N(unsigned long long x)   { return newton<>(x); }
-constexpr auto operator ""_Pa(long double x)  { return pascal<>(x); }    constexpr auto operator ""_Pa(unsigned long long x)  { return pascal<>(x); }
-constexpr auto operator ""_J(long double x)   { return joule<>(x); }     constexpr auto operator ""_J(unsigned long long x)   { return joule<>(x); }
-constexpr auto operator ""_W(long double x)   { return watt<>(x); }      constexpr auto operator ""_W(unsigned long long x)   { return watt<>(x); }
-constexpr auto operator ""_C(long double x)   { return coulomb<>(x); }   constexpr auto operator ""_C(unsigned long long x)   { return coulomb<>(x); }
-constexpr auto operator ""_V(long double x)   { return volt<>(x); }      constexpr auto operator ""_V(unsigned long long x)   { return volt<>(x); }
-constexpr auto operator ""_F(long double x)   { return farad<>(x); }     constexpr auto operator ""_F(unsigned long long x)   { return farad<>(x); }
-constexpr auto operator ""_ohm(long double x) { return ohm<>(x); }       constexpr auto operator ""_ohm(unsigned long long x) { return ohm<>(x); }
-constexpr auto operator ""_S(long double x)   { return siemens<>(x); }   constexpr auto operator ""_S(unsigned long long x)   { return siemens<>(x); }
-constexpr auto operator ""_Wb(long double x)  { return weber<>(x); }     constexpr auto operator ""_Wb(unsigned long long x)  { return weber<>(x); }
-constexpr auto operator ""_T(long double x)   { return tesla<>(x); }     constexpr auto operator ""_T(unsigned long long x)   { return tesla<>(x); }
-constexpr auto operator ""_H(long double x)   { return henry<>(x); }     constexpr auto operator ""_H(unsigned long long x)   { return henry<>(x); }
-constexpr auto operator ""_lm(long double x)  { return lumen<>(x); }     constexpr auto operator ""_lm(unsigned long long x)  { return lumen<>(x); }
-constexpr auto operator ""_lx(long double x)  { return lux<>(x); }       constexpr auto operator ""_lx(unsigned long long x)  { return lux<>(x); }
-constexpr auto operator ""_Bq(long double x)  { return becquerel<>(x); } constexpr auto operator ""_Bq(unsigned long long x)  { return becquerel<>(x); }
-constexpr auto operator ""_Gy(long double x)  { return gray<>(x); }      constexpr auto operator ""_Gy(unsigned long long x)  { return gray<>(x); }
-constexpr auto operator ""_Sv(long double x)  { return sievert<>(x); }   constexpr auto operator ""_Sv(unsigned long long x)  { return sievert<>(x); }
-constexpr auto operator ""_kat(long double x) { return katal<>(x); }     constexpr auto operator ""_kat(unsigned long long x) { return katal<>(x); }
-constexpr auto operator ""_Ci(long double x)  { return curie<>(x); }     constexpr auto operator ""_Ci(unsigned long long x)  { return curie<>(x); }
-constexpr auto operator ""_R(long double x)   { return roentgen<>(x); }  constexpr auto operator ""_R(unsigned long long x)   { return roentgen<>(x); }
+constexpr auto operator ""_m(long double x)   { return metre<>(x); }
+constexpr auto operator ""_kg(long double x)  { return kilogram<>(x); }
+constexpr auto operator ""_s(long double x)   { return second<>(x); }
+constexpr auto operator ""_A(long double x)   { return ampere<>(x); }
+constexpr auto operator ""_K(long double x)   { return kelvin<>(x); }
+constexpr auto operator ""_mol(long double x) { return mole<>(x); }
+constexpr auto operator ""_cd(long double x)  { return candela<>(x); }
+constexpr auto operator ""_Hz(long double x)  { return hertz<>(x); }
+constexpr auto operator ""_N(long double x)   { return newton<>(x); }
+constexpr auto operator ""_Pa(long double x)  { return pascal<>(x); }
+constexpr auto operator ""_J(long double x)   { return joule<>(x); }
+constexpr auto operator ""_W(long double x)   { return watt<>(x); }
+constexpr auto operator ""_C(long double x)   { return coulomb<>(x); }
+constexpr auto operator ""_V(long double x)   { return volt<>(x); }
+constexpr auto operator ""_F(long double x)   { return farad<>(x); }
+constexpr auto operator ""_ohm(long double x) { return ohm<>(x); }
+constexpr auto operator ""_S(long double x)   { return siemens<>(x); }
+constexpr auto operator ""_Wb(long double x)  { return weber<>(x); }
+constexpr auto operator ""_T(long double x)   { return tesla<>(x); }
+constexpr auto operator ""_H(long double x)   { return henry<>(x); }
+constexpr auto operator ""_lm(long double x)  { return lumen<>(x); }
+constexpr auto operator ""_lx(long double x)  { return lux<>(x); }
+constexpr auto operator ""_Bq(long double x)  { return becquerel<>(x); }
+constexpr auto operator ""_Gy(long double x)  { return gray<>(x); }
+constexpr auto operator ""_Sv(long double x)  { return sievert<>(x); }
+constexpr auto operator ""_kat(long double x) { return katal<>(x); }
+constexpr auto operator ""_Ci(long double x)  { return curie<>(x); }
+constexpr auto operator ""_R(long double x)   { return roentgen<>(x); }
 
-constexpr double operator ""_rad(long double x) { return radian<> * x; }    constexpr double operator ""_rad(unsigned long long x) { return radian<> * x; }
-constexpr double operator ""_sr(long double x)  { return steradian<> * x; } constexpr double operator ""_sr(unsigned long long x)  { return steradian<> * x; }
-constexpr double operator ""_deg(long double x) { return degree<> * x; }    constexpr double operator ""_deg(unsigned long long x) { return degree<> * x; }
+constexpr double operator ""_rad(long double x) { return radian<> * x; }
+constexpr double operator ""_sr(long double x)  { return steradian<> * x; }
+constexpr double operator ""_deg(long double x) { return degree<> * x; }
 
 } // namespace ig
 
