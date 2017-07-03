@@ -21,11 +21,11 @@
  SOFTWARE.
 */
 
-#ifndef IG_MATH_CSG_H
-#define IG_MATH_CSG_H
+#ifndef IG_MATH_DIVISION_H
+#define IG_MATH_DIVISION_H
 
 namespace ig {
 
 } // namespace ig
 
-#endif // IG_MATH_CSG_H
+#endif // IG_MATH_DIVISION_H

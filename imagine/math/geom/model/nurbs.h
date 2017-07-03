@@ -21,8 +21,11 @@
  SOFTWARE.
 */
 
-#include "imagine/math/geom/modeling/csg.h"
+#ifndef IG_MATH_NURBS_H
+#define IG_MATH_NURBS_H
 
 namespace ig {
 
 } // namespace ig
+
+#endif // IG_MATH_NURBS_H

@@ -47,7 +47,7 @@ public:
   auto operator*=(T sca) -> quaternion&;
 
   static auto axis(T angle, const vector_type& axis) {
-    return quaternion{std::cos(angle / T(2)), axis * std::sin(angle / T(2))};
+    return quaternion{std::cos(angle / 2), axis * std::sin(angle / 2)};
   }
 
   static auto euler(T roll, T pitch, T yaw) {

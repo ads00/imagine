@@ -31,14 +31,14 @@ namespace ig  {
 namespace lin {
 
 template <typename Mat, typename Rhs, typename Lhs, typename precond>
-void cg(const matrix_base<Mat>& A, const matrix_base<Rhs>& b, matrix_base<Lhs>& x, const precond& precond, double tolerance = 1e-7) {
-  using vector_type = precond::vector_type;
+void cg(const matrix_base<Mat>& A, const matrix_base<Rhs>& b, matrix_base<Lhs>& x, const precond& pre, double tolerance = 1e-7) {
+  using vector_type = typename precond::vector_type;
 
   size_t n = A.diagsize();
   vector_type r = b - A * x;
 
   auto threshold = tolerance * tolerance * dot(b, b);
-  auto p = precond.solve(r);
+  auto p = pre.solve(r);
   auto ro = dot(r, p), no = dot(r, r);
 
   vector_type z{n}, v{n};
@@ -48,7 +48,7 @@ void cg(const matrix_base<Mat>& A, const matrix_base<Rhs>& b, matrix_base<Lhs>& 
     x += a * p;
     r -= a * v;
 
-    z = precond.solve(r);
+    z = pre.solve(r);
 
     auto rn = ro;
     ro = dot(r, z), p = z + (ro / rn) * p;
@@ -56,8 +56,8 @@ void cg(const matrix_base<Mat>& A, const matrix_base<Rhs>& b, matrix_base<Lhs>& 
 }
 
 template <typename Mat, typename Rhs, typename Lhs, typename precond>
-void bicgstab(const matrix_base<Mat>& A, const matrix_base<Rhs>& b, matrix_base<Lhs>& x, const precond& precond, double tolerance = 1e-7) {
-  using vector_type = precond::vector_type;
+void bicgstab(const matrix_base<Mat>& A, const matrix_base<Rhs>& b, matrix_base<Lhs>& x, const precond& pre, double tolerance = 1e-7) {
+  using vector_type = typename precond::vector_type;
   using type = mat_t<Mat>;
 
   size_t n = A.diagsize();
@@ -83,13 +83,13 @@ void bicgstab(const matrix_base<Mat>& A, const matrix_base<Rhs>& b, matrix_base<
     auto c = (no / nn) * (a / w);
     p = r + c * (p - w * v);
 
-    y = precond.solve(p);
+    y = pre.solve(p);
     v = A * y;
 
     a = no / dot(rn, v);
     s = r - a * v;
 
-    z = precond.solve(s);
+    z = pre.solve(s);
     t = A * z;
 
     auto tt = dot(t, t);

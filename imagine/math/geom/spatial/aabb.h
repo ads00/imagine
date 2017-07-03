@@ -41,7 +41,7 @@ public:
 
   auto size() const         { return max_ - min_; }
   auto volume() const       { return size().prod(); }
-  auto surface_area() const {
+  auto area() const {
     auto ext = size();
     return 2.f * (ext[0] * ext[1] + ext[0] * ext[2] + ext[1] * ext[2]); }
 

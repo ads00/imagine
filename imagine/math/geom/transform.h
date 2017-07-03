@@ -30,6 +30,8 @@ namespace ig {
 
 class ig_api transform {
 public:
+  transform() = default;
+  explicit transform(const mat4& trf);
   explicit transform(const vec3& pos, const quat& ori, const vec3& sca);
   virtual ~transform();
 

@@ -21,20 +21,20 @@
  SOFTWARE.
 */
 
-#ifndef IG_MATH_PLANEROT_H
-#define IG_MATH_PLANEROT_H
+#ifndef IG_MATH_ROTATION_H
+#define IG_MATH_ROTATION_H
 
 #include "imagine/math/theory/matrix.h"
 
 namespace ig {
 
 template <typename T>
-class planerot {
+class rotation {
 public:
   using type = T;
   static_assert(std::is_arithmetic<type>::value, "Plane rotation computation requires arithmetic values");
 
-  explicit planerot(type c, type s)
+  explicit rotation(type c, type s)
     : c_{c}
     , s_{s} {}
 
@@ -59,8 +59,8 @@ private:
 };
 
 template <typename T>
-constexpr auto operator*(const planerot<T>& lhs, const planerot<T>& rhs) {
-  return planerot<T>{lhs.c_ * rhs.c_ - lhs.s_ * rhs.s_,
+constexpr auto operator*(const rotation<T>& lhs, const rotation<T>& rhs) {
+  return rotation<T>{lhs.c_ * rhs.c_ - lhs.s_ * rhs.s_,
                      lhs.c_ * rhs.s_ + lhs.s_ * rhs.c_};
 }
 
@@ -75,27 +75,27 @@ auto jacobi(T x, T y, T z) {
     : 1 / (tau - w);
 
   auto n = 1 / std::sqrt(t * t + 1);
-  return planerot<T>{n, -sign(t) * (y / std::abs(y)) * std::abs(t) * n};
+  return rotation<T>{n, -sign(t) * (y / std::abs(y)) * std::abs(t) * n};
 }
 
 template <typename T>
 auto givens(T p, T q) {
-  if      (q == 0) return std::make_pair(planerot<T>{sign(p),  T(0)}, std::abs(p));
-  else if (p == 0) return std::make_pair(planerot<T>{T(0), -sign(q)}, std::abs(q));
+  if      (q == 0) return std::make_pair(rotation<T>{sign(p),  T(0)}, std::abs(p));
+  else if (p == 0) return std::make_pair(rotation<T>{T(0), -sign(q)}, std::abs(q));
   else if (std::abs(p) > std::abs(q)) {
     auto t = q / p;
     auto u = sign(p) * std::sqrt(t * t + 1);
     auto c = 1 / u;
-    return std::make_pair(planerot<T>{c, -t * c}, p * u);
+    return std::make_pair(rotation<T>{c, -t * c}, p * u);
   } else {
     auto t = p / q;
     auto u = sign(q) * std::sqrt(t * t + 1);
     auto s = -1 / u;
-    return std::make_pair(planerot<T>{-t * s, s}, q * u);
+    return std::make_pair(rotation<T>{-t * s, s}, q * u);
   }
 }
 
 } // namespace lin
 } // namespace ig
 
-#endif // IG_MATH_PLANEROT_H
+#endif // IG_MATH_ROTATION_H

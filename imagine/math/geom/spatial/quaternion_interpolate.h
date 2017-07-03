@@ -29,17 +29,17 @@ namespace spt {
 
 template <typename T>
 constexpr auto lerp(const quaternion<T>& lhs, const quaternion<T>& rhs, T t) {
-  return normalise(lhs * (T(1) - t) + rhs * t);
+  return normalise(lhs * (1 - t) + rhs * t);
 }
 
 template <typename T>
 auto slerp(const quaternion<T>& lhs, const quaternion<T>& rhs, T t) {
   auto coshalf = dot(lhs, rhs);
-  if (std::abs(coshalf) >= T(1)) {
+  if (std::abs(coshalf) >= 1) {
     return lerp(lhs, rhs, t);
   } else {
     auto a = std::acos(coshalf);
-    return (lhs * std::sin((T(1) - t) * a) + rhs * std::sin(t * a)) / std::sin(a);
+    return (lhs * std::sin((1 - t) * a) + rhs * std::sin(t * a)) / std::sin(a);
   }
 }
 

@@ -64,7 +64,7 @@ auto rotate(const quaternion<T>& q, const matrix_base<Mat>& v) {
 
   auto c1 = lin::cross(q.vector, v);
   auto c2 = lin::cross(q.vector, c1);
-  return v + T(2) * (c1 * q.scalar + c2);
+  return v + 2 * (c1 * q.scalar + c2);
 }
 
 } // namespace spt

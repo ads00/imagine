@@ -21,11 +21,11 @@
  SOFTWARE.
 */
 
-#ifndef IG_MATH_DELAUNAY_H
-#define IG_MATH_DELAUNAY_H
+#ifndef IG_MATH_CSGT_H
+#define IG_MATH_CSGT_H
 
 namespace ig {
 
 } // namespace ig
 
-#endif // IG_MATH_DELAUNAY_H
+#endif // IG_MATH_CSGT_H

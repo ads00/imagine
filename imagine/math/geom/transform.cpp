@@ -25,6 +25,11 @@
 
 namespace ig {
 
+transform::transform(const mat4& trf)
+  : parent_{nullptr}
+  , uwt_{true}
+  , wt_{trf} {}
+
 transform::transform(const vec3& pos, const quat& ori, const vec3& sca)
   : parent_{nullptr}
   , uwt_{false}

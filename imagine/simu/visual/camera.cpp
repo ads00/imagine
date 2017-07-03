@@ -48,9 +48,9 @@ void camera::clip(float zn, float zf) {
   zn_ = zn, zf_ = zf;
 }
 
-ray3 camera::cast_ray(size_t x, size_t y) const {
-  auto nx = x / static_cast<float>(w_) * 2.f - 1.f; 
-  auto ny = y / static_cast<float>(h_) * 2.f - 1.f;
+ray3 camera::cast_ray(float x, float y) const {
+  auto nx = x / w_ * 2.f - 1.f; 
+  auto ny = y / h_ * 2.f - 1.f;
 
   auto raster = trf::transform(iproj_, vec3{nx, ny, 1.f}, unit_);
   vec3 

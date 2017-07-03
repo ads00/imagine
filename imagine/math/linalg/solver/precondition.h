@@ -42,8 +42,8 @@ public:
 
     for (size_t i = 0; i < mat.diagsize(); ++i)
       invdiag_[i] = mat(i, i) != 0 
-        ? T(1) / mat(i, i) 
-        : T(1);
+        ? 1 / mat(i, i) 
+        : 1;
   }
 
   vector_type solve(const vector_type& b) const {

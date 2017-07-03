@@ -27,10 +27,10 @@ namespace ig  {
 namespace trf {
 
 mat4 scale(const vec3& s) {
-  return mat4{s[0], 0.f,  0.f,  0.f,
-              0.f,  s[1], 0.f,  0.f,
-              0.f,  0.f,  s[2], 0.f,
-              0.f,  0.f,  0.f,  1.f};
+  return mat4 { s[0], 0.f,  0.f,  0.f,
+                0.f,  s[1], 0.f,  0.f,
+                0.f,  0.f,  s[2], 0.f,
+                0.f,  0.f,  0.f,  1.f };
 }
 
 mat4 rotation(const quat& r) {
@@ -44,17 +44,17 @@ mat4 rotation(const quat& r) {
   auto yy = y * v[1], yz = z * v[1], zz = z * v[2];
   auto wx = x * r.scalar, wy = y * r.scalar, wz = z * r.scalar;
 
-  return mat4{1.f - (yy + zz), xy + wz,         xz - wy,         0.f,
-              xy - wz,         1.f - (xx + zz), yz + wx,         0.f,
-              xz + wy,         yz - wx,         1.f - (xx + yy), 0.f,
-              0.f,             0.f,             0.f,             1.f};
+  return mat4 { 1.f - (yy + zz), xy + wz,         xz - wy,         0.f,
+                xy - wz,         1.f - (xx + zz), yz + wx,         0.f,
+                xz + wy,         yz - wx,         1.f - (xx + yy), 0.f,
+                0.f,             0.f,             0.f,             1.f };
 }
 
 mat4 translation(const vec3& t) {
-  return mat4{1.f,  0.f,  0.f,  0.f,
-              0.f,  1.f,  0.f,  0.f,
-              0.f,  0.f,  1.f,  0.f,
-              t[0], t[1], t[2], 1.f};
+  return mat4 { 1.f,  0.f,  0.f,  0.f,
+                0.f,  1.f,  0.f,  0.f,
+                0.f,  0.f,  1.f,  0.f,
+                t[0], t[1], t[2], 1.f };
 }
 
 mat4 look(const vec3& eye, const vec3& focus, const vec3& up) {
@@ -64,10 +64,10 @@ mat4 look(const vec3& eye, const vec3& focus, const vec3& up) {
   auto n = -eye;
 
   using lin::dot;
-  return mat4{R0[0],      R1[0],      R2[0],      0.f,
-              R0[1],      R1[1],      R2[1],      0.f,
-              R0[2],      R1[2],      R2[2],      0.f,
-              dot(R0, n), dot(R1, n), dot(R2, n), 1.f};
+  return mat4 { R0[0],      R1[0],      R2[0],      0.f,
+                R0[1],      R1[1],      R2[1],      0.f,
+                R0[2],      R1[2],      R2[2],      0.f,
+                dot(R0, n), dot(R1, n), dot(R2, n), 1.f };
 }
 
 mat4 perspective(float fovy, float asp, float zn, float zf) {
@@ -75,20 +75,20 @@ mat4 perspective(float fovy, float asp, float zn, float zf) {
   auto ta = asp * tanh;
   auto zr = zf - zn;
 
-  return mat4{1.f / ta,  0.f,         0.f,            0.f,
-              0.f,       1.f / tanh,  0.f,            0.f,
-              0.f,       0.f,         zf / zr,        1.f,
-              0.f,       0.f,        -(zf * zn) / zr, 0.f};
+  return mat4 { 1.f / ta,  0.f,         0.f,            0.f,
+                0.f,       1.f / tanh,  0.f,            0.f,
+                0.f,       0.f,         zf / zr,        1.f,
+                0.f,       0.f,        -(zf * zn) / zr, 0.f };
 }
 
 mat4 orthographic(float l, float r, float b, float t, float zn, float zf) {
   auto zr = zf - zn;
   auto ws = r - l, hs = t - b;
 
-  return mat4{2.f / ws,      0.f,           0.f,      0.f,
-              0.f,           2.f / hs,      0.f,      0.f,
-              0.f,           0.f,           1.f / zr, 0.f,
-             -(r + l) / ws, -(t + b) / hs, -zn / zr,  1.f};
+  return mat4 { 2.f / ws,      0.f,           0.f,      0.f,
+                0.f,           2.f / hs,      0.f,      0.f,
+                0.f,           0.f,           1.f / zr, 0.f,
+               -(r + l) / ws, -(t + b) / hs, -zn / zr,  1.f };
 }
 
 vec3 transform(const mat4& m, const vec3& v, bool unit) {
@@ -97,13 +97,23 @@ vec3 transform(const mat4& m, const vec3& v, bool unit) {
   auto zp = m(2, 0) * v[0] + m(2, 1) * v[1] + m(2, 2) * v[2];
 
   if (!unit) {
-    auto us = vec3{xp + m(0, 3), yp + m(1, 3), zp + m(2, 3)};
-    auto wp = m(3, 0) * v[0] + m(3, 1) * v[1] + m(3, 2) * v[2] + m(3, 3);
-    return vec3{us / wp};
+    return vec3 { 
+      vec3 {  xp   + m(0, 3),  yp   + m(1, 3),  zp   + m(2, 3) } / 
+             (v[0] * m(3, 0) + v[1] * m(3, 1) + v[2] * m(3, 2) + m(3, 3)) };
   } else {
-    return vec3{xp, yp, zp};
+    return vec3 { xp, yp, zp };
   }
 }
 
 } // namespace trf
+
+template <>
+template <>
+inline auto mat4::eye<true, float>() {
+  return mat4 { 1.f, 0.f, 0.f, 0.f,
+                0.f, 1.f, 0.f, 0.f,
+                0.f, 0.f, 1.f, 0.f,
+                0.f, 0.f, 0.f, 1.f };  
+}
+
 } // namespace ig

@@ -36,7 +36,7 @@ public:
   void extent(float fovy);
   void clip(float zn, float zf);
 
-  ray3 cast_ray(size_t x, size_t y) const;
+  ray3 cast_ray(float x, float y) const;
 
   const mat4& view();
   const mat4& proj();

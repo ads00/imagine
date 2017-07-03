@@ -61,7 +61,7 @@ private:
   std::vector< std::shared_ptr<log_sink> > sinks_{default_sink};
 };
 
-class ig_api log_context {
+class log_context {
 public:
   explicit log_context(log_t type, const char* func, const char* file, int32_t line)
     : type{type}
