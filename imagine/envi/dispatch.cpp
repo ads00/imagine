@@ -45,10 +45,6 @@ void dispatch::exit(int32_t return_code) {
   native_->running_     = false;
 }
 
-void dispatch::tick(const func_type& fn) {
-  tick_ = fn;
-}
-
 // Native implementations
 //
 

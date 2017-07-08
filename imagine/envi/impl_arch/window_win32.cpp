@@ -82,7 +82,8 @@ window_native::window_native(const window& ref, window::types_t types, const std
                             cx, cy, cwidth, cheight, nullptr, nullptr, instance_, this);
 
   RECT clirect, winrect;
-  GetClientRect(handle_, &clirect); GetWindowRect(handle_, &winrect);
+  GetClientRect(handle_, &clirect); 
+  GetWindowRect(handle_, &winrect);
 
   w_ = clirect.right - clirect.left, h_ = clirect.bottom - clirect.top;
   x_ = winrect.left, y_ = winrect.top;
@@ -90,12 +91,13 @@ window_native::window_native(const window& ref, window::types_t types, const std
 
 LRESULT window_native::internal(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
   auto keyboard_ev = [&wparam](event_keyboard::type_t type) -> event_keyboard {
-    return {type, keyboard::impl::get_modifiers(), keyboard::impl::get_key(wparam), static_cast<uint32_t>(wparam)};
+    return 
+    {type, keyboard::impl::get_modifiers(), keyboard::impl::get_key(wparam), static_cast<uint32_t>(wparam)};
   };
 
   auto mouse_ev = [&lparam](event_mouse::type_t type) -> event_mouse {
-    return {type, keyboard::impl::get_modifiers(),
-            mouse::impl::get_buttons(), mouse::impl::get_x(lparam), mouse::impl::get_y(lparam)};
+    return 
+    {type, keyboard::impl::get_modifiers(), mouse::impl::get_buttons(), mouse::impl::get_x(lparam), mouse::impl::get_y(lparam)};
   };
   auto mouse_click_ev = [&lparam, &mouse_ev](event_mouse::type_t type, mouse::button button) -> event_mouse {
     auto ev = mouse_ev(type); ev.click.button = button;
@@ -185,12 +187,14 @@ LRESULT window_native::internal(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 
       auto cw = clirect.right - clirect.left, ch = clirect.bottom - clirect.top;
       if (w_ != cw || h_ != ch) {
-        w_ = cw, h_ = ch;
+        w_ = cw;
+        h_ = ch;
         ref_.process(event_status{event_status::resized});
       }
 
       if (x_ != winrect.left || y_ != winrect.top) {
-        x_ = winrect.left, y_ = winrect.top;
+        x_ = winrect.left;
+        y_ = winrect.top;
         ref_.process(event_status{event_status::moved});
       }
     }

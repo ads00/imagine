@@ -52,7 +52,8 @@ reflector<Vec>::reflector(Vec& vec)
   auto c = vec_[0];
   auto s = lin::dot(vec_, vec_);
 
-  beta_ = -sign(c) * std::sqrt(s); tau_ = (beta_ - c) / beta_;
+  beta_ = -sign(c) * std::sqrt(s); 
+  tau_  = (beta_ - c) / beta_;
   for (size_t i = 1; i < vec.size(); ++i) vec_[i] /= c - beta_;
 }
 

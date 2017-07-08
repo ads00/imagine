@@ -57,7 +57,8 @@ auto memory::allocate(uint64_t size, uint64_t alignment) -> std::unique_ptr<bloc
     auto map_fl = layers_bitmap_.front() & (~0 << (map.first + 1));
     if (!map_fl)
       return nullptr;
-    map.first = ffs(map_fl); map_sl = layers_bitmap_[map.first + 1];
+    map.first = ffs(map_fl); 
+    map_sl = layers_bitmap_[map.first + 1];
   }
 
   map.second = ffs(map_sl);
@@ -71,10 +72,12 @@ auto memory::allocate(uint64_t size, uint64_t alignment) -> std::unique_ptr<bloc
     layers_bitmap_.front() &= ~(1 << map.first);
 
   auto link_before = [&block](auto& next) {
-    next->next_block = block.get(); next->prev_block = block->prev_block;
+    next->next_block = block.get(); 
+    next->prev_block = block->prev_block;
     block->prev_block = block->prev_block->next_block = next.get(); };
   auto link_after  = [&block](auto& prev) {
-    prev->prev_block = block.get(); prev->next_block = block->next_block;
+    prev->prev_block = block.get(); 
+    prev->next_block = block->next_block;
     block->next_block = block->next_block->prev_block = prev.get(); };
 
   auto aligned_offset = ig::align(block->offset, alignment);
@@ -82,9 +85,12 @@ auto memory::allocate(uint64_t size, uint64_t alignment) -> std::unique_ptr<bloc
   if (remain) {
     if (remain > min_blocksize) {
       link_before(manage(remain, block->offset, true));
-      block->size -= remain; block->offset += remain;
+      block->size   -= remain; 
+      block->offset += remain;
     } else {
-      block->prev_block->size += remain; block->size -= remain; block->offset = aligned_offset;
+      block->prev_block->size += remain; 
+      block->size             -= remain; 
+      block->offset = aligned_offset;
     }
   }
 
@@ -143,8 +149,7 @@ auto memory::manage(uint64_t size, uint64_t offset, bool free) -> std::unique_pt
 }
 
 auto find_bitset(uint32_t v) {
-  uint32_t 
-    bits = 32;
+  uint32_t bits = 32;
   if (!(v & 0xffff0000)) v <<= 16, bits -= 16; if (!(v & 0xff000000)) v <<=  8, bits -=  8;
   if (!(v & 0xf0000000)) v <<=  4, bits -=  4; if (!(v & 0xc0000000)) v <<=  2, bits -=  2;
   if (!(v & 0x80000000)) v <<=  1, bits -=  1; return bits;

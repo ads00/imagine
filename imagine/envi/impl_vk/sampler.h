@@ -38,7 +38,8 @@ public:
   explicit sampler(const device& device, filter mag, filter min, address_mode mode, mipmap_mode mipmap, float anisotropy = 0.f);
   virtual ~sampler();
 
-  const device& devi; };
+  const device& devi; 
+};
 
 enum class filter      { nearest = 0, linear = 1, cubic = 1000015000 };
 enum class mipmap_mode { nearest = 0, linear = 1 };

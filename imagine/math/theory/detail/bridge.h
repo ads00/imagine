@@ -38,8 +38,7 @@ auto table_load(const table& tbl, const std::string& filename) {
   
   for (auto& format_bridge : tbl) {
     auto& validate = std::get<0>(format_bridge);
-    if (!validate)
-      continue;
+    if (!validate) continue;
 
     auto data_ptr = validate(in)
       ? std::get<1>(format_bridge)(in)

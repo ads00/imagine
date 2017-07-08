@@ -80,7 +80,8 @@ void cursor::move(int32_t x, int32_t y, const window* win) {
     ? ClientToScreen(reinterpret_cast<HWND>(win->get_handle()), &pos)
     : true;
 
-  win->cursor.native_->x_ = x, win->cursor.native_->y_ = y;
+  win->cursor.native_->x_ = x;
+  win->cursor.native_->y_ = y;
   SetCursorPos(pos.x, pos.y);
 }
 

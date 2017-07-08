@@ -38,10 +38,9 @@ public:
 
   template <typename Fn, typename... Args>
   auto work(Fn&& fn, Args&&... args) {
-    using return_type = decltype(fn(args...));
+    using return_type = std::packaged_task<decltype(fn(args...))()>;
     auto task = 
-      std::make_shared<std::packaged_task<return_type()> >
-      (std::bind(std::forward<Fn>(fn), std::forward<Args>(args)...));
+    std::make_shared<return_type>(std::bind(std::forward<Fn>(fn), std::forward<Args>(args)...));
 
     auto res = task->get_future();
     {
@@ -58,7 +57,10 @@ public:
 
 private:
   std::vector<std::thread> workers_;
-  std::queue< std::function<void()> > tasks_;
+  std::queue
+    < std::function
+      < void() > 
+    > tasks_;
 
   std::mutex mutex_;
   std::condition_variable cv_;

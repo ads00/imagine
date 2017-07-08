@@ -47,8 +47,7 @@ public:
   lib& operator=(const lib&) = delete;
 
 private:
-  std::unique_ptr<impl::lib_native> 
-    native_;
+  std::unique_ptr<impl::lib_native> native_;
 };
 
 } // namespace ig

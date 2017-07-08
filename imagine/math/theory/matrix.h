@@ -101,10 +101,10 @@ public:
   auto make_eye() -> matrix&;
 
   template < bool X = immutable, typename = std::enable_if_t<X> >
-  static auto eye()         { matrix eye{};  return eye.make_eye(); }
+  static auto eye()         { return matrix{ }.make_eye(); }
 
   template < bool X = hybrid,    typename = std::enable_if_t<X> >
-  static auto eye(size_t n) { matrix eye{n}; return eye.make_eye(); }
+  static auto eye(size_t n) { return matrix{n}.make_eye(); }
 
 private:
   using container_type = std::conditional_t

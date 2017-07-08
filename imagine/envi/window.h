@@ -81,9 +81,9 @@ public:
   cursor cursor;
 
 private:
-  std::unique_ptr<impl::window_native> 
-    native_;
-  dispatch::func_type link_;
+  std::unique_ptr<impl::window_native> native_;
+  std::function
+  < void() > link_ = [] {};
 };
 
 } // namespace ig

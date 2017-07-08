@@ -116,18 +116,13 @@ struct inverse<Mat, 4> {
              det3_helper(a3, a1, a2, b1, b2, b3);
     };
 
-    concrete_mat_t<Mat>
-      inv{};
+    concrete_mat_t<Mat> inv{};
     auto invdet = 1 / determinant<Mat>::run(mat);
 
-    inv(0, 0) =  cofactor(0, 0) * invdet; inv(1, 0) = -cofactor(0, 1) * invdet;
-    inv(2, 0) =  cofactor(0, 2) * invdet; inv(3, 0) = -cofactor(0, 3) * invdet;
-    inv(0, 1) = -cofactor(1, 0) * invdet; inv(1, 1) =  cofactor(1, 1) * invdet;
-    inv(2, 1) = -cofactor(1, 2) * invdet; inv(3, 1) =  cofactor(1, 3) * invdet;
-    inv(0, 2) =  cofactor(2, 0) * invdet; inv(1, 2) = -cofactor(2, 1) * invdet;
-    inv(2, 2) =  cofactor(2, 2) * invdet; inv(3, 2) = -cofactor(2, 3) * invdet;
-    inv(0, 3) = -cofactor(3, 0) * invdet; inv(1, 3) =  cofactor(3, 1) * invdet;
-    inv(2, 3) = -cofactor(3, 2) * invdet; inv(3, 3) =  cofactor(3, 3) * invdet;
+    inv(0, 0) =  cofactor(0, 0) * invdet; inv(1, 0) = -cofactor(0, 1) * invdet; inv(2, 0) =  cofactor(0, 2) * invdet; inv(3, 0) = -cofactor(0, 3) * invdet;
+    inv(0, 1) = -cofactor(1, 0) * invdet; inv(1, 1) =  cofactor(1, 1) * invdet; inv(2, 1) = -cofactor(1, 2) * invdet; inv(3, 1) =  cofactor(1, 3) * invdet;
+    inv(0, 2) =  cofactor(2, 0) * invdet; inv(1, 2) = -cofactor(2, 1) * invdet; inv(2, 2) =  cofactor(2, 2) * invdet; inv(3, 2) = -cofactor(2, 3) * invdet;
+    inv(0, 3) = -cofactor(3, 0) * invdet; inv(1, 3) =  cofactor(3, 1) * invdet; inv(2, 3) = -cofactor(3, 2) * invdet; inv(3, 3) =  cofactor(3, 3) * invdet;
     return inv;
   }
 };
@@ -142,8 +137,7 @@ struct inverse<Mat, 3> {
       return mat(a1, b1) * mat(a2, b2) - mat(a1, b2) * mat(a2, b1);
     };
 
-    concrete_mat_t<Mat>
-      inv{};
+    concrete_mat_t<Mat> inv{};
     auto invdet = 1 / determinant<Mat>::run(mat);
 
     inv(0, 0) = cofactor(0, 0) * invdet; inv(1, 0) = cofactor(0, 1) * invdet; inv(2, 0) = cofactor(0, 2) * invdet;
@@ -156,8 +150,7 @@ struct inverse<Mat, 3> {
 template <typename Mat>
 struct inverse<Mat, 2> {
   static auto run(const matrix_base<Mat>& mat) {
-    concrete_mat_t<Mat>
-      inv{};
+    concrete_mat_t<Mat> inv{};
     auto invdet = 1 / determinant<Mat>::run(mat);
 
     inv(0, 0) =  mat(1, 1) * invdet; inv(1, 0) = -mat(1, 0) * invdet;

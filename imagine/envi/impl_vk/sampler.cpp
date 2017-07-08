@@ -30,7 +30,7 @@ namespace vk {
 image::sampler::sampler(const device& device, filter mag, filter min, address_mode mode, mipmap_mode mipmap, float anisotropy)
   : devi{device} {
 
-  VkSamplerCreateInfo sampler_info{};
+  VkSamplerCreateInfo sampler_info {};
     sampler_info.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
     sampler_info.flags = 0;
     sampler_info.magFilter = static_cast<VkFilter>(mag);

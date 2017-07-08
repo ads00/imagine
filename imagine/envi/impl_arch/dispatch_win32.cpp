@@ -76,13 +76,11 @@ void dispatch::process_events() {
   for (auto& window : native_->windows_)
     ;
 
-  MSG 
-    msg{};
+  MSG msg{};
   while (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE)) {
     TranslateMessage(&msg);
     DispatchMessage(&msg);
-  }
-  tick_();
+  } tick_();
 }
 
 } // namespace ig

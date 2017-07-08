@@ -104,14 +104,12 @@ void surface::post_acquire() {
 
   // Present modes
   uint32_t present_count = 0;
-  inst->vkGetPhysicalDeviceSurfacePresentModesKHR(
-    phys, handle, &present_count, nullptr);
+  inst->vkGetPhysicalDeviceSurfacePresentModesKHR(phys, handle, &present_count, nullptr);
     impl_->present_modes.resize(present_count);
   inst->vkGetPhysicalDeviceSurfacePresentModesKHR(phys, handle, &present_count, impl_->present_modes.data());
   // Formats
   uint32_t formats_count = 0;
-  inst->vkGetPhysicalDeviceSurfaceFormatsKHR(
-    phys, handle, &formats_count, nullptr);
+  inst->vkGetPhysicalDeviceSurfaceFormatsKHR(phys, handle, &formats_count, nullptr);
     impl_->formats.resize(formats_count);
   inst->vkGetPhysicalDeviceSurfaceFormatsKHR(phys, handle, &formats_count, impl_->formats.data());
 }

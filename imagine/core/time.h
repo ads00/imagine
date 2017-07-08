@@ -74,9 +74,7 @@ public:
 template <typename C>
 template <typename P, typename Fn, typename... Args>
 auto time<C>::measure_once(size_t runs, Fn&& fn, Args&&... args) const {
-  time_job<P> 
-    job{runs};
-
+  time_job<P> job{runs};
   for (size_t run = 0; run < runs; ++run) {
     auto begin = C::now();
     std::forward<Fn>(fn)(std::forward<Args>(args)...);

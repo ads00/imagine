@@ -71,8 +71,8 @@ pptr png_readp_impl(std::istream& stream) {
   png_set_scale_16(png_ptr);
 
   png_read_update_info(png_ptr, info_ptr);
-  auto imag = std::make_unique<png_t>(
-    png_t::shape_type{width, height}, png_get_channels(png_ptr, info_ptr));
+  auto imag = 
+  std::make_unique<png_t>(png_t::shape_type{width, height}, png_get_channels(png_ptr, info_ptr));
 
   for (png_uint_32 j = 0; j < height; ++j)
     png_read_row(png_ptr, reinterpret_cast<uint8_t*>(

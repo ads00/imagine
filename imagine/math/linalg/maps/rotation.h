@@ -58,12 +58,6 @@ private:
   T c_, s_;
 };
 
-template <typename T>
-constexpr auto operator*(const rotation<T>& lhs, const rotation<T>& rhs) {
-  return rotation<T>{lhs.c_ * rhs.c_ - lhs.s_ * rhs.s_,
-                     lhs.c_ * rhs.s_ + lhs.s_ * rhs.c_};
-}
-
 namespace lin {
 
 template <typename T>

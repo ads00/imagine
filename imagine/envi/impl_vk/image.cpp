@@ -89,8 +89,7 @@ bool image::bind(std::unique_ptr<block_type> block) {
 }
 
 auto image::require(uint64_t& size, uint64_t& alignment) -> uint32_t {
-  VkMemoryRequirements 
-    mem_reqs{};
+  VkMemoryRequirements mem_reqs{};
   devi->vkGetImageMemoryRequirements(devi, handle, &mem_reqs);
 
   size = mem_reqs.size, alignment = mem_reqs.alignment;

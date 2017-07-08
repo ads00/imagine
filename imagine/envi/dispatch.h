@@ -33,7 +33,6 @@ namespace impl { class dispatch_native; }
 
 class ig_api dispatch {
 public:
-  using func_type = std::function<void()>;
   friend class window;
 
   dispatch();
@@ -43,15 +42,15 @@ public:
   virtual void exit(int32_t return_code);
 
   virtual void process_events();
-  virtual void tick(const func_type& fn);
+  template <typename Fn> void tick(Fn&& fn) { tick_ = fn; }
 
   dispatch(const dispatch&) = delete;
   dispatch& operator=(const dispatch&) = delete;
 
 private:
-  std::unique_ptr<impl::dispatch_native>
-    native_;
-  func_type tick_ = [] {};
+  std::unique_ptr<impl::dispatch_native> native_;
+  std::function
+  < void() > tick_ = [] {};
 };
 
 } // namespace ig

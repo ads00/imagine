@@ -49,8 +49,7 @@ public:
   static void move(int32_t x, int32_t y, const window* win = nullptr);
 
 private:
-  std::unique_ptr<impl::cursor_native> 
-    native_;
+  std::unique_ptr<impl::cursor_native> native_;
 };
 
 enum class cursor_shape : int32_t {

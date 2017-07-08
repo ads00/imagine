@@ -97,9 +97,8 @@ vec3 transform(const mat4& m, const vec3& v, bool unit) {
   auto zp = m(2, 0) * v[0] + m(2, 1) * v[1] + m(2, 2) * v[2];
 
   if (!unit) {
-    return vec3 { 
-      vec3 {  xp   + m(0, 3),  yp   + m(1, 3),  zp   + m(2, 3) } / 
-             (v[0] * m(3, 0) + v[1] * m(3, 1) + v[2] * m(3, 2) + m(3, 3)) };
+    return vec3 { xp   + m(0, 3),  yp   + m(1, 3),  zp   + m(2, 3) } / 
+                 (v[0] * m(3, 0) + v[1] * m(3, 1) + v[2] * m(3, 2) + m(3, 3));
   } else {
     return vec3 { xp, yp, zp };
   }

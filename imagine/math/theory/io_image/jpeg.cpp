@@ -47,7 +47,8 @@ boolean jpeg_readproc(
   j_decompress_ptr jpeg_ptr);
 boolean jpeg_writeproc(
   j_compress_ptr jpeg_ptr);
-void jpeg_message(j_common_ptr jpeg_ptr); void jpeg_exit(j_common_ptr jpeg_ptr);
+void jpeg_message(j_common_ptr jpeg_ptr); 
+void jpeg_exit(j_common_ptr jpeg_ptr);
 
 // Jpeg interface implementation - validate - read - write
 bool jpeg_validate(std::istream& stream) {
@@ -105,8 +106,8 @@ jptr jpeg_readp_impl(std::istream& stream) {
   jpeg_read_header(&jpeg_ptr, TRUE);
   jpeg_start_decompress(&jpeg_ptr);
 
-  auto imag = std::make_unique<jpeg_t>(
-    jpeg_t::shape_type{jpeg_ptr.output_width, jpeg_ptr.output_height}, jpeg_ptr.output_components);
+  auto imag = 
+  std::make_unique<jpeg_t>(jpeg_t::shape_type{jpeg_ptr.output_width, jpeg_ptr.output_height}, jpeg_ptr.output_components);
 
   while (jpeg_ptr.output_scanline < jpeg_ptr.output_height) {
     auto r = imag->buffer() + (imag->get_shape().front() * imag->get_features() * jpeg_ptr.output_scanline);

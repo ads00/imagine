@@ -30,10 +30,12 @@ namespace ig     {
 namespace sample {
 
 template <typename T>
-auto spherical(T phi, T cos_theta, T sin_theta) {
-  return vec3 { std::cos(phi) * sin_theta,
-                cos_theta,
-                std::sin(phi) * sin_theta }; }
+auto spherical(T phi, T cos_theta, T sin_theta) 
+{ return vec3{std::cos(phi) * sin_theta, cos_theta, std::sin(phi) * sin_theta}; }
+
+template <typename T>
+auto cylindrical(T theta, T y)
+{ return vec3{std::cos(theta), y, std::sin(theta)}; }
 
 ig_api vec3 hemisphere_uniform(const vec2& s);
 ig_api vec3 hemisphere_cosine (const vec2& s);

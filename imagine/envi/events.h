@@ -76,7 +76,7 @@ struct event_status {
 
 class ig_api events {
 public:
-  template <typename T> using func_type = std::function<void(const T&)>;
+  template <typename T> using func_type = std::function< void(const T&) >;
   events() = default;
 
   template <typename T>

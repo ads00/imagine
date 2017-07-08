@@ -39,8 +39,8 @@ public:
 
   void expand(const vec3& point);
 
-  auto size() const         { return max_ - min_; }
-  auto volume() const       { return size().prod(); }
+  auto size() const   { return max_ - min_; }
+  auto volume() const { return size().prod(); }
   auto area() const {
     auto ext = size();
     return 2.f * (ext[0] * ext[1] + ext[0] * ext[2] + ext[1] * ext[2]); }

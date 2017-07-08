@@ -235,24 +235,22 @@ auto matrix_base<C>::mean() const -> type {
 template <typename Mat>
 inline std::ostream& operator<<(std::ostream& stream, const matrix_base<Mat>& mat) {
   size_t width = 0;
-  std::stringstream 
-    w{}; w.precision(5);
+  std::stringstream w{}; w.precision(5);
 
   for (auto elemt : mat) {
-    w.str(std::string{}); w.clear(); w << std::fixed << elemt;
-    width = std::max<size_t>(width, size_t(w.tellp()));
+    w.str(std::string{});
+    w.clear();
+    w << std::fixed << elemt; width = std::max<size_t>(width, size_t(w.tellp()));
   }
 
-  stream.precision(5); stream.setf(std::ios::fixed);
+  stream.precision(5);
+  stream << std::fixed;
   for (size_t i = 0; i < mat.rows(); ++i) {
-    stream << std::endl;
-    stream.width(width); stream << mat(i, 0);
+    stream << std::endl; stream.width(width); stream << mat(i, 0);
     for (size_t j = 1; j < mat.cols(); ++j) {
-      stream << ' ';
-      stream.width(width); stream << mat(i, j);
+      stream << ' ';     stream.width(width); stream << mat(i, j);
     }
-  }
-  return stream;
+  } return stream;
 }
 
 } // namespace ig
