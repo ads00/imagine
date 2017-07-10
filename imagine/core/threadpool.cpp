@@ -28,7 +28,7 @@ namespace ig {
 threadpool::threadpool(size_t workers)
   : running_{true} {
 
-  for (size_t i = 0; i < workers; ++i)
+  for (size_t i = jobs_ = 0; i < workers; ++i)
     workers_.emplace_back([this] {
       for (;;) {
         std::function
@@ -43,6 +43,8 @@ threadpool::threadpool(size_t workers)
           tasks_.pop();
         }
         task();
+        jobs_--;
+        wv_.notify_one();
       }
     });
 }
@@ -52,6 +54,13 @@ threadpool::~threadpool() {
   cv_.notify_all();
   for (auto& worker : workers_)
     worker.join();
+}
+
+void threadpool::wait() {
+  if (jobs_ > 0) {
+    std::unique_lock<decltype(wait_)> lock{wait_};
+    wv_.wait(lock, [this] { return !jobs_; });
+  }
 }
 
 } // namespace ig

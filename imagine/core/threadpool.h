@@ -36,6 +36,8 @@ public:
   explicit threadpool(size_t workers = std::thread::hardware_concurrency());
   ~threadpool();
 
+  void wait();
+
   template <typename Fn, typename... Args>
   auto work(Fn&& fn, Args&&... args) {
     using return_type = std::packaged_task<decltype(fn(args...))()>;
@@ -48,6 +50,7 @@ public:
       tasks_.emplace([task]() { (*task)(); });
     }
 
+    jobs_++;
     cv_.notify_one();
     return res;
   }
@@ -62,9 +65,10 @@ private:
       < void() > 
     > tasks_;
 
-  std::mutex mutex_;
-  std::condition_variable cv_;
   std::atomic_bool running_;
+  std::atomic_int jobs_;
+  std::condition_variable cv_, wv_;
+  std::mutex mutex_, wait_;
 };
 
 } // namespace ig

@@ -39,7 +39,6 @@ public:
     , direction{dir} {}
 
   auto operator()(T t) const { return origin + t * direction; }
-
   vector_type origin, direction;
 };
 
