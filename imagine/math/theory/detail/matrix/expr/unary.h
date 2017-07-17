@@ -30,7 +30,11 @@
 namespace ig {
 
 template <typename Mat, typename Op>
-struct mat_traits< unary_expr<Mat, Op> > {
+struct mat_traits
+<
+  unary_expr<Mat, Op>
+>
+{
   using type = mat_t<Mat>;
   static constexpr auto n_rows = mat_traits<Mat>::n_rows, 
                         n_cols = mat_traits<Mat>::n_cols;
@@ -38,14 +42,14 @@ struct mat_traits< unary_expr<Mat, Op> > {
 
 template <typename Fn>
 struct unary_fn {
-  template <typename T> constexpr auto operator()(const T& val) const { return fn_(val); }
   Fn fn_;
-};
+  template <typename T> 
+  constexpr auto operator()(const T& val) const { return fn_(val); } };
 
-template <typename Mat, typename Op>
-class unary_expr : public matrix_base< unary_expr<Mat, Op> > {
+template <typename m_, typename o_>
+class unary_expr : public matrix_base< unary_expr<m_, o_> > {
 public:
-  explicit unary_expr(const Mat& mat, const Op& op)
+  explicit unary_expr(const m_& mat, const o_& op)
     : mat_{mat}
     , op_{op} {}
 
@@ -56,14 +60,13 @@ public:
   auto operator[](size_t n) const               { return op_(mat_[n]); }
 
 private:
-  const Mat mat_;
-  const Op op_;
+  const m_ mat_;
+  const o_ op_;
 };
 
 template <typename Mat>
-constexpr auto operator-(const matrix_base<Mat>& mat) {
-  return unary_expr< Mat, std::negate<> >{mat.derived(), std::negate<>{}};
-}
+constexpr auto operator-(const matrix_base<Mat>& mat) 
+{ return unary_expr< Mat, std::negate<> >{mat.derived(), std::negate<>{}}; }
 
 // Unary lambda-based function applier
 template <typename Mat, typename Fn>

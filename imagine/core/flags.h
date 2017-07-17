@@ -32,8 +32,7 @@ template <typename E>
 class flags {
 public:
   using enum_type       = E;
-  using underlying_type = typename std::make_unsigned_t<
-                          typename std::underlying_type_t<enum_type> >;
+  using underlying_type = typename std::underlying_type_t<enum_type>;
 
   constexpr flags() = default;
   constexpr flags(enum_type e) : flags_{underlying_type(e)} {}
@@ -70,7 +69,11 @@ template <typename E> constexpr auto operator^(E lhs, E rhs)
 { return flags<E>{lhs} ^ rhs; }
 
 template <typename E>
-constexpr auto to_f(E e) { return static_cast< std::underlying_type_t<E> >(e); }
+constexpr auto enum_cast(E e) 
+{ return static_cast
+    < 
+      std::underlying_type_t<E> 
+    >(e); }
 
 } // namespace ig
 

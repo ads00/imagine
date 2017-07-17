@@ -51,6 +51,8 @@ public:
   bool dbg();
   bool supported(const std::string& name) const;
 
+  using devi_type = std::unique_ptr<device>;
+  using phys_type = std::shared_ptr<physical>;
   template <capability... caps>
   auto make_context(hardware unit, uint32_t id = 0) const {
     auto it = std::find_if(physicals_.begin(), physicals_.end(), [&unit, &id](auto& phys) {
@@ -61,14 +63,9 @@ public:
       : *physicals_.begin();
 
     struct context {
-    context(std::shared_ptr<physical>& dev) 
-      : phys{dev}
-      , devi{std::make_unique<device>(*phys, std::vector<capabilities>{caps...})} {}
-
-    std::shared_ptr<physical> phys;
-    std::unique_ptr<device> 
-      devi; 
-    }; return context{phys};
+      devi_type devi;
+      phys_type phys;
+    }; return context{std::make_unique<device>(*phys, std::vector<capabilities>{caps...}), phys};
   }
 
   auto& operator->() const { return ipfn_; }
@@ -79,8 +76,7 @@ private:
 
 private:
   bool validation_;
-  std::vector< std::shared_ptr<physical> > 
-    physicals_;
+  std::vector<phys_type> physicals_;
 
   struct impl; 
   std::unique_ptr<impl> impl_;

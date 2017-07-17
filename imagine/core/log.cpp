@@ -34,12 +34,12 @@ log& log::get() {
   return l;
 }
 
-log& log::add_sink(const std::shared_ptr<log_sink>& sink) {
+log& log::add_sink(const sink_type& sink) {
   sinks_.push_back(sink); 
   return *this;
 }
 
-void log::remove_sink(const std::shared_ptr<log_sink>& sink) {
+void log::remove_sink(const sink_type& sink) {
   sinks_.erase(std::remove(sinks_.begin(), sinks_.end(), sink), 
                sinks_.end()); 
 }
@@ -50,7 +50,7 @@ void log::push(const log_context& ctx) {
     sink->consume(ctx);
 }
 
-log::formatter_type log::default_format = [](const log_context& c) {
+log::frm_type log::default_format = [](const log_context& c) {
   auto tt = std::chrono::system_clock::to_time_t
   (
     std::chrono::system_clock::now()
@@ -70,6 +70,6 @@ log::formatter_type log::default_format = [](const log_context& c) {
   return ss.str();
 };
 
-std::shared_ptr<log_sink> log::default_sink = std::make_shared<log_sink>(std::cout);
+log::sink_type log::default_sink = std::make_shared<log_sink>(std::cout);
 
 } // namespace ig

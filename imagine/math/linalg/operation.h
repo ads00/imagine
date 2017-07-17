@@ -35,8 +35,18 @@ constexpr auto dot(const matrix_base<Lhs>& lhs, const matrix_base<Rhs>& rhs) {
 }
 
 template <typename Lhs, typename Rhs>
+constexpr auto reflect(const matrix_base<Lhs>& i, const matrix_base<Rhs>& n) {
+  return i - 2 * dot(i, n) * n;
+}
+
+template <typename Lhs, typename Rhs>
 constexpr auto cross(const matrix_base<Lhs>& lhs, const matrix_base<Rhs>& rhs) {
-  using vec_type = colvec<std::common_type_t< mat_t<Lhs>, mat_t<Rhs> >, 3>;
+  using vec_type = 
+    colvec
+    < std::common_type_t
+      < mat_t<Lhs>, 
+        mat_t<Rhs> 
+      >, 3>;
   assert(lhs.vector() && lhs.vecsize() == 3 && "Cross exists only in three-dimensional space");
   assert(rhs.vector() && rhs.vecsize() == 3 && "Cross exists only in three-dimensional space");
 

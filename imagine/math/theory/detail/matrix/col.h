@@ -28,17 +28,20 @@
 
 namespace ig {
 
-template <typename Xpr>
-struct mat_traits< mat_col<Xpr> > : mat_traits<Xpr> {
-  using type = mat_t<Xpr>;
-  static constexpr auto n_rows = mat_traits<Xpr>::n_rows, 
-                        n_cols = 1;
+template <typename X>
+struct mat_traits
+<
+  mat_col<X>
+>
+{
+  using type = mat_t<X>;
+  static constexpr auto n_rows = mat_traits<X>::n_rows, n_cols = 1;
 };
 
-template <typename Xpr>
-class mat_col : public matrix_base< mat_col<Xpr> > {
+template <typename x_>
+class mat_col : public matrix_base< mat_col<x_> > {
 public:
-  explicit mat_col(Xpr& xpr, size_t col)
+  explicit mat_col(x_& xpr, size_t col)
     : xpr_{xpr}
     , col_{col} {}
 
@@ -58,7 +61,7 @@ public:
   auto operator=(const matrix_base<Mat>& o) {  eval(*this, o); return *this; }
 
 private:
-  Xpr& xpr_;
+  x_& xpr_;
   size_t col_;
 };
 

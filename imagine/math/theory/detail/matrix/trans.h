@@ -28,17 +28,21 @@
 
 namespace ig {
 
-template <typename Xpr>
-struct mat_traits< mat_trans<Xpr> > {
-  using type = mat_t<Xpr>;
-  static constexpr auto n_rows = mat_traits<Xpr>::n_cols, 
-                        n_cols = mat_traits<Xpr>::n_rows;
+template <typename X>
+struct mat_traits
+<
+  mat_trans<X>
+>
+{
+  using type = mat_t<X>;
+  static constexpr auto n_rows = mat_traits<X>::n_cols, 
+                        n_cols = mat_traits<X>::n_rows;
 };
 
-template <typename Xpr>
-class mat_trans : public matrix_base< mat_trans<Xpr> > {
+template <typename x_>
+class mat_trans : public matrix_base< mat_trans<x_> > {
 public:
-  explicit mat_trans(Xpr& xpr)
+  explicit mat_trans(x_& xpr)
     : xpr_{xpr} {}
 
   auto rows() const { return xpr_.cols(); }
@@ -51,7 +55,7 @@ public:
   decltype(auto) operator[](size_t)       = delete;
 
 private:
-  Xpr& xpr_;
+  x_& xpr_;
 };
 
 } // namespace ig

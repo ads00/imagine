@@ -29,8 +29,15 @@
 namespace ig {
 
 template <typename Lhs, typename Rhs>
-struct mat_traits< product_expr<Lhs, Rhs> > {
-  using type = std::common_type_t< mat_t<Lhs>, mat_t<Rhs> >;
+struct mat_traits
+<
+  product_expr<Lhs, Rhs>
+>
+{
+  using type = std::common_type_t
+    < mat_t<Lhs>, 
+      mat_t<Rhs> 
+    >;
   static constexpr auto D = 
     mat_traits<Lhs>::n_rows == dynamic_sized ||
     mat_traits<Rhs>::n_cols == dynamic_sized;
@@ -38,16 +45,18 @@ struct mat_traits< product_expr<Lhs, Rhs> > {
                         n_cols = D ? -1 : mat_traits<Rhs>::n_cols;
 };
 
-template <typename Lhs, typename Rhs>
-class product_expr : public matrix_base< product_expr<Lhs, Rhs> > {
+template <typename l_, typename r_>
+class product_expr : public matrix_base< product_expr<l_, r_> > {
 public:
   using matrix_type = concrete_mat_t<product_expr>;
-  explicit product_expr(const Lhs& lhs, const Rhs& rhs)
-    : product_expr{lhs, rhs, std::integral_constant<bool, matrix_type::immutable>{}}
+  explicit product_expr(const l_& lhs, const r_& rhs)
+    : product_expr{lhs, 
+                   rhs, 
+                   std::integral_constant<bool, matrix_type::immutable>{}}
   { eval_product(lhs, rhs); }
 
-  product_expr(const Lhs& lhs, const Rhs& rhs, std::true_type)  : prod_{} {}
-  product_expr(const Lhs& lhs, const Rhs& rhs, std::false_type) : prod_{lhs.rows(), rhs.cols()} {}
+  product_expr(const l_& lhs, const r_& rhs, std::true_type)  : prod_{} {}
+  product_expr(const l_& lhs, const r_& rhs, std::false_type) : prod_{lhs.rows(), rhs.cols()} {}
 
   auto rows() const { return prod_.rows(); }
   auto cols() const { return prod_.cols(); }
@@ -56,7 +65,7 @@ public:
   auto operator[](size_t n) const               { return prod_[n]; }
 
 private:
-  void eval_product(const Lhs& lhs, const Rhs& rhs) {
+  void eval_product(const l_& lhs, const r_& rhs) {
     for (size_t i = 0; i < lhs.cols(); ++i)
       for (size_t j = 0; j < rhs.cols(); ++j)
         for (size_t k = 0; k < lhs.rows(); ++k) prod_(k, j) += lhs(k, i) * rhs(i, j);

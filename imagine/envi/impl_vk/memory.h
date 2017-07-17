@@ -36,7 +36,7 @@ public:
   friend class resource;
   friend class memory_allocator;
 
-  explicit memory(memory_allocator& allocator, uint32_t fl, uint32_t sl);
+  explicit memory(memory_allocator& allocator);
   virtual ~memory();
 
   struct block {
@@ -47,19 +47,26 @@ public:
     ~block() {}
 
     memory& mem;
-    uint64_t size, offset; bool free;
-    using block_p = block*; block_p prev_block = nullptr, next_block = nullptr;
-  };
+    uint64_t size, offset; 
+    bool free;
+    block* prev_block = nullptr, * next_block = nullptr;
+  }; using block_type = std::unique_ptr<block>;
+
+protected:
+  /*
+  static const uint32_t log2_size = 25; */
+  static const uint32_t log2_size = 24;
+  static const uint32_t log2_layers = 4;
 
 protected:
   auto allocate(uint64_t size, uint64_t alignment) -> std::unique_ptr<block>;
   void coalesce(std::unique_ptr<block> block);
 
   auto mapping_insert(uint32_t size) {
-    auto fl = fls(size), sl = size >> (fl - layer_size_) ^ (1 << layer_size_);
-    return std::make_pair(fl - (layer_size_ + 1), sl); }
+    auto fl = fls(size), sl = size >> (fl - log2_layers) ^ (1 << log2_layers);
+    return std::make_pair(fl - (log2_layers + 1), sl); }
   auto mapping_search(uint32_t size) {
-    return mapping_insert(size + (1 << (fls(size) - layer_size_)) - 1); }
+    return mapping_insert(size + (1 << (fls(size) - log2_layers)) - 1); }
 
   auto manage(uint64_t size, uint64_t offset, bool free) -> std::unique_ptr<block>&;
 
@@ -70,8 +77,11 @@ protected:
 
 private:
    void* mapped_;
-   block sentinel_; uint32_t layer_size_;
-   std::vector<uint32_t> layers_bitmap_; std::vector< std::vector< std::unique_ptr<block> > > blocks_;
+   block sentinel_; 
+   std::vector<uint32_t> layers_bitmap_; 
+   std::vector
+   < std::vector<block_type>
+   > blocks_;
 };
 
 class ig_api memory_allocator {
@@ -80,7 +90,7 @@ public:
   ~memory_allocator();
 
   void bind(resource& resource, memory_properties properties);
-  void allocate(uint32_t log2size, uint32_t index);
+  void allocate(uint32_t index);
 
   memory_allocator(const memory_allocator&) = delete;
   memory_allocator& operator=(const memory_allocator&) = delete;
@@ -89,13 +99,12 @@ public:
   const physical& phys;
 
 private:
-  /*
-  static const uint32_t log2_size = 25; */
-  static const uint32_t log2_size = 24;
-  static const uint32_t log2_layers = 4;
-
-private:
-  std::unordered_map< uint32_t, std::vector< std::unique_ptr<memory> > > pool_;
+  using memory_type = std::unique_ptr<memory>;
+  std::unordered_map
+  < 
+    uint32_t, 
+    std::vector<memory_type> 
+  > pools_;
 };
 
 } // namespace vk

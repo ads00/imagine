@@ -32,15 +32,14 @@ constexpr uint32_t log2_min_blocksize = 5;
 constexpr uint64_t      min_blocksize = 32;
 
 // memory
-memory::memory(memory_allocator& allocator, uint32_t fl, uint32_t sl)
+memory::memory(memory_allocator& allocator)
   : devi{allocator.devi}
   , sentinel_{*this, 0, 0, false}
   , mapped_{nullptr}
-  , layer_size_{sl}
-  , layers_bitmap_(fl - log2_min_blocksize + 1, 0)
-  , blocks_      ((fl - log2_min_blocksize) * (1 << layer_size_)) {
+  , layers_bitmap_(log2_size - log2_min_blocksize + 1, 0)
+  , blocks_      ((log2_size - log2_min_blocksize) * (1 << log2_layers)) {
 
-  auto& pool_block = manage((1 << fl) - 1, 0, true);
+  auto& pool_block = manage((1 << log2_size) - 1, 0, true);
   sentinel_.prev_block = sentinel_.next_block = 
     pool_block->prev_block = pool_block->next_block = &sentinel_;
 }
@@ -62,7 +61,7 @@ auto memory::allocate(uint64_t size, uint64_t alignment) -> std::unique_ptr<bloc
   }
 
   map.second = ffs(map_sl);
-  auto& seg_list = blocks_[map.first * (1 << layer_size_) + map.second];
+  auto& seg_list = blocks_[map.first * (1 << log2_layers) + map.second];
   auto block = std::move(seg_list.back());
 
   seg_list.pop_back();
@@ -106,7 +105,7 @@ auto memory::allocate(uint64_t size, uint64_t alignment) -> std::unique_ptr<bloc
 void memory::coalesce(std::unique_ptr<block> block) {
   auto coalesce_neighbor = [this, &block](auto& neighbor, bool prior) {
     auto mapping = mapping_insert(static_cast<uint32_t>(neighbor->size));
-    auto& seg_list = blocks_[mapping.first * (1 << layer_size_) + mapping.second];
+    auto& seg_list = blocks_[mapping.first * (1 << log2_layers) + mapping.second];
 
     auto& block_it = std::find_if(seg_list.begin(), seg_list.end(), [&block, &neighbor](auto& b) {
       return b.get() == neighbor; });
@@ -130,7 +129,7 @@ void memory::coalesce(std::unique_ptr<block> block) {
   if (block->next_block->free) coalesce_neighbor(block->next_block, false);
 
   auto mapping = mapping_insert(static_cast<uint32_t>(block->size));
-  auto& seg_list = blocks_[mapping.first * (1 << layer_size_) + mapping.second];
+  auto& seg_list = blocks_[mapping.first * (1 << log2_layers) + mapping.second];
 
   layers_bitmap_.front()            |= (1 << mapping.first);
   layers_bitmap_[mapping.first + 1] |= (1 << mapping.second);
@@ -140,7 +139,7 @@ void memory::coalesce(std::unique_ptr<block> block) {
 
 auto memory::manage(uint64_t size, uint64_t offset, bool free) -> std::unique_ptr<block>& {
   auto mapping = mapping_insert(static_cast<uint32_t>(size));
-  auto& seg_list = blocks_[mapping.first * (1 << layer_size_) + mapping.second];
+  auto& seg_list = blocks_[mapping.first * (1 << log2_layers) + mapping.second];
 
   layers_bitmap_.front() |= (1 << mapping.first);
   layers_bitmap_[mapping.first + 1] |= (1 << mapping.second);
@@ -170,32 +169,32 @@ void memory_allocator::bind(resource& resource, memory_properties properties) {
   auto type = resource.require(size, alignment); 
   auto heap = phys.select_heap(type, properties);
 
-  auto block_it = std::find_if(pool_[heap].begin(), pool_[heap].end(), [&resource, &size, &alignment](auto& mem) {
+  auto block_it = std::find_if(pools_[heap].begin(), pools_[heap].end(), [&resource, &size, &alignment](auto& mem) {
     auto block = mem->allocate(size, alignment);
     return block
       ? resource.bind(std::move(block))
       : false;
   });
 
-  if (block_it == pool_[heap].end()) {
-    allocate(log2_size, heap);
-    auto& mem = pool_[heap].back();
+  if (block_it == pools_[heap].end()) {
+    allocate(heap);
+    auto& mem = pools_[heap].back();
     auto block = mem->allocate(size, alignment); resource.bind(std::move(block));
   }
 }
 
-void memory_allocator::allocate(uint32_t log2size, uint32_t index) {
+void memory_allocator::allocate(uint32_t index) {
   VkMemoryAllocateInfo memalloc_info {};
     memalloc_info.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-    memalloc_info.allocationSize  = uint64_t(1) << log2size;
+    memalloc_info.allocationSize  = 1 << memory::log2_size;
     memalloc_info.memoryTypeIndex = index;
 
-  auto mmr = std::make_unique<memory>(*this, log2size, log2_layers);
+  auto mmr = std::make_unique<memory>(*this);
   auto res = devi->vkAllocateMemory(devi, &memalloc_info, nullptr, *mmr);
   if (res != VK_SUCCESS) {
     throw std::runtime_error{"Failed to allocate device memory : " + vulkan::to_string(res)};
   } else {
-    pool_[index].emplace_back(std::move(mmr));
+    pools_[index].emplace_back(std::move(mmr));
   }
 }
 

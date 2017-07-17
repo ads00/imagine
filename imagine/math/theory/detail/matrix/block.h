@@ -28,17 +28,21 @@
 
 namespace ig {
 
-template <typename Xpr>
-struct mat_traits< mat_block<Xpr> > : mat_traits<Xpr> {
-  using type = mat_t<Xpr>;
-  static constexpr auto n_rows = mat_traits<Xpr>::n_rows, 
-                        n_cols = mat_traits<Xpr>::n_cols;
+template <typename X>
+struct mat_traits
+<
+  mat_block<X>
+>
+{
+  using type = mat_t<X>;
+  static constexpr auto n_rows = mat_traits<X>::n_rows, 
+                        n_cols = mat_traits<X>::n_cols;
 };
 
-template <typename Xpr>
-class mat_block : public matrix_base< mat_block<Xpr> > {
+template <typename x_>
+class mat_block : public matrix_base< mat_block<x_> > {
 public:
-  explicit mat_block(Xpr& xpr, size_t row, size_t col, size_t nr, size_t nc)
+  explicit mat_block(x_& xpr, size_t row, size_t col, size_t nr, size_t nc)
     : xpr_{xpr}
     , colvec_{false}
     , rowvec_{false}
@@ -47,7 +51,7 @@ public:
     , nr_{nr}
     , nc_{nc} {}
 
-  explicit mat_block(Xpr& xpr, size_t start, size_t n)
+  explicit mat_block(x_& xpr, size_t start, size_t n)
     : xpr_{xpr}
     , colvec_{xpr_.cols() == 1}
     , rowvec_{xpr_.rows() == 1}
@@ -72,7 +76,7 @@ public:
   auto operator=(const matrix_base<Mat>& o) { eval(*this, o); return *this; }
 
 private:
-  Xpr& xpr_;
+  x_& xpr_;
   bool colvec_, rowvec_;
   size_t row_, col_, nr_, nc_;
 };

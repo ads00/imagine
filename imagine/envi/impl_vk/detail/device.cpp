@@ -64,8 +64,9 @@ device::device(const physical& physical, const std::vector<capabilities>& rq)
 
   std::vector<VkDeviceQueueCreateInfo> 
     queues_info{};
-  std::vector< std::vector<float> >    
-    queue_prios{};
+  std::vector
+  < std::vector<float> 
+  > queue_prios{};
   for (auto& definition : selects_.definitions) {
     queue_prios.emplace_back(definition.second, 1.f);
     VkDeviceQueueCreateInfo queue_info {};

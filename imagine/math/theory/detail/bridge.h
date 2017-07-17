@@ -72,7 +72,8 @@ struct bridge {
   static auto load(const std::string& filename)                          { return detail::table_load(tbl(), filename); }
   static bool save(const std::string& filename, F format, const T& data) { return detail::table_save(tbl(), filename, format, data); }
 
-  using table = std::vector< std::tuple<validate, readp, write> >;
+  using loader = std::tuple<validate, readp, write>;
+  using table  = std::vector<loader>;
   static ig_api table& tbl(); 
 };
 

@@ -33,10 +33,10 @@
 
 namespace ig {
 
-constexpr int32_t dynamic_sized = -1;
-template <typename T, int32_t M, int32_t N> class matrix;
-template <typename T, int32_t N = dynamic_sized> using colvec = matrix<T, N, 1>;
-template <typename T, int32_t N = dynamic_sized> using rowvec = matrix<T, 1, N>;
+constexpr uint32_t dynamic_sized = 0;
+template <typename T, uint32_t M, uint32_t N> class matrix;
+template <typename T, uint32_t N = dynamic_sized> using colvec = matrix<T, N, 1>;
+template <typename T, uint32_t N = dynamic_sized> using rowvec = matrix<T, 1, N>;
 
 template <typename Xpr> class mat_block;
 template <typename Xpr> class mat_col;

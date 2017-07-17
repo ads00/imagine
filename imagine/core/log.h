@@ -39,18 +39,19 @@ class log_context;
 class log_sink;
 class ig_api log {
 public:
-  using formatter_type = std::function<std::string(const log_context&)>;
+  using frm_type = std::function< std::string(const log_context&) >;
+  using sink_type = std::shared_ptr<log_sink>;
   friend log_context;
   
-  log& add_sink(const std::shared_ptr<log_sink>& sink);
-  void remove_sink(const std::shared_ptr<log_sink>& sink);
+  log& add_sink(const sink_type& sink);
+  void remove_sink(const sink_type& sink);
 
   log(const log&) = delete;
   log& operator=(const log&) = delete;
 
   static log& get();
-  static formatter_type default_format;
-  static std::shared_ptr<log_sink> default_sink;
+  static frm_type default_format;
+  static sink_type default_sink;
 
 private:
   log() = default;
@@ -58,7 +59,7 @@ private:
 
 private:
   std::mutex mutex_;
-  std::vector< std::shared_ptr<log_sink> > sinks_{default_sink};
+  std::vector<sink_type> sinks_{default_sink};
 };
 
 class log_context {
@@ -76,16 +77,16 @@ public:
 
 class log_sink {
 public:
-  explicit log_sink(std::ostream& stream, const log::formatter_type& format = log::default_format)
+  explicit log_sink(std::ostream& stream, const log::frm_type& format = log::default_format)
     : stream_{stream}
-    , formatter_{format} {}
+    , format_{format} {}
   virtual ~log_sink() = default;
 
-  virtual void consume(const log_context& ctx) { stream_ << formatter_(ctx); }
+  virtual void consume(const log_context& ctx) { stream_ << format_(ctx); }
 
 protected:
   std::ostream& stream_;
-  log::formatter_type formatter_;
+  log::frm_type format_;
 };
 
 } // namespace ig

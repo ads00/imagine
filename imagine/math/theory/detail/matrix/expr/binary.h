@@ -30,16 +30,23 @@
 namespace ig {
 
 template <typename Lhs, typename Rhs, typename Op>
-struct mat_traits< binary_expr<Lhs, Rhs, Op> > {
-  using type = std::common_type_t< mat_t<Lhs>, mat_t<Rhs> >;
+struct mat_traits
+<
+  binary_expr<Lhs, Rhs, Op>
+>
+{
+  using type = std::common_type_t
+    < mat_t<Lhs>, 
+      mat_t<Rhs> 
+    >;
   static constexpr auto n_rows = mat_traits<Lhs>::n_rows, 
                         n_cols = mat_traits<Lhs>::n_cols;
 };
 
-template <typename Lhs, typename Rhs, typename Op>
-class binary_expr : public matrix_base< binary_expr<Lhs, Rhs, Op> > {
+template <typename l_, typename r_, typename o_>
+class binary_expr : public matrix_base< binary_expr<l_, r_, o_> > {
 public:
-  explicit binary_expr(const Lhs& lhs, const Rhs& rhs, const Op& op)
+  explicit binary_expr(const l_& lhs, const r_& rhs, const o_& op)
     : lhs_{lhs}
     , rhs_{rhs}
     , op_{op} {}
@@ -51,9 +58,9 @@ public:
   auto operator[](size_t n) const               { return op_(lhs_[n], rhs_[n]); }
 
 private:
-  const Lhs lhs_;
-  const Rhs rhs_;
-  const Op op_;
+  const l_ lhs_;
+  const r_ rhs_;
+  const o_ op_;
 };
 
 template <typename Lhs, typename Rhs>
@@ -94,6 +101,32 @@ constexpr auto operator%(const matrix_base<Lhs>& lhs, const matrix_base<Rhs>& rh
       Rhs, 
       std::multiplies<> 
     >{lhs.derived(), rhs.derived(), std::multiplies<>{}};
+}
+
+template <typename Lhs, typename Rhs>
+constexpr auto minima(const matrix_base<Lhs>& lhs, const matrix_base<Rhs>& rhs) {
+  assert(lhs.size() == rhs.size() && "Incoherent matrix cwise minima");
+
+  auto minimum = [](auto lhs, auto rhs)
+  { return std::min(lhs, rhs); };
+  return binary_expr
+    < Lhs,
+      Rhs,
+      decltype(minimum)
+    >{lhs.derived(), rhs.derived(), minimum};
+}
+
+template <typename Lhs, typename Rhs>
+constexpr auto maxima(const matrix_base<Lhs>& lhs, const matrix_base<Rhs>& rhs) {
+  assert(lhs.size() == rhs.size() && "Incoherent matrix cwise maxima");
+
+  auto maximum = [](auto lhs, auto rhs)
+  { return std::max(lhs, rhs); };
+  return binary_expr
+    < Lhs,
+      Rhs,
+      decltype(maximum)
+    >{lhs.derived(), rhs.derived(), maximum};
 }
 
 } // namespace ig

@@ -96,11 +96,11 @@ constexpr auto operator-(const unit<Dims, T>& lhs, const unit<Dims, T>& rhs)
 
 template <typename DX, typename DY, typename T>
 constexpr auto operator*(const unit<DX, T>& lhs, const unit<DY, T>& rhs) 
-{ return apply_dims< std::plus<int32_t> > (lhs, rhs, lhs.magn() * rhs.magn()); }
+{ return apply_dims< std::plus<> > (lhs, rhs, lhs.magn() * rhs.magn()); }
 
 template <typename DX, typename DY, typename T>
 constexpr auto operator/(const unit<DX, T>& lhs, const unit<DY, T>& rhs) 
-{ return apply_dims< std::minus<int32_t> >(lhs, rhs, lhs.magn() / rhs.magn()); }
+{ return apply_dims< std::minus<> >(lhs, rhs, lhs.magn() / rhs.magn()); }
 
 template <typename Dims, typename T>
 constexpr auto operator+(const unit<Dims, T>& q, T scalar) 
@@ -132,7 +132,7 @@ constexpr auto operator/(const unit<Dims, T>& q, T scalar)
 
 template <typename Dims, typename T>
 constexpr auto operator/(T scalar, const unit<Dims, T>& q)
-{ return apply_dims< std::minus<int32_t> >(unit<dimensionless, T>{}, q, scalar / q.magn()); }
+{ return apply_dims< std::minus<> >(unit<dimensionless, T>{}, q, scalar / q.magn()); }
 
 // SI base units
 using length_d      = dimensions< 1, 0, 0, 0, 0, 0, 0 >;

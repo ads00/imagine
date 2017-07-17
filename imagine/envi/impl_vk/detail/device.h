@@ -61,8 +61,7 @@ private:
   virtual void pre_acquire() override;
 
 private:
-  std::unique_ptr<memory_allocator> 
-    allocator_;
+  std::unique_ptr<memory_allocator> allocator_;
   struct select {
     std::vector< std::pair<uint32_t, uint32_t> > indices;     // indices[i]     -> family , index
     std::vector< std::pair<uint32_t, uint32_t> > definitions; // definitions[i] -> family , count

@@ -21,7 +21,7 @@
  SOFTWARE.
 */
 
-#include "imagine/simu/visual/sampling/maps.h"
+#include "imagine/simu/visual/sample/maps.h"
 
 namespace ig     {
 namespace sample {

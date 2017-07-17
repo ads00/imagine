@@ -81,19 +81,22 @@ public:
 
   template <typename T>
   void process(const T& arg) const {
-    auto& fn = std::get< func_type<T> >(handlers_);
-    if (fn) {
-      fn(arg);
-    }
+    auto& fn = std::get
+      < func_type<T> 
+      >(handlers_);
+    if (fn) fn(arg);
   }
 
-  void keyboard(const func_type<event_keyboard>& fn) { std::get< std::decay_t<decltype(fn)> >(handlers_) = fn; }
-  void mouse   (const func_type<event_mouse>& fn)    { std::get< std::decay_t<decltype(fn)> >(handlers_) = fn; }
-  void status  (const func_type<event_status>& fn)   { std::get< std::decay_t<decltype(fn)> >(handlers_) = fn; }
+  void keyboard(const func_type<event_keyboard>& fn) { std::get<0>(handlers_) = fn; }
+  void mouse   (const func_type<event_mouse>& fn)    { std::get<1>(handlers_) = fn; }
+  void status  (const func_type<event_status>& fn)   { std::get<2>(handlers_) = fn; }
 
 private:
-  std::tuple< func_type<event_keyboard>, func_type<event_mouse>,
-              func_type<event_status> > handlers_;
+  std::tuple
+  < func_type<event_keyboard>, 
+    func_type<event_mouse>,
+    func_type<event_status> 
+  > handlers_;
 };
 
 } // namespace ig

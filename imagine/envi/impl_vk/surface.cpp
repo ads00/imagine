@@ -84,7 +84,7 @@ auto surface::get_capabilities() const -> surface_capabilities
 
 auto surface::support_format(format fmt) const -> format {
   auto fmt_it = std::find_if(impl_->formats.begin(), impl_->formats.end(), [this, &fmt](auto& format) {
-    return format.format == to_f(fmt);
+    return format.format == enum_cast(fmt);
   });
   return fmt_it != impl_->formats.end()
     ? fmt
@@ -92,7 +92,7 @@ auto surface::support_format(format fmt) const -> format {
 }
 
 auto surface::support_present_mode(present_mode present) const -> present_mode {
-  auto pres_it = std::find(impl_->present_modes.begin(), impl_->present_modes.end(), to_f(present));
+  auto pres_it = std::find(impl_->present_modes.begin(), impl_->present_modes.end(), enum_cast(present));
   return pres_it != impl_->present_modes.end()
     ? present
     : present_mode::fifo;

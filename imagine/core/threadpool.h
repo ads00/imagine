@@ -61,9 +61,9 @@ public:
 private:
   std::vector<std::thread> workers_;
   std::queue
-    < std::function
-      < void() > 
-    > tasks_;
+  < 
+    std::function< void() > 
+  > tasks_;
 
   std::atomic_bool running_;
   std::atomic_int jobs_;

@@ -38,21 +38,22 @@
 
 namespace ig {
 
-template <typename T, int32_t M, int32_t N>
-struct mat_traits< matrix<T, M, N> > {
+template <typename T, uint32_t M, uint32_t N>
+struct mat_traits
+< 
+  matrix<T, M, N> 
+> 
+{
   using type = T;
-  static constexpr auto n_rows = M, 
-                        n_cols = N;
+  static constexpr auto n_rows = M, n_cols = N; 
 };
 
-template <typename T, int32_t M = dynamic_sized, int32_t N = M>
-class matrix : public matrix_base< matrix<T, M, N> > {
+template <typename t_, uint32_t m_ = dynamic_sized, uint32_t n_ = m_>
+class matrix : public matrix_base< matrix<t_, m_, n_> > {
 public:
-  using type = T;
-  using base_type = matrix_base< matrix<type, M, N> >;
-
-  static constexpr auto dynamic_rows = (M < 0);
-  static constexpr auto dynamic_cols = (N < 0);
+  using type = t_;
+  static constexpr auto dynamic_rows = !m_;
+  static constexpr auto dynamic_cols = !n_;
   static constexpr auto dynamic = (dynamic_rows && dynamic_cols);
   static constexpr auto hybrid  = (dynamic_rows || dynamic_cols);
   static constexpr auto immutable = !hybrid;
@@ -69,7 +70,7 @@ public:
 
   template < bool X = hybrid, typename = std::enable_if_t<X> >
   constexpr explicit matrix(size_t n)
-    : data_{{}, dynamic_rows ? n : static_cast<size_t>(M), dynamic_cols ? n : static_cast<size_t>(N)} 
+    : data_{{}, dynamic_rows ? n : static_cast<size_t>(m_), dynamic_cols ? n : static_cast<size_t>(n_)} 
     { data_.d.resize(data_.m * data_.n); }
 
   template < bool X = dynamic, typename = std::enable_if_t<X> >
@@ -84,7 +85,7 @@ public:
   template <typename Mat> matrix(const matrix_base<Mat>& o, std::false_type)
     : data_{container_type(o.rows() * o.cols()), o.rows(), o.cols()} {}
 
-  matrix(const base_type& o) : data_{o.derived().data_} {}
+  matrix(const matrix& o) : data_{o.derived().data_} {}
 
   auto rows() const { return data_.rows_impl(); }
   auto cols() const { return data_.cols_impl(); }
@@ -108,9 +109,9 @@ public:
 
 private:
   using container_type = std::conditional_t
-    <hybrid,
-     std::vector<type>, 
-     std::array<type, M * N>
+    < hybrid,
+      std::vector<type>, 
+      std::array<type, m_ * n_>
     >;
     
   struct dynamic_data {
@@ -120,40 +121,41 @@ private:
     { return n; } container_type d; size_t m, n; };
   struct static_data {
     size_t rows_impl() const 
-    { return M; }
+    { return m_; }
     size_t cols_impl() const 
-    { return N; } alignas(IG_VECTORIZE_ALIGN) container_type d; };
+    { return n_; } alignas(IG_VECTORIZE_ALIGN) container_type d; };
 
   std::conditional_t
-    <hybrid, 
-     dynamic_data, static_data> data_;
+  < hybrid, 
+    dynamic_data, static_data
+  > data_;
 };
 
-template <typename T, int32_t M, int32_t N>
-auto matrix<T, M, N>::operator()(size_t row, size_t col) const -> const type& {
+template <typename t_, uint32_t m_, uint32_t n_>
+auto matrix<t_, m_, n_>::operator()(size_t row, size_t col) const -> const type& {
   assert(row < rows() && col < cols() && "Invalid matrix subscript");
   return data_.d[col * rows() + row]; }
 
-template <typename T, int32_t M, int32_t N>
-auto matrix<T, M, N>::operator()(size_t row, size_t col) -> type& {
+template <typename t_, uint32_t m_, uint32_t n_>
+auto matrix<t_, m_, n_>::operator()(size_t row, size_t col) -> type& {
   assert(row < rows() && col < cols() && "Invalid matrix subscript");
   return data_.d[col * rows() + row]; }
 
-template <typename T, int32_t M, int32_t N>
-auto matrix<T, M, N>::operator[](size_t n) const -> const type& {
+template <typename t_, uint32_t m_, uint32_t n_>
+auto matrix<t_, m_, n_>::operator[](size_t n) const -> const type& {
   assert(n < rows() * cols() && "Invalid matrix subscript");
   return data_.d[n]; }
 
-template <typename T, int32_t M, int32_t N>
-auto matrix<T, M, N>::operator[](size_t n) -> type& {
+template <typename t_, uint32_t m_, uint32_t n_>
+auto matrix<t_, m_, n_>::operator[](size_t n) -> type& {
   assert(n < rows() * cols() && "Invalid matrix subscript");
   return data_.d[n]; }
 
 // Eye (Identity)
-template <typename T, int32_t M, int32_t N>
-auto matrix<T, M, N>::make_eye() -> matrix& {
-  size_t i = 0, stride = base_type::diagsize() + 1;
-  std::generate(base_type::begin(), base_type::end(), [this, &i, &stride]() { return !(i++ % stride); });
+template <typename t_, uint32_t m_, uint32_t n_>
+auto matrix<t_, m_, n_>::make_eye() -> matrix& {
+  size_t i = 0, stride = matrix::diagsize() + 1;
+  std::generate(matrix::begin(), matrix::end(), [this, &i, &stride]() { return !(i++ % stride); });
   return *this;
 }
 

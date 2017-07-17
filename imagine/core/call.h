@@ -28,10 +28,12 @@
 
 #include <functional>
 #include <vector>
+#include <algorithm>
 
 namespace ig {
 
-template <typename Signature> class call;
+template <typename Signature> 
+class call;
 template <typename R, typename... Args>
 class call<R(Args...)> {
 public:
@@ -40,7 +42,7 @@ public:
 
   call() = default;
 
-  auto connect(const func_type& fn);
+  auto link(const func_type& fn);
   void emit(Args&&... args) const;
   void operator()(Args&&... args) const;
 
@@ -50,7 +52,6 @@ public:
   call& operator=(const call&) = delete;
 
 private:
-  template <typename Signature>
   class subscriber {
   public:
     friend call;
@@ -62,14 +63,14 @@ private:
   private:
     call& call_;
     func_type fn_;
-  }; using subscriber_type = subscriber<sig_type>;
+  }; using subscriber_type = std::shared_ptr<subscriber>;
 
-  std::vector< std::shared_ptr<subscriber_type> > subs_;
+  std::vector<subscriber_type> subs_;
 };
 
 // call
 template <typename R, typename... Args>
-auto call<R(Args...)>::connect(const func_type& fn) {
+auto call<R(Args...)>::link(const func_type& fn) {
   subs_.emplace_back(std::make_shared<subscriber_type>(*this, fn));
   return subs_.back();
 }
@@ -99,8 +100,7 @@ auto call<R(Args...)>::collect(Args&&... args) const {
 
 // call::subscriber
 template <typename R, typename... Args>
-template <typename Signature>
-void call<R(Args...)>::subscriber<Signature>::disconnect() {
+void call<R(Args...)>::subscriber::disconnect() {
   call_.subs_.erase(std::remove_if(call_.subs_.begin(), call_.subs_.end(), [this](auto& sub) {
     return sub.get() == this;
   }), call_.subs_.end());
