@@ -21,8 +21,8 @@
  SOFTWARE.
 */
 
-#ifndef IG_MATH_TRANSFORM_H
-#define IG_MATH_TRANSFORM_H
+#ifndef IG_SIMU_TRANSFORM_H
+#define IG_SIMU_TRANSFORM_H
 
 #include "imagine/math/geom/proj.h"
 
@@ -45,7 +45,8 @@ public:
 
   void link(transform* parent);
 
-  const mat4& get_wt();
+  const mat4& object_world();
+  const mat4& world_object();
 
 private:
   void remove_child(const transform& tr);
@@ -53,13 +54,13 @@ private:
 
 private:
   transform* parent_;
-  std::vector< std::reference_wrapper<transform> > children_;
+  std::vector<transform*> children_;
 
-  bool uwt_;
-  mat4 wt_;
+  bool uow_, uwo_;
+  mat4  ow_,  wo_;
   vec3 pos_; quat ori_; vec3 sca_;
 };
 
 } // namespace ig
 
-#endif // IG_MATH_TRANSFORM_H
+#endif // IG_SIMU_TRANSFORM_H

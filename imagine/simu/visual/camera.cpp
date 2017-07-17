@@ -36,7 +36,7 @@ camera::camera(planar_proj proj, size_t w, size_t h, const vec3& pos, const vec3
   , target_{target}
   , up_{up}
   , zn_{1e-3f}, zf_{1e3f}, fovy_{1.5f}
-  , unit_{true}, uview_{false}, uproj_{false} {}
+  , uview_{false}, uproj_{false} {}
 
 void camera::extent(float fovy) {
   uproj_ = false;
@@ -48,27 +48,20 @@ void camera::clip(float zn, float zf) {
   zn_ = zn, zf_ = zf;
 }
 
+void camera::update() { unproject_ = lin::inv(proj() * view()); }
+
 ray3 camera::cast_ray(float x, float y) const {
   auto nx = x / w_ * 2.f - 1.f; 
   auto ny = y / h_ * 2.f - 1.f;
 
-  auto raster = trf::transform(iproj_, vec3{nx, ny, 1.f}, unit_);
-  vec3 
-    wo{}, 
-    wd{};
-  if (projection_ == planar_proj::perspective) {
-    wo = pos_;
-    wd = trf::transform(iview_, raster, true);
-  } else {
-    wo = trf::transform(iview_, raster, true);
-    wd = -pos_;
-  }
-  return ray3{wo, lin::normalise(wd)};
+  auto wo = trf::transform(unproject_, vec3{nx, ny, 0.f});
+  auto wd = trf::transform(unproject_, vec3{nx, ny, 1.f});
+  return ray3{wo, lin::normalise(wd - wo)};
 }
 
 const mat4& camera::view() {
   if (!uview_) {
-    view_ = trf::look(pos_, target_, up_), iview_ = lin::inv(view_);
+    view_ = trf::look(pos_, target_, up_);
     uview_ = true;
   } return view_;
 }
@@ -78,14 +71,11 @@ const mat4& camera::proj() {
     switch (projection_) {
     case planar_proj::perspective:
       proj_ = trf::perspective(fovy_, static_cast<float>(w_) / h_, zn_, zf_);
-      unit_ = false;
       break;
     case planar_proj::orthographic:
       proj_ = trf::orthographic(-static_cast<float>(w_) / h_, static_cast<float>(w_) / h_, -1.f, 1.f, zn_, zf_);
-      unit_ = true;
       break;
     }
-    iproj_ = lin::inv(proj_);
     uproj_ = true;
   } return proj_;
 }

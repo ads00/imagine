@@ -21,29 +21,28 @@
  SOFTWARE.
 */
 
-#include "imagine/math/geom/transform.h"
+#include "imagine/simu/anim/transform.h"
 
 namespace ig {
 
 transform::transform(const mat4& trf)
   : parent_{nullptr}
-  , uwt_{true}
-  , wt_{trf} {}
+  , uow_{true}
+  , wo_{trf} {}
 
 transform::transform(const vec3& pos, const quat& ori, const vec3& sca)
   : parent_{nullptr}
-  , uwt_{false}
-  , wt_{mat4::eye()}
+  , uow_{false}
+  , uwo_{false}
+  , ow_{mat4::eye()}
   , pos_{pos}
   , ori_{ori}
   , sca_{sca} {}
 
 transform::~transform() {
-  if (parent_) {
-    parent_->remove_child(*this);
-    for (auto& child : children_)
-      child.get().parent_ = nullptr;
-  }
+  for (auto& child : children_)
+    child->parent_ = nullptr;
+  if (parent_) parent_->remove_child(*this);
 }
 
 void transform::positions(const vec3& pos, coordinate coord) {
@@ -53,7 +52,7 @@ void transform::positions(const vec3& pos, coordinate coord) {
     break;
   case coordinate::world:
     pos_ = parent_
-      ? trf::transform(lin::inv(parent_->get_wt()), pos)
+      ? trf::transform(parent_->world_object(), pos)
       : pos;
     break;
   }
@@ -92,7 +91,7 @@ transform& transform::translate(const vec3& tra, coordinate coord) {
     break;
   case coordinate::world:
     pos_ += parent_ 
-      ? trf::transform(lin::inv(parent_->get_wt()), tra)
+      ? trf::transform(parent_->world_object(), tra)
       : tra;
     break;
   }
@@ -126,40 +125,45 @@ transform& transform::scale(const vec3& sca) {
 }
 
 void transform::remove_child(const transform& tr) {
-  children_.erase(std::remove_if(children_.begin(), children_.end(), [this, &tr](auto& child) {
-    return &child.get() == &tr;
-  }), children_.end());
+  children_.erase(std::remove(children_.begin(), children_.end(), &tr), children_.end());
 }
 
 void transform::link(transform* parent) {
   assert(parent != this && "Reflexive transform classes are not allowed");
-  if (parent_)
-    parent_->remove_child(*this);
+
+  if (parent_ == parent) return;
+  if (parent_) parent_->remove_child(*this);
 
   parent_ = parent;
-  hierarchical_invalidate();
   if (parent_) {
-    parent_->children_.push_back(*this);
-  }
+    parent_->children_.emplace_back(this);
+  } hierarchical_invalidate();
 }
 
-const mat4& transform::get_wt() {
-  if (!uwt_) {
+const mat4& transform::object_world() {
+  if (!uow_) {
     auto trs = trf::translation(pos_) * trf::rotation(ori_) * trf::scale(sca_);
     if (parent_) {
-      wt_ = parent_->get_wt() * trs;
+      ow_ = parent_->object_world() * trs;
     } else {
-      wt_ = trs;
-    } uwt_ = true;
-  }
-  return wt_;
+      ow_ = trs;
+    } uow_ = true;
+  } return ow_;
+}
+
+const mat4& transform::world_object() {
+  if (!uwo_) {
+    wo_ = lin::inv(object_world());
+    uwo_ = true;
+  } return ow_;
 }
 
 void transform::hierarchical_invalidate() {
-  if (uwt_) {
-    uwt_ = false;
+  if (uow_) {
+    uow_ = false;
+    uwo_ = false;
     for (auto& child : children_)
-      child.get().hierarchical_invalidate();
+      child->hierarchical_invalidate();
   }
 }
 

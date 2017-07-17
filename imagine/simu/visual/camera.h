@@ -36,12 +36,13 @@ public:
   void extent(float fovy);
   void clip(float zn, float zf);
 
+  void update();
   ray3 cast_ray(float x, float y) const;
 
   const mat4& view();
   const mat4& proj();
 
-private:
+//private:
   planar_proj projection_;
 
   size_t w_, h_;
@@ -50,10 +51,8 @@ private:
   float zn_, zf_;
   float fovy_;
 
-  bool unit_;
   bool uview_, uproj_;
-  mat4  view_,  proj_,
-       iview_, iproj_;
+  mat4  view_,  proj_, unproject_;
 };
 
 } // namespace ig
