@@ -27,12 +27,12 @@ namespace ig {
 
 // axis-aligned bounding box
 aabb::aabb()
-  : min_{ std::numeric_limits<float>::infinity()}
-  , max_{-std::numeric_limits<float>::infinity()} {}
+  : min{ std::numeric_limits<float>::infinity()}
+  , max{-std::numeric_limits<float>::infinity()} {}
 
 aabb::aabb(const vec3& min, const vec3& max)
-  : min_{min}
-  , max_{max} {}
+  : min{min}
+  , max{max} {}
 
 aabb::aabb(const std::vector<vec3>& points) : aabb{} {
   for (auto& point : points)
@@ -40,7 +40,29 @@ aabb::aabb(const std::vector<vec3>& points) : aabb{} {
 }
 
 void aabb::expand(const vec3& point) {
-  for (uint32_t i = 0; i < 3; ++i) min_[i] = std::min(min_[i], point[i]), max_[i] = std::max(max_[i], point[i]);
+  for (uint32_t i = 0; i < 3; ++i) min[i] = std::min(min[i], point[i]), max[i] = std::max(max[i], point[i]);
 }
+
+bool aabb::intersect(const vec3& origin, const vec3& dir_rcp) {
+  auto t1 = (min[0] - origin[0]) * dir_rcp[0];
+  auto t2 = (max[0] - origin[0]) * dir_rcp[0];
+
+  auto tmin = std::min(t1, t2);
+  auto tmax = std::max(t1, t2);
+
+  for (uint32_t i = 1; i < 3; ++i) {
+    t1 = (min[i] - origin[i]) * dir_rcp[i];
+    t2 = (max[i] - origin[i]) * dir_rcp[i];
+
+    tmin = std::max(tmin, std::min(t1, t2));
+    tmax = std::min(tmax, std::max(t1, t2));
+  } return tmax > std::max(tmin, 0.f);
+}
+
+aabb union_g(const aabb& lhs, const aabb& rhs) 
+{ return aabb{minima(lhs.min, rhs.min), maxima(lhs.max, rhs.max)}; }
+
+aabb inter_g(const aabb& lhs, const aabb& rhs) 
+{ return aabb{maxima(lhs.min, rhs.min), minima(lhs.max, rhs.max)}; }
 
 } // namespace ig

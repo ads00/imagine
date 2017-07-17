@@ -38,18 +38,20 @@ public:
   explicit aabb(const std::vector<vec3>& points);
 
   void expand(const vec3& point);
+  bool intersect(const vec3& origin, const vec3& dir_rcp);
 
-  auto size() const   { return max_ - min_; }
-  auto volume() const { return size().prod(); }
+  auto centroid() const { return (min + max) * 0.5f; }
+  auto size() const     { return max - min; }
+  auto volume() const   { return size().prod(); }
   auto area() const {
     auto ext = size();
     return 2.f * (ext[0] * ext[1] + ext[0] * ext[2] + ext[1] * ext[2]); }
 
-  auto centroid() const { return (min_ + max_) * 0.5f; }
-
-//private:
-  vec3 min_, max_;
+  vec3 min, max;
 };
+
+aabb union_g(const aabb& lhs, const aabb& rhs); // geometric union
+aabb inter_g(const aabb& lhs, const aabb& rhs); // geometric intersection
 
 } // namespace ig
 
