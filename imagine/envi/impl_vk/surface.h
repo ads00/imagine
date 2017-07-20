@@ -52,7 +52,7 @@ protected:
   auto support_format(format fmt) const -> format;
   auto support_present_mode(present_mode present) const -> present_mode;
 
-  virtual void post_acquire() override;
+  virtual void postprocess() override;
 
 private:
   struct impl; 

@@ -91,7 +91,7 @@ instance::instance(bool validation)
     app_info.pEngineName        = ig_engine.c_str();
       app_info.apiVersion = VK_API_VERSION_1_0;
 
-  pre_acquire();
+  preprocess();
   std::vector<const char*> extensions(impl_->extensions.size());
   std::transform(impl_->extensions.begin(), impl_->extensions.end(), extensions.begin(), [](auto& extension)
   { return extension.extensionName; });
@@ -113,7 +113,7 @@ instance::instance(bool validation)
     throw std::runtime_error{"Failed to create instance : " + vulkan::to_string(res)};
   } else {
     vulkan::acquire(*this);
-    post_acquire();
+    postprocess();
   }
 }
 
@@ -144,7 +144,7 @@ bool instance::supported(const std::string& name) const {
   }) != impl_->extensions.end();
 }
 
-void instance::pre_acquire() {
+void instance::preprocess() {
   // Extensions
   uint32_t extension_count = 0;
   assert(vkEnumerateInstanceExtensionProperties(nullptr, &extension_count, nullptr) == VK_SUCCESS
@@ -170,7 +170,7 @@ void instance::pre_acquire() {
   }
 }
 
-void instance::post_acquire() {
+void instance::postprocess() {
   // Physical devices
   uint32_t physical_devices_count = 1;
   ipfn_->vkEnumeratePhysicalDevices(handle, &physical_devices_count, nullptr);

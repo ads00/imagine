@@ -32,33 +32,33 @@
 
 namespace ig {
 
-template <typename P> 
+template <typename Duration> 
 class time_job;
-template <typename C>
+template <typename Chrono>
 class time {
 public:
   time() = default;
 
-  template <typename P, typename Fn, typename... Args> auto measure_once(size_t runs, Fn&& fn, Args&&... args) const;
-  template <typename P, typename Fn, typename... Args> void measure_each(time_job<P>& job, Fn&& fn, Args&&... args) const;
+  template <typename Duration, typename Fn, typename... Args> auto measure_once(size_t runs, Fn&& fn, Args&&... args) const;
+  template <typename Duration, typename Fn, typename... Args> void measure_each(time_job<Duration>& job, Fn&& fn, Args&&... args) const;
 
   time(const time&) = delete;
   time& operator=(const time&) = delete;
 };
 
-template <typename P = std::chrono::microseconds>
+template <typename Duration = std::chrono::microseconds>
 class time_job {
 public:
   explicit time_job(size_t reset = 1)
     : rr{reset}
     , count{0}
-    , samples(reset, P{0}) {}
+    , samples(reset, Duration{0}) {}
 
   void generate_stats() {
     std::sort(samples.begin(), samples.end());
     auto lo_id = (count + 1) / 4;
     auto hi_id = (count + 1) * 3 / 4;
-    auto sum = std::accumulate(samples.begin() + lo_id, samples.begin() + hi_id, P{0});
+    auto sum = std::accumulate(samples.begin() + lo_id, samples.begin() + hi_id, Duration{0});
 
     stats.lo_q = samples[lo_id].count();
     stats.hi_q = samples[hi_id].count();
@@ -67,19 +67,19 @@ public:
   }
 
   size_t rr, count;
-  std::vector<P> samples;
+  std::vector<Duration> samples;
   struct stats { uint64_t lo_q, hi_q, median, average; } stats{};
 };
 
-template <typename C>
-template <typename P, typename Fn, typename... Args>
-auto time<C>::measure_once(size_t runs, Fn&& fn, Args&&... args) const {
-  time_job<P> job{runs};
+template <typename Chrono>
+template <typename Duration, typename Fn, typename... Args>
+auto time<Chrono>::measure_once(size_t runs, Fn&& fn, Args&&... args) const {
+  time_job<Duration> job{runs};
   for (size_t run = 0; run < runs; ++run) {
-    auto begin = C::now();
+    auto begin = Chrono::now();
     std::forward<Fn>(fn)(std::forward<Args>(args)...);
-    auto end   = C::now();
-    job.samples[run] = std::chrono::duration_cast<P>(end - begin);
+    auto end   = Chrono::now();
+    job.samples[run] = std::chrono::duration_cast<Duration>(end - begin);
     job.count++;
   }
 
@@ -87,13 +87,13 @@ auto time<C>::measure_once(size_t runs, Fn&& fn, Args&&... args) const {
   return job;
 }
 
-template <typename C>
-template <typename P, typename Fn, typename... Args>
-void time<C>::measure_each(time_job<P>& job, Fn&& fn, Args&&... args) const {
-  auto begin = C::now();
+template <typename Chrono>
+template <typename Duration, typename Fn, typename... Args>
+void time<Chrono>::measure_each(time_job<Duration>& job, Fn&& fn, Args&&... args) const {
+  auto begin = Chrono::now();
   std::forward<Fn>(fn)(std::forward<Args>(args)...);
-  auto end   = C::now();
-  job.samples[job.count] = std::chrono::duration_cast<P>(end - begin);
+  auto end   = Chrono::now();
+  job.samples[job.count] = std::chrono::duration_cast<Duration>(end - begin);
 
   if (++job.count == job.rr) {
     job.generate_stats(); job.count = 0; }

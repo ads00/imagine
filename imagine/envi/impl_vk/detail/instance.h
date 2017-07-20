@@ -53,7 +53,7 @@ public:
 
   using devi_type = std::unique_ptr<device>;
   using phys_type = std::shared_ptr<physical>;
-  template <capability... caps>
+  template <capability... Caps>
   auto make_context(hardware unit, uint32_t id = 0) const {
     auto it = std::find_if(physicals_.begin(), physicals_.end(), [&unit, &id](auto& phys) {
       return phys->get_type() == unit && !id--;
@@ -65,14 +65,14 @@ public:
     struct context {
       devi_type devi;
       phys_type phys;
-    }; return context{std::make_unique<device>(*phys, std::vector<capabilities>{caps...}), phys};
+    }; return context{std::make_unique<device>(*phys, std::vector<capabilities>{Caps...}), phys};
   }
 
   auto& operator->() const { return ipfn_; }
 
 private:
-  virtual void pre_acquire() override;
-  virtual void post_acquire() override;
+  virtual void preprocess() override;
+  virtual void postprocess() override;
 
 private:
   bool validation_;

@@ -30,9 +30,9 @@
 namespace ig  {
 namespace lin {
 
-template <typename Mat, typename Rhs, typename Lhs, typename precond>
-void cg(const matrix_base<Mat>& A, const matrix_base<Rhs>& b, matrix_base<Lhs>& x, const precond& pre, double tolerance = 1e-7) {
-  using vector_type = typename precond::vector_type;
+template <typename Mat, typename Rhs, typename Lhs, typename Precond>
+void cg(const matrix_base<Mat>& A, const matrix_base<Rhs>& b, matrix_base<Lhs>& x, const Precond& pre, double tolerance = 1e-7) {
+  using vector_type = typename Precond::vector_type;
 
   size_t n = A.diagsize();
   vector_type r = b - A * x;
@@ -55,9 +55,9 @@ void cg(const matrix_base<Mat>& A, const matrix_base<Rhs>& b, matrix_base<Lhs>& 
   }
 }
 
-template <typename Mat, typename Rhs, typename Lhs, typename precond>
-void bicgstab(const matrix_base<Mat>& A, const matrix_base<Rhs>& b, matrix_base<Lhs>& x, const precond& pre, double tolerance = 1e-7) {
-  using vector_type = typename precond::vector_type;
+template <typename Mat, typename Rhs, typename Lhs, typename Precond>
+void bicgstab(const matrix_base<Mat>& A, const matrix_base<Rhs>& b, matrix_base<Lhs>& x, const Precond& pre, double tolerance = 1e-7) {
+  using vector_type = typename Precond::vector_type;
   using type = mat_t<Mat>;
 
   size_t n = A.diagsize();

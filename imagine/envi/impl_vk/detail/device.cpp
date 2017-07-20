@@ -79,7 +79,7 @@ device::device(const physical& physical, const std::vector<capabilities>& rq)
     queues_info.emplace_back(std::move(queue_info));
   }
 
-  pre_acquire();
+  preprocess();
   std::vector<const char*> extensions(impl_->extensions.size());
   std::transform(impl_->extensions.begin(), impl_->extensions.end(), extensions.begin(), [](auto& extension)
   { return extension.extensionName; });
@@ -117,7 +117,7 @@ bool device::supported(const std::string& name) const {
   }) != impl_->extensions.end();
 }
 
-void device::pre_acquire() {
+void device::preprocess() {
   // Extensions
   uint32_t extension_count = 0;
   assert(inst->vkEnumerateDeviceExtensionProperties(phys, nullptr, &extension_count, nullptr) == VK_SUCCESS

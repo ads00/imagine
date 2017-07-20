@@ -32,8 +32,8 @@
 namespace ig     {
 namespace detail {
 
-template <typename table>
-auto table_load(const table& tbl, const std::string& filename) {
+template <typename Table>
+auto table_load(const Table& tbl, const std::string& filename) {
   std::ifstream in{filename, std::ios::binary};
   
   for (auto& format_bridge : tbl) {
@@ -49,11 +49,11 @@ auto table_load(const table& tbl, const std::string& filename) {
     {"(Bridge): No available entry found in the bridge table"};
 }
 
-template <typename T, typename F, typename table>
-bool table_save(const table& tbl, const std::string& filename, F format, const T& data) {
+template <typename T, typename Format, typename Table>
+bool table_save(const Table& tbl, const std::string& filename, Format fmt, const T& data) {
   std::ofstream out{filename, std::ios::binary | std::ios::trunc};
 
-  auto& write = std::get<2>(tbl[static_cast<size_t>(format)]);
+  auto& write = std::get<2>(tbl[static_cast<size_t>(fmt)]);
   return out.good()
     ? write(out, data)
     : false;
@@ -61,7 +61,7 @@ bool table_save(const table& tbl, const std::string& filename, F format, const T
 
 } // namespace detail
 
-template <typename T, typename F>
+template <typename T, typename Format>
 struct bridge {
   using type = T;
   using rptr = std::unique_ptr<T>;
@@ -69,8 +69,8 @@ struct bridge {
   using readp    = rptr (*)(std::istream&);
   using write    = bool (*)(std::ostream&, const T&);
   
-  static auto load(const std::string& filename)                          { return detail::table_load(tbl(), filename); }
-  static bool save(const std::string& filename, F format, const T& data) { return detail::table_save(tbl(), filename, format, data); }
+  static auto load(const std::string& filename)                            { return detail::table_load(tbl(), filename); }
+  static bool save(const std::string& filename, Format fmt, const T& data) { return detail::table_save(tbl(), filename, fmt, data); }
 
   using loader = std::tuple<validate, readp, write>;
   using table  = std::vector<loader>;

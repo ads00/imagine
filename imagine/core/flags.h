@@ -28,10 +28,10 @@
 
 namespace ig {
 
-template <typename E>
+template <typename Enum>
 class flags {
 public:
-  using enum_type       = E;
+  using enum_type       = Enum;
   using underlying_type = typename std::underlying_type_t<enum_type>;
 
   constexpr flags() = default;
@@ -61,18 +61,18 @@ private:
   underlying_type flags_;
 };
 
-template <typename E> constexpr auto operator|(E lhs, E rhs) 
-{ return flags<E>{lhs} | rhs; }
-template <typename E> constexpr auto operator&(E lhs, E rhs) 
-{ return flags<E>{lhs} & rhs; }
-template <typename E> constexpr auto operator^(E lhs, E rhs)
-{ return flags<E>{lhs} ^ rhs; }
+template <typename Enum> constexpr auto operator|(Enum lhs, Enum rhs)
+{ return flags<Enum>{lhs} | rhs; }
+template <typename Enum> constexpr auto operator&(Enum lhs, Enum rhs)
+{ return flags<Enum>{lhs} & rhs; }
+template <typename Enum> constexpr auto operator^(Enum lhs, Enum rhs)
+{ return flags<Enum>{lhs} ^ rhs; }
 
-template <typename E>
-constexpr auto enum_cast(E e) 
+template <typename Enum>
+constexpr auto enum_cast(Enum e)
 { return static_cast
     < 
-      std::underlying_type_t<E> 
+      std::underlying_type_t<Enum>
     >(e); }
 
 } // namespace ig

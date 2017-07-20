@@ -54,7 +54,7 @@ public:
   const instance& inst;
 
 protected:
-  virtual void post_acquire() override;
+  virtual void postprocess() override;
 
 private:
   struct impl; 

@@ -94,12 +94,12 @@ template <typename Dims, typename T>
 constexpr auto operator-(const unit<Dims, T>& lhs, const unit<Dims, T>& rhs) 
 { return unit<Dims, T>{magnitude_tag, lhs.magn() - rhs.magn()}; }
 
-template <typename DX, typename DY, typename T>
-constexpr auto operator*(const unit<DX, T>& lhs, const unit<DY, T>& rhs) 
+template <typename Dx, typename Dy, typename T>
+constexpr auto operator*(const unit<Dx, T>& lhs, const unit<Dy, T>& rhs) 
 { return apply_dims< std::plus<> > (lhs, rhs, lhs.magn() * rhs.magn()); }
 
-template <typename DX, typename DY, typename T>
-constexpr auto operator/(const unit<DX, T>& lhs, const unit<DY, T>& rhs) 
+template <typename Dx, typename Dy, typename T>
+constexpr auto operator/(const unit<Dx, T>& lhs, const unit<Dy, T>& rhs) 
 { return apply_dims< std::minus<> >(lhs, rhs, lhs.magn() / rhs.magn()); }
 
 template <typename Dims, typename T>

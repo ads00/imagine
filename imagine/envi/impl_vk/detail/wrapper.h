@@ -66,17 +66,16 @@ struct VkDisplayKHR_T;
 struct VkDisplayModeKHR_T;
 struct VkDescriptorUpdateTemplateKHR_T;
 
-template <typename T>
+template <typename Handle>
 class managed {
 public:
-  constexpr managed() : handle{nullptr} {}
-  constexpr managed(T handle) 
-    : handle{std::forward<T>(handle)} {}
-  virtual ~managed() { handle = nullptr; }
+  constexpr managed() = default;
+  constexpr managed(Handle handle) 
+    : handle{handle} {}
 
-  operator T*() { return &handle; }
-  constexpr operator const T*() const { return &handle; }
-  constexpr operator const T&() const { return handle; }
+  operator Handle*() { return &handle; }
+  constexpr operator const Handle*() const { return &handle; }
+  constexpr operator const Handle&() const { return handle; }
 
   managed(const managed&) = delete;
   managed& operator=(const managed&) = delete;
@@ -88,9 +87,11 @@ public:
   }
 
 protected:
-  virtual void pre_acquire() {}
-  virtual void post_acquire() {}
-  T handle;
+  virtual ~managed() { handle = nullptr; }
+  virtual void preprocess() {}
+  virtual void postprocess() {}
+  Handle handle
+    = nullptr;
 };
 
 using device_features = struct VkPhysicalDeviceFeatures;

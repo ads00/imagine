@@ -62,7 +62,7 @@ surface::surface(const physical& physical, const window& window)
     throw std::runtime_error{"Failed to create surface : " + vulkan::to_string(res)};
   } else {
     get_queue();
-    post_acquire();
+    postprocess();
   }
 }
 
@@ -98,7 +98,7 @@ auto surface::support_present_mode(present_mode present) const -> present_mode {
     : present_mode::fifo;
 }
 
-void surface::post_acquire() {
+void surface::postprocess() {
   // Capabilities
   inst->vkGetPhysicalDeviceSurfaceCapabilitiesKHR(phys, handle, &impl_->capabilities);
 

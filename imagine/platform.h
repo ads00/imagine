@@ -252,7 +252,7 @@ ANDROID  - Android platform
 # endif
 #endif
 
-#if defined(__SSE2__) || defined(__SSE3__) || defined(__SSSE3__) || defined(__SSE4_1__) || defined(__SSE4_2__)
+#if defined(__SSE2__) || defined(__SSE3__) || defined(__SSSE3__) || defined(__SSE4_1__) || defined(__SSE4_2__) || _M_X64
 # define IG_VECTORIZE_SSE
 # define IG_VECTORIZE_ALIGN 16
 #elif defined(__AVX__)

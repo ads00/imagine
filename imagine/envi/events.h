@@ -76,13 +76,13 @@ struct event_status {
 
 class ig_api events {
 public:
-  template <typename T> using func_type = std::function< void(const T&) >;
+  template <typename EventArg> using func_type = std::function< void(const EventArg&) >;
   events() = default;
 
-  template <typename T>
-  void process(const T& arg) const {
+  template <typename EventArg>
+  void process(const EventArg& arg) const {
     auto& fn = std::get
-      < func_type<T> 
+      < func_type<EventArg>
       >(handlers_);
     if (fn) fn(arg);
   }

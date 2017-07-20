@@ -123,7 +123,7 @@ private:
     size_t rows_impl() const 
     { return m_; }
     size_t cols_impl() const 
-    { return n_; } alignas(IG_VECTORIZE_ALIGN) container_type d; };
+    { return n_; } container_type d; };
 
   std::conditional_t
   < hybrid, 

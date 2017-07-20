@@ -58,7 +58,7 @@ public:
   const instance& inst;
 
 private:
-  virtual void pre_acquire() override;
+  virtual void preprocess() override;
 
 private:
   std::unique_ptr<memory_allocator> allocator_;

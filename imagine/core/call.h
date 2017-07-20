@@ -34,10 +34,10 @@ namespace ig {
 
 template <typename Signature> 
 class call;
-template <typename R, typename... Args>
-class call<R(Args...)> {
+template <typename Return, typename... Args>
+class call<Return(Args...)> {
 public:
-  using sig_type  = R(Args...);
+  using sig_type  = Return(Args...);
   using func_type = std::function< sig_type >;
 
   call() = default;
@@ -46,7 +46,7 @@ public:
   void emit(Args&&... args) const;
   void operator()(Args&&... args) const;
 
-  template <typename collect> auto collect(Args&&... args) const;
+  template <typename Collect> auto collect(Args&&... args) const;
 
   call(const call&) = delete;
   call& operator=(const call&) = delete;
@@ -69,38 +69,38 @@ private:
 };
 
 // call
-template <typename R, typename... Args>
-auto call<R(Args...)>::link(const func_type& fn) {
+template <typename Return, typename... Args>
+auto call<Return(Args...)>::link(const func_type& fn) {
   subs_.emplace_back(std::make_shared<subscriber_type>(*this, fn));
   return subs_.back();
 }
 
-template <typename R, typename... Args>
-void call<R(Args...)>::emit(Args&&... args) const {
+template <typename Return, typename... Args>
+void call<Return(Args...)>::emit(Args&&... args) const {
   for (auto& sub : subs_)
     sub->fn_(std::forward<Args>(args)...);
 }
 
-template <typename R, typename... Args>
-void call<R(Args...)>::operator()(Args&&... args) const {
+template <typename Return, typename... Args>
+void call<Return(Args...)>::operator()(Args&&... args) const {
   emit(std::forward<Args>(args)...);
 }
 
-template <typename R, typename... Args>
-template <typename collect>
-auto call<R(Args...)>::collect(Args&&... args) const {
-  static_assert(std::is_default_constructible<collect>::value, "Collecter must be default constructible");
-  static_assert(std::is_same<collect::value_type, R>::value,   "Collecter value type must be equal to call return type");
+template <typename Return, typename... Args>
+template <typename Collect>
+auto call<Return(Args...)>::collect(Args&&... args) const {
+  static_assert(std::is_default_constructible<Collect>::value,    "Collecter must be default constructible");
+  static_assert(std::is_same<Collect::value_type, Return>::value, "Collecter value type must be equal to call return type");
 
-  collect collecter{};
+  Collect collecter{};
   for (auto& sub : subs_)
     collecter.emplace_back(sub->fn_(std::forward<Args>(args)...));
   return collecter;
 }
 
 // call::subscriber
-template <typename R, typename... Args>
-void call<R(Args...)>::subscriber::disconnect() {
+template <typename Return, typename... Args>
+void call<Return(Args...)>::subscriber::disconnect() {
   call_.subs_.erase(std::remove_if(call_.subs_.begin(), call_.subs_.end(), [this](auto& sub) {
     return sub.get() == this;
   }), call_.subs_.end());

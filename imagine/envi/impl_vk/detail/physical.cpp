@@ -52,7 +52,7 @@ physical::physical(const instance& instance, VkPhysicalDevice_T* physical)
   : managed<VkPhysicalDevice_T*>{physical}
   , inst{instance}
   , impl_{std::make_unique<impl>()} 
-{ post_acquire(); }
+{ postprocess(); }
 
 physical::~physical() {}
 
@@ -103,7 +103,7 @@ size_t physical::get_ssbo_alignment() const
 auto physical::get_features() const -> device_features
 { return impl_->features; }
 
-void physical::post_acquire() {
+void physical::postprocess() {
   inst->vkGetPhysicalDeviceFeatures(handle, &impl_->features);
   inst->vkGetPhysicalDeviceProperties(handle, &impl_->properties);
   inst->vkGetPhysicalDeviceMemoryProperties(handle, &impl_->memory);

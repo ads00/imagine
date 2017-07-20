@@ -64,19 +64,19 @@ template <typename Mat> using concrete_mat_t =
     mat_traits<Mat>::n_rows, mat_traits<Mat>::n_cols
   >;
 
-template <typename C>
+template <typename Derived>
 class matrix_base {
 public:
-  using type = typename mat_traits<C>::type;
+  using type = typename mat_traits<Derived>::type;
 
-  auto& derived() const { return static_cast<const C&>(*this); }
-  auto& derived()       { return static_cast<C&>(*this); }
+  auto& derived() const { return static_cast<const Derived&>(*this); }
+  auto& derived()       { return static_cast<Derived&>(*this); }
 
-  template <typename iter>
+  template <typename ConstDerived>
   class iterator : public std::iterator<std::random_access_iterator_tag, 
                                         type> {
   public:
-    explicit iterator(iter& derived, size_t i) 
+    explicit iterator(ConstDerived& derived, size_t i)
       : i_{i}
       , derived_{derived} {}
 
@@ -101,13 +101,14 @@ public:
     { return derived_[i_]; }
 
   protected:
-    size_t i_; iter& derived_;
+    size_t i_; 
+    ConstDerived& derived_;
   };
 
-  auto begin() const { return iterator<const C>{derived(), 0}; }
-  auto begin()       { return iterator<C>{derived(), 0}; }
-  auto end() const   { return iterator<const C>{derived(), size()}; }
-  auto end()         { return iterator<C>{derived(), size()}; }
+  auto begin() const { return iterator<const Derived>{derived(), 0}; }
+  auto begin()       { return iterator<Derived>{derived(), 0}; }
+  auto end() const   { return iterator<const Derived>{derived(), size()}; }
+  auto end()         { return iterator<Derived>{derived(), size()}; }
 
   auto sum() const -> type;
   auto prod() const -> type;
@@ -123,21 +124,21 @@ public:
   auto diagsize() const { return std::min(rows(), cols()); }
   auto vecsize() const  { return std::max(rows(), cols()); }
 
-  auto head(size_t n) const { return mat_block<const C>{derived(), 0, n}; }
-  auto head(size_t n)       { return mat_block<C>{derived(), 0, n}; }
-  auto tail(size_t n) const { return mat_block<const C>{derived(), size() - n, n}; }
-  auto tail(size_t n)       { return mat_block<C>{derived(), size() - n, n}; }
+  auto head(size_t n) const { return mat_block<const Derived>{derived(), 0, n}; }
+  auto head(size_t n)       { return mat_block<Derived>{derived(), 0, n}; }
+  auto tail(size_t n) const { return mat_block<const Derived>{derived(), size() - n, n}; }
+  auto tail(size_t n)       { return mat_block<Derived>{derived(), size() - n, n}; }
 
-  auto row(size_t n) const { return mat_row<const C>{derived(), n}; }
-  auto row(size_t n)       { return mat_row<C>{derived(), n}; }
-  auto col(size_t n) const { return mat_col<const C>{derived(), n}; }
-  auto col(size_t n)       { return mat_col<C>{derived(), n}; }
+  auto row(size_t n) const { return mat_row<const Derived>{derived(), n}; }
+  auto row(size_t n)       { return mat_row<Derived>{derived(), n}; }
+  auto col(size_t n) const { return mat_col<const Derived>{derived(), n}; }
+  auto col(size_t n)       { return mat_col<Derived>{derived(), n}; }
 
-  auto diag() const { return mat_diag<const C>{derived()}; }
-  auto diag()       { return mat_diag<C>{derived()}; }
+  auto diag() const { return mat_diag<const Derived>{derived()}; }
+  auto diag()       { return mat_diag<Derived>{derived()}; }
 
-  auto t() const { return mat_trans<const C>{derived()}; }
-  auto t()       { return mat_trans<C>{derived()}; }
+  auto t() const { return mat_trans<const Derived>{derived()}; }
+  auto t()       { return mat_trans<Derived>{derived()}; }
 
   auto operator()(size_t row, size_t col) const -> decltype(auto) { return derived()(row, col); }
   auto operator()(size_t row, size_t col)       -> decltype(auto) { return derived()(row, col); }
@@ -164,13 +165,13 @@ public:
 
   template <typename Mat> 
   auto& operator*=(const matrix_base<Mat>& mat) {
-    assert(C::hybrid && "Cannot multiply in place an immutable matrix");
+    assert(Derived::hybrid && "Cannot multiply in place an immutable matrix");
     return derived() = std::move(*this) * mat;
   }
 
   class initializer {
   public:
-    explicit initializer(C& mat) 
+    explicit initializer(Derived& mat)
       : mat_{mat}
       , row_{0}
       , col_{0}
@@ -183,15 +184,15 @@ public:
     }
 
   private:
-    C& mat_;
+    Derived& mat_;
     size_t row_, col_, curr_;
   };
 
   auto operator<<(type val) { return initializer{derived()}, val; }
 };
 
-template <typename gen, typename Mat>
-void eval_helper(matrix_base<gen>& ev, const matrix_base<Mat>& mat) {
+template <typename Gen, typename Mat>
+void eval_helper(matrix_base<Gen>& ev, const matrix_base<Mat>& mat) {
   assert(ev.rows() == mat.rows() && ev.cols() == mat.cols()
          && "Incoherent algebraic evaluation");
 
@@ -200,35 +201,35 @@ void eval_helper(matrix_base<gen>& ev, const matrix_base<Mat>& mat) {
     for (size_t j = 0; j < evr; ++j) ev(j, i) = mat(j, i);
 }
 
-template <typename gen, typename Mat>
-void eval(matrix_base<gen>& ev, const matrix_base<Mat>& mat) {
+template <typename Gen, typename Mat>
+void eval(matrix_base<Gen>& ev, const matrix_base<Mat>& mat) {
   eval_helper(ev, mat);
 }
 
-template <typename gen, typename Mat, typename O>
-void eval(matrix_base<gen>& ev, const matrix_base<Mat>& mat, const O&) {
+template <typename Gen, typename Mat, typename O>
+void eval(matrix_base<Gen>& ev, const matrix_base<Mat>& mat, const O&) {
   eval_helper(ev, mat);
 }
 
-template <typename gen, typename Mat>
-void eval(matrix_base<gen>& ev, const matrix_base<Mat>& mat, typename gen::dynamics_data& i) {
+template <typename Gen, typename Mat>
+void eval(matrix_base<Gen>& ev, const matrix_base<Mat>& mat, typename Gen::dynamics_data& i) {
   i.d_.resize(ev.size());
   eval_helper(ev, mat);
 }
 
 // Cwise
-template <typename C>
-auto matrix_base<C>::sum() const -> type {
+template <typename Derived>
+auto matrix_base<Derived>::sum() const -> type {
   return std::accumulate(begin(), end(), type(0));
 }
 
-template <typename C>
-auto matrix_base<C>::prod() const -> type {
+template <typename Derived>
+auto matrix_base<Derived>::prod() const -> type {
   return std::accumulate(begin(), end(), type(1), std::multiplies<type>{});
 }
 
-template <typename C>
-auto matrix_base<C>::mean() const -> type {
+template <typename Derived>
+auto matrix_base<Derived>::mean() const -> type {
   return sum() / size();
 }
 
