@@ -21,11 +21,54 @@
  SOFTWARE.
 */
 
-#ifndef IG_MATH_NURBS_H
-#define IG_MATH_NURBS_H
+#ifndef IG_MATH_MESH_H
+#define IG_MATH_MESH_H
+
+#include "imagine/math/geom/shape.h"
+
+#include <array>
+#include <unordered_map>
 
 namespace ig {
 
+template <typename Vertex, template <typename> typename Polygon>
+class mesh {
+public:
+  using f_type = std::array<uint32_t, Polygon<Vertex>::N>;
+  using v_type = Vertex;
+
+  mesh() = default;
+
+  auto get_faces_count() const { return std::tuple_size<f_type>::value * faces.size(); }
+
+  auto& get_edges() const    { return edges_; }
+  auto& get_topology() const { return topology_; }
+
+  std::vector<f_type> faces;
+  std::vector<v_type> vertices;
+
+private:
+  struct part {};
+  std::vector<part> parts_;
+
+  struct halfedge {
+    f_type& face;
+    v_type& vertex; halfedge* pair, * next;
+  }; std::vector<halfedge> edges_;
+
+  struct topology {
+    std::unordered_map<f_type*, halfedge&> F_edge;
+    std::unordered_map<v_type*, halfedge&> V_edge;
+  } topology_;
+};
+
+struct vertex {
+  vec3 p;
+  vec3 n;
+  vec2 uv; };
+// utils
+struct vertex_pos_color { vec3 p; vec4 c; };
+
 } // namespace ig
 
-#endif // IG_MATH_NURBS_H
+#endif // IG_MATH_MESH_H

@@ -25,7 +25,6 @@
 
 namespace ig {
 
-// axis-aligned bounding box
 aabb::aabb()
   : min{ std::numeric_limits<float>::infinity()}
   , max{-std::numeric_limits<float>::infinity()} {}
@@ -39,24 +38,24 @@ aabb::aabb(const std::vector<vec3>& points) : aabb{} {
     expand(point);
 }
 
-void aabb::expand(const vec3& point) {
-  for (uint32_t i = 0; i < 3; ++i) min[i] = std::min(min[i], point[i]), max[i] = std::max(max[i], point[i]);
+void aabb::expand(const vec3& p) {
+  for (uint32_t i = 0; i < 3; ++i) min[i] = std::min(min[i], p[i]), max[i] = std::max(max[i], p[i]);
 }
 
-bool aabb::intersect(const vec3& origin, const vec3& dir_rcp) {
-  auto t1 = (min[0] - origin[0]) * dir_rcp[0];
-  auto t2 = (max[0] - origin[0]) * dir_rcp[0];
+bool aabb::intersect(const vec3& o, const vec3& dr, float& tmin, float& tmax) const {
+  float tx1 = (min[0] - o[0]) * dr[0];
+  float tx2 = (max[0] - o[0]) * dr[0];
+  float ty1 = (min[1] - o[1]) * dr[1];
+  float ty2 = (max[1] - o[1]) * dr[1];
+  float tz1 = (min[2] - o[2]) * dr[2];
+  float tz2 = (max[2] - o[2]) * dr[2];
 
-  auto tmin = std::min(t1, t2);
-  auto tmax = std::max(t1, t2);
+  tmin = std::max(std::max(std::min(tx1, tx2), std::min(ty1, ty2)), std::min(tz1, tz2));
+  tmax = std::min(std::min(std::max(tx1, tx2), std::max(ty1, ty2)), std::max(tz1, tz2));
 
-  for (uint32_t i = 1; i < 3; ++i) {
-    t1 = (min[i] - origin[i]) * dir_rcp[i];
-    t2 = (max[i] - origin[i]) * dir_rcp[i];
-
-    tmin = std::max(tmin, std::min(t1, t2));
-    tmax = std::min(tmax, std::max(t1, t2));
-  } return tmax > std::max(tmin, 0.f);
+  if (tmax < 0)    return false;
+  if (tmin > tmax) return false;
+  return true;
 }
 
 aabb union_g(const aabb& lhs, const aabb& rhs) 

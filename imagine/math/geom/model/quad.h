@@ -21,38 +21,27 @@
  SOFTWARE.
 */
 
-#ifndef IG_MATH_AABB_H
-#define IG_MATH_AABB_H
+#ifndef IG_MATH_QUAD_H
+#define IG_MATH_QUAD_H
 
-#include "imagine/math/geom/proj.h"
+#include "imagine/math/geom/shape.h"
 
 namespace ig {
 
-class aabb;
-class convex;
-
-class ig_api aabb {
+template <typename Vertex>
+class quad : public shape {
 public:
-  aabb();
-  explicit aabb(const vec3& min, const vec3& max);
-  explicit aabb(const std::vector<vec3>& points);
+  static constexpr size_t N = 4;
+  explicit quad(const Vertex& v0, const Vertex& v1, const Vertex& v2, const Vertex& v3)
+    : v0{v0}
+    , v1{v1}
+    , v2{v2}
+    , v3{v3} {}
 
-  void expand(const vec3& p);
-  bool intersect(const vec3& o, const vec3& dr, float& tmin, float& tmax) const;
-
-  auto centroid() const { return (min + max) * 0.5f; }
-  auto extent() const   { return max - min; }
-  auto volume() const   { return extent().prod(); }
-  auto area() const {
-    auto ext = extent();
-    return 2.f * (ext[0] * ext[1] + ext[0] * ext[2] + ext[1] * ext[2]); }
-
-  vec3 min, max;
+protected:
+  Vertex v0, v1, v2, v3;
 };
-
-ig_api aabb union_g(const aabb& lhs, const aabb& rhs); // geometric union
-ig_api aabb inter_g(const aabb& lhs, const aabb& rhs); // geometric intersection
 
 } // namespace ig
 
-#endif // IG_MATH_BV_H
+#endif // IG_MATH_QUAD_H

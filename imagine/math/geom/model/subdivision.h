@@ -21,38 +21,11 @@
  SOFTWARE.
 */
 
-#ifndef IG_MATH_AABB_H
-#define IG_MATH_AABB_H
-
-#include "imagine/math/geom/proj.h"
+#ifndef IG_MATH_SUBDIVISION_H
+#define IG_MATH_SUBDIVISION_H
 
 namespace ig {
 
-class aabb;
-class convex;
-
-class ig_api aabb {
-public:
-  aabb();
-  explicit aabb(const vec3& min, const vec3& max);
-  explicit aabb(const std::vector<vec3>& points);
-
-  void expand(const vec3& p);
-  bool intersect(const vec3& o, const vec3& dr, float& tmin, float& tmax) const;
-
-  auto centroid() const { return (min + max) * 0.5f; }
-  auto extent() const   { return max - min; }
-  auto volume() const   { return extent().prod(); }
-  auto area() const {
-    auto ext = extent();
-    return 2.f * (ext[0] * ext[1] + ext[0] * ext[2] + ext[1] * ext[2]); }
-
-  vec3 min, max;
-};
-
-ig_api aabb union_g(const aabb& lhs, const aabb& rhs); // geometric union
-ig_api aabb inter_g(const aabb& lhs, const aabb& rhs); // geometric intersection
-
 } // namespace ig
 
-#endif // IG_MATH_BV_H
+#endif // IG_MATH_SUBDIVISION_H

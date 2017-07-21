@@ -21,11 +21,28 @@
  SOFTWARE.
 */
 
-#ifndef IG_MATH_DIVISION_H
-#define IG_MATH_DIVISION_H
+#ifndef IG_MATH_PRIMITIVE_H
+#define IG_MATH_PRIMITIVE_H
 
-namespace ig {
+#include "imagine/math/geom/mesh.h"
+#include "imagine/math/geom/model/quad.h"
+#include "imagine/math/geom/model/triangle.h"
 
+namespace ig   {
+
+template <typename Vertex> using qmesh = mesh<Vertex, quad>;
+template <typename Vertex> using tmesh = mesh<Vertex, triangle>;
+
+namespace pgen {
+
+ig_api tmesh<vertex> box(uint32_t subdiv, const vec3& size = vec3{1.f});
+ig_api tmesh<vertex> plane(uint32_t subdiv, const vec2& size = vec2{1.f});
+ig_api tmesh<vertex> uv_sphere(uint32_t subdiv, float radius = 1.f);
+
+// frame lines
+ig_api std::vector<vertex_pos_color> frame(float size = 1.f);
+
+} // namespace pgen
 } // namespace ig
 
-#endif // IG_MATH_DIVISION_H
+#endif // IG_MATH_PRIMITIVE_H
