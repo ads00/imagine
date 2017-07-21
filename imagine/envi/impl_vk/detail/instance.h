@@ -26,7 +26,6 @@
 
 #include "imagine/envi/impl_vk/detail/wrapper.h"
 
-#include <algorithm>
 #include <tuple>
 #include <vector>
 

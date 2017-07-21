@@ -29,13 +29,13 @@
 namespace ig {
 
 template 
-<int32_t Length,
- int32_t Mass,
- int32_t Time,
- int32_t Current     = 0,
- int32_t Temperature = 0,
- int32_t Amount      = 0,
- int32_t Intensity   = 0> 
+< int32_t Length,
+  int32_t Mass,
+  int32_t Time,
+  int32_t Current     = 0,
+  int32_t Temperature = 0,
+  int32_t Amount      = 0,
+  int32_t Intensity   = 0> 
 struct dimensions {
   enum {
     length = Length, 
@@ -53,37 +53,48 @@ public:
   using dimension_type = Dims;
   
   constexpr unit() = default;
-  constexpr explicit unit(magnitude_tag_t, type x) : value{x} {}
+  constexpr explicit unit(magnitude_tag_t, type x) : value_{x} {}
 
   template <typename O>
   constexpr explicit unit(const unit<Dims, O>& o)
-    : value{o} {}
+    : value_{o} {}
   template <typename S>
-  constexpr auto operator()(S x) const { return unit(magnitude_tag, value * x); }
+  constexpr auto operator()(S x) const { return unit(magnitude_tag, value_ * x); }
 
-  constexpr operator T() const { return value; }
+  constexpr operator T() const { return value_; }
 
   constexpr auto magn() const 
-  { return value; }
+  { return value_; }
   constexpr auto dims() const 
   { return dimension_type{}; }
 
 protected:
-  type value;
+  type value_;
 };
 
-template <typename Fn, typename Dx, typename Dy, typename T>
-constexpr auto apply_dims(const unit<Dx, T>& lhs, const unit<Dy, T>& rhs, T&& x) {
-  constexpr Fn 
-    fx;
-  return unit<
-    dimensions<fx(Dx::length, Dy::length),
-               fx(Dx::mass, Dy::mass),
-               fx(Dx::time, Dy::time),
-               fx(Dx::current, Dy::current),
-               fx(Dx::temperature, Dy::temperature),
-               fx(Dx::amount, Dy::amount),
-               fx(Dx::intensity, Dy::intensity)>, T>(magnitude_tag, std::forward<T>(x));
+template 
+< int32_t lhs_, 
+  int32_t rhs_ >
+struct dimension_add : public std::integral_constant<int32_t, lhs_ + rhs_> {};
+
+template 
+< int32_t lhs_, 
+  int32_t rhs_ >
+struct dimension_sub : public std::integral_constant<int32_t, lhs_ - rhs_> {};
+
+template <template <int32_t, int32_t> typename Expr, typename Dx, typename Dy, typename T>
+constexpr auto dimension_transform(const unit<Dx, T>& lhs, const unit<Dy, T>& rhs, T&& x) {
+  return unit
+    < dimensions
+      < Expr<Dx::length, Dy::length>::value,
+        Expr<Dx::mass, Dy::mass>::value,
+        Expr<Dx::time, Dy::time>::value,
+        Expr<Dx::current, Dy::current>::value,
+        Expr<Dx::temperature, Dy::temperature>::value,
+        Expr<Dx::amount, Dy::amount>::value,
+        Expr<Dx::intensity, Dy::intensity>::value
+      >, 
+    T >(magnitude_tag, std::forward<T>(x));
 }
 
 template <typename Dims, typename T>
@@ -96,11 +107,11 @@ constexpr auto operator-(const unit<Dims, T>& lhs, const unit<Dims, T>& rhs)
 
 template <typename Dx, typename Dy, typename T>
 constexpr auto operator*(const unit<Dx, T>& lhs, const unit<Dy, T>& rhs) 
-{ return apply_dims< std::plus<> > (lhs, rhs, lhs.magn() * rhs.magn()); }
+{ return dimension_transform<dimension_add> (lhs, rhs, lhs.magn() * rhs.magn()); }
 
 template <typename Dx, typename Dy, typename T>
 constexpr auto operator/(const unit<Dx, T>& lhs, const unit<Dy, T>& rhs) 
-{ return apply_dims< std::minus<> >(lhs, rhs, lhs.magn() / rhs.magn()); }
+{ return dimension_transform<dimension_sub>(lhs, rhs, lhs.magn() / rhs.magn()); }
 
 template <typename Dims, typename T>
 constexpr auto operator+(const unit<Dims, T>& q, T scalar) 
@@ -132,7 +143,7 @@ constexpr auto operator/(const unit<Dims, T>& q, T scalar)
 
 template <typename Dims, typename T>
 constexpr auto operator/(T scalar, const unit<Dims, T>& q)
-{ return apply_dims< std::minus<> >(unit<dimensionless, T>{}, q, scalar / q.magn()); }
+{ return dimension_transform<dimension_sub>(unit<dimensionless, T>{}, q, scalar / q.magn()); }
 
 // SI base units
 using length_d      = dimensions< 1, 0, 0, 0, 0, 0, 0 >;

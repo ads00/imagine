@@ -25,8 +25,6 @@
 #include "imagine/envi/impl_arch/dispatch_impl.h"
 #include "imagine/envi/window.h"
 
-#include <algorithm>
-
 namespace ig {
 
 window::window()

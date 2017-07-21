@@ -27,8 +27,6 @@
 #include "imagine/envi/keyboard.h"
 #include "imagine/envi/mouse.h"
 
-#include <functional>
-
 namespace ig {
 
 // keyboard events

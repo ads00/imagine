@@ -26,9 +26,7 @@
 
 #include "imagine/ig.h"
 
-#include <functional>
 #include <vector>
-#include <algorithm>
 
 namespace ig {
 

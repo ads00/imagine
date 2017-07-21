@@ -28,7 +28,6 @@
 
 #include <chrono>
 #include <vector>
-#include <algorithm>
 
 namespace ig {
 

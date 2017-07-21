@@ -25,7 +25,6 @@
 #define IG_MATH_BINARY_H
 
 #include "imagine/math/theory/detail/matrix/base.h"
-#include <functional>
 
 namespace ig {
 

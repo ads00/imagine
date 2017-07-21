@@ -27,7 +27,6 @@
 #include "imagine/ig.h"
 
 #include <sstream>
-#include <functional>
 #include <mutex>
 #include <vector>
 

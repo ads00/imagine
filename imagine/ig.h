@@ -34,6 +34,10 @@
 #include <iterator>
 #include <stdexcept>
 
+#include <algorithm>
+#include <numeric>
+#include <functional>
+
 #include <cstddef>
 #include <cassert>
 
