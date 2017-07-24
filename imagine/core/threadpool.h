@@ -38,11 +38,11 @@ public:
 
   void wait();
 
-  template <typename Fn, typename... Args>
-  auto work(Fn&& fn, Args&&... args) {
+  template <typename Callable, typename... Args>
+  auto work(Callable&& fn, Args&&... args) {
     using return_type = std::packaged_task<decltype(fn(args...))()>;
     auto task = 
-    std::make_shared<return_type>(std::bind(std::forward<Fn>(fn), std::forward<Args>(args)...));
+    std::make_shared<return_type>(std::bind(std::forward<Callable>(fn), std::forward<Args>(args)...));
 
     auto res = task->get_future();
     {

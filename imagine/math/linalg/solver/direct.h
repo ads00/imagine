@@ -55,7 +55,7 @@ void backward_solve(const matrix_base<Mat>& lhs, matrix_base<Vec>&& rhs, bool un
 
   auto n = lhs.diagsize();
   if (!unit) rhs[n - 1] /= lhs(n - 1, n - 1);
-  for (size_t i = n - 1; i--> 0; ) {
+  for (size_t i = n - 1; i-- > 0; ) {
     auto s = rhs[i];
     for (size_t j = i + 1; j < n; ++j)
       s -= lhs(i, j) * rhs[j];

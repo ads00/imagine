@@ -40,7 +40,7 @@ public:
   virtual void exit(int32_t return_code);
 
   virtual void process_events();
-  template <typename Fn> void tick(Fn&& fn) { tick_ = fn; }
+  template <typename Callable> void tick(Callable&& fn) { tick_ = fn; }
 
   dispatch(const dispatch&) = delete;
   dispatch& operator=(const dispatch&) = delete;

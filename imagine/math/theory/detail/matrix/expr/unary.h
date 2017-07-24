@@ -39,9 +39,9 @@ struct mat_traits
                         n_cols = mat_traits<Mat>::n_cols;
 };
 
-template <typename Fn>
+template <typename Callable>
 struct unary_fn {
-  Fn fn_;
+  Callable fn_;
   template <typename T> 
   constexpr auto operator()(const T& val) const { return fn_(val); } };
 
@@ -68,12 +68,12 @@ constexpr auto operator-(const matrix_base<Mat>& mat)
 { return unary_expr< Mat, std::negate<> >{mat.derived(), std::negate<>{}}; }
 
 // Unary lambda-based function applier
-template <typename Mat, typename Fn>
-constexpr auto apply_fn(const matrix_base<Mat>& mat, Fn&& fn) { 
+template <typename Mat, typename Callable>
+constexpr auto apply_fn(const matrix_base<Mat>& mat, Callable&& fn) {
   return unary_expr
     < Mat, 
-      unary_fn<Fn> 
-    >{mat.derived(), unary_fn<Fn>{fn}}; 
+      unary_fn<Callable>
+    >{mat.derived(), unary_fn<Callable>{fn}};
 }
 
 template <typename Mat>

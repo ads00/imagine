@@ -105,7 +105,7 @@ svd<Mat>::svd(const matrix_type& mat)
   }
 
   // Accumulation of right hand transformations
-  for (size_t i = n_; i--> 0; ) {
+  for (size_t i = n_; i-- > 0; ) {
     for (size_t j = i + 1; j < n_; ++j) v_(j, i) = u_(i, j) / u_(i, i + 1) / g;
     for (size_t j = i + 1; j < n_; ++j) {
       type s = 0;
@@ -118,7 +118,7 @@ svd<Mat>::svd(const matrix_type& mat)
   }
 
   // Accumulation of left hand transformations
-  for (size_t i = n_; i--> 0; ) {
+  for (size_t i = n_; i-- > 0; ) {
     auto l = i + 1;
     for (size_t j = l; j < n_; ++j) u_(i, j) = 0;
 
@@ -141,7 +141,7 @@ svd<Mat>::svd(const matrix_type& mat)
   threshold_ = std::numeric_limits<type>::epsilon() * m_ * std::abs(s_[0]);
 
   // Diagonalization of the bidiagonal form
-  for (size_t i = n_; i--> 0; ) {
+  for (size_t i = n_; i-- > 0; ) {
     size_t l = 0, nm = 0;
     type f = 0; 
     type c = 0;

@@ -43,9 +43,11 @@ public:
   auto centroid() const { return (min + max) * 0.5f; }
   auto extent() const   { return max - min; }
   auto volume() const   { return extent().prod(); }
-  auto area() const {
+
+  auto half_area() const { 
     auto ext = extent();
-    return 2.f * (ext[0] * ext[1] + ext[0] * ext[2] + ext[1] * ext[2]); }
+    return ext[0] * ext[1] + ext[0] * ext[2] + ext[1] * ext[2]; }
+  auto area() const { return 2 * half_area(); }
 
   vec3 min, max;
 };

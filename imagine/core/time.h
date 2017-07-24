@@ -38,8 +38,8 @@ class time {
 public:
   time() = default;
 
-  template <typename Duration, typename Fn, typename... Args> auto measure_once(size_t runs, Fn&& fn, Args&&... args) const;
-  template <typename Duration, typename Fn, typename... Args> void measure_each(time_job<Duration>& job, Fn&& fn, Args&&... args) const;
+  template <typename Duration, typename Callable, typename... Args> auto measure_once(size_t runs, Callable&& fn, Args&&... args) const;
+  template <typename Duration, typename Callable, typename... Args> void measure_each(time_job<Duration>& job, Callable&& fn, Args&&... args) const;
 
   time(const time&) = delete;
   time& operator=(const time&) = delete;
@@ -71,12 +71,12 @@ public:
 };
 
 template <typename Chrono>
-template <typename Duration, typename Fn, typename... Args>
-auto time<Chrono>::measure_once(size_t runs, Fn&& fn, Args&&... args) const {
+template <typename Duration, typename Callable, typename... Args>
+auto time<Chrono>::measure_once(size_t runs, Callable&& fn, Args&&... args) const {
   time_job<Duration> job{runs};
   for (size_t run = 0; run < runs; ++run) {
     auto begin = Chrono::now();
-    std::forward<Fn>(fn)(std::forward<Args>(args)...);
+    std::forward<Callable>(fn)(std::forward<Args>(args)...);
     auto end   = Chrono::now();
     job.samples[run] = std::chrono::duration_cast<Duration>(end - begin);
     job.count++;
@@ -87,10 +87,10 @@ auto time<Chrono>::measure_once(size_t runs, Fn&& fn, Args&&... args) const {
 }
 
 template <typename Chrono>
-template <typename Duration, typename Fn, typename... Args>
-void time<Chrono>::measure_each(time_job<Duration>& job, Fn&& fn, Args&&... args) const {
+template <typename Duration, typename Callable, typename... Args>
+void time<Chrono>::measure_each(time_job<Duration>& job, Callable&& fn, Args&&... args) const {
   auto begin = Chrono::now();
-  std::forward<Fn>(fn)(std::forward<Args>(args)...);
+  std::forward<Callable>(fn)(std::forward<Args>(args)...);
   auto end   = Chrono::now();
   job.samples[job.count] = std::chrono::duration_cast<Duration>(end - begin);
 

@@ -60,7 +60,7 @@ eigen<Mat, true>::eigen(const matrix_type& mat)
 
   vector_type e{n_};
   // Symmetric Householder reduction to tridiagonal form
-  for (size_t i = n_; i--> 1; ) {
+  for (size_t i = n_; i-- > 1; ) {
     type h = 0;
     if (i - 1 > 0) {
       // Generate Householder vector
@@ -140,7 +140,7 @@ eigen<Mat, true>::eigen(const matrix_type& mat)
       type c = 1, s = 1, p = 0;
 
       // Implicit QL transformation
-      for (size_t i = m; i--> l; ) {
+      for (size_t i = m; i-- > l; ) {
         auto b = c * e[i];
         auto f = s * e[i];
         auto r = e[i + 1] = std::hypot(f, g);
