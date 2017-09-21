@@ -10,7 +10,7 @@ workspace "imagine"
       ".",
       "third_party"}
       
-  flags "c++14"
+  cppdialect "c++17"
   filter "configurations:debug"
     targetsuffix "-d"
   filter "configurations:release"
