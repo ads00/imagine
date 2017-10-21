@@ -1,0 +1,42 @@
+workspace "imagine"
+  language "c++"
+  architecture "x86_64"
+  configurations {"debug", "release"}
+  
+  location "build"
+  targetdir "%{prj.location}"
+  objdir    "%{prj.location}/obj/%{prj.name}/%{cfg.buildcfg}"
+  includedirs {
+      "src",
+      "third_party"}
+      
+  cppdialect "c++17"
+  filter "configurations:debug"   targetsuffix "-d"
+  filter "configurations:release" optimize "speed"
+    
+  filter "toolset:gcc or clang" buildoptions "-march=native"
+  filter "toolset:msc*"         buildoptions "/MP"           defines "_CRT_SECURE_NO_WARNINGS"
+  
+  -- Imagine library
+  project "imagine"
+    kind "sharedlib"
+    defines "IG_BUILD"
+    
+    files {
+      "src/**.h",
+      "src/**.cpp",
+      "third_party/**.h",
+      "third_party/**.c"}
+      
+    filter "system:linux"   excludes {"src/**_win32.cpp", "src/**_cocoa.mm"}  links {"pthread"}
+    filter "system:windows" excludes {"src/**_posix.cpp", "src/**_cocoa.mm"}  links {"gdi32"}
+    filter "system:macosx"  excludes {"src/**_win32.cpp", "src/**_posix.cpp"} links {"framework Cocoa", "framework CoreFoundation"}
+    
+  -- Imagine editor & scripting engine
+  project "igc"
+    kind "consoleapp"
+    files {
+      "cli/**.h",
+      "cli/**.cpp"}
+    links {"imagine"}
+    
