@@ -86,7 +86,7 @@ template
 inline auto shuffle(const packet_bool& v, const packet_bool& t)
 { return packet_bool{_mm_shuffle_ps(v, t, _MM_SHUFFLE(i3, i2, i1, i0))}; }
 inline auto select(const packet_bool& lhs, const packet_bool& rhs, const packet_bool& mask)
-{ return packet_bool{_mm_blendv_ps(lhs, rhs, mask)}; }
+{ return packet_bool{_mm_or_ps(_mm_and_ps(mask, rhs), _mm_andnot_ps(mask, lhs))}; }
 
 } // namespace ig
 

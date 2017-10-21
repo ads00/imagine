@@ -108,10 +108,14 @@ inline auto shuffle(const packet_float& v, const packet_float& t)
 { return packet_float{_mm_shuffle_ps(v, t, _MM_SHUFFLE(i3, i2, i1, i0))}; }
 
 // Reduction
-inline auto vreduce_min(const packet_float& v) { auto h = min(shuffle<1, 0, 3, 2>(v), v); return min(shuffle<2, 3, 0, 1>(h), h); }
-inline auto vreduce_max(const packet_float& v) { auto h = max(shuffle<1, 0, 3, 2>(v), v); return max(shuffle<2, 3, 0, 1>(h), h); }
+inline auto vreduce_min(const packet_float& v) { 
+  auto h = min(shuffle<1, 0, 3, 2>(v), v); 
+  return   min(shuffle<2, 3, 0, 1>(h), h); }
+inline auto vreduce_max(const packet_float& v) { 
+  auto h = max(shuffle<1, 0, 3, 2>(v), v); 
+  return   max(shuffle<2, 3, 0, 1>(h), h); }
 
-inline auto select(const packet_bool& m, const packet_float& t, const packet_float& f) { return packet_float{_mm_blendv_ps(f, t, m)}; }
+inline auto select(const packet_bool& m, const packet_float& t, const packet_float& f) { return packet_float{_mm_or_ps(_mm_and_ps(m, t), _mm_andnot_ps(m, f))}; }
 inline auto select_min(const packet_bool& b, const packet_float& v) {
   auto a = select(b, v,  std::numeric_limits<float>::infinity());
   auto m = b & (a == vreduce_min(a));
