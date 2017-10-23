@@ -3,7 +3,7 @@ workspace "imagine"
   architecture "x86_64"
   configurations {"debug", "release"}
   
-  location "build"
+  location "ws"
   targetdir "%{prj.location}"
   objdir    "%{prj.location}/obj/%{prj.name}/%{cfg.buildcfg}"
   includedirs {
@@ -36,7 +36,7 @@ workspace "imagine"
   project "igc"
     kind "consoleapp"
     files {
-      "cli/**.h",
-      "cli/**.cpp"}
+      "igc/**.h",
+      "igc/**.cpp"}
     links {"imagine"}
     
