@@ -29,11 +29,11 @@ namespace ig {
 
 widget::widget()
   : native_{std::make_unique<impl::widget_impl>(*this)}
-  , cursor{cursor_shape::none} {}
+  , cursor_{cursor_shape::none} {}
 
 widget::widget(const dispatch& dsp, widget_styles styles, const std::string& caption, uint32_t w, uint32_t h)
   : native_{std::make_unique<impl::widget_impl>(*this, styles, caption, w, h)}
-  , cursor{cursor_shape::arrow} { 
+  , cursor_{cursor_shape::arrow} { 
 
   link_ = [this, &widgets = dsp.native_->widgets_]() {
     auto it = 

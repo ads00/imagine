@@ -60,6 +60,19 @@ surface::surface(const physical& physical, const widget& widget)
       &surface_info, 
       nullptr, 
       &handle);
+  #elif defined(IG_UNIX)
+  VkXcbSurfaceCreateInfoKHR surface_info {};
+    surface_info.sType = VK_STRUCTURE_TYPE_XCB_SURFACE_CREATE_INFO_KHR;
+    surface_info.flags = 0;
+    // surface_info.connection = ;
+    // surface_info.window = ;
+
+  auto res = 
+    inst->vkCreateXcbSurfaceKHR(
+      inst,
+      &surface_info,
+      nullptr,
+      &handle);
   #endif
 
   if (res != VK_SUCCESS) {

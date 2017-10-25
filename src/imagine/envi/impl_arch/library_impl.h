@@ -39,6 +39,12 @@ public:
 
   #if defined(IG_WIN)
   HMODULE handle_;
+  // kernel32
+  // <windows.h>
+  #elif defined(IG_UNIX)
+  void* handle_;
+  // dl
+  // <dlfcn.h>
   #endif
 };
 

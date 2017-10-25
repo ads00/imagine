@@ -82,8 +82,8 @@ void cursor::move(int32_t x, int32_t y, const widget* widget) {
     ? ClientToScreen(reinterpret_cast<HWND>(widget->get_handle()), &pos)
     : true;
 
-  widget->cursor.native_->x_ = x;
-  widget->cursor.native_->y_ = y;
+  widget->cursor_.native_->x_ = x;
+  widget->cursor_.native_->y_ = y;
   SetCursorPos(pos.x, pos.y);
 }
 

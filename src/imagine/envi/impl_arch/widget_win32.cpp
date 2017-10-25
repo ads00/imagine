@@ -128,14 +128,14 @@ LRESULT widget_impl::internal(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
     return ev; };
   auto mouse_move_ev = [this, &lparam, &mouse_ev](mouse_event::type_t type, bool entered) -> mouse_event {
     auto ev = mouse_ev(type);
-    if (ev.x != ref_.cursor.native_->x_ || ev.y != ref_.cursor.native_->y_) {
+    if (ev.x != ref_.cursor_.native_->x_ || ev.y != ref_.cursor_.native_->y_) {
       ev.move.dx = entered 
         ? 0 
-        : ev.x - ref_.cursor.native_->x_,
+        : ev.x - ref_.cursor_.native_->x_,
       ev.move.dy = entered
         ? 0 
-        : ev.y - ref_.cursor.native_->y_;
-      ref_.cursor.native_->x_ = ev.x, ref_.cursor.native_->y_ = ev.y;
+        : ev.y - ref_.cursor_.native_->y_;
+      ref_.cursor_.native_->x_ = ev.x, ref_.cursor_.native_->y_ = ev.y;
     } else {
       ev.type = mouse_event::none;
     } return ev;
@@ -226,7 +226,7 @@ LRESULT widget_impl::internal(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
     ref_.status(status_event{status_event::closed});
     break;
   case WM_SETCURSOR:
-    ref_.cursor.refresh();
+    ref_.cursor_.refresh();
     break;
   default:
     break;

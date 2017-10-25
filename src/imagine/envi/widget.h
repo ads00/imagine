@@ -72,7 +72,9 @@ public:
   widget(const widget&) = delete;
   widget& operator=(const widget&) = delete;
 
-  cursor cursor;
+public:
+  // icon   icon_;
+  cursor cursor_;
 
 private:
   std::unique_ptr<impl::widget_impl> native_;

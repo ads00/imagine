@@ -330,7 +330,7 @@ std::string vulkan::to_string(VkResult res) {
   case VK_ERROR_INCOMPATIBLE_DRIVER:   return "The requested version of Vulkan is not supported by the driver or is otherwise incompatible for implementation-specific reasons";
   case VK_ERROR_TOO_MANY_OBJECTS:      return "Too many objects of the type have already been created";
   case VK_ERROR_FORMAT_NOT_SUPPORTED:  return "A requested format is not supported on this device";
-  case VK_ERROR_FRAGMENTED_POOL:       return "A requested pool allocation has failed due to fragmentation of the pool’s memory";
+  case VK_ERROR_FRAGMENTED_POOL:       return "A requested pool allocation has failed due to fragmentation of the pool's memory";
 
   case VK_SUCCESS: return "Success";
   default:         return "Unhandled Vulkan result"; }

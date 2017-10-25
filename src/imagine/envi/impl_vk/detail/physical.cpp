@@ -55,15 +55,6 @@ physical::physical(const instance& instance, VkPhysicalDevice_T* physical)
 
 physical::~physical() {}
 
-int32_t physical::heap(uint32_t type, memory_properties properties) const {
-  for (uint32_t i = 0; i < impl_->memory.memoryTypeCount; i++) {
-    if ((type & 1) == 1) {
-      if ((impl_->memory.memoryTypes[i].propertyFlags & properties) == properties)
-        return i;
-    } type >>= 1;
-  } return -1;
-}
-
 int32_t physical::queue(capabilities caps) const {
   int32_t fit = -1, candidate = -1;
   for (uint32_t i = 0; i < impl_->queues_families.size() && fit < 0; ++i) {
@@ -79,6 +70,15 @@ int32_t physical::queue(capabilities caps) const {
     : candidate != -1 
       ? candidate 
       : 0;
+}
+
+int32_t physical::heap(uint32_t type, memory_properties properties) const {
+  for (uint32_t i = 0; i < impl_->memory.memoryTypeCount; i++) {
+    if ((type & 1) == 1) {
+      if ((impl_->memory.memoryTypes[i].propertyFlags & properties) == properties)
+        return i;
+    } type >>= 1;
+  } return -1;
 }
 
 uint32_t physical::get_api_version() const

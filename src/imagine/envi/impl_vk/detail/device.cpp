@@ -23,7 +23,6 @@
 
 #include "imagine/envi/impl_vk/detail/vulkan.h"
 #include "imagine/envi/impl_vk/detail/device.h"
-#include "imagine/envi/impl_vk/memory.h"
 #include "imagine/envi/impl_vk/surface.h"
 
 namespace ig {
@@ -57,6 +56,7 @@ device::device(const physical& physical, const std::vector<capabilities>& rq)
   , impl_{std::make_unique<impl>()}
   , dpfn_{std::make_unique<dPfn>()} {
 
+  auto features = phys.get_features();
   for (auto& request : rq)
     (request & capability::present) != 0
       ? selects_.prepare(surface{phys, widget{}}.get_queue())
@@ -90,7 +90,7 @@ device::device(const physical& physical, const std::vector<capabilities>& rq)
   VkDeviceCreateInfo device_info {};
     device_info.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
     device_info.flags = 0;
-    device_info.pEnabledFeatures = &phys.get_features();
+    device_info.pEnabledFeatures = &features;
     device_info.queueCreateInfoCount = static_cast<uint32_t>(queues_info.size());
       device_info.pQueueCreateInfos  = queues_info.data();
     device_info.enabledExtensionCount     = static_cast<uint32_t>(extensions.size());
@@ -106,12 +106,10 @@ device::device(const physical& physical, const std::vector<capabilities>& rq)
     throw std::runtime_error{"Failed to create device : " + vulkan::to_string(res)};
   } else {
     vulkan::acquire_fn(*this);
-    allocator_ = std::make_unique<memory_allocator>(*this);
   }
 }
 
 device::~device() {
-  allocator_.reset(); 
   dpfn_->vkDestroyDevice(
     handle, 
     nullptr);

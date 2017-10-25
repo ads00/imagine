@@ -42,10 +42,12 @@ namespace vk {
 #define  VK_NO_PROTOTYPES
 #include "vulkan/vulkan.h"
 
+class instance;
+class device;
 class vulkan {
 public:
-  friend class instance;
-  friend class device;
+  friend instance;
+  friend device;
 
   vulkan() = delete;
   static void discover();

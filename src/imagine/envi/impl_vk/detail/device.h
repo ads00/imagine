@@ -31,7 +31,6 @@ namespace ig {
 namespace vk {
 
 class dPfn;
-class memory_allocator;
 class IG_API device : public managed<VkDevice_T*> {
 public:
   friend vulkan;
@@ -43,7 +42,6 @@ public:
   bool wait() const;
   bool supported(const std::string& name) const;
 
-  auto& get_allocator() const { return allocator_; }
   auto& operator->() const    { return dpfn_; }
 
   const physical& phys;
@@ -53,13 +51,12 @@ private:
   void impl_get();
 
 private:
-  std::unique_ptr<memory_allocator> allocator_;
   struct select {
     std::vector< std::pair<uint32_t, uint32_t> > indices;     // indices[i]     -> family , index
     std::vector< std::pair<uint32_t, uint32_t> > definitions; // definitions[i] -> family , count
     void prepare(uint32_t family);
     auto retrieve(uint32_t i) const 
-    { return i < indices.size() ? indices[i] : std::make_pair(0, 0); }
+    { return i < indices.size() ? indices[i] : std::make_pair(uint32_t(0), uint32_t(0)); }
   } selects_;
 
   struct impl;

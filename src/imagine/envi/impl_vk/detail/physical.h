@@ -35,8 +35,8 @@ public:
   explicit physical(const instance& instance, VkPhysicalDevice_T* physical);
   virtual ~physical();
 
-  int32_t heap(uint32_t type, memory_properties properties) const;
   int32_t queue(capabilities caps) const;
+  int32_t heap(uint32_t type, memory_properties properties) const;
 
   // properties
   uint32_t get_api_version() const;
