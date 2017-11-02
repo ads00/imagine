@@ -34,7 +34,6 @@ template <typename Hierarchy, typename Heuristic>
 class sah {
 public:
   using build_node = typename Hierarchy::ref;
-  using leaf_node  = typename Hierarchy::leaf;
   using record     = typename Heuristic::record;
   static constexpr size_t branching = 4;
 
@@ -43,9 +42,11 @@ public:
     , heuristic_{primitives_, 32}
     , leaf_size_{leaf_size}
     , block_size_{block_size * Hierarchy::M}
-    , leaf_block_{static_cast<size_t>(std::log2(block_size_)) * leaf_size_}
+    , leaf_block_{static_cast<size_t>(std::log2(block_size_))}
+    , build_track_{0}
     , intersect_cost_{intersect}
     , traversal_cost_{traversal}
+    , leaves_(tree_.objects_.size())
     , info_{0, 0} {}
 
   void build();
@@ -61,33 +62,31 @@ private:
   size_t leaf_size_;
   size_t block_size_;
   size_t leaf_block_;
+  size_t build_track_;
 
   float intersect_cost_;
   float traversal_cost_;
 
   std::vector<prim_info> primitives_;
+  std::vector<size_t> leaves_;
   record info_;
 };
 
 template <typename Hierarchy, typename Heuristic>
 void sah<Hierarchy, Heuristic>::build() {
-  auto& objs = tree_.objects_;
-  for (auto obj = objs.begin(); obj != objs.end(); ++obj) {
-    for (auto prim = obj->begin(); prim != obj->end(); ++prim) {
-      auto i = static_cast<uint32_t>(std::distance(objs.begin(), obj));
-      auto j = static_cast<uint32_t>(std::distance(obj->begin(), prim));
-      auto& id = primitives_.emplace_back(
-        i, 
-        j, 
-        (*prim)->bounds());
-      info_.expand(id.bounds);
-    }
+  for (auto& object : tree_.objects_) {
+    auto& id = primitives_.emplace_back(leaves_.emplace_back(object->id), object->bounds());
+    info_.expand(id.bounds);
   }
   
   auto root = recurse(info_);
   assert(
     root.index == 0 
     && "Tree building process failed");
+  std::sort(
+    tree_.objects_.begin(), 
+    tree_.objects_.end(), 
+    [&](auto& lhs, auto& rhs) { return leaves_[lhs->id] < leaves_[rhs->id]; });
 
   tree_.root_   = root;
   tree_.bounds_ = info_.geometry_bounds;
@@ -99,12 +98,12 @@ auto sah<Hierarchy, Heuristic>::recurse(record& current) -> build_node {
   auto split = heuristic_.find(current);
   auto leaf_cost =
     intersect_cost_ * current.geometry_bounds.half_area() * 
-    current.size() / block_size_;
+    current.size() * leaf_block_;
   auto split_cost = 
     traversal_cost_ * current.geometry_bounds.half_area() + 
     intersect_cost_ * split.cost;
 
-  if (current.size() < leaf_size_ || (current.size() < leaf_block_ && leaf_cost < split_cost))
+  if (current.size() <= leaf_size_ || (current.size() <= block_size_ && leaf_cost < split_cost))
     return leaf(current);
 
   std::array<record, branching> children;
@@ -117,7 +116,7 @@ auto sah<Hierarchy, Heuristic>::recurse(record& current) -> build_node {
     
     for (size_t i = 0; i < n; ++i) {
       auto child_cost = children[i].geometry_bounds.half_area();
-      if (children[i].size() < leaf_size_) continue;
+      if (children[i].size() <= leaf_size_) continue;
       if (child_cost > cost) {
         child = static_cast<int32_t>(i);
         cost = child_cost;
@@ -135,18 +134,17 @@ auto sah<Hierarchy, Heuristic>::recurse(record& current) -> build_node {
 
 template <typename Hierarchy, typename Heuristic>
 auto sah<Hierarchy, Heuristic>::leaf(const record& record) -> build_node {
-  auto blocks = leaf_node::required_blocks(record.size());
+  auto blocks = record.size();
 
   build_node leaf;
-  leaf.index = static_cast<uint32_t>(tree_.leaves_.size());
+  leaf.index = static_cast<uint32_t>(build_track_);
   leaf.count = static_cast<uint32_t>(blocks);
 
-  for (size_t i = 0; i < blocks; ++i) {
-    tree_.leaves_.emplace_back(
-      tree_.objects_,
-      std::next(primitives_.begin(), std::max(record.begin + leaf_node::M * i, record.begin)),
-      std::next(primitives_.begin(), std::min(record.begin + leaf_node::M * (i + 1), record.end))
-    );
+  for (size_t i = 0; i < blocks; ++i, ++build_track_) {
+    leaves_
+    [
+      primitives_[record.begin + i].geom
+    ] = build_track_;
   } return leaf;
 }
 

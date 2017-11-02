@@ -42,7 +42,6 @@ public:
     auto is_leaf() const { return count != uint32_t(~0); }
     uint32_t count, index; };
 
-  using leaf = typename Object::primitive;
   struct node {
     using bounds = std::array<packet_float, 2>;
 
@@ -76,7 +75,6 @@ protected:
   bbox bounds_;
 
   std::vector<node> nodes_;
-  std::vector<leaf> leaves_;
   std::vector<Object> objects_;
 };
 

@@ -21,19 +21,11 @@
  SOFTWARE.
 */
 
-#ifndef IG_MATH_PRIMINFO_H
-#define IG_MATH_PRIMINFO_H
-
-#include "imagine/math/geom/proj.h"
+#ifndef IG_MATH_PRIMS_H
+#define IG_MATH_PRIMS_H
 
 namespace ig {
 
-struct prim_info { 
-  explicit prim_info(size_t geom, const bbox& bounds)
-    : geom{geom}
-    , bounds{bounds} {}
-  size_t geom; bbox bounds; };
-
 } // namespace ig
 
-#endif // IG_MATH_PRIMINFO_H
+#endif // IG_MATH_PRIMS_H
