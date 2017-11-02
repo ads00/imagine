@@ -9,42 +9,49 @@
  copies of the Software, and to permit persons to whom the Software is
  furnished to do so, subject to the following conditions:
 
- The above copyright notice and this permission notice shall be included in
- all copies or substantial portions of the Software.
+ The above copyright notice and this permission notice shall be included in all
+ copies or substantial portions of the Software.
 
  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- THE SOFTWARE.
+ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ SOFTWARE.
 */
 
-#ifndef IG_MATH_SHAPE_H
-#define IG_MATH_SHAPE_H
+#ifndef IG_MATH_MESH_H
+#define IG_MATH_MESH_H
 
-#include "imagine/math/geom/manifold.h"
-#include "imagine/math/geom/spatial/ray.h"
-#include "imagine/math/geom/spatial/aabb.h"
+#include "imagine/math/geom/model/implicit/triangle.h"
 
-namespace ig  {
+#include <array>
 
-class shape {
+namespace ig {
+
+template < typename V >
+class mesh {
 public:
-  virtual float pdf() const { return 1.f / area(); }
+  using F = std::array<uint32_t, 3>;
 
-  virtual bbox bounds() const = 0;
-  virtual float area() const = 0;
-  
-  virtual bool sample(float x, float y) const = 0;
-  virtual bool solve(ray& ray) const = 0;
-  virtual bool compute_dg(
-    float u, 
-    float v, 
-    manifold& dg) const = 0;
+  mesh() = default;
+  auto operator[](size_t i) const {
+    auto& f = faces;
+    auto& v = vertices;
+    return std::make_unique< triangle<V> >(v[f[i][0]], v[f[i][1]], v[f[i][2]]); }
+
+  std::vector<F> faces;
+  std::vector<V> vertices;
 };
+
+struct vertex {
+  vec3 p;
+  vec3 n;
+  vec2 uv; };
+// utils
+struct vertex_pos_color { vec3 p; vec4 c; };
 
 } // namespace ig
 
-#endif // IG_MATH_SHAPE_H
+#endif // IG_MATH_MESH_H

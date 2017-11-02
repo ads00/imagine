@@ -50,8 +50,16 @@ private:
 };
 
 enum class cursor_shape {
-  none, arrow, cross, hand, pointer,
-  help, progress, wait, text, sizeall,
+  none, 
+  arrow, 
+  cross, 
+  hand, 
+  pointer,
+  help, 
+  progress, 
+  wait, 
+  text, 
+  sizeall,
   resize_n, resize_s, resize_e, resize_w, resize_nw, resize_se, resize_ne, resize_sw,
   bitmap };
 

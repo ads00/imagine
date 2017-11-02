@@ -122,7 +122,7 @@ LRESULT widget_impl::internal(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
     {type, keyboard::impl::get_modifiers(), mouse::impl::get_buttons(), mouse::impl::get_x(lparam), mouse::impl::get_y(lparam)}; };
   auto mouse_click_ev = [&lparam, &mouse_ev](mouse_event::type_t type, mouse::button button) -> mouse_event {
     auto ev = mouse_ev(type); ev.click.button = button;
-    return ev;  };
+    return ev; };
   auto mouse_wheel_ev = [&lparam, &wparam, &mouse_ev](mouse_event::type_t type) -> mouse_event {
     auto ev = mouse_ev(type); ev.wheel.delta = mouse::impl::get_wheel_delta(wparam);
     return ev; };

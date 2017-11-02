@@ -29,12 +29,18 @@
 #include "imagine/math/geom/spatial/aabb.h"
 #include "imagine/math/geom/spatial/quaternion.h"
 
+#include "imagine/math/theory/simd_accel/intrinsics.h"
+
 namespace ig {
 
 using mat4 = matrix<float, 4>;
 using vec4 = colvec<float, 4>; using vec3 = colvec<float, 3>; using vec2 = colvec<float, 2>;
 using quat = quaternion<float>;
 using bbox = aabb<float>;
+
+using pmat4 = matrix<packet_float, 4>;
+using pvec4 = colvec<packet_float, 4>; using pvec3 = colvec<packet_float, 3>;
+
 enum class coordinate  { local, world };
 
 namespace trf {

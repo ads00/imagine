@@ -85,8 +85,7 @@ public:
   auto& derived()       { return static_cast<Derived&>(*this); }
 
   template <typename ConstDerived>
-  class iterator : public std::iterator<std::random_access_iterator_tag, value_type>
-  {
+  class iterator {
   public:
     explicit iterator(ConstDerived& derived, size_t i)
       : i_{i}
@@ -180,9 +179,9 @@ public:
     return derived() = std::move(*this) * mat;
   }
 
-  auto sum() const;
-  auto prod() const;
-  auto mean() const;
+  auto sum() const  -> typename value_type;
+  auto prod() const -> typename value_type;
+  auto mean() const -> typename value_type;
 
   class initializer {
   public:
@@ -239,15 +238,15 @@ void eval(matrix_base<Gen>& ev, const matrix_base<Mat>& mat, typename Gen::dynam
 
 // Cwise
 template <typename Derived>
-auto matrix_base<Derived>::sum() const
+auto matrix_base<Derived>::sum() const -> typename value_type
 { return std::accumulate(begin(), end(), value_type(0)); }
 
 template <typename Derived>
-auto matrix_base<Derived>::prod() const
+auto matrix_base<Derived>::prod() const -> typename value_type
 { return std::accumulate(begin(), end(), value_type(1), std::multiplies<>{}); }
 
 template <typename Derived>
-auto matrix_base<Derived>::mean() const
+auto matrix_base<Derived>::mean() const -> typename value_type
 { return sum() / size(); }
 
 template <typename Mat>
