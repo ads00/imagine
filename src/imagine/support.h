@@ -25,31 +25,17 @@
 #define IG_SUPPORT_H
 
 /*
-MSVC     - Microsoft Visual C/C++
 GNU      - GNU C++
 CLANG    - C++ front-end for the LLVM compiler
 */
 
-#if defined(_MSC_VER)
+#if defined(__GNUC__)
+# define IG_GNU (__GNUC__ * 100 + __GNUC_MINOR__)
 # if defined(__clang__)
 #  define IG_CLANG ((__clang_major__ * 100) + __clang_minor__)
 # endif
-# define IG_MSVC (_MSC_VER)
-# define IG_EXPORT __declspec(dllexport)
-# define IG_IMPORT __declspec(dllimport)
-# define IG_DEPRECATED __declspec(deprecated)
-# define IG_UNUSED 
-# define IG_NORETURN __declspec(noreturn)
-# define IG_TLS __declspec(thread)
-# pragma warning(disable:4251)
-
-#elif defined(__GNUC__)
-# define IG_GNU (__GNUC__ * 100 + __GNUC_MINOR__)
 # if defined(__MINGW32)
 #  define IG_MINGW
-# endif
-# if defined(__clang__)
-#  define IG_CLANG ((__clang_major__ * 100) + __clang_minor__)
 # endif
 # if defined(IG_WIN)
 #  define IG_EXPORT __declspec(dllexport)
