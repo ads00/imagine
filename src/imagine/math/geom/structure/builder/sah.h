@@ -35,13 +35,13 @@ class sah {
 public:
   using build_node = typename Hierarchy::ref;
   using record     = typename Heuristic::record;
-  static constexpr size_t branching = 4;
+  static constexpr size_t branching = Hierarchy::M;
 
   explicit sah(Hierarchy& tree, size_t leaf_size, size_t block_size, float intersect, float traversal)
     : tree_{tree}
     , heuristic_{primitives_, 32}
     , leaf_size_{leaf_size}
-    , block_size_{block_size * Hierarchy::M}
+    , block_size_{block_size * branching}
     , leaf_block_{static_cast<size_t>(std::log2(block_size_))}
     , build_track_{0}
     , intersect_cost_{intersect}
@@ -78,14 +78,14 @@ void sah<Hierarchy, Heuristic>::build() {
     auto& id = primitives_.emplace_back(leaves_.emplace_back(object->id), object->bounds());
     info_.expand(id.bounds);
   }
-  
+
   auto root = recurse(info_);
   assert(
-    root.index == 0 
+    root.index == 0
     && "Tree building process failed");
   std::sort(
-    tree_.objects_.begin(), 
-    tree_.objects_.end(), 
+    tree_.objects_.begin(),
+    tree_.objects_.end(),
     [&](auto& lhs, auto& rhs) { return leaves_[lhs->id] < leaves_[rhs->id]; });
 
   tree_.root_   = root;
@@ -97,10 +97,10 @@ template <typename Hierarchy, typename Heuristic>
 auto sah<Hierarchy, Heuristic>::recurse(record& current) -> build_node {
   auto split = heuristic_.find(current);
   auto leaf_cost =
-    intersect_cost_ * current.geometry_bounds.half_area() * 
+    intersect_cost_ * current.geometry_bounds.half_area() *
     current.size() * leaf_block_;
-  auto split_cost = 
-    traversal_cost_ * current.geometry_bounds.half_area() + 
+  auto split_cost =
+    traversal_cost_ * current.geometry_bounds.half_area() +
     intersect_cost_ * split.cost;
 
   if (current.size() <= leaf_size_ || (current.size() <= block_size_ && leaf_cost < split_cost))
@@ -113,7 +113,7 @@ auto sah<Hierarchy, Heuristic>::recurse(record& current) -> build_node {
   while (n < branching) {
     int32_t child = -1;
     float   cost  = -std::numeric_limits<float>::infinity();
-    
+
     for (size_t i = 0; i < n; ++i) {
       auto child_cost = children[i].geometry_bounds.half_area();
       if (children[i].size() <= leaf_size_) continue;
@@ -158,7 +158,7 @@ auto sah<Hierarchy, Heuristic>::node(PrimIterator begin, PrimIterator end) {
   tree_.nodes_.resize(node.index + 1);
   std::array<build_node, branching> children;
   std::transform(
-    begin, 
+    begin,
     end,
     children.begin(),
     [this](auto& child) { return recurse(child); });
@@ -166,11 +166,11 @@ auto sah<Hierarchy, Heuristic>::node(PrimIterator begin, PrimIterator end) {
   size_t i = 0;
   std::for_each(
     begin,
-    end, 
-    [this, &node, &children, &i](auto& child) { 
+    end,
+    [this, &node, &children, &i](auto& child) {
       tree_.nodes_[node.index].invalidate(i);
       tree_.nodes_[node.index].encode_packet(i, children[i], child.geometry_bounds);
-      i++; 
+      i++;
     }
   ); return node;
 }

@@ -30,7 +30,7 @@
 namespace ig {
 
 struct traversal {
-  static constexpr size_t depth = 40;
+  static constexpr size_t depth = 32;
   static constexpr size_t stack_size = IG_PACKET_WIDE * depth;
 
   explicit traversal(const vec3& origin, const vec3& direction)
@@ -51,34 +51,35 @@ struct traversal {
     ray& ray);
 
   pvec3 origin, rcp_direction;
-  packet_float distance; 
+  packet distance;
   size_t mask;
-  uint32_t x_sgn, 
-           y_sgn, 
+  uint32_t x_sgn,
+           y_sgn,
            z_sgn;
 };
 
 template <typename Traverse, typename Node>
 auto traversal::closest(Traverse& stack, const Node& node) {
-  auto r = bit_scan_forward_r(mask);
+  auto r = ctz_f(mask);
+  auto s = stack;
   if (mask == 0) return node.children[r];
 
   auto c0 = node.children[r];
   auto d0 = static_cast<uint32_t>(distance[r]);
-  r = bit_scan_forward_r(mask);
+  r = ctz_f(mask);
   auto c1 = node.children[r];
   auto d1 = static_cast<uint32_t>(distance[r]);
   if (mask == 0) {
-    if (d0 < d1) { 
+    if (d0 < d1) {
       stack->item = c1;
       stack->dist = d1;
       stack++;
-      return c0; 
-    } else { 
+      return c0;
+    } else {
       stack->item = c0;
       stack->dist = d0;
       stack++;
-      return c1; 
+      return c1;
     }
   }
 
@@ -87,31 +88,29 @@ auto traversal::closest(Traverse& stack, const Node& node) {
   stack->item = c1;
   stack->dist = d1; stack++;
 
-  r = bit_scan_forward_r(mask);
-  stack->item = node.children[r];
-  stack->dist = static_cast<uint32_t>(distance[r]);
-  stack++;
-  if (mask == 0) {
-    std::sort(stack - 3, stack, [](auto& lhs, auto& rhs) { return lhs.dist > rhs.dist; });
-    return stack--[-1].item;
+  for (;;) {
+    r = ctz_f(mask);
+    stack->item = node.children[r];
+    stack->dist = static_cast<uint32_t>(distance[r]);
+    stack++;
+    if (mask == 0) {
+      std::sort(
+        s,
+        stack,
+        [](auto& lhs, auto& rhs) { return lhs.dist > rhs.dist; });
+      return stack--[-1].item;
+    }
   }
-
-  r = bit_scan_forward_r(mask);
-  stack->item = node.children[r];
-  stack->dist = static_cast<uint32_t>(distance[r]);
-  stack++;
-  std::sort(stack - 4, stack, [](auto& lhs, auto& rhs) { return lhs.dist > rhs.dist; });
-  return stack--[-1].item;
 }
 
 template <typename Traverse, typename Node>
 auto traversal::any(Traverse& stack, const Node& node) {
-  auto r = bit_scan_forward_r(mask);
+  auto r = ctz_f(mask);
   if (mask == 0) return node.children[r];
   for (;;) {
     stack->item = node.children[r];
     stack++;
-    r = bit_scan_forward_r(mask);
+    r = ctz_f(mask);
     if (mask == 0) return node.children[r];
   }
 }
@@ -134,14 +133,14 @@ auto traversal::traverse(const Hierarchy& root, Walk&& walk, Visitor&& visitor, 
       if (current.is_leaf()) {
         auto proceed = visitor(hit, current);
         if (proceed) return true;
-        else 
+        else
         break;
       } else {
         auto node = root.nodes_[current.index];
         if (node.intersect(*this, ray.tnear, ray.tfar)) break;
-        
+
         current = walk(
-          stack_ptr, 
+          stack_ptr,
           node);
       }
     }

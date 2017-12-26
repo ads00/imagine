@@ -38,18 +38,18 @@ public:
   static constexpr size_t M = IG_PACKET_WIDE;
 
   struct ref {
-    auto is_node() const { return count == uint32_t(~0); } 
+    auto is_node() const { return count == uint32_t(~0); }
     auto is_leaf() const { return count != uint32_t(~0); }
     uint32_t count, index; };
 
   struct node {
-    using bounds = std::array<packet_float, 2>;
+    using bounds = std::array<packet, 2>;
 
-    void invalidate(size_t i) { 
+    void invalidate(size_t i) {
       x.front()[i] = y.front()[i] = z.front()[i] =  std::numeric_limits<float>::infinity();
       x.back ()[i] = y.back ()[i] = z.back ()[i] = -std::numeric_limits<float>::infinity(); }
     void encode_packet(
-      size_t i, 
+      size_t i,
       const ref& node,
       const bbox& bounds) {
       x.front()[i] = bounds.min[0]; y.front()[i] = bounds.min[1]; z.front()[i] = bounds.min[2];
@@ -57,8 +57,8 @@ public:
 
     bool intersect(
       traversal& ray,
-      const packet_float& tnear,
-      const packet_float& tfar) const;
+      const packet& tnear,
+      const packet& tfar) const;
 
     bounds x, y, z;
     std::array<ref, M> children;
@@ -84,7 +84,7 @@ bool tree<Object>::optimize() {
 }
 
 template <typename Object>
-bool tree<Object>::node::intersect(traversal& ray, const packet_float& tnear, const packet_float& tfar) const {
+bool tree<Object>::node::intersect(traversal& ray, const packet& tnear, const packet& tfar) const {
   auto nx = (x[1 - ray.x_sgn] - ray.origin[0]) * ray.rcp_direction[0];
   auto ny = (y[1 - ray.y_sgn] - ray.origin[1]) * ray.rcp_direction[1];
   auto nz = (z[1 - ray.z_sgn] - ray.origin[2]) * ray.rcp_direction[2];
@@ -92,7 +92,7 @@ bool tree<Object>::node::intersect(traversal& ray, const packet_float& tnear, co
   auto fy = (y[    ray.y_sgn] - ray.origin[1]) * ray.rcp_direction[1];
   auto fz = (z[    ray.z_sgn] - ray.origin[2]) * ray.rcp_direction[2];
 
-  return 
+  return
     (ray.mask = movemask(
       (ray.distance = max(max(nx, ny), max(nz, tnear))) <= min(min(fx, fy), min(fz, tfar)))) == 0;
 }

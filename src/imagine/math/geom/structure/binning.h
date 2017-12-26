@@ -48,69 +48,68 @@ private:
 
 class bin {
 public:
-  enum axis { 
+  enum axis {
     invalid = -1,
-    x = 0, 
-    y = 1, 
+    x = 0,
+    y = 1,
     z = 2, dimensions = 3 };
   using axis_bounds = std::array<bbox, 3>;
 
-  struct cut { 
-    explicit cut(const bin_mapping& mapping, axis dimension, size_t index, float cost)
-      : mapping{mapping}
-      , dimension{dimension}
-      , index{index}, cost{cost} {}
+  struct cut {
     bin_mapping mapping; axis dimension; size_t index; float cost; };
 
   explicit bin(uint32_t bins)
     : bounds_(bins) {}
 
-  template <typename PrimIterator>
-  auto& pack(PrimIterator begin, PrimIterator end, const bin_mapping& mapping) {
-    std::for_each(
-      begin, 
-      end,
-      [this, &mapping](auto& primitive) {
-        auto bounds = primitive.bounds;
-        auto binmap = mapping.bin(bounds.min + bounds.max);
-        for (uint32_t d = 0; d < dimensions; ++d) bounds_[static_cast<size_t>(binmap[d])][d].expand(bounds);
-      }); return *this;
-  }
-
-  template <typename Cost>
-  auto split(const bin_mapping& mapping, Cost&& bounds_cost) const {
-    std::vector<float> left_costs(mapping.bins());
-
-    axis   split = invalid;
-    size_t pivot = mapping.bins() / 2;
-    float  cost  = std::numeric_limits<float>::max();
-
-    for (uint32_t d = 0; d < dimensions; ++d) {
-      bbox acc;
-      for (size_t i = 0; i < mapping.bins() - 1; ++i) acc.expand(bounds_[i][d]), left_costs[i] = bounds_cost(acc);
-
-      acc.invalidate();
-      for (size_t i = mapping.bins(); i-- > 0; ) {
-        acc.expand(bounds_[i][d]);
-        auto split_cost = left_costs[i - 1] * i + bounds_cost(acc) * (mapping.bins() - i);
-
-        if (cost > split_cost) {
-          split = static_cast<axis>(d);
-          pivot = i;
-          cost = split_cost;
-        }
-      }
-    } 
-    return cut{
-      mapping, 
-      static_cast<axis>(split), 
-      pivot, 
-      cost};
-  }
+  template <typename Cost>         auto split(const bin_mapping& mapping, Cost&& bounds_cost) const;
+  template <typename PrimIterator> auto& pack(PrimIterator begin, PrimIterator end, const bin_mapping& mapping);
 
 private:
   std::vector<axis_bounds> bounds_;
 };
+
+template <typename Cost>
+auto bin::split(const bin_mapping& mapping, Cost&& bounds_cost) const {
+  std::vector<float> left_costs(mapping.bins());
+
+  axis   split = invalid;
+  size_t pivot = mapping.bins() / 2;
+  float  cost  = std::numeric_limits<float>::max();
+
+  for (uint32_t d = 0; d < dimensions; ++d) {
+    bbox acc;
+    for (size_t i = 0; i < mapping.bins() - 1; ++i) acc.expand(bounds_[i][d]), left_costs[i] = bounds_cost(acc);
+
+    acc.invalidate();
+    for (size_t i = mapping.bins(); i-- > 1; ) {
+      acc.expand(bounds_[i][d]);
+      auto split_cost = left_costs[i - 1] * i + bounds_cost(acc) * (mapping.bins() - i);
+
+      if (cost > split_cost) {
+        split = static_cast<axis>(d);
+        pivot = i;
+        cost = split_cost;
+      }
+    }
+  }
+  return cut{
+    mapping,
+    static_cast<axis>(split),
+    pivot,
+    cost};
+}
+
+template <typename PrimIterator>
+auto& bin::pack(PrimIterator begin, PrimIterator end, const bin_mapping& mapping) {
+  std::for_each(
+    begin,
+    end,
+    [this, &mapping](auto& primitive) {
+      auto bounds = primitive.bounds;
+      auto binmap = mapping.bin(bounds.min + bounds.max);
+      for (uint32_t d = 0; d < dimensions; ++d) bounds_[static_cast<size_t>(binmap[d])][d].expand(bounds);
+    }); return *this;
+}
 
 } // namespace ig
 
