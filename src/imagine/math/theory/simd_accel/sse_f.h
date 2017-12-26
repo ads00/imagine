@@ -21,25 +21,25 @@
  SOFTWARE.
 */
 
-#ifndef IG_MATH_SSE_F_H
-#define IG_MATH_SSE_F_H
+#ifndef IG_MATH_FLOAT4_H
+#define IG_MATH_FLOAT4_H
 
 namespace ig {
 
-struct packet_float {
-  packet_float() = default;
-  packet_float(__m128 in) : d{in} {}
-  packet_float(float x)   : d{_mm_set1_ps(x)} {}
-  explicit packet_float(float x, float y, float z, float w)
+struct float4 {
+  float4() = default;
+  float4(__m128 in) : d{in} {}
+  float4(float x)   : d{_mm_set1_ps(x)} {}
+  explicit float4(float x, float y, float z, float w)
     : d{_mm_set_ps(
-        w, 
+        w,
         z,
         y,
         x)} {}
 
-  auto& operator[](size_t n) const 
+  auto& operator[](size_t n) const
   { return d.p[n]; }
-  auto& operator[](size_t n)  
+  auto& operator[](size_t n)
   { return d.p[n]; }
 
   operator const __m128&() const { return d.v; }
@@ -53,78 +53,60 @@ struct packet_float {
 };
 
 // Operators
-inline auto operator+(const packet_float& lhs, const packet_float& rhs) { return packet_float{_mm_add_ps(lhs, rhs)}; }
-inline auto operator-(const packet_float& lhs, const packet_float& rhs) { return packet_float{_mm_sub_ps(lhs, rhs)}; }
-inline auto operator*(const packet_float& lhs, const packet_float& rhs) { return packet_float{_mm_mul_ps(lhs, rhs)}; }
-inline auto operator/(const packet_float& lhs, const packet_float& rhs) { return packet_float{_mm_div_ps(lhs, rhs)}; }
+inline auto operator+(const float4& lhs, const float4& rhs) { return float4{_mm_add_ps(lhs, rhs)}; }
+inline auto operator-(const float4& lhs, const float4& rhs) { return float4{_mm_sub_ps(lhs, rhs)}; }
+inline auto operator*(const float4& lhs, const float4& rhs) { return float4{_mm_mul_ps(lhs, rhs)}; }
+inline auto operator/(const float4& lhs, const float4& rhs) { return float4{_mm_div_ps(lhs, rhs)}; }
 
-inline auto operator^(const packet_float& lhs, const packet_float& rhs) { return packet_float{_mm_xor_ps(lhs, rhs)}; }
-inline auto operator-(const packet_float& v)                            { return packet_float{_mm_xor_ps(v, _mm_castsi128_ps(_mm_set1_epi32(0x80000000)))}; }
+inline auto operator^(const float4& lhs, const float4& rhs) { return float4{_mm_xor_ps(lhs, rhs)}; }
+inline auto operator-(const float4& v)                      { return float4{_mm_xor_ps(v, _mm_castsi128_ps(_mm_set1_epi32(0x80000000)))}; }
 
 // Comparison
-inline auto operator==(const packet_float& lhs, const packet_float& rhs) { return packet_bool{_mm_cmpeq_ps(lhs, rhs)}; }
-inline auto operator!=(const packet_float& lhs, const packet_float& rhs) { return packet_bool{_mm_cmpneq_ps(lhs, rhs)}; }
-inline auto operator< (const packet_float& lhs, const packet_float& rhs) { return packet_bool{_mm_cmplt_ps(lhs, rhs)}; }
-inline auto operator>=(const packet_float& lhs, const packet_float& rhs) { return packet_bool{_mm_cmpnlt_ps(lhs, rhs)}; }
-inline auto operator> (const packet_float& lhs, const packet_float& rhs) { return packet_bool{_mm_cmpnle_ps(lhs, rhs)}; }
-inline auto operator<=(const packet_float& lhs, const packet_float& rhs) { return packet_bool{_mm_cmple_ps(lhs, rhs)}; }
+inline auto operator==(const float4& lhs, const float4& rhs) { return bool4{_mm_cmpeq_ps(lhs, rhs)}; }
+inline auto operator!=(const float4& lhs, const float4& rhs) { return bool4{_mm_cmpneq_ps(lhs, rhs)}; }
+inline auto operator< (const float4& lhs, const float4& rhs) { return bool4{_mm_cmplt_ps(lhs, rhs)}; }
+inline auto operator<=(const float4& lhs, const float4& rhs) { return bool4{_mm_cmple_ps(lhs, rhs)}; }
+inline auto operator> (const float4& lhs, const float4& rhs) { return bool4{_mm_cmpnle_ps(lhs, rhs)}; }
+inline auto operator>=(const float4& lhs, const float4& rhs) { return bool4{_mm_cmpnlt_ps(lhs, rhs)}; }
 
 // Relational
-inline auto min(const packet_float& lhs, const packet_float& rhs) { return packet_float{_mm_min_ps(lhs, rhs)}; }
-inline auto max(const packet_float& lhs, const packet_float& rhs) { return packet_float{_mm_max_ps(lhs, rhs)}; }
+inline auto min(const float4& lhs, const float4& rhs) { return float4{_mm_min_ps(lhs, rhs)}; }
+inline auto max(const float4& lhs, const float4& rhs) { return float4{_mm_max_ps(lhs, rhs)}; }
 
 // Arithmetic & Rounding
-inline auto abs(const packet_float& v)     { return packet_float{_mm_and_ps(v, _mm_castsi128_ps(_mm_set1_epi32(0x7fffffff)))}; }
-inline auto sgnmask(const packet_float& v) { return packet_float{_mm_and_ps(v, _mm_castsi128_ps(_mm_set1_epi32(0x80000000)))}; }
+inline auto abs(const float4& v)     { return float4{_mm_and_ps(v, _mm_castsi128_ps(_mm_set1_epi32(0x7fffffff)))}; }
+inline auto sgnmask(const float4& v) { return float4{_mm_and_ps(v, _mm_castsi128_ps(_mm_set1_epi32(0x80000000)))}; }
 
-inline auto sqrt(const packet_float& v)
-{ return packet_float{_mm_sqrt_ps(v)}; }
-inline auto rcp(const packet_float& v) {
-  auto r = _mm_rcp_ps(v); 
-  return packet_float{_mm_mul_ps(r, _mm_sub_ps(packet_float{2.f}, _mm_mul_ps(r, v)))}; }
-inline auto rsqrt(const packet_float& v) {
+inline auto sqrt(const float4& v)
+{ return float4{_mm_sqrt_ps(v)}; }
+inline auto rcp(const float4& v) {
+  auto r = _mm_rcp_ps(v);
+  return float4{_mm_mul_ps(r, _mm_sub_ps(float4{2.f}, _mm_mul_ps(r, v)))}; }
+inline auto rsqrt(const float4& v) {
   auto r = _mm_rsqrt_ps(v);
-  return packet_float{_mm_add_ps(_mm_mul_ps(_mm_set1_ps(1.5f), r),
-                     _mm_mul_ps(_mm_mul_ps(_mm_mul_ps(v, _mm_set1_ps(-0.5f)), r), _mm_mul_ps(r, r)))}; }
+  return float4{_mm_add_ps(_mm_mul_ps(_mm_set1_ps(1.5f), r),
+                _mm_mul_ps(_mm_mul_ps(_mm_mul_ps(v, _mm_set1_ps(-0.5f)), r), _mm_mul_ps(r, r)))}; }
 
 // Movement & Shifting & Shuffling
-inline auto unpacklo(const packet_float& lhs, const packet_float& rhs) { return packet_float{_mm_unpacklo_ps(lhs, rhs)}; }
-inline auto unpackhi(const packet_float& lhs, const packet_float& rhs) { return packet_float{_mm_unpackhi_ps(lhs, rhs)}; }
+inline auto unpacklo(const float4& lhs, const float4& rhs) { return float4{_mm_unpacklo_ps(lhs, rhs)}; }
+inline auto unpackhi(const float4& lhs, const float4& rhs) { return float4{_mm_unpackhi_ps(lhs, rhs)}; }
 
-template 
-< size_t i0, 
-  size_t i1, 
-  size_t i2, 
-  size_t i3 > 
-inline auto shuffle(const packet_float& v)
-{ return packet_float{_mm_castsi128_ps(_mm_shuffle_epi32(_mm_castps_si128(v), _MM_SHUFFLE(i3, i2, i1, i0)))}; }
-
-template 
-< size_t i0, 
-  size_t i1, 
-  size_t i2, 
+template
+< size_t i0,
+  size_t i1,
+  size_t i2,
   size_t i3 >
-inline auto shuffle(const packet_float& v, const packet_float& t)
-{ return packet_float{_mm_shuffle_ps(v, t, _MM_SHUFFLE(i3, i2, i1, i0))}; }
+inline auto shuffle(const float4& v)
+{ return float4{_mm_castsi128_ps(_mm_shuffle_epi32(_mm_castps_si128(v), _MM_SHUFFLE(i3, i2, i1, i0)))}; }
 
-// Reduction
-inline auto vreduce_min(const packet_float& v) { 
-  auto h = min(shuffle<1, 0, 3, 2>(v), v); 
-  return   min(shuffle<2, 3, 0, 1>(h), h); }
-inline auto vreduce_max(const packet_float& v) { 
-  auto h = max(shuffle<1, 0, 3, 2>(v), v); 
-  return   max(shuffle<2, 3, 0, 1>(h), h); }
-
-inline auto select(const packet_bool& m, const packet_float& t, const packet_float& f) { return packet_float{_mm_or_ps(_mm_and_ps(m, t), _mm_andnot_ps(m, f))}; }
-inline auto select_min(const packet_bool& b, const packet_float& v) {
-  auto a = select(b, v,  std::numeric_limits<float>::infinity());
-  auto m = b & (a == vreduce_min(a));
-  return bit_scan_forward(movemask(any(m) ? m : b)); }
-inline auto select_max(const packet_bool& b, const packet_float& v) {
-  auto a = select(b, v, -std::numeric_limits<float>::infinity());
-  auto m = b & (a == vreduce_max(a));
-  return bit_scan_forward(movemask(any(m) ? m : b)); }
+template
+< size_t i0,
+  size_t i1,
+  size_t i2,
+  size_t i3 >
+inline auto shuffle(const float4& v, const float4& t)
+{ return float4{_mm_shuffle_ps(v, t, _MM_SHUFFLE(i3, i2, i1, i0))}; }
 
 } // namespace ig
 
-#endif // IG_MATH_SSE_F_H
+#endif // IG_MATH_FLOAT4_H

@@ -21,14 +21,20 @@
  SOFTWARE.
 */
 
-#ifndef IG_MATH_SSE_H
-#define IG_MATH_SSE_H
+#ifndef IG_MATH_AVX_H
+#define IG_MATH_AVX_H
 
 #include "imagine/math/theory/simd_accel/intrinsics.h"
 
 #include "imagine/math/theory/simd_accel/sse_b.h"
 #include "imagine/math/theory/simd_accel/sse_f.h"
 #include "imagine/math/theory/simd_accel/sse_i.h"
- using packet = ig::float4;
 
-#endif // IG_MATH_SSE_H
+#include "imagine/math/theory/simd_accel/avx_b.h"
+#include "imagine/math/theory/simd_accel/avx_f.h"
+#if defined(__AVX2__)
+#include "imagine/math/theory/simd_accel/avx_i.h"
+#endif
+using packet = ig::float8;
+
+#endif // IG_MATH_AVX_H

@@ -21,19 +21,19 @@
  SOFTWARE.
 */
 
-#ifndef IG_MATH_SSE_B_H
-#define IG_MATH_SSE_B_H
+#ifndef IG_MATH_BOOL4_H
+#define IG_MATH_BOOL4_H
 
 namespace ig {
 
-struct packet_bool {
-  packet_bool() = default;
-  packet_bool(__m128 in) : d{in} {}
-  packet_bool(bool x)    : d{x ? _mm_castsi128_ps(_mm_set1_epi32(-1)) : _mm_setzero_ps()} {}
+struct bool4 {
+  bool4() = default;
+  bool4(__m128 in) : d{in} {}
+  bool4(bool x)    : d{x ? _mm_castsi128_ps(_mm_set1_epi32(-1)) : _mm_setzero_ps()} {}
 
-  auto& operator[](size_t n) const 
+  auto& operator[](size_t n) const
   { return d.p[n]; }
-  auto& operator[](size_t n)       
+  auto& operator[](size_t n)
   { return d.p[n]; }
 
   operator const __m128&() const { return d.v; }
@@ -47,47 +47,61 @@ struct packet_bool {
   > d;
 };
 
-// Operators
-inline auto operator!(const packet_bool& v) { return packet_bool{_mm_xor_ps(v, packet_bool{std::true_type{}})}; }
+// Selection
+inline auto select(const __m128& lhs, const __m128& rhs, const __m128& mask)
+{
+#if defined \
+    (__SSE4_1__)
+  return _mm_blendv_ps(
+    lhs,
+    rhs,
+    mask);
+#else
+  return _mm_or_ps(
+    _mm_and_ps   (mask, rhs),
+    _mm_andnot_ps(mask, lhs));
+#endif
+}
 
-inline auto operator&(const packet_bool& lhs, const packet_bool& rhs) { return packet_bool{_mm_and_ps(lhs, rhs)}; }
-inline auto operator|(const packet_bool& lhs, const packet_bool& rhs) { return packet_bool{_mm_or_ps(lhs, rhs)}; }
-inline auto operator^(const packet_bool& lhs, const packet_bool& rhs) { return packet_bool{_mm_xor_ps(lhs, rhs)}; }
+// Operators
+inline auto operator!(const bool4& v) { return bool4{_mm_xor_ps(v, bool4{std::true_type{}})}; }
+
+inline auto operator&(const bool4& lhs, const bool4& rhs) { return bool4{_mm_and_ps(lhs, rhs)}; }
+inline auto operator|(const bool4& lhs, const bool4& rhs) { return bool4{_mm_or_ps(lhs, rhs)}; }
+inline auto operator^(const bool4& lhs, const bool4& rhs) { return bool4{_mm_xor_ps(lhs, rhs)}; }
 
 // Comparison
-inline auto operator!=(const packet_bool& lhs, const packet_bool& rhs) { return packet_bool{_mm_xor_ps(lhs, rhs)}; }
-inline auto operator==(const packet_bool& lhs, const packet_bool& rhs) { return packet_bool{_mm_castsi128_ps(_mm_cmpeq_epi32(lhs, rhs))}; }
+inline auto operator!=(const bool4& lhs, const bool4& rhs) { return bool4{_mm_xor_ps(lhs, rhs)}; }
+inline auto operator==(const bool4& lhs, const bool4& rhs) { return bool4{_mm_castsi128_ps(_mm_cmpeq_epi32(lhs, rhs))}; }
 
 // Reduction
-inline auto movemask(const packet_bool& v)
+inline auto movemask(const bool4& v)
 { return _mm_movemask_ps(v); }
 
-inline bool all(const packet_bool& v)  { return movemask(v) == 0xf; }
-inline bool any(const packet_bool& v)  { return movemask(v) != 0x0; }
-inline bool none(const packet_bool& v) { return movemask(v) == 0x0; }
+inline bool all(const bool4& v)  { return movemask(v) == 0xf; }
+inline bool any(const bool4& v)  { return movemask(v) != 0x0; }
+inline bool none(const bool4& v) { return movemask(v) == 0x0; }
 
 // Movement & Shifting & Shuffling
-inline auto unpacklo(const packet_bool& lhs, const packet_bool& rhs) { return packet_bool{_mm_unpacklo_ps(lhs, rhs)}; }
-inline auto unpackhi(const packet_bool& lhs, const packet_bool& rhs) { return packet_bool{_mm_unpackhi_ps(lhs, rhs)}; }
+inline auto unpacklo(const bool4& lhs, const bool4& rhs) { return bool4{_mm_unpacklo_ps(lhs, rhs)}; }
+inline auto unpackhi(const bool4& lhs, const bool4& rhs) { return bool4{_mm_unpackhi_ps(lhs, rhs)}; }
 
-template 
-< size_t i0, 
-  size_t i1, 
-  size_t i2, 
-  size_t i3 > 
-inline auto shuffle(const packet_bool& v)
-{ return packet_bool{_mm_shuffle_epi32(v, _MM_SHUFFLE(i3, i2, i1, i0))}; }
-
-template 
-< size_t i0, 
-  size_t i1, 
-  size_t i2, 
+template
+< size_t i0,
+  size_t i1,
+  size_t i2,
   size_t i3 >
-inline auto shuffle(const packet_bool& v, const packet_bool& t)
-{ return packet_bool{_mm_shuffle_ps(v, t, _MM_SHUFFLE(i3, i2, i1, i0))}; }
-inline auto select(const packet_bool& lhs, const packet_bool& rhs, const packet_bool& mask)
-{ return packet_bool{_mm_or_ps(_mm_and_ps(mask, rhs), _mm_andnot_ps(mask, lhs))}; }
+inline auto shuffle(const bool4& v)
+{ return bool4{_mm_shuffle_epi32(v, _MM_SHUFFLE(i3, i2, i1, i0))}; }
+
+template
+< size_t i0,
+  size_t i1,
+  size_t i2,
+  size_t i3 >
+inline auto shuffle(const bool4& v, const bool4& t)
+{ return bool4{_mm_shuffle_ps(v, t, _MM_SHUFFLE(i3, i2, i1, i0))}; }
 
 } // namespace ig
 
-#endif // IG_MATH_SSE_B_H
+#endif // IG_MATH_BOOL4_H

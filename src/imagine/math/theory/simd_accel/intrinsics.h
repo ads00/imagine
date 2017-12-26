@@ -27,7 +27,39 @@
 #include "imagine/ig.h"
 #include <immintrin.h>
 
+#if defined(__AVX__) || defined(__AVX2__)
+# define IG_SSE
+# define IG_AVX
+# define IG_VECTOR_SIMD 32
+# define IG_PACKET_WIDE  8
+#elif defined(__SSE2__) || defined(__SSE3__) || defined(__SSSE3__) || defined(__SSE4_1__) || defined(__SSE4_2__) || defined(IG_X86_64)
+# define IG_SSE
+# define IG_VECTOR_SIMD 16
+# define IG_PACKET_WIDE  4
+#else
+# define IG_VECTOR_SIMD  0
+# define IG_PACKET_WIDE  1
+#endif
+
 namespace ig {
+
+inline auto clz(size_t v) { return __builtin_clz(v); }
+inline auto ctz(size_t v) { return __builtin_ctz(v); }
+inline auto ctz_f(size_t& v) {
+  auto i = ctz(v);
+  v &= v - 1;
+  return i;
+}
+
+template
+< typename Simd,
+  typename Plain,
+  uint32_t Align >
+struct simd_data { union alignas(Align) { Simd v; Plain p; }; };
+
+} // namespace ig
+
+#if defined(IG_X86)
 
 inline void prefetch_l1(const void* ptr)  { _mm_prefetch(reinterpret_cast<const char*>(ptr), _MM_HINT_T0); }
 inline void prefetch_l2(const void* ptr)  { _mm_prefetch(reinterpret_cast<const char*>(ptr), _MM_HINT_T1); }
@@ -35,51 +67,13 @@ inline void prefetch_l3(const void* ptr)  { _mm_prefetch(reinterpret_cast<const 
 inline void prefetch_ex(const void* ptr)  { _mm_prefetch(reinterpret_cast<const char*>(ptr), _MM_HINT_T0); }
 inline void prefetch_nta(const void* ptr) { _mm_prefetch(reinterpret_cast<const char*>(ptr), _MM_HINT_NTA); }
 
-inline auto bit_scan_forward(size_t v) 
-{ 
-#if defined(IG_GNU) \
- || defined(IG_CLANG)
-  return __builtin_ctzl(v);
+# if defined  (IG_AVX)
+#  include "imagine/math/theory/simd_accel/avx.h"
+# elif defined(IG_SSE)
+#  include "imagine/math/theory/simd_accel/sse.h"
+# endif
 #else
-  unsigned long r = 0; _BitScanForward64(&r, v); return r; 
-#endif
-}
-inline auto bit_scan_reverse(size_t v) 
-{ 
-#if defined(IG_GNU) \
- || defined(IG_CLANG)
-  return __builtin_clzl(v);
-#else
-  unsigned long r = 0; _BitScanReverse64(&r, v); return r; 
-#endif
-}
-inline auto bit_scan_forward_r(size_t& v) {
-  size_t i = bit_scan_forward(v); 
-  v &= v - 1;
-  return i; 
-}
 
-template 
-< typename Simd, 
-  typename Plain, 
-  uint32_t Align >
-struct simd_data { union alignas(Align) { Simd v; Plain p; }; };
-
-} // namespace ig
-
-#if defined(__SSE2__) || defined(__SSE3__) || defined(__SSSE3__) || defined(__SSE4_1__) || defined(__SSE4_2__) || _M_X64
-# define IG_SSE
-# define IG_VECTOR_SIMD 16
-# define IG_PACKET_WIDE  4
-# include "imagine/math/theory/simd_accel/sse.h"
-#elif defined(__AVX__)
-# define IG_AVX
-# define IG_SSE
-# define IG_VECTOR_SIMD 32
-# define IG_PACKET_WIDE  8
-# include "imagine/math/theory/simd_accel/avx.h"
-#else
-# define IG_VECTOR_SIMD 0
 #endif
 
 #endif // IG_MATH_INTRINSICS_H

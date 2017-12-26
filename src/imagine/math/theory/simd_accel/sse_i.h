@@ -21,30 +21,31 @@
  SOFTWARE.
 */
 
-#ifndef IG_MATH_SSE_I_H
-#define IG_MATH_SSE_I_H
+#ifndef IG_MATH_INT4_H
+#define IG_MATH_INT4_H
 
 namespace ig {
 
-struct packet_int {
-  packet_int() = default;
-  packet_int(__m128i in) : d{in} {}
-  packet_int(__m128 in)  : d{_mm_cvtps_epi32(in)} {}
-  packet_int(int x)      : d{_mm_set1_epi32(x)} {}
-  explicit packet_int(int x, int y, int z, int w)
+struct int4 {
+  int4() = default;
+  int4(__m128i in) : d{in} {}
+  int4(__m128  in) : d{_mm_cvtps_epi32(in)} {}
+  int4(int x)      : d{_mm_set1_epi32(x)} {}
+  explicit int4(int x, int y, int z, int w)
     : d{_mm_set_epi32(
-        w, 
+        w,
         z,
         y,
         x)} {}
 
-  auto& operator[](size_t n) const 
+  auto& operator[](size_t n) const
   { return d.p[n]; }
-  auto& operator[](size_t n)       
+  auto& operator[](size_t n)
   { return d.p[n]; }
 
   operator const __m128i&() const { return d.v; }
   operator       __m128i&()       { return d.v; }
+  operator const __m128  () const { return _mm_castsi128_ps(d.v); }
 
   simd_data
   < __m128i,
@@ -54,47 +55,50 @@ struct packet_int {
 };
 
 // Operators
-inline auto operator+(const packet_int& lhs, const packet_int& rhs) { return packet_int{_mm_add_epi32(lhs, rhs)}; }
-inline auto operator-(const packet_int& lhs, const packet_int& rhs) { return packet_int{_mm_sub_epi32(lhs, rhs)}; }
-inline auto operator*(const packet_int& lhs, const packet_int& rhs) { return packet_int{_mm_mullo_epi32(lhs, rhs)}; }
+inline auto operator+(const int4& lhs, const int4& rhs) { return int4{_mm_add_epi32(lhs, rhs)}; }
+inline auto operator-(const int4& lhs, const int4& rhs) { return int4{_mm_sub_epi32(lhs, rhs)}; }
+inline auto operator*(const int4& lhs, const int4& rhs) {
+  auto l = _mm_mul_epu32(lhs, rhs);
+  auto h = _mm_mul_epu32(_mm_srli_si128(lhs, 4), _mm_srli_si128(rhs, 4));
+  return int4{_mm_unpacklo_epi32(_mm_shuffle_epi32(l, _MM_SHUFFLE(0, 0, 2, 0)), _mm_shuffle_epi32(h, _MM_SHUFFLE(0, 0, 2, 0)))}; }
 
-inline auto operator&(const packet_int& lhs, const packet_int& rhs) { return packet_int{_mm_and_si128(lhs, rhs)}; }
-inline auto operator|(const packet_int& lhs, const packet_int& rhs) { return packet_int{_mm_or_si128(lhs, rhs)}; }
-inline auto operator^(const packet_int& lhs, const packet_int& rhs) { return packet_int{_mm_xor_si128(lhs, rhs)}; }
-inline auto operator-(const packet_int& v)                          { return packet_int{_mm_sub_epi32(_mm_setzero_si128(), v)}; }
+inline auto operator&(const int4& lhs, const int4& rhs) { return int4{_mm_and_si128(lhs, rhs)}; }
+inline auto operator|(const int4& lhs, const int4& rhs) { return int4{_mm_or_si128(lhs, rhs)}; }
+inline auto operator^(const int4& lhs, const int4& rhs) { return int4{_mm_xor_si128(lhs, rhs)}; }
+inline auto operator-(const int4& v)                    { return int4{_mm_sub_epi32(_mm_setzero_si128(), v)}; }
 
 // Comparison
-inline auto operator==(const packet_int& lhs, const packet_int& rhs) { return packet_bool{_mm_castsi128_ps(_mm_cmpeq_epi32(lhs, rhs))}; }
-inline auto operator!=(const packet_int& lhs, const packet_int& rhs) { return !(lhs == rhs); }
-inline auto operator< (const packet_int& lhs, const packet_int& rhs) { return packet_bool{_mm_castsi128_ps(_mm_cmplt_epi32(lhs, rhs))}; }
-inline auto operator>=(const packet_int& lhs, const packet_int& rhs) { return !(lhs <  rhs); }
-inline auto operator> (const packet_int& lhs, const packet_int& rhs) { return packet_bool{_mm_castsi128_ps(_mm_cmpgt_epi32(lhs, rhs))}; }
-inline auto operator<=(const packet_int& lhs, const packet_int& rhs) { return !(lhs >  rhs); }
+inline auto operator==(const int4& lhs, const int4& rhs) { return bool4{_mm_castsi128_ps(_mm_cmpeq_epi32(lhs, rhs))}; }
+inline auto operator!=(const int4& lhs, const int4& rhs) { return !(lhs == rhs); }
+inline auto operator< (const int4& lhs, const int4& rhs) { return bool4{_mm_castsi128_ps(_mm_cmplt_epi32(lhs, rhs))}; }
+inline auto operator>=(const int4& lhs, const int4& rhs) { return !(lhs < rhs); }
+inline auto operator> (const int4& lhs, const int4& rhs) { return bool4{_mm_castsi128_ps(_mm_cmpgt_epi32(lhs, rhs))}; }
+inline auto operator<=(const int4& lhs, const int4& rhs) { return !(lhs > rhs); }
 
 // Relational
-inline auto min(const packet_int& lhs, const packet_int& rhs) { return packet_int{_mm_min_epi32(lhs, rhs)}; }
-inline auto max(const packet_int& lhs, const packet_int& rhs) { return packet_int{_mm_max_epi32(lhs, rhs)}; }
+inline auto min(const int4& lhs, const int4& rhs) { return select(lhs < rhs, lhs, rhs); }
+inline auto max(const int4& lhs, const int4& rhs) { return select(lhs > rhs, lhs, rhs); }
 
 // Movement & Shifting & Shuffling
-inline auto unpacklo(const packet_int& lhs, const packet_int& rhs) { return packet_int{_mm_castps_si128(_mm_unpacklo_ps(_mm_castsi128_ps(lhs), _mm_castsi128_ps(rhs)))}; }
-inline auto unpackhi(const packet_int& lhs, const packet_int& rhs) { return packet_int{_mm_castps_si128(_mm_unpackhi_ps(_mm_castsi128_ps(lhs), _mm_castsi128_ps(rhs)))}; }
+inline auto unpacklo(const int4& lhs, const int4& rhs) { return int4{_mm_unpacklo_epi32(lhs, rhs)}; }
+inline auto unpackhi(const int4& lhs, const int4& rhs) { return int4{_mm_unpackhi_epi32(lhs, rhs)}; }
 
-template 
-< size_t i0, 
-  size_t i1, 
-  size_t i2, 
-  size_t i3 > 
-inline auto shuffle(const packet_int& v)
-{ return packet_int{_mm_shuffle_epi32(v, _MM_SHUFFLE(i3, i2, i1, i0))}; }
-
-template 
-< size_t i0, 
-  size_t i1, 
-  size_t i2, 
+template
+< size_t i0,
+  size_t i1,
+  size_t i2,
   size_t i3 >
-inline auto shuffle(const packet_int& v, const packet_int& t)
-{ return packet_int{_mm_castps_si128(_mm_shuffle_ps(_mm_castsi128_ps(v), _mm_castsi128_ps(t), _MM_SHUFFLE(i3, i2, i1, i0)))}; }
+inline auto shuffle(const int4& v)
+{ return int4{_mm_shuffle_epi32(v, _MM_SHUFFLE(i3, i2, i1, i0))}; }
+
+template
+< size_t i0,
+  size_t i1,
+  size_t i2,
+  size_t i3 >
+inline auto shuffle(const int4& v, const int4& t)
+{ return int4{_mm_castps_si128(_mm_shuffle_ps(_mm_castsi128_ps(v), _mm_castsi128_ps(t), _MM_SHUFFLE(i3, i2, i1, i0)))}; }
 
 } // namespace ig
 
-#endif // IG_MATH_SSE_I_H
+#endif // IG_MATH_INT4_H
