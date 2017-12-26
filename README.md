@@ -6,24 +6,24 @@
 
 Imagine is a research-oriented simulation library based on computational graphs that provides many algorithms for light transport, fluids and rigid body dynamics.
 
-It's written in modern c++17 with performance and modularity in mind. 
+It's written in modern c++17 with performance and modularity in mind.
 
 ## Features
 
 * :globe_with_meridians: **Computational mathematics**
   * Expression template linear algebra (dense linear solvers and decompositions)
-  * Projective transformations, meshes manipulations, surface triangulations and space partitioning
+  * Projective geometry, space partitioning and surface representations (meshes, patches, implicit)
+  * Nonlinear optimization with gradient descent, quasi-newton and levenberg-marquardt
   * Ordinary differential equations solvers for implicit, explicit and symplectic systems
-  * Linear and non-linear optimization (stochastic gradient descent, quasi-newton, levenberg-marquardt)
 * :video_game: **Interactive cross-platform environment**
-  * Real-time physically based viewport using vulkan with built-in voxel cone tracing, temporal antialiasing and many post-process techniques (bloom, color correction, motion blur, etc)
-  * Virtual and augmented reality using openxr, including an advanced pose compositor, stereo rendering and monoscopic far field optimization
+  * Real-time physically based viewport with built-in voxel cone tracing, temporal antialiasing and many post-process techniques (bloom, color correction, motion blur, etc)
+  * Virtual and augmented reality, including an advanced pose compositor, stereo rendering and monoscopic far field optimization
 * :high_brightness: **Light transport**
 * :wavy_dash: **Fluids and rigid body dynamics**
 
 At the moment, the development is focused on a physically correct (spectral) renderer .
 Next step will be to implement modern rendering techniques for the viewport in order to produces interesting results.
-  
+
 ## License
 
 Imagine is released under the [MIT](LICENSE) licence.
