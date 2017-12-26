@@ -57,17 +57,17 @@ cursor_impl::cursor_impl(cursor_shape shape, int32_t x, int32_t y)
 
   handle_ = static_cast<HCURSOR>(
     LoadImage(
-      nullptr, 
-      cursor_tbl[static_cast<uint32_t>(shape)], 
-      IMAGE_CURSOR, 
-      0, 0, 
+      nullptr,
+      cursor_tbl[static_cast<uint32_t>(shape)],
+      IMAGE_CURSOR,
+      0, 0,
       LR_DEFAULTSIZE | LR_SHARED));
 }
 
 } // namespace impl
 
-void cursor::refresh() const { 
-  SetCursor(native_->handle_); 
+void cursor::refresh() const {
+  SetCursor(native_->handle_);
 }
 
 void cursor::clip(const widget& widget) {

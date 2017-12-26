@@ -58,14 +58,14 @@ mat4 translation(const vec3& t) {
 }
 
 mat4 look(const vec3& eye, const vec3& focus, const vec3& up) {
-  auto R2 = lin::normalise(focus - eye);
-  auto R0 = lin::normalise(lin::cross(up, R2));
-  auto R1 = lin::cross(R2, R0);
+  auto f = lin::normalise(focus - eye);
+  auto s = lin::normalise(lin::cross(up, f));
+  auto u = lin::cross(f, s);
 
-  return mat4{R0[0],  R0[1],  R0[2],  lin::dot(R0, -eye),
-              R1[0],  R1[1],  R1[2],  lin::dot(R1, -eye),
-              R2[0],  R2[1],  R2[2],  lin::dot(R2, -eye),
-              0.f,    0.f,    0.f,    1.f};
+  return mat4{s[0],  s[1],  s[2],  lin::dot(s, -eye),
+              u[0],  u[1],  u[2],  lin::dot(u, -eye),
+              f[0],  f[1],  f[2],  lin::dot(f, -eye),
+              0.f,   0.f,   0.f,   1.f};
 }
 
 mat4 perspective(float fovy, float asp, float zn, float zf) {
@@ -96,8 +96,8 @@ vec3 transform(const mat4& m, const vec3& v, bool unit) {
 
   if (!unit) {
     return vec3{xp + m(0, 3),
-                yp + m(1, 3), 
-                zp + m(2, 3)} / 
+                yp + m(1, 3),
+                zp + m(2, 3)} /
                 (v[0] * m(3, 0) + v[1] * m(3, 1) + v[2] * m(3, 2) + m(3, 3));
   } else {
     return vec3{xp, yp, zp};
@@ -112,7 +112,7 @@ inline auto mat4::eye<true, float>() {
   return mat4{1.f, 0.f, 0.f, 0.f,
               0.f, 1.f, 0.f, 0.f,
               0.f, 0.f, 1.f, 0.f,
-              0.f, 0.f, 0.f, 1.f};  
+              0.f, 0.f, 0.f, 1.f};
 }
 
 } // namespace ig

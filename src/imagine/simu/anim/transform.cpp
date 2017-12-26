@@ -47,84 +47,87 @@ transform::~transform() {
 
 void transform::positions(const vec3& pos, coordinate coord) {
   switch (coord) {
-  case coordinate::local:
-    pos_ = pos;
-    break;
-  case coordinate::world:
-    pos_ = parent_
-      ? trf::transform(parent_->world_object(), pos)
-      : pos;
-    break;
+    case coordinate::local:
+      pos_ = pos;
+      break;
+    case coordinate::world:
+      pos_ = parent_
+        ? trf::transform(parent_->world_object(), pos)
+        : pos;
+      break;
+    default: {}
   }
 }
 
 void transform::directs(const quat& ori, coordinate coord) {
   switch (coord) {
-  case coordinate::local:
-    ori_ = ori;
-    break;
-  case coordinate::world:
-    ori_ = parent_ 
-      ? parent_->ori_ * ori_ 
-      : ori_;
-    break;
+    case coordinate::local:
+      ori_ = ori;
+      break;
+    case coordinate::world:
+      ori_ = parent_
+        ? parent_->ori_ * ori_
+        : ori_;
+      break;
+    default: {}
   }
 }
 
 void transform::scales(const vec3& sca, coordinate coord) {
   switch (coord) {
-  case coordinate::local:
-    sca_ = sca;
-    break;
-  case coordinate::world:
-    sca_ = parent_ 
-      ? sca / parent_->sca_ 
-      : sca_;
-    break;
+    case coordinate::local:
+      sca_ = sca;
+      break;
+    case coordinate::world:
+      sca_ = parent_
+        ? sca / parent_->sca_
+        : sca_;
+      break;
+    default: {}
   }
 }
 
 transform& transform::translate(const vec3& tra, coordinate coord) {
   switch (coord) {
-  case coordinate::local:
-    pos_ += spt::rotate(ori_, tra);
-    break;
-  case coordinate::world:
-    pos_ += parent_ 
-      ? trf::transform(parent_->world_object(), tra)
-      : tra;
-    break;
+    case coordinate::local:
+      pos_ += spt::rotate(ori_, tra);
+      break;
+    case coordinate::world:
+      pos_ += parent_
+        ? trf::transform(parent_->world_object(), tra)
+        : tra;
+      break;
   } return hierarchical_invalidate();
 }
 
 transform& transform::rotate(const quat& rot, coordinate coord) {
   switch (coord) {
-  case coordinate::local:
-    ori_ = spt::normalise(ori_ * rot);
-    break;
-  case coordinate::world:
-    auto into = parent_ 
-      ? parent_->ori_ * ori_
-      : ori_;
+    case coordinate::local:
+      ori_ = spt::normalise(ori_ * rot);
+      break;
+    case coordinate::world:
+      auto into = parent_
+        ? parent_->ori_ * ori_
+        : ori_;
 
-    ori_ = parent_ 
-      ? ori_ * spt::inv(into) * rot * into
-      : spt::normalise(rot * into);
-    break;
+      ori_ = parent_
+        ? ori_ * spt::inv(into) * rot * into
+        : spt::normalise(rot * into);
+      break;
   } return hierarchical_invalidate();
 }
 
 transform& transform::scale(const vec3& sca) {
-  sca_ *= sca; 
+  sca_ *= sca;
   return hierarchical_invalidate();
 }
 
 void transform::remove_child(const transform& tr) {
   children_.erase(
     std::remove(
-      children_.begin(), 
-      children_.end(), 
-      &tr), 
+      children_.begin(),
+      children_.end(),
+      &tr),
     children_.end());
 }
 

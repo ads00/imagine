@@ -54,11 +54,11 @@ surface::surface(const physical& physical, const widget& widget)
     surface_info.hinstance = GetModuleHandle(nullptr);
     surface_info.hwnd      = reinterpret_cast<HWND>(widget.get_handle());
 
-  auto res = 
+  auto res =
     inst->vkCreateWin32SurfaceKHR(
-      inst, 
-      &surface_info, 
-      nullptr, 
+      inst,
+      &surface_info,
+      nullptr,
       &handle);
   #elif defined(IG_UNIX)
   VkXcbSurfaceCreateInfoKHR surface_info {};
@@ -67,7 +67,7 @@ surface::surface(const physical& physical, const widget& widget)
     // surface_info.connection = ;
     // surface_info.window = ;
 
-  auto res = 
+  auto res =
     inst->vkCreateXcbSurfaceKHR(
       inst,
       &surface_info,
@@ -85,8 +85,8 @@ surface::surface(const physical& physical, const widget& widget)
 
 surface::~surface() {
   inst->vkDestroySurfaceKHR(
-    inst, 
-    handle, 
+    inst,
+    handle,
     nullptr);
 }
 
@@ -95,9 +95,9 @@ int32_t surface::get_queue() const {
   uint32_t supported = false, i = 0;
   do
   { inst->vkGetPhysicalDeviceSurfaceSupportKHR(
-      phys, 
-      i, 
-      handle, 
+      phys,
+      i,
+      handle,
       &supported); }
   while (!supported && ++i);
   return i;
@@ -107,10 +107,10 @@ auto surface::get_capabilities() const -> surface_capabilities
 { return impl_->capabilities; }
 
 auto surface::support_format(format fmt) const -> format {
-  auto fmt_it = 
+  auto fmt_it =
     std::find_if(
-      impl_->formats.begin(), 
-      impl_->formats.end(), 
+      impl_->formats.begin(),
+      impl_->formats.end(),
       [this, &fmt](auto& format) { return format.format == enum_cast(fmt); });
 
   return fmt_it != impl_->formats.end()
@@ -128,35 +128,35 @@ auto surface::support_present_mode(present_mode present) const -> present_mode {
 void surface::impl_get() {
   // Capabilities
   inst->vkGetPhysicalDeviceSurfaceCapabilitiesKHR(
-    phys, 
-    handle, 
+    phys,
+    handle,
     &impl_->capabilities);
 
   // Present modes
   uint32_t present_count = 0;
   inst->vkGetPhysicalDeviceSurfacePresentModesKHR(
-    phys, 
-    handle, 
-    &present_count, 
+    phys,
+    handle,
+    &present_count,
     nullptr);
     impl_->present_modes.resize(present_count);
   inst->vkGetPhysicalDeviceSurfacePresentModesKHR(
-    phys, 
-    handle, 
-    &present_count, 
+    phys,
+    handle,
+    &present_count,
     impl_->present_modes.data());
   // Formats
   uint32_t formats_count = 0;
   inst->vkGetPhysicalDeviceSurfaceFormatsKHR(
-    phys, 
-    handle, 
-    &formats_count, 
+    phys,
+    handle,
+    &formats_count,
     nullptr);
     impl_->formats.resize(formats_count);
   inst->vkGetPhysicalDeviceSurfaceFormatsKHR(
-    phys, 
-    handle, 
-    &formats_count, 
+    phys,
+    handle,
+    &formats_count,
     impl_->formats.data());
 }
 

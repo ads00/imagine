@@ -62,10 +62,10 @@ device::device(const physical& physical, const std::vector<capabilities>& rq)
       ? selects_.prepare(surface{phys, widget{}}.get_queue())
       : selects_.prepare(phys.queue(request));
 
-  std::vector<VkDeviceQueueCreateInfo> 
+  std::vector<VkDeviceQueueCreateInfo>
     queues_info{};
   std::vector
-  < std::vector<float> 
+  < std::vector<float>
   > queue_prios{};
   for (auto& definition : selects_.definitions) {
     auto& prio = queue_prios.emplace_back(definition.second, 1.f);
@@ -82,9 +82,9 @@ device::device(const physical& physical, const std::vector<capabilities>& rq)
   impl_get();
   std::vector<const char*> extensions(impl_->extensions.size());
   std::transform(
-    impl_->extensions.begin(), 
-    impl_->extensions.end(), 
-    extensions.begin(), 
+    impl_->extensions.begin(),
+    impl_->extensions.end(),
+    extensions.begin(),
     [](auto& extension) { return extension.extensionName; });
 
   VkDeviceCreateInfo device_info {};
@@ -96,11 +96,11 @@ device::device(const physical& physical, const std::vector<capabilities>& rq)
     device_info.enabledExtensionCount     = static_cast<uint32_t>(extensions.size());
       device_info.ppEnabledExtensionNames = extensions.data();
 
-  auto res = 
+  auto res =
     inst->vkCreateDevice(
-      phys, 
-      &device_info, 
-      nullptr, 
+      phys,
+      &device_info,
+      nullptr,
       &handle);
   if (res != VK_SUCCESS) {
     throw std::runtime_error{"Failed to create device : " + vulkan::to_string(res)};
@@ -111,7 +111,7 @@ device::device(const physical& physical, const std::vector<capabilities>& rq)
 
 device::~device() {
   dpfn_->vkDestroyDevice(
-    handle, 
+    handle,
     nullptr);
 }
 
@@ -121,8 +121,8 @@ bool device::wait() const {
 
 bool device::supported(const std::string& name) const {
   return std::find_if(
-    impl_->extensions.begin(), 
-    impl_->extensions.end(), 
+    impl_->extensions.begin(),
+    impl_->extensions.end(),
     [&name](auto& ext) { return std::string{ext.extensionName} == name; }) != impl_->extensions.end();
 }
 
@@ -131,34 +131,34 @@ void device::impl_get() {
   uint32_t extension_count = 0;
   assert(
     inst->vkEnumerateDeviceExtensionProperties(
-      phys, 
-      nullptr, 
-      &extension_count, 
+      phys,
+      nullptr,
+      &extension_count,
       nullptr) == VK_SUCCESS
     && "Failed to enumerate device extension properties");
 
   if (extension_count > 0) {
     impl_->extensions.resize(extension_count);
     inst->vkEnumerateDeviceExtensionProperties(
-      phys, 
-      nullptr, 
-      &extension_count, 
-      impl_->extensions.data()); 
+      phys,
+      nullptr,
+      &extension_count,
+      impl_->extensions.data());
   }
 }
 
 void device::select::prepare(uint32_t family) {
-  auto queue_it = 
+  auto queue_it =
     std::find_if(
       definitions.begin(),
-      definitions.end(), 
+      definitions.end(),
       [&family](auto& definition) { return definition.first == family; });
 
-  if (queue_it == definitions.end()) 
-    queue_it = 
+  if (queue_it == definitions.end())
+    queue_it =
       definitions.emplace(
-        definitions.end(), 
-        family, 
+        definitions.end(),
+        family,
         1);
   else queue_it->second++;
   indices.emplace_back(family, queue_it->second - 1);

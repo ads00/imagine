@@ -55,7 +55,7 @@ private:
     std::vector< std::pair<uint32_t, uint32_t> > indices;     // indices[i]     -> family , index
     std::vector< std::pair<uint32_t, uint32_t> > definitions; // definitions[i] -> family , count
     void prepare(uint32_t family);
-    auto retrieve(uint32_t i) const 
+    auto retrieve(uint32_t i) const
     { return i < indices.size() ? indices[i] : std::make_pair(uint32_t(0), uint32_t(0)); }
   } selects_;
 

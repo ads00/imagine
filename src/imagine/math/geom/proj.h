@@ -38,9 +38,10 @@ using vec4 = colvec<float, 4>; using vec3 = colvec<float, 3>; using vec2 = colve
 using quat = quaternion<float>;
 using bbox = aabb<float>;
 
-using pmat4 = matrix<packet_float, 4>;
-using pvec4 = colvec<packet_float, 4>; using pvec3 = colvec<packet_float, 3>;
+using pmat4 = matrix<packet, 4>;
+using pvec4 = colvec<packet, 4>; using pvec3 = colvec<packet, 3>;
 
+enum class planar_proj { perspective, orthographic };
 enum class coordinate  { local, world };
 
 namespace trf {
@@ -54,14 +55,14 @@ IG_API mat4 look(
   const vec3& focus,
   const vec3& up);
 IG_API mat4 perspective(
-  float fovy, 
-  float asp, 
-  float zn, 
+  float fovy,
+  float asp,
+  float zn,
   float zf);
 IG_API mat4 orthographic(
-  float l, float r, 
-  float t, float b, 
-  float zn, 
+  float l, float r,
+  float t, float b,
+  float zn,
   float zf);
 
 IG_API vec3 transform(

@@ -33,7 +33,7 @@ namespace vk {
 
 enum class hardware;
 enum class memory_property : uint32_t; using memory_properties = flags<memory_property>;
-enum capability : uint32_t; 
+enum capability : uint32_t;
 using capabilities = flags<capability>;
 
 class iPfn;
@@ -61,7 +61,7 @@ protected:
   < std::shared_ptr<physical>
   > physicals_;
 
-  struct impl; 
+  struct impl;
   std::unique_ptr<impl> impl_;
   std::unique_ptr<iPfn> ipfn_;
 };

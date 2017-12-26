@@ -30,7 +30,7 @@ namespace ig {
 namespace vk {
 
 struct instance::impl {
-  // Callback on warnings / errors 
+  // Callback on warnings / errors
   // Require VK_EXT_debug_report rev. > 3 and validation enabled
   VkDebugReportCallbackEXT dbg_callback;
 
@@ -63,7 +63,7 @@ struct instance::impl {
   // VK_LAYER_GOOGLE_unique_objects impl. 1
   std::vector<VkLayerProperties> layers; };
 
-static std::string ig_engine = 
+static std::string ig_engine =
     "imagine_vk";
 static std::vector<std::string> meta_layers = {
     "VK_LAYER_GOOGLE_threading",
@@ -73,13 +73,13 @@ static std::vector<std::string> meta_layers = {
     "VK_LAYER_GOOGLE_unique_objects" };
 
 VkBool32 vk_dbg_callback(
-  VkDebugReportFlagsEXT flags, 
+  VkDebugReportFlagsEXT flags,
   VkDebugReportObjectTypeEXT type,
   uint64_t obj, size_t location, int32_t code, const char* prefix, const char* msg, void* udata) {
   log_(
-    info, 
-    "(Vk - {}): {}", 
-    prefix, 
+    info,
+    "(Vk - {}): {}",
+    prefix,
     msg);
   return false;
 }
@@ -120,10 +120,10 @@ instance::instance(bool validation)
     inst_info.enabledExtensionCount     = static_cast<uint32_t>(extensions.size());
       inst_info.ppEnabledExtensionNames = extensions.data();
 
-  auto res = 
+  auto res =
     vkCreateInstance(
-      &inst_info, 
-      nullptr, 
+      &inst_info,
+      nullptr,
       &handle);
   if (res != VK_SUCCESS) {
     throw std::runtime_error{"Failed to create instance : " + vulkan::to_string(res)};
@@ -136,11 +136,11 @@ instance::instance(bool validation)
 instance::~instance() {
   if (impl_->dbg_callback)
     ipfn_->vkDestroyDebugReportCallbackEXT(
-      handle, 
-      impl_->dbg_callback, 
+      handle,
+      impl_->dbg_callback,
       nullptr);
   ipfn_->vkDestroyInstance(
-    handle, 
+    handle,
     nullptr);
 }
 
@@ -157,16 +157,16 @@ bool instance::dbg() {
     debugreport_info.pUserData   = reinterpret_cast<void*>(this);
 
   return ipfn_->vkCreateDebugReportCallbackEXT(
-    handle, 
-    &debugreport_info, 
-    nullptr, 
+    handle,
+    &debugreport_info,
+    nullptr,
     &impl_->dbg_callback) == VK_SUCCESS;
 }
 
 bool instance::supported(const std::string& name) const {
   return std::find_if(
-    impl_->extensions.begin(), 
-    impl_->extensions.end(), 
+    impl_->extensions.begin(),
+    impl_->extensions.end(),
     [&name](auto& ext) { return std::string{ext.extensionName} == name; }) != impl_->extensions.end();
 }
 
@@ -175,17 +175,17 @@ void instance::impl_get() {
   uint32_t extension_count = 0;
   assert(
     vkEnumerateInstanceExtensionProperties(
-      nullptr, 
-      &extension_count, 
+      nullptr,
+      &extension_count,
       nullptr) == VK_SUCCESS
     && "Failed to enumerate instance extension properties");
 
   if (extension_count > 0) {
     impl_->extensions.resize(extension_count);
     vkEnumerateInstanceExtensionProperties(
-      nullptr, 
-      &extension_count, 
-      impl_->extensions.data()); 
+      nullptr,
+      &extension_count,
+      impl_->extensions.data());
   }
 
   if (validation_) {
@@ -193,22 +193,22 @@ void instance::impl_get() {
     uint32_t layer_count = 0;
     assert(
       vkEnumerateInstanceLayerProperties(
-        &layer_count, 
+        &layer_count,
         nullptr) == VK_SUCCESS
       && "Failed to enumerate instance layer properties");
 
     if (layer_count > 0) {
       impl_->layers.resize(layer_count);
       vkEnumerateInstanceLayerProperties(
-        &layer_count, 
+        &layer_count,
         impl_->layers.data());
 
       impl_->layers.erase(
         std::remove_if(
-          impl_->layers.begin(), 
-          impl_->layers.end(), 
+          impl_->layers.begin(),
+          impl_->layers.end(),
           [](auto& layer) { return std::find(meta_layers.begin(), meta_layers.end(), std::string{layer.layerName}) == meta_layers.end();
-      }), impl_->layers.end()); 
+      }), impl_->layers.end());
     }
   }
 }
@@ -217,15 +217,15 @@ void instance::physicals_get() {
   // Physical devices
   uint32_t physical_devices_count = 1;
   ipfn_->vkEnumeratePhysicalDevices(
-    handle, 
-    &physical_devices_count, 
+    handle,
+    &physical_devices_count,
     nullptr);
 
   if (physical_devices_count > 0) {
     std::vector<VkPhysicalDevice> physical_devices(physical_devices_count);
     ipfn_->vkEnumeratePhysicalDevices(
-      handle, 
-      &physical_devices_count, 
+      handle,
+      &physical_devices_count,
       physical_devices.data());
 
     for (auto& physical_device : physical_devices)

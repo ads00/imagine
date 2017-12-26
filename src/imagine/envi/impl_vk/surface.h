@@ -55,7 +55,7 @@ protected:
   void impl_get();
 
 private:
-  struct impl; 
+  struct impl;
   std::unique_ptr<impl> impl_;
 };
 

@@ -27,7 +27,7 @@ namespace ig       {
 namespace keyboard {
 namespace impl     {
 
-static const key key_tbl[] = {                     
+static const key key_tbl[] = {
                       // Keyboard mapping table
                       // Dec |  Hex | Windows Virtual key
   key::unknown,     //   0   0x00
@@ -301,7 +301,7 @@ auto get_modifiers() -> modifiers {
   return mods;
 }
 
-auto get_key(WPARAM wparam) -> key 
+auto get_key(WPARAM wparam) -> key
 { return key_tbl[wparam]; }
 
 } // namespace impl

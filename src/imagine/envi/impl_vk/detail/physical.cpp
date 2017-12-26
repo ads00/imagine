@@ -40,7 +40,7 @@ struct physical::impl {
   // Informations about API and driver versions
   // Device name, id and type, as well as vendor id
   // Hardware limits (shader stages, memory alignments, number of descriptors, etc.)
-  VkPhysicalDeviceProperties properties; 
+  VkPhysicalDeviceProperties properties;
   // Describes memory heaps and associated types that can be allocated
   VkPhysicalDeviceMemoryProperties memory;
 
@@ -65,10 +65,10 @@ int32_t physical::queue(capabilities caps) const {
         ? candidate = i
         : fit = fit;
   }
-  return fit != -1 
-    ? fit 
-    : candidate != -1 
-      ? candidate 
+  return fit != -1
+    ? fit
+    : candidate != -1
+      ? candidate
       : 0;
 }
 
@@ -103,25 +103,25 @@ auto physical::get_features() const -> device_features
 
 void physical::impl_get() {
   inst->vkGetPhysicalDeviceFeatures(
-    handle, 
+    handle,
     &impl_->features);
   inst->vkGetPhysicalDeviceProperties(
-    handle, 
+    handle,
     &impl_->properties);
   inst->vkGetPhysicalDeviceMemoryProperties(
-    handle, 
+    handle,
     &impl_->memory);
 
   // Queue families
   uint32_t family_count = 0;
   inst->vkGetPhysicalDeviceQueueFamilyProperties(
-    handle, 
-    &family_count, 
+    handle,
+    &family_count,
     nullptr);
     impl_->queues_families.resize(family_count);
   inst->vkGetPhysicalDeviceQueueFamilyProperties(
-    handle, 
-    &family_count, 
+    handle,
+    &family_count,
     impl_->queues_families.data());
 }
 

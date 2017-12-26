@@ -52,14 +52,14 @@ void log_mgr::add_sink(const sink_ptr& sink) {
 
 void log_mgr::remove_sink(const sink_ptr& sink) {
   sinks_.erase(
-    std::remove(sinks_.begin(), sinks_.end(), sink), 
-    sinks_.end()); 
+    std::remove(sinks_.begin(), sinks_.end(), sink),
+    sinks_.end());
 }
 
 void log_mgr::write(log_t type, const char* format) {
   buffer_ << format;
   log_entry e{
-    type, 
+    type,
     "", // src.function_name,
     "", // src.file_name,
     0,  // src.line,
@@ -75,10 +75,10 @@ log_mgr::formatter log_mgr::default_format = [](const log_entry& e) {
   ss << std::put_time(std::localtime(&tt), "%c");
 
   switch (e.type) {
-  case log_t::dbg:   ss << " - DEBUG [" << e.func << '@' << e.line << "] "; break;
-  case log_t::info:  ss << " - INFO  "; break;
-  case log_t::warn:  ss << " - WARN  "; break;
-  case log_t::err:   ss << " - ERR   "; break; }
+    case log_t::dbg:   ss << " - DEBUG [" << e.func << '@' << e.line << "] "; break;
+    case log_t::info:  ss << " - INFO  "; break;
+    case log_t::warn:  ss << " - WARN  "; break;
+    case log_t::err:   ss << " - ERR   "; break; }
 
   ss << e.message;
   return ss.str();

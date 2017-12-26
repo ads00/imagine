@@ -32,6 +32,7 @@ template <typename Vertex>
 struct triangle : public shape {
 public:
   static constexpr size_t N = 3;
+  static_assert(std::is_base_of_v<vertex, Vertex>, "Analytic triangle requires base vertex of [position, normal, tangent space]");
 
   triangle() = default;
   explicit triangle(Vertex v0, Vertex v1, Vertex v2)
@@ -106,16 +107,16 @@ bool triangle<Vertex>::compute_dg(float u, float v, manifold& dg) const {
       (-dy2[0] * dx1 + dy1[0] * dx2) * r);
   };
 
-  dg.p  = bary(v0.p, v1.p, v2.p); 
+  dg.p  = bary(v0.p, v1.p, v2.p);
   dg.n  = lin::normalise(bary(v0.n, v1.n, v2.n));
   dg.uv = bary(v0.uv, v1.uv, v2.uv);
   auto duv1 = v1.uv - v0.uv;
   auto duv2 = v2.uv - v0.uv;
   std::tie(
-    dg.dpdu, 
+    dg.dpdu,
     dg.dpdv) = partials(v1.p - v0.p, v2.p - v0.p, duv1, duv2);
   std::tie(
-    dg.dndu, 
+    dg.dndu,
     dg.dndv) = partials(v1.n - v0.n, v2.n - v0.n, duv1, duv2);
   return true;
 }

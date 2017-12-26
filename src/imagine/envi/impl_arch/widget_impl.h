@@ -25,21 +25,7 @@
 #define IG_ENVI_WIDGET_IMPL_H
 
 #include "imagine/envi/widget.h"
-#if defined(IG_WIN)
- #undef UNICODE
- #define ISOLATION_AWARE_ENABLED 1
- #define WIN32_LEAN_AND_MEAN
- #define VC_EXTRALEAN
- #define NOMINMAX
-
- #include <windows.h>
- #include <commctrl.h>
-
- #pragma comment(lib, "comctl32.lib")
- #pragma comment(linker,"\"/manifestdependency:type='win32' \
- name='Microsoft.Windows.Common-Controls' version='6.0.0.0' \
- processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
-#endif
+#include "imagine/envi/impl_arch/config_impl.h"
 
 namespace ig   {
 namespace impl {
@@ -63,9 +49,9 @@ public:
 
   #if defined(IG_WIN)
   LRESULT internal(
-    HWND hwnd, 
-    UINT msg, 
-    WPARAM wparam, 
+    HWND hwnd,
+    UINT msg,
+    WPARAM wparam,
     LPARAM lparam);
 
   DWORD wstyle_;

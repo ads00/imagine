@@ -52,7 +52,7 @@ struct mouse_event {
   struct event_click { mouse::button button; };
   struct event_move  { int32_t dx, dy; };
   struct event_wheel { float delta; };
-  
+
   keyboard::modifiers modifiers;
   mouse::buttons buttons;
   int32_t x, y;
@@ -81,7 +81,7 @@ public:
   public:
     using event_callback = std::function< void(const Event&) >;
 
-    void operator()(const Event& ev) const 
+    void operator()(const Event& ev) const
     { if (handler_) handler_(ev); }
     void operator()(const event_callback& fn) { handler_ = fn; }
 

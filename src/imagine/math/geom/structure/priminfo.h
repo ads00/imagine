@@ -28,7 +28,7 @@
 
 namespace ig {
 
-struct prim_info { 
+struct prim_info {
   explicit prim_info(size_t geom, const bbox& bounds)
     : geom{geom}
     , bounds{bounds} {}

@@ -75,7 +75,7 @@ public:
 
   constexpr operator const Handle&() const { return handle; }
   constexpr operator const Handle*() const { return &handle; }
-  operator Handle*()                       
+  operator Handle*()
   { return &handle; }
 
   managed(const managed&) = delete;
@@ -84,7 +84,7 @@ public:
   managed(managed&& o) : handle{o.handle} { o.handle = nullptr; }
   managed& operator=(managed&& o) {
     handle = o.handle; o.handle = nullptr;
-    return *this; 
+    return *this;
   }
 
 protected:

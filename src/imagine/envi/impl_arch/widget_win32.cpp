@@ -21,7 +21,6 @@
  SOFTWARE.
 */
 
-#include "imagine/envi/impl_arch/config_impl.h"
 #include "imagine/envi/impl_arch/widget_impl.h"
 #include "imagine/envi/impl_arch/dispatch_impl.h"
 #include "imagine/envi/impl_arch/cursor_impl.h"
@@ -44,7 +43,7 @@ widget_impl::widget_impl(const widget& ref)
     throw std::runtime_error{"Failed to register wndclass instance"};
   }
 
-  handle_ = 
+  handle_ =
     CreateWindowEx(
       0, ig_widget_class.data(),
       "",
@@ -80,15 +79,15 @@ widget_impl::widget_impl(const widget& ref, widget_styles styles, const std::str
 
   RECT adjrect{0, 0, static_cast<LONG>(w), static_cast<LONG>(h)};
   AdjustWindowRect(
-    &adjrect, 
-    wstyle_, 
+    &adjrect,
+    wstyle_,
     false);
 
   auto cwidth = adjrect.right - adjrect.left, cheight = adjrect.bottom - adjrect.top;
   auto cx = (GetSystemMetrics(SM_CXSCREEN) - w) / 2;
   auto cy = (GetSystemMetrics(SM_CYSCREEN) - h) / 2;
-  
-  handle_ = 
+
+  handle_ =
     CreateWindowExA(
       0, ig_widget_class.data(),
       caption.data(),
@@ -100,8 +99,8 @@ widget_impl::widget_impl(const widget& ref, widget_styles styles, const std::str
 
   RECT clirect, winrect;
   GetClientRect(
-    handle_, 
-    &clirect); 
+    handle_,
+    &clirect);
   GetWindowRect(
     handle_,
     &winrect);
@@ -113,12 +112,12 @@ widget_impl::widget_impl(const widget& ref, widget_styles styles, const std::str
 LRESULT widget_impl::internal(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
   // keyboard event generator
   auto keyboard_ev = [&wparam](keyboard_event::type_t type) -> keyboard_event {
-    return 
+    return
     {type, keyboard::impl::get_modifiers(), keyboard::impl::get_key(wparam), static_cast<uint32_t>(wparam)}; };
 
   // mouse event generator
   auto mouse_ev = [&lparam](mouse_event::type_t type) -> mouse_event {
-    return 
+    return
     {type, keyboard::impl::get_modifiers(), mouse::impl::get_buttons(), mouse::impl::get_x(lparam), mouse::impl::get_y(lparam)}; };
   auto mouse_click_ev = [&lparam, &mouse_ev](mouse_event::type_t type, mouse::button button) -> mouse_event {
     auto ev = mouse_ev(type); ev.click.button = button;
@@ -129,11 +128,11 @@ LRESULT widget_impl::internal(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
   auto mouse_move_ev = [this, &lparam, &mouse_ev](mouse_event::type_t type, bool entered) -> mouse_event {
     auto ev = mouse_ev(type);
     if (ev.x != ref_.cursor_.native_->x_ || ev.y != ref_.cursor_.native_->y_) {
-      ev.move.dx = entered 
-        ? 0 
+      ev.move.dx = entered
+        ? 0
         : ev.x - ref_.cursor_.native_->x_,
       ev.move.dy = entered
-        ? 0 
+        ? 0
         : ev.y - ref_.cursor_.native_->y_;
       ref_.cursor_.native_->x_ = ev.x, ref_.cursor_.native_->y_ = ev.y;
     } else {
@@ -143,32 +142,32 @@ LRESULT widget_impl::internal(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 
   switch (msg) {
   case WM_KEYDOWN:
-  case WM_SYSKEYDOWN: 
+  case WM_SYSKEYDOWN:
     ref_.keyboard(keyboard_ev(keyboard_event::pressed));
     break;
   case WM_KEYUP:
-  case WM_SYSKEYUP: 
+  case WM_SYSKEYUP:
     ref_.keyboard(keyboard_ev(keyboard_event::released));
     break;
-  case WM_LBUTTONDOWN: 
+  case WM_LBUTTONDOWN:
     ref_.mouse(mouse_click_ev(mouse_event::pressed, mouse::button::left));
     break;
-  case WM_MBUTTONDOWN: 
+  case WM_MBUTTONDOWN:
     ref_.mouse(mouse_click_ev(mouse_event::pressed, mouse::button::middle));
     break;
   case WM_RBUTTONDOWN:
     ref_.mouse(mouse_click_ev(mouse_event::pressed, mouse::button::right));
     break;
-  case WM_LBUTTONUP: 
+  case WM_LBUTTONUP:
     ref_.mouse(mouse_click_ev(mouse_event::released, mouse::button::left));
     break;
-  case WM_MBUTTONUP: 
+  case WM_MBUTTONUP:
     ref_.mouse(mouse_click_ev(mouse_event::released, mouse::button::middle));
     break;
-  case WM_RBUTTONUP: 
+  case WM_RBUTTONUP:
     ref_.mouse(mouse_click_ev(mouse_event::released, mouse::button::right));
     break;
-  case WM_LBUTTONDBLCLK: 
+  case WM_LBUTTONDBLCLK:
     ref_.mouse(mouse_click_ev(mouse_event::pressed, mouse::button::left));
     ref_.mouse(mouse_click_ev(mouse_event::dbl_clicked, mouse::button::left));
     break;
@@ -180,7 +179,7 @@ LRESULT widget_impl::internal(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
     ref_.mouse(mouse_click_ev(mouse_event::pressed, mouse::button::right));
     ref_.mouse(mouse_click_ev(mouse_event::dbl_clicked, mouse::button::right));
     break;
-  case WM_MOUSEWHEEL: 
+  case WM_MOUSEWHEEL:
     ref_.mouse(mouse_wheel_ev(mouse_event::wheeled));
     break;
   case WM_MOUSELEAVE:
@@ -189,7 +188,7 @@ LRESULT widget_impl::internal(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
     break;
     case WM_MOUSEMOVE:
     if (!mouse_tracked_) {
-      mouse::impl::track(handle_); 
+      mouse::impl::track(handle_);
       mouse_tracked_ = true;
 
       ref_.mouse(mouse_ev(mouse_event::entered));
@@ -198,14 +197,14 @@ LRESULT widget_impl::internal(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
       ref_.mouse(mouse_move_ev(mouse_event::moved, false));
     }
     break;
-  case WM_EXITSIZEMOVE: 
+  case WM_EXITSIZEMOVE:
     {
       RECT clirect, winrect;
       GetClientRect(
-        handle_, 
-        &clirect); 
+        handle_,
+        &clirect);
       GetWindowRect(
-        handle_, 
+        handle_,
         &winrect);
 
       auto cw = clirect.right - clirect.left, ch = clirect.bottom - clirect.top;
@@ -232,9 +231,9 @@ LRESULT widget_impl::internal(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
     break;
   }
   return DefWindowProc(
-    hwnd, 
-    msg, 
-    wparam, 
+    hwnd,
+    msg,
+    wparam,
     lparam);
 }
 
@@ -260,8 +259,8 @@ void widget::focus() {
 void widget::resize(uint32_t width, uint32_t height) {
   RECT winrect{0, 0, static_cast<LONG>(width), static_cast<LONG>(height)};
   AdjustWindowRect(
-    &winrect, 
-    static_cast<DWORD>(GetWindowLongPtr(native_->handle_, GWL_STYLE)), 
+    &winrect,
+    static_cast<DWORD>(GetWindowLongPtr(native_->handle_, GWL_STYLE)),
     false);
   SetWindowPos(
     native_->handle_,
@@ -304,7 +303,7 @@ void widget::set_fullscreen(bool fullscreen) {
     MONITORINFO minfo;
     minfo.cbSize = sizeof(minfo);
     GetMonitorInfo(
-      MonitorFromWindow(native_->handle_, MONITOR_DEFAULTTONEAREST), 
+      MonitorFromWindow(native_->handle_, MONITOR_DEFAULTTONEAREST),
       &minfo);
 
     SetWindowLong(
@@ -343,11 +342,11 @@ void widget::set_caption(const std::string& caption) {
 }
 
 void widget::set_parent(const widget* parent) {
-  auto handle = parent 
-    ? parent->native_->handle_ 
+  auto handle = parent
+    ? parent->native_->handle_
     : nullptr;
-  native_->wstyle_ &= handle 
-    ? ~WS_POPUP | WS_CHILD 
+  native_->wstyle_ &= handle
+    ? ~WS_POPUP | WS_CHILD
     : ~WS_CHILD;
 
   SetWindowLong(

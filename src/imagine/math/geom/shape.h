@@ -30,6 +30,9 @@
 
 namespace ig  {
 
+struct vertex;
+// generic vertex for [triangles, curves and patches]
+
 class shape {
 public:
   virtual float pdf() const { return 1.f / area(); }

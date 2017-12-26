@@ -53,7 +53,7 @@ private:
 
 auto context::build(std::initializer_list<capabilities> caps, uint32_t id, bool thread) {
   auto it = std::find_if(
-    physicals_.begin(), 
+    physicals_.begin(),
     physicals_.end(),
     [this, &id](auto& phys) { return phys->get_type() == unit_ && !id--; });
 

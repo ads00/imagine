@@ -47,9 +47,9 @@ public:
   #if defined(IG_WIN)
   static HINSTANCE reg();
   static LRESULT CALLBACK proc(
-    HWND hwnd, 
-    UINT msg, 
-    WPARAM wparam, 
+    HWND hwnd,
+    UINT msg,
+    WPARAM wparam,
     LPARAM lparam);
   #endif
 };

@@ -32,11 +32,11 @@ auto get_buttons() -> buttons {
 
   buttons buttons{button::none};
   if (GetAsyncKeyState(VK_LBUTTON) < 0)
-    buttons |= swap 
+    buttons |= swap
       ? button::right
       : button::left;
   if (GetAsyncKeyState(VK_RBUTTON) < 0)
-    buttons |= swap 
+    buttons |= swap
       ? button::left
       : button::right;
   if (GetAsyncKeyState(VK_MBUTTON) < 0)
@@ -44,13 +44,13 @@ auto get_buttons() -> buttons {
   return buttons;
 }
 
-auto get_x(LPARAM lparam) -> int32_t 
+auto get_x(LPARAM lparam) -> int32_t
 { return LOWORD(lparam); }
 
-auto get_y(LPARAM lparam) -> int32_t 
+auto get_y(LPARAM lparam) -> int32_t
 { return HIWORD(lparam); }
 
-auto get_wheel_delta(WPARAM wparam) -> float 
+auto get_wheel_delta(WPARAM wparam) -> float
 { return static_cast<float>(GET_WHEEL_DELTA_WPARAM(wparam)) / WHEEL_DELTA; }
 
 auto track(HWND widget) -> bool {

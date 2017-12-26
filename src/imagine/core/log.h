@@ -28,7 +28,8 @@
 #include "imagine/core/log/mgr.h"
 #include "imagine/core/log/sink.h"
 
-#define log__(type, fmt, ...) ig::log_mgr::get().write(type, fmt, /*__LINE__, __FILE__, __func__,*/ __VA_ARGS__)
+#define log__(type, ...) ig::log_mgr::get().write(type, /*__LINE__, __FILE__, __func__,*/ __VA_ARGS__)
+
 
 #define log_(type, fmt, ...) \
         log__(type, fmt "\n", __VA_ARGS__)
