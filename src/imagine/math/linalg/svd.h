@@ -79,7 +79,7 @@ svd<Mat>::svd(const matrix_type& mat)
     for (size_t j = i; j < m_; ++j) s += u_(j, i) * u_(j, i);
 
     auto f = u_(i, i);
-    g = -sign(f) * sqrt(s);
+    g = -sign(f) * std::sqrt(s);
     auto h = f * g - s;
     u_(i, i) = f - g;
     for (size_t j = l; j < n_; ++j) {
@@ -94,7 +94,7 @@ svd<Mat>::svd(const matrix_type& mat)
       for (size_t j = l; j < n_; ++j) s += u_(i, j) * u_(i, j);
 
       auto f = u_(i, l);
-      g = -sign(f) * sqrt(s);
+      g = -sign(f) * std::sqrt(s);
       auto h = f * g - s;
       u_(i, l) = f - g;
       for (size_t j = l; j < n_; ++j) e[j] = u_(i, j) / h;

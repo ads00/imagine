@@ -32,7 +32,7 @@ namespace lin {
 template 
 < typename Mat, 
   typename Vec >
-void forward_solve(const matrix_base<Mat>& lhs, matrix_base<Vec>& rhs, bool unit = false) {
+void forward_solve(const matrix_base<Mat>& lhs, Vec&& rhs, bool unit = false) {
   assert(
     lhs.square() 
     && "Forward solver requires a square matrix");
@@ -58,7 +58,7 @@ void forward_solve(const matrix_base<Mat>& lhs, matrix_base<Vec>& rhs, bool unit
 template
 < typename Mat,
   typename Vec >
-void backward_solve(const matrix_base<Mat>& lhs, matrix_base<Vec>& rhs, bool unit = false) {
+void backward_solve(const matrix_base<Mat>& lhs, Vec&& rhs, bool unit = false) {
   assert(
     lhs.square() 
     && "Backward solver requires a square matrix");

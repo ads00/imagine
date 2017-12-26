@@ -179,9 +179,9 @@ public:
     return derived() = std::move(*this) * mat;
   }
 
-  auto sum() const  -> typename value_type;
-  auto prod() const -> typename value_type;
-  auto mean() const -> typename value_type;
+  auto sum() const  -> value_type;
+  auto prod() const -> value_type;
+  auto mean() const -> value_type;
 
   class initializer {
   public:
@@ -238,15 +238,15 @@ void eval(matrix_base<Gen>& ev, const matrix_base<Mat>& mat, typename Gen::dynam
 
 // Cwise
 template <typename Derived>
-auto matrix_base<Derived>::sum() const -> typename value_type
+auto matrix_base<Derived>::sum() const -> value_type
 { return std::accumulate(begin(), end(), value_type(0)); }
 
 template <typename Derived>
-auto matrix_base<Derived>::prod() const -> typename value_type
+auto matrix_base<Derived>::prod() const -> value_type
 { return std::accumulate(begin(), end(), value_type(1), std::multiplies<>{}); }
 
 template <typename Derived>
-auto matrix_base<Derived>::mean() const -> typename value_type
+auto matrix_base<Derived>::mean() const -> value_type
 { return sum() / size(); }
 
 template <typename Mat>
