@@ -61,19 +61,23 @@ auto binned::find(const record& record) {
 }
 
 auto binned::partition(const cut& cut, size_t begin, size_t end) {
-  size_t center = std::distance(
-    primitives_.begin(),
-    std::partition(
-      std::next(primitives_.begin(), begin),
-      std::next(primitives_.begin(), end),
-      [&cut](auto& primitive) { return cut.mapping.bin(primitive.bounds, cut.index, cut.dimension); }));
+  size_t center = cut.dimension != bin::invalid
+    ? std::distance(
+        primitives_.begin(),
+        std::partition(
+          std::next(primitives_.begin(), begin),
+          std::next(primitives_.begin(), end),
+          [&cut](auto& primitive) { return cut.mapping.bin(primitive.bounds, cut.index, cut.dimension); }))
+    : (begin + end) / 2;
 
   record
   local_left{begin, begin}, local_right{center, center};
 
-  for (auto i = begin;  i < center; ++i) local_left.expand (primitives_[i].bounds);
+  for (auto i = begin;  i < center; ++i) local_left .expand(primitives_[i].bounds);
   for (auto i = center; i < end;    ++i) local_right.expand(primitives_[i].bounds);
-  return std::make_pair(local_left, local_right);
+  return std::make_pair(
+    local_left,
+    local_right);
 }
 
 } // namespace heuristic
