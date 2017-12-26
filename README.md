@@ -13,8 +13,8 @@ It's written in modern c++17 with performance and modularity in mind.
 * :globe_with_meridians: **Computational mathematics**
   * Expression template linear algebra (dense linear solvers and decompositions)
   * Projective geometry, space partitioning and surface representations (meshes, patches, implicit)
-  * Nonlinear optimization with gradient descent, quasi-newton and levenberg-marquardt
   * Ordinary differential equations solvers for implicit, explicit and symplectic systems
+  * Nonlinear optimization with gradient descent, quasi-newton and least squares methods
 * :video_game: **Interactive cross-platform environment**
   * Real-time physically based viewport with built-in voxel cone tracing, temporal antialiasing and many post-process techniques (bloom, color correction, motion blur, etc)
   * Virtual and augmented reality, including an advanced pose compositor, stereo rendering and monoscopic far field optimization
