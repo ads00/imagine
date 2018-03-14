@@ -28,15 +28,15 @@
 namespace ig {
 
 widget::widget()
-  : native_{std::make_unique<impl::widget_impl>(*this)}
-  , cursor_{cursor_shape::none} {}
+  : cursor_{cursor_shape::none}
+  , native_{std::make_unique<impl::widget_impl>(*this)} {}
 
 widget::widget(const dispatch& dsp, widget_styles styles, const std::string& caption, uint32_t w, uint32_t h)
-  : native_{std::make_unique<impl::widget_impl>(*this, styles, caption, w, h)}
-  , cursor_{cursor_shape::arrow} { 
+  : cursor_{cursor_shape::arrow}
+  , native_{std::make_unique<impl::widget_impl>(*this, styles, caption, w, h)} {
 
   link_ = [this, &widgets = dsp.native_->widgets_]() {
-    auto it = 
+    auto it =
       std::remove_if(
         widgets.begin(),
         widgets.end(),

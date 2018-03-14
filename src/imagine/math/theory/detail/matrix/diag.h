@@ -47,14 +47,9 @@ public:
   auto rows() const { return xpr_.diagsize(); }
   auto cols() const { return matrix_traits<matrix_diag>::n_cols; }
 
-  decltype(auto) operator()(size_t row, size_t) const 
-  { return xpr_(row, row); }
-  decltype(auto) operator()(size_t row, size_t) 
-  { return xpr_(row, row); }
-
-  decltype(auto) operator[](size_t n) const 
+  decltype(auto) operator[](size_t n) const
   { return xpr_(n, n); }
-  decltype(auto) operator[](size_t n) 
+  decltype(auto) operator[](size_t n)
   { return xpr_(n, n); }
 
   template <typename Mat>

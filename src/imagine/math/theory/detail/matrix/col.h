@@ -48,12 +48,7 @@ public:
   auto rows() const { return xpr_.rows(); }
   auto cols() const { return matrix_traits<matrix_col>::n_cols; }
 
-  decltype(auto) operator()(size_t row, size_t) const 
-  { return xpr_(row, col_); }
-  decltype(auto) operator()(size_t row, size_t) 
-  { return xpr_(row, col_); }
-
-  decltype(auto) operator[](size_t n) const 
+  decltype(auto) operator[](size_t n) const
   { return xpr_(n, col_); }
   decltype(auto) operator[](size_t n)
   { return xpr_(n, col_); }

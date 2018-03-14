@@ -33,15 +33,15 @@ namespace ig {
 
 enum log_t { dbg, info, warn, err };
 
+class log_rec;
 class log_sink;
-class log_entry;
 class IG_API log_mgr {
 public:
-  using formatter = std::function< std::string(const log_entry&) >;
+  using formatter = std::function< std::string(const log_rec&) >;
   using sink_ptr  = std::shared_ptr<log_sink>;
-  
+
   void flush();
-  void push_entry(const log_entry& entry);
+  void push_rec(const log_rec& rec);
 
   void clear();
   void add_sink(const sink_ptr& sink);
@@ -50,8 +50,8 @@ public:
   template <typename T, typename... Args>
   void write(
     log_t type,
-    const char* format, 
-    T&& arg, 
+    const char* format,
+    T&& arg,
     Args&&... args);
   void write(log_t type, const char* format);
 
@@ -77,8 +77,8 @@ void log_mgr::write(log_t type, const char* format, T&& arg, Args&&... args) {
     if (c != '{' && c != '}') continue;
     if (*p == c) {
       buffer_.write(s, p - s);
-      s = ++p; 
-      continue; 
+      s = ++p;
+      continue;
     } else {
       buffer_.write(s, (p - 1) - s);
       buffer_ << arg; write(type, ++p, std::forward<Args>(args)...);

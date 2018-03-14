@@ -24,8 +24,8 @@
 #ifndef IG_CORE_LOG_H
 #define IG_CORE_LOG_H
 
-#include "imagine/core/log/entry.h"
 #include "imagine/core/log/mgr.h"
+#include "imagine/core/log/rec.h"
 #include "imagine/core/log/sink.h"
 
 #define log__(type, ...) ig::log_mgr::get().write(type, /*__LINE__, __FILE__, __func__,*/ __VA_ARGS__)

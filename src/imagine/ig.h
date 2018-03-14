@@ -27,8 +27,8 @@
 #define IG_MAJOR 1
 #define IG_MINOR 0
 
-#include "imagine/platform.h"
-#include "imagine/support.h"
+#include "imagine/plt.h"
+#include "imagine/sup.h"
 
 #include <memory>
 #include <iterator>

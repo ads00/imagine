@@ -32,14 +32,16 @@ namespace ig {
 
 class log_sink {
 public:
-  explicit log_sink(std::ostream& stream, const log_mgr::formatter& format = log_mgr::default_format)
+  explicit log_sink(
+    std::ostream& stream,
+    const log_mgr::formatter& format = log_mgr::default_format)
     : stream_{stream}
     , format_{format} {}
   virtual ~log_sink() = default;
 
   virtual void flush()
   { stream_.flush(); }
-  virtual void consume(const log_entry& entry) { stream_ << format_(entry); }
+  virtual void consume(const log_rec& rec) { stream_ << format_(rec); }
 
 protected:
   std::ostream& stream_;

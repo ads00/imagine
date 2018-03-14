@@ -31,13 +31,13 @@ struct float8 {
   float8(__m256 in) : d{in} {}
   float8(float x)   : d{_mm256_set1_ps(x)} {}
   explicit float8(float a, float b, float c, float d, float e, float f, float g, float h)
-    : d{_mm256_set_ps(
+    : d{_mm256_setr_ps(
         a, b,
         c, d,
         e, f,
         g, h)} {}
 
-  auto& operator[](size_t n) const
+  auto operator[](size_t n) const
   { return d.p[n]; }
   auto& operator[](size_t n)
   { return d.p[n]; }
@@ -79,15 +79,8 @@ inline auto sgnmask(const float8& v) { return float8{_mm256_and_ps(v, _mm256_cas
 
 inline auto sqrt(const float8& v)
 { return float8{_mm256_sqrt_ps(v)}; }
-inline auto rcp(const float8& v) {
-  auto r = _mm256_rcp_ps(v);
-  return float8{_mm256_mul_ps(r, _mm256_sub_ps(float8{2.f}, _mm256_mul_ps(r, v)))}; }
-inline auto rsqrt(const float8& v) {
-  auto r = _mm256_rsqrt_ps(v);
-  return float8{_mm256_add_ps(_mm256_mul_ps(_mm256_set1_ps(1.5f), r),
-                _mm256_mul_ps(_mm256_mul_ps(_mm256_mul_ps(v, _mm256_set1_ps(-0.5f)), r), _mm256_mul_ps(r, r)))}; }
 
-// Movement & Shifting & Shuffling
+// Movement & Shuffling
 inline auto unpacklo(const float8& lhs, const float8& rhs) { return float8{_mm256_unpacklo_ps(lhs, rhs)}; }
 inline auto unpackhi(const float8& lhs, const float8& rhs) { return float8{_mm256_unpackhi_ps(lhs, rhs)}; }
 

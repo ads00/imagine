@@ -70,16 +70,10 @@ template <typename Arithmetic> constexpr Arithmetic boltzmann   = Arithmetic(1.3
 template <typename Arithmetic> constexpr Arithmetic avogadro    = Arithmetic(6.02214129e+23);  // Avogadro's number in mol-1
 
 template <typename Arithmetic>
-constexpr Arithmetic sign(Arithmetic x) {
-  return x > 0 
-    ? Arithmetic(1)
-    : x < 0 
-      ? Arithmetic(-1)
-      : Arithmetic( 0);
-}
+constexpr auto sign(Arithmetic x) { return (x > 0) - (x < 0); }
 
 template <typename Arithmetic>
-constexpr auto align(Arithmetic x, Arithmetic alignment) { return x + alignment - 1 &~(alignment - 1); }
+constexpr auto align(Arithmetic x, Arithmetic alignment) { return (x + alignment - 1) &~(alignment - 1); }
 
 } // namespace ig
 

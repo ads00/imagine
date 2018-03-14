@@ -23,6 +23,7 @@
 
 #include "imagine/envi/impl_vk/detail/vulkan.h"
 #include "imagine/envi/impl_vk/detail/device.h"
+#include "imagine/envi/impl_vk/memory.h"
 #include "imagine/envi/impl_vk/surface.h"
 
 namespace ig {
@@ -67,12 +68,12 @@ device::device(const physical& physical, const std::vector<capabilities>& rq)
   std::vector
   < std::vector<float>
   > queue_prios{};
-  for (auto& definition : selects_.definitions) {
-    auto& prio = queue_prios.emplace_back(definition.second, 1.f);
+  for (auto& [family, count] : selects_.definitions) {
+    auto& prio = queue_prios.emplace_back(count, 1.f);
     VkDeviceQueueCreateInfo queue_info {};
       queue_info.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
       queue_info.flags = 0;
-      queue_info.queueFamilyIndex = definition.first;
+      queue_info.queueFamilyIndex = family;
       queue_info.queueCount = static_cast<uint32_t>(prio.size());
       queue_info.pQueuePriorities = prio.data();
 

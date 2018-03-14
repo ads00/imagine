@@ -41,8 +41,8 @@ public:
     : invdiag_{mat.diagsize()} {
 
     for (size_t i = 0; i < mat.diagsize(); ++i)
-      invdiag_[i] = mat(i, i) != 0 
-        ? 1 / mat(i, i) 
+      invdiag_[i] = mat(i, i) != 0
+        ? 1 / mat(i, i)
         : 1;
   }
 
@@ -54,7 +54,7 @@ private:
 
 template <typename Arithmetic>
 auto jacobi_preconditioner<Arithmetic>::solve(const vector_type& b) const -> vector_type
-{ return invdiag_ % b; }
+{ return invdiag_ * b; }
 
 } // namespace ig
 

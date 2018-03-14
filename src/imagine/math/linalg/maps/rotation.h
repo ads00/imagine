@@ -24,7 +24,7 @@
 #ifndef IG_MATH_ROTATION_H
 #define IG_MATH_ROTATION_H
 
-#include "imagine/math/theory/matrix.h"
+#include "imagine/math/linalg/op.h"
 
 namespace ig {
 
@@ -71,8 +71,8 @@ auto givens(Arithmetic p, Arithmetic q) {
     auto c = 1 / u;
     return std::make_pair(
       rotation<Arithmetic>{
-         c, 
-        -t * c}, 
+         c,
+        -t * c},
       p * u);
   } else {
     auto t = p / q;
@@ -80,8 +80,8 @@ auto givens(Arithmetic p, Arithmetic q) {
     auto s = -1 / u;
     return std::make_pair(
       rotation<Arithmetic>{
-        -t * s, 
-         s}, 
+        -t * s,
+         s},
       q * u);
   }
 }

@@ -32,7 +32,7 @@ struct int8 {
   int8(__m256  in) : d{_mm256_cvtps_epi32(in)} {}
   int8(int x)      : d{_mm256_set1_epi32(x)} {}
   explicit int8(int a, int b, int c, int d, int e, int f, int g, int h)
-    : d{_mm256_set_epi32(
+    : d{_mm256_setr_epi32(
         a, b,
         c, d,
         e, f,
@@ -76,7 +76,7 @@ inline auto operator>=(const int8& lhs, const int8& rhs) { return !(lhs < rhs); 
 inline auto min(const int8& lhs, const int8& rhs) { return int8{_mm256_min_epi32(lhs, rhs)}; }
 inline auto max(const int8& lhs, const int8& rhs) { return int8{_mm256_max_epi32(lhs, rhs)}; }
 
-// Movement & Shifting & Shuffling
+// Movement & Shuffling
 inline auto unpacklo(const int8& lhs, const int8& rhs) { return int8{_mm256_unpacklo_epi32(lhs, rhs)}; }
 inline auto unpackhi(const int8& lhs, const int8& rhs) { return int8{_mm256_unpackhi_epi32(lhs, rhs)}; }
 

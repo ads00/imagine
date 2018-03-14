@@ -29,30 +29,33 @@
 #include "imagine/math/theory/detail/matrix/col.h"
 #include "imagine/math/theory/detail/matrix/row.h"
 #include "imagine/math/theory/detail/matrix/diag.h"
-#include "imagine/math/theory/detail/matrix/trans.h"
+
+#include "imagine/math/theory/detail/matrix/type/symm.h"
+#include "imagine/math/theory/detail/matrix/type/triang.h"
 
 #include "imagine/math/theory/detail/matrix/expr/unary.h"
-#include "imagine/math/theory/detail/matrix/expr/product.h"
 #include "imagine/math/theory/detail/matrix/expr/binary.h"
+#include "imagine/math/theory/detail/matrix/expr/prod.h"
+#include "imagine/math/theory/detail/matrix/expr/trans.h"
 #include "imagine/math/theory/detail/matrix/expr/relational.h"
 
 namespace ig {
 
-template 
-< typename T, 
+template
+< typename T,
   size_t M,
   size_t N >
 struct matrix_traits
-< 
-  matrix<T, M, N> 
-> 
+<
+  matrix<T, M, N>
+>
 {
   using value_type = T;
-  static constexpr auto n_rows = M, n_cols = N; 
+  static constexpr auto n_rows = M, n_cols = N;
 };
 
-template 
-< typename t_, 
+template
+< typename t_,
   size_t m_ = dynamic_size,
   size_t n_ = m_ >
 class matrix : public matrix_base< matrix<t_, m_, n_> > {
@@ -69,22 +72,22 @@ public:
 
   template < bool X = immutable, typename = std::enable_if_t<X>, typename... Args >
   constexpr explicit matrix(value_type i, Args&&... args) : data_{{i, std::forward<Args>(args)...}} {
-    [this](size_t s) 
+    [this](size_t s)
     { std::fill(data_.d.begin() + s + 1, data_.d.end(), data_.d[s]); }(sizeof...(args));
   }
 
   template < bool X = hybrid, typename = std::enable_if_t<X> >
   constexpr explicit matrix(size_t n)
     : data_{
-        {}, 
-        dynamic_rows ? n : static_cast<size_t>(m_), 
+        {},
+        dynamic_rows ? n : static_cast<size_t>(m_),
         dynamic_cols ? n : static_cast<size_t>(n_)} { data_.d.resize(data_.m * data_.n); }
 
   template < bool X = dynamic, typename = std::enable_if_t<X> >
   constexpr explicit matrix(size_t m, size_t n)
     : data_{
-        container_type(m * n), 
-        m, 
+        container_type(m * n),
+        m,
         n} {}
 
   template <typename Mat>
@@ -95,7 +98,7 @@ public:
   template <typename Mat> matrix(const matrix_base<Mat>& o, std::false_type)
     : data_{
         container_type(
-          o.rows() * o.cols()), 
+          o.rows() * o.cols()),
           o.rows(),  o.cols()} {}
 
   matrix(const matrix& o) : data_{o.derived().data_} {}
@@ -126,20 +129,20 @@ private:
       std::vector<value_type>,
       std::array <value_type, m_ * n_>
     >;
-    
+
   struct dynamic_data {
-    size_t rows_impl() const 
-    { return m; } 
-    size_t cols_impl() const 
+    size_t rows_impl() const
+    { return m; }
+    size_t cols_impl() const
     { return n; } container_type d; size_t m, n; };
   struct static_data {
-    size_t rows_impl() const 
+    size_t rows_impl() const
     { return m_; }
-    size_t cols_impl() const 
+    size_t cols_impl() const
     { return n_; } container_type d; };
 
   std::conditional_t
-  < hybrid, 
+  < hybrid,
     dynamic_data, static_data
   > data_;
 };
@@ -150,10 +153,10 @@ template
   size_t n_ >
 auto matrix<t_, m_, n_>::operator()(size_t row, size_t col) const -> const value_type& {
   assert(
-    row < rows() && 
-    col < cols() 
+    row < rows() &&
+    col < cols()
     && "Invalid matrix subscript");
-  return data_.d[row * cols() + col]; 
+  return data_.d[row * cols() + col];
 }
 
 template
@@ -162,8 +165,8 @@ template
   size_t n_ >
 auto matrix<t_, m_, n_>::operator()(size_t row, size_t col) -> value_type& {
   assert(
-    row < rows() && 
-    col < cols() 
+    row < rows() &&
+    col < cols()
     && "Invalid matrix subscript");
   return data_.d[row * cols() + col];
 }
@@ -174,7 +177,7 @@ template
   size_t n_ >
 auto matrix<t_, m_, n_>::operator[](size_t n) const -> const value_type& {
   assert(n < rows() * cols() && "Invalid matrix subscript");
-  return data_.d[n]; 
+  return data_.d[n];
 }
 
 template
@@ -183,7 +186,7 @@ template
   size_t n_ >
 auto matrix<t_, m_, n_>::operator[](size_t n) -> value_type& {
   assert(n < rows() * cols() && "Invalid matrix subscript");
-  return data_.d[n]; 
+  return data_.d[n];
 }
 
 // Eye (Identity)
@@ -192,7 +195,7 @@ template
   size_t m_,
   size_t n_ >
 auto matrix<t_, m_, n_>::make_eye() -> matrix& {
-  size_t i = 0, stride = matrix::diagsize() + 1;
+  size_t i = 0, stride = matrix::diag_size() + 1;
   std::generate(matrix::begin(), matrix::end(), [this, &i, &stride]() { return !(i++ % stride); });
   return *this;
 }

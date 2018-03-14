@@ -35,6 +35,6 @@
 #if defined(__AVX2__)
 #include "imagine/math/theory/simd_accel/avx_i.h"
 #endif
-using packet = ig::float8;
+ using packet = ig::float8;
 
 #endif // IG_MATH_AVX_H

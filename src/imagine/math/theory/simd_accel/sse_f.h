@@ -79,15 +79,8 @@ inline auto sgnmask(const float4& v) { return float4{_mm_and_ps(v, _mm_castsi128
 
 inline auto sqrt(const float4& v)
 { return float4{_mm_sqrt_ps(v)}; }
-inline auto rcp(const float4& v) {
-  auto r = _mm_rcp_ps(v);
-  return float4{_mm_mul_ps(r, _mm_sub_ps(float4{2.f}, _mm_mul_ps(r, v)))}; }
-inline auto rsqrt(const float4& v) {
-  auto r = _mm_rsqrt_ps(v);
-  return float4{_mm_add_ps(_mm_mul_ps(_mm_set1_ps(1.5f), r),
-                _mm_mul_ps(_mm_mul_ps(_mm_mul_ps(v, _mm_set1_ps(-0.5f)), r), _mm_mul_ps(r, r)))}; }
 
-// Movement & Shifting & Shuffling
+// Movement & Shuffling
 inline auto unpacklo(const float4& lhs, const float4& rhs) { return float4{_mm_unpacklo_ps(lhs, rhs)}; }
 inline auto unpackhi(const float4& lhs, const float4& rhs) { return float4{_mm_unpackhi_ps(lhs, rhs)}; }
 

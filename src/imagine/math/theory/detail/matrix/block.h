@@ -43,39 +43,27 @@ class matrix_block : public matrix_base< matrix_block<x_> > {
 public:
   explicit matrix_block(x_& xpr, size_t row, size_t col, size_t nr, size_t nc)
     : xpr_{xpr}
-    , colvec_{false}
-    , rowvec_{false}
     , row_{row}
     , col_{col}
     , nr_{nr}
     , nc_{nc} {}
 
-  explicit matrix_block(x_& xpr, size_t start, size_t n)
-    : xpr_{xpr}
-    , colvec_{xpr_.cols() == 1}
-    , rowvec_{xpr_.rows() == 1}
-    , row_{colvec_ ? start : 0}
-    , col_{rowvec_ ? start : 0}
-    , nr_{colvec_ ? n : 1}
-    , nc_{rowvec_ ? n : 1} {}
-
   auto rows() const { return nr_; }
   auto cols() const { return nc_; }
 
-  decltype(auto) operator()(size_t row, size_t col) const 
+  decltype(auto) operator()(size_t row, size_t col) const
   { return xpr_(row_ + row, col_ + col); }
-  decltype(auto) operator()(size_t row, size_t col) 
+  decltype(auto) operator()(size_t row, size_t col)
   { return xpr_(row_ + row, col_ + col); }
 
-  decltype(auto) operator[](size_t n) const = delete;
-  decltype(auto) operator[](size_t n)       = delete;
+  decltype(auto) operator[](size_t n) const { return xpr_((row_ + n) / nr_, (col_ + n) % nc_); }
+  decltype(auto) operator[](size_t n)       { return xpr_((row_ + n) / nr_, (col_ + n) % nc_); }
 
   template <typename Mat>
   auto operator=(const matrix_base<Mat>& o) { return eval(*this, o); }
 
 private:
   x_& xpr_;
-  bool colvec_, rowvec_;
   size_t row_, col_, nr_, nc_;
 };
 

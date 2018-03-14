@@ -47,8 +47,15 @@ struct bool8 {
   > d;
 };
 
+// Selection
+inline auto select(const __m256& lhs, const __m256& rhs, const __m256& mask)
+{
+  return _mm256_blendv_ps(rhs, lhs, mask);
+}
+
 // Operators
 inline auto operator!(const bool8& v) { return bool8{_mm256_xor_ps(v, bool8{std::true_type{}})}; }
+inline auto operator~(const bool8& v) { return bool8{_mm256_xor_ps(v, bool8{std::false_type{}})}; }
 
 inline auto operator&(const bool8& lhs, const bool8& rhs) { return bool8{_mm256_and_ps(lhs, rhs)}; }
 inline auto operator|(const bool8& lhs, const bool8& rhs) { return bool8{_mm256_or_ps(lhs, rhs)}; }
@@ -62,11 +69,11 @@ inline auto operator==(const bool8& lhs, const bool8& rhs) { return bool8{_mm256
 inline auto movemask(const bool8& v)
 { return _mm256_movemask_ps(v); }
 
-inline bool all(const bool8& v)  { return movemask(v) == 0xff; }
+inline bool all(const bool8& v)  { return _mm256_testc_ps(v, bool8{std::true_type{}}); }
 inline bool any(const bool8& v)  { return _mm256_testz_ps(v, v) == 0x0; }
 inline bool none(const bool8& v) { return _mm256_testz_ps(v, v) != 0x0; }
 
-// Movement & Shifting & Shuffling
+// Movement & Shuffling
 inline auto unpacklo(const bool8& lhs, const bool8& rhs) { return bool8{_mm256_unpacklo_ps(lhs, rhs)}; }
 inline auto unpackhi(const bool8& lhs, const bool8& rhs) { return bool8{_mm256_unpackhi_ps(lhs, rhs)}; }
 
@@ -85,8 +92,6 @@ template
   size_t i3 >
 inline auto shuffle(const bool8& v, const bool8& t)
 { return bool8{_mm256_shuffle_ps(v, t, _MM_SHUFFLE(i3, i2, i1, i0))}; }
-inline auto select(const bool8& lhs, const bool8& rhs, const bool8& mask)
-{ return bool8{_mm256_blendv_ps(rhs, lhs, mask)}; }
 
 } // namespace ig
 

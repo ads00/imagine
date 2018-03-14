@@ -25,6 +25,7 @@
 #define IG_MATH_MATRIXBASE_H
 
 #include "imagine/math/basis.h"
+#include "imagine/math/theory/expression.h"
 
 #include <vector>
 #include <array>
@@ -32,33 +33,29 @@
 namespace ig {
 
 constexpr size_t dynamic_size = 0;
-template 
-< typename T, 
+template
+< typename T,
   size_t M,
   size_t N > class matrix;
-template 
-< typename T, 
-  size_t N = dynamic_size > using colvec = matrix<T, N, 1>;
-template 
-< typename T, 
-  size_t N = dynamic_size > using rowvec = matrix<T, 1, N>;
+template <typename T, size_t N = dynamic_size> using colvec = matrix<T, N, 1>;
+template <typename T, size_t N = dynamic_size> using rowvec = matrix<T, 1, N>;
 
-template 
+template
 < typename Mat,
   typename FunctionObject > class matrix_unary;
 template
 < typename Lhs,
   typename Rhs,
   typename FunctionObject > class matrix_binary;
-template 
-< typename Lhs, 
-  typename Rhs > class matrix_product;
+template
+< typename Lhs,
+  typename Rhs >        class matrix_prod;
+template <typename Mat> class matrix_trans;
 
+template <typename Xpr> class matrix_block;
 template <typename Xpr> class matrix_col;
 template <typename Xpr> class matrix_row;
 template <typename Xpr> class matrix_diag;
-template <typename Mat> class matrix_trans;
-template <typename Xpr> class matrix_block;
 
 template <typename Mat> class matrix_symm;
 template <typename Mat> class matrix_triang;
@@ -69,93 +66,64 @@ template <typename Xpr> struct matrix_traits<const Xpr> : matrix_traits<Xpr> {};
 
 // Aliases
 template <typename Mat> using matrix_t = typename matrix_traits<Mat>::value_type;
-template <typename Mat> using concrete_matrix = 
+template <typename Mat> using concrete_matrix =
   matrix
   <
     matrix_t<Mat>,
     matrix_traits<Mat>::n_rows, matrix_traits<Mat>::n_cols
   >;
 
-template <typename Derived>
-class matrix_base {
+template <typename D>
+class matrix_base : public expression<D> {
 public:
-  using value_type = matrix_t<Derived>;
+  using value_type = matrix_t<D>;
 
-  auto& derived() const { return static_cast<const Derived&>(*this); }
-  auto& derived()       { return static_cast<Derived&>(*this); }
+  using base = expression<D>;
+  using base::derived;
+  using base::eval;
+  template <typename Xpr> using iterator = typename base::template iterator<Xpr>;
 
-  template <typename ConstDerived>
-  class iterator {
-  public:
-    explicit iterator(ConstDerived& derived, size_t i)
-      : i_{i}
-      , derived_{derived} {}
-
-    auto& operator++() { ++i_; return *this; }
-    auto& operator--() { --i_; return *this; }
-    auto& operator=(const iterator& o) { i_ = o.i_; return *this; }
-
-    auto operator+(const iterator& o) 
-    { return i_ + o.i_; }
-    auto operator-(const iterator& o) 
-    { return i_ - o.i_; }
-
-    bool operator==(const iterator& o) 
-    { return i_ == o.i_; }
-    bool operator!=(const iterator& o) 
-    { return i_ != o.i_; }
-    bool operator<(const iterator& o) 
-    { return i_ < o.i_; }
-    
-    auto operator*() const -> decltype(auto) 
-    { return derived_[i_]; }
-
-  protected:
-    size_t i_;
-    ConstDerived& derived_;
-  };
-
-  auto begin() const { return iterator<const Derived>{derived(), 0}; }
-  auto begin()       { return iterator<Derived>{derived(), 0}; }
-  auto end() const   { return iterator<const Derived>{derived(), size()}; }
-  auto end()         { return iterator<Derived>{derived(), size()}; }
-
-  auto square() const { return rows() == cols(); }
-  auto vector() const { return rows() == 1 || cols() == 1; }
+  auto begin() const { return iterator<const D>{derived(), 0}; }
+  auto begin()       { return iterator<D>{derived(), 0}; }
+  auto end() const   { return iterator<const D>{derived(), size()}; }
+  auto end()         { return iterator<D>{derived(), size()}; }
 
   auto rows() const { return derived().rows(); }
   auto cols() const { return derived().cols(); }
   auto size() const { return rows() * cols(); }
 
-  auto diagsize() const { return std::min(rows(), cols()); }
-  auto vecsize() const  { return std::max(rows(), cols()); }
+  auto diag_size() const { return std::min(rows(), cols()); }
+  auto vec_size() const  { return std::max(rows(), cols()); }
 
-  auto col(size_t n) const { return matrix_col<const Derived>{derived(), n}; }
-  auto col(size_t n)       { return matrix_col<Derived>{derived(), n}; }
-  auto row(size_t n) const { return matrix_row<const Derived>{derived(), n}; }
-  auto row(size_t n)       { return matrix_row<Derived>{derived(), n}; }
+  auto square() const { return rows() == cols(); }
+  auto vector() const { return rows() == 1 || cols() == 1; }
 
-  auto diag() const { return matrix_diag<const Derived>{derived()}; }
-  auto diag()       { return matrix_diag<Derived>{derived()}; }
-  auto t() const    { return matrix_trans<const Derived>{derived()}; }
-  auto t()          { return matrix_trans<Derived>{derived()}; }
+  auto col(size_t n) const { return matrix_col<const D>{derived(), n}; }
+  auto col(size_t n)       { return matrix_col<D>      {derived(), n}; }
+  auto row(size_t n) const { return matrix_row<const D>{derived(), n}; }
+  auto row(size_t n)       { return matrix_row<D>      {derived(), n}; }
 
-  auto head(size_t n) const { return matrix_block<const Derived>{derived(), 0, n}; }
-  auto head(size_t n)       { return matrix_block<Derived>{derived(), 0, n}; }
-  auto tail(size_t n) const { return matrix_block<const Derived>{derived(), size() - n, n}; }
-  auto tail(size_t n)       { return matrix_block<Derived>{derived(), size() - n, n}; }
+  auto diag() const { return matrix_diag<const D> {derived()}; }
+  auto diag()       { return matrix_diag<D>       {derived()}; }
+  auto t() const    { return matrix_trans<const D>{derived()}; }
+  auto t()          { return matrix_trans<D>      {derived()}; }
+
+  auto head(size_t n, size_t m) const { return matrix_block<const D>{derived(), 0, 0, std::min(n, rows()), std::min(m, cols())}; }
+  auto head(size_t n, size_t m)       { return matrix_block<D>      {derived(), 0, 0, std::min(n, rows()), std::min(m, cols())}; }
+  auto tail(size_t n, size_t m) const { return matrix_block<const D>{derived(), std::max(0, rows() - n), std::max(0, cols() - m), std::max(1, rows() - n), std::max(1, cols() - m)}; }
+  auto tail(size_t n, size_t m)       { return matrix_block<D>      {derived(), std::max(0, rows() - n), std::max(0, cols() - m), std::max(1, rows() - n), std::max(1, cols() - m)}; }
 
   decltype(auto) operator()(size_t row, size_t col) const
   { return derived()(row, col); }
-  decltype(auto) operator()(size_t row, size_t col) 
+  decltype(auto) operator()(size_t row, size_t col)
   { return derived()(row, col); }
 
-  decltype(auto) operator[](size_t index) const 
+  decltype(auto) operator[](size_t index) const
   { return derived()[index]; }
   decltype(auto) operator[](size_t index)
   { return derived()[index]; }
 
-  auto& operator+=(value_type value) 
+  auto& operator+=(value_type value)
   { return derived() = std::move(*this) + value; }
   auto& operator-=(value_type value)
   { return derived() = std::move(*this) - value; }
@@ -164,20 +132,16 @@ public:
   auto& operator/=(value_type value)
   { return derived() = std::move(*this) / value; }
 
-  template <typename Mat> 
+  template <typename Mat>
   auto& operator+=(const matrix_base<Mat>& mat) { return derived() = std::move(*this) + mat; }
-  template <typename Mat> 
+  template <typename Mat>
   auto& operator-=(const matrix_base<Mat>& mat) { return derived() = std::move(*this) - mat; }
-  template <typename Mat> 
+  template <typename Mat>
+  auto& operator*=(const matrix_base<Mat>& mat) { return derived() = std::move(*this) * mat; }
+  template <typename Mat>
   auto& operator/=(const matrix_base<Mat>& mat) { return derived() = std::move(*this) / mat; }
   template <typename Mat>
   auto& operator%=(const matrix_base<Mat>& mat) { return derived() = std::move(*this) % mat; }
-
-  template <typename Mat> 
-  auto& operator*=(const matrix_base<Mat>& mat) {
-    assert(Derived::hybrid && "Cannot multiply in place an immutable matrix");
-    return derived() = std::move(*this) * mat;
-  }
 
   auto sum() const  -> value_type;
   auto prod() const -> value_type;
@@ -185,41 +149,39 @@ public:
 
   class initializer {
   public:
-    explicit initializer(Derived& mat)
+    explicit initializer(D& mat)
       : mat_{mat}
       , row_{0}
       , col_{0}
       , curr_{0} {}
 
     auto operator,(value_type value) {
-      if (col_ == mat_.cols()) 
-        row_++, 
+      if (col_ == mat_.cols())
+        row_++,
         col_ = 0;
       mat_(row_, col_++) = value;
-      curr_++; 
+      curr_++;
       return *this;
     }
 
   private:
-    Derived& mat_;
+    D& mat_;
     size_t row_, col_, curr_;
   };
 
-  auto operator<<(value_type val) 
-  { return initializer{derived()}, val; }
+  auto operator<<(value_type val) { return initializer{derived()}, val; }
 };
 
 template <typename Gen, typename Mat>
 void eval_helper(matrix_base<Gen>& ev, const matrix_base<Mat>& mat) {
   assert(
-    ev.rows() == mat.rows() && 
+    ev.rows() == mat.rows() &&
     ev.cols() == mat.cols()
     && "Incoherent algebraic evaluation");
 
-  for (size_t i = 0; i < ev.rows(); ++i)
-    for (size_t j = 0; j < ev.cols(); ++j) 
-      ev (i, j) = 
-      mat(i, j);
+  for (size_t i = 0; i < ev.size(); ++i)
+    ev [i] =
+    mat[i];
 }
 
 template <typename Gen, typename Mat>
@@ -237,16 +199,25 @@ void eval(matrix_base<Gen>& ev, const matrix_base<Mat>& mat, typename Gen::dynam
 }
 
 // Cwise
-template <typename Derived>
-auto matrix_base<Derived>::sum() const -> value_type
-{ return std::accumulate(begin(), end(), value_type(0)); }
+template <typename D>
+auto matrix_base<D>::sum() const -> value_type {
+  return std::accumulate(
+    begin(),
+    end(),
+    value_type(0));
+}
 
-template <typename Derived>
-auto matrix_base<Derived>::prod() const -> value_type
-{ return std::accumulate(begin(), end(), value_type(1), std::multiplies<>{}); }
+template <typename D>
+auto matrix_base<D>::prod() const -> value_type {
+  return std::accumulate(
+    begin(),
+    end(),
+    value_type(1),
+    std::multiplies<>{});
+}
 
-template <typename Derived>
-auto matrix_base<Derived>::mean() const -> value_type
+template <typename D>
+auto matrix_base<D>::mean() const -> value_type
 { return sum() / size(); }
 
 template <typename Mat>

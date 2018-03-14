@@ -32,8 +32,8 @@
 
 namespace ig {
 
-template 
-< typename Clock, 
+template
+< typename Clock,
   typename Duration = std::chrono::milliseconds >
 class time {
 public:
@@ -58,15 +58,17 @@ void time<Clock, Duration>::generate_stats() {
   auto lo_id = (count + 1) / 4;
   auto hi_id = (count + 1) * 3 / 4;
 
-  stats.lo_q = samples[lo_id].count();  
+  stats.lo_q = samples[lo_id].count();
   stats.hi_q = samples[hi_id].count();
   stats.median = samples[count / 2].count();
-  stats.average = 
+  stats.average =
     std::accumulate(
       samples.begin() + lo_id,
       samples.begin() + hi_id,
-      Duration{0}).count() / 
-      (hi_id - lo_id);
+      Duration{0})
+    .count()
+    /
+    (hi_id - lo_id);
 }
 
 template

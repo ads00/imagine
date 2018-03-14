@@ -141,63 +141,65 @@ LRESULT widget_impl::internal(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
   };
 
   switch (msg) {
-  case WM_KEYDOWN:
-  case WM_SYSKEYDOWN:
-    ref_.keyboard(keyboard_ev(keyboard_event::pressed));
-    break;
-  case WM_KEYUP:
-  case WM_SYSKEYUP:
-    ref_.keyboard(keyboard_ev(keyboard_event::released));
-    break;
-  case WM_LBUTTONDOWN:
-    ref_.mouse(mouse_click_ev(mouse_event::pressed, mouse::button::left));
-    break;
-  case WM_MBUTTONDOWN:
-    ref_.mouse(mouse_click_ev(mouse_event::pressed, mouse::button::middle));
-    break;
-  case WM_RBUTTONDOWN:
-    ref_.mouse(mouse_click_ev(mouse_event::pressed, mouse::button::right));
-    break;
-  case WM_LBUTTONUP:
-    ref_.mouse(mouse_click_ev(mouse_event::released, mouse::button::left));
-    break;
-  case WM_MBUTTONUP:
-    ref_.mouse(mouse_click_ev(mouse_event::released, mouse::button::middle));
-    break;
-  case WM_RBUTTONUP:
-    ref_.mouse(mouse_click_ev(mouse_event::released, mouse::button::right));
-    break;
-  case WM_LBUTTONDBLCLK:
-    ref_.mouse(mouse_click_ev(mouse_event::pressed, mouse::button::left));
-    ref_.mouse(mouse_click_ev(mouse_event::dbl_clicked, mouse::button::left));
-    break;
-  case WM_MBUTTONDBLCLK:
-    ref_.mouse(mouse_click_ev(mouse_event::pressed, mouse::button::middle));
-    ref_.mouse(mouse_click_ev(mouse_event::dbl_clicked, mouse::button::middle));
-    break;
-  case WM_RBUTTONDBLCLK:
-    ref_.mouse(mouse_click_ev(mouse_event::pressed, mouse::button::right));
-    ref_.mouse(mouse_click_ev(mouse_event::dbl_clicked, mouse::button::right));
-    break;
-  case WM_MOUSEWHEEL:
-    ref_.mouse(mouse_wheel_ev(mouse_event::wheeled));
-    break;
-  case WM_MOUSELEAVE:
-    mouse_tracked_ = false;
-    ref_.mouse(mouse_ev(mouse_event::leaved));
-    break;
+    case WM_KEYDOWN:
+    case WM_SYSKEYDOWN:
+      ref_.keyboard(keyboard_ev(keyboard_event::pressed));
+      break;
+    case WM_KEYUP:
+    case WM_SYSKEYUP:
+      ref_.keyboard(keyboard_ev(keyboard_event::released));
+      break;
+    case WM_LBUTTONDOWN:
+      ref_.mouse(mouse_click_ev(mouse_event::pressed, mouse::button::left));
+      break;
+    case WM_MBUTTONDOWN:
+      ref_.mouse(mouse_click_ev(mouse_event::pressed, mouse::button::middle));
+      break;
+    case WM_RBUTTONDOWN:
+      ref_.mouse(mouse_click_ev(mouse_event::pressed, mouse::button::right));
+      break;
+    case WM_LBUTTONUP:
+      ref_.mouse(mouse_click_ev(mouse_event::released, mouse::button::left));
+      break;
+    case WM_MBUTTONUP:
+      ref_.mouse(mouse_click_ev(mouse_event::released, mouse::button::middle));
+      break;
+    case WM_RBUTTONUP:
+      ref_.mouse(mouse_click_ev(mouse_event::released, mouse::button::right));
+      break;
+    case WM_LBUTTONDBLCLK:
+      ref_.mouse(mouse_click_ev(mouse_event::pressed, mouse::button::left));
+      ref_.mouse(mouse_click_ev(mouse_event::dbl_clicked, mouse::button::left));
+      break;
+    case WM_MBUTTONDBLCLK:
+      ref_.mouse(mouse_click_ev(mouse_event::pressed, mouse::button::middle));
+      ref_.mouse(mouse_click_ev(mouse_event::dbl_clicked, mouse::button::middle));
+      break;
+    case WM_RBUTTONDBLCLK:
+      ref_.mouse(mouse_click_ev(mouse_event::pressed, mouse::button::right));
+      ref_.mouse(mouse_click_ev(mouse_event::dbl_clicked, mouse::button::right));
+      break;
+    case WM_MOUSEWHEEL:
+      ref_.mouse(mouse_wheel_ev(mouse_event::wheeled));
+      break;
+    case WM_MOUSELEAVE:
+      mouse_tracked_ = false;
+      ref_.mouse(mouse_ev(mouse_event::leaved));
+      break;
     case WM_MOUSEMOVE:
-    if (!mouse_tracked_) {
-      mouse::impl::track(handle_);
-      mouse_tracked_ = true;
+    {
+      if (!mouse_tracked_) {
+        mouse::impl::track(handle_);
+        mouse_tracked_ = true;
 
-      ref_.mouse(mouse_ev(mouse_event::entered));
-      ref_.mouse(mouse_move_ev(mouse_event::moved, true));
-    } else {
-      ref_.mouse(mouse_move_ev(mouse_event::moved, false));
+        ref_.mouse(mouse_ev(mouse_event::entered));
+        ref_.mouse(mouse_move_ev(mouse_event::moved, true));
+      } else {
+        ref_.mouse(mouse_move_ev(mouse_event::moved, false));
+      }
     }
     break;
-  case WM_EXITSIZEMOVE:
+    case WM_EXITSIZEMOVE:
     {
       RECT clirect, winrect;
       GetClientRect(
@@ -221,14 +223,13 @@ LRESULT widget_impl::internal(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
       }
     }
     break;
-  case WM_CLOSE:
-    ref_.status(status_event{status_event::closed});
-    break;
-  case WM_SETCURSOR:
-    ref_.cursor_.refresh();
-    break;
-  default:
-    break;
+    case WM_CLOSE:
+      ref_.status(status_event{status_event::closed});
+      break;
+    case WM_SETCURSOR:
+      ref_.cursor_.refresh();
+      break;
+    default: {}
   }
   return DefWindowProc(
     hwnd,

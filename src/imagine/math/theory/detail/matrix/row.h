@@ -48,14 +48,9 @@ public:
   auto rows() const { return matrix_traits<matrix_row>::n_rows; }
   auto cols() const { return xpr_.cols(); }
 
-  decltype(auto) operator()(size_t, size_t col) const 
-  { return xpr_(row_, col); }
-  decltype(auto) operator()(size_t, size_t col) 
-  { return xpr_(row_, col); }
-
-  decltype(auto) operator[](size_t n) const 
+  decltype(auto) operator[](size_t n) const
   { return xpr_(row_, n); }
-  decltype(auto) operator[](size_t n) 
+  decltype(auto) operator[](size_t n)
   { return xpr_(row_, n); }
 
   template <typename Mat>

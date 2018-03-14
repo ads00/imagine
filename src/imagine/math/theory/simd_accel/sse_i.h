@@ -79,7 +79,7 @@ inline auto operator<=(const int4& lhs, const int4& rhs) { return !(lhs > rhs); 
 inline auto min(const int4& lhs, const int4& rhs) { return select(lhs < rhs, lhs, rhs); }
 inline auto max(const int4& lhs, const int4& rhs) { return select(lhs > rhs, lhs, rhs); }
 
-// Movement & Shifting & Shuffling
+// Movement & Shuffling
 inline auto unpacklo(const int4& lhs, const int4& rhs) { return int4{_mm_unpacklo_epi32(lhs, rhs)}; }
 inline auto unpackhi(const int4& lhs, const int4& rhs) { return int4{_mm_unpackhi_epi32(lhs, rhs)}; }
 

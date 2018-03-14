@@ -82,7 +82,7 @@ inline bool all(const bool4& v)  { return movemask(v) == 0xf; }
 inline bool any(const bool4& v)  { return movemask(v) != 0x0; }
 inline bool none(const bool4& v) { return movemask(v) == 0x0; }
 
-// Movement & Shifting & Shuffling
+// Movement & Shuffling
 inline auto unpacklo(const bool4& lhs, const bool4& rhs) { return bool4{_mm_unpacklo_ps(lhs, rhs)}; }
 inline auto unpackhi(const bool4& lhs, const bool4& rhs) { return bool4{_mm_unpackhi_ps(lhs, rhs)}; }
 
