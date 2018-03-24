@@ -35,22 +35,31 @@ struct instance::impl {
   VkDebugReportCallbackEXT dbg_callback;
 
   // Vulkan instance extensions
-  // Registered and published KHR(X) and EXT extensions supported
-  // VK_KHR_surface rev. 25
-  // VK_KHR_display rev. 21
-  // VK_KHR_xlib_surface rev. 6
-  // VK_KHR_xcb_surface rev. 6
-  // VK_KHR_wayland_surface rev. 6
-  // VK_KHR_mir_surface rev. 4
-  // VK_KHR_android_surface rev. 6
-  // VK_KHR_win32_surface rev. 6
-  // VK_EXT_debug_report rev. 8
-  // VK_EXT_validation_flags rev. 1
-  // VK_NN_vi_surface rev. 1
-  // VK_KHX_device_group_creation rev. 1 (draft)
-  // VK_EXT_direct_mode_display rev. 1
-  // VK_MVK_ios_surface rev. 2
-  // VK_MVK_macos_surface rev. 2
+  // Registered and published KHR and EXT extensions supported
+  // VK_KHR_surface rev. 25 [James Jones, Ian Elliott]
+  // VK_KHR_display rev. 21 [James Jones, Norbert Nopper]
+  // VK_KHR_get_physical_device_properties2 rev. 1 [Jeff Bolz]
+  // VK_KHR_device_group_creation rev. 1 [Jeff Bolz]
+  // VK_KHR_external_memory_capabilities rev. 1 [James Jones]
+  // VK_KHR_external_semaphore_capabilities rev. 1 [James Jones]
+  // VK_KHR_external_fence_capabilities rev. 1 [Jesse Hall]
+  // VK_KHR_get_surface_capabilities2 rev. 1 [James Jones]
+  // VK_EXT_debug_report rev. 9 [Courtney Goeltzenleuchter]
+  // VK_EXT_validation_flags rev. 1 [Tobin Ehlis]
+  // VK_EXT_direct_mode_display rev. 1 [James Jones]
+  // VK_EXT_display_surface_counter rev. 1 [James Jones]
+  // VK_EXT_swapchain_colorspace rev. 3 [Courtney Goeltzenleuchter]
+  // VK_EXT_debug_utils rev. 1 [Mark Young]
+
+  // VK_KHR_xlib_surface rev. 6 [Jesse Hall, Ian Elliott]
+  // VK_KHR_xcb_surface rev. 6 [Jesse Hall, Ian Elliott]
+  // VK_KHR_wayland_surface rev. 6 [Jesse Hall, Ian Elliott]
+  // VK_KHR_mir_surface rev. 4 [Jesse Hall, Ian Elliott]
+  // VK_KHR_win32_surface rev. 6 [Jesse Hall, Ian Elliott]
+  // VK_KHR_android_surface rev. 6 [Jesse Hall]
+  // VK_MVK_macos_surface rev. 2 [Bill Hollings]
+  // VK_MVK_ios_surface rev. 2 [Bill Hollings]
+  // VK_NN_vi_surface rev. 1 [Mathias Heyer]
   std::vector<VkExtensionProperties> extensions;
 
   // Official Vulkan SDK layers
@@ -59,7 +68,6 @@ struct instance::impl {
   // VK_LAYER_LUNARG_parameter_validation impl. 1
   // VK_LAYER_LUNARG_object_tracker impl. 1
   // VK_LAYER_LUNARG_core_validation impl. 1
-  // VK_LAYER_LUNARG_swapchain impl. 1
   // VK_LAYER_GOOGLE_unique_objects impl. 1
   std::vector<VkLayerProperties> layers; };
 

@@ -23,7 +23,6 @@
 
 #include "imagine/envi/impl_vk/detail/vulkan.h"
 #include "imagine/envi/impl_vk/detail/device.h"
-#include "imagine/envi/impl_vk/memory.h"
 #include "imagine/envi/impl_vk/surface.h"
 
 namespace ig {
@@ -31,24 +30,54 @@ namespace vk {
 
 struct device::impl {
   // Vulkan device extensions
-  // Registered and published KHR(X) and EXT extensions supported
-  // VK_KHR_swapchain rev. 68
-  // VK_KHR_display_swapchain rev. 9 (draft)
-  // VK_KHR_sampler_mirror_clamp_to_edge rev. 1 (final)
-  // VK_KHR_shader_draw_parameters rev. 1 (complete)
-  // VK_KHR_maintenance1 rev. 1 (draft)
-  // VK_KHR_push_descriptor rev. 1 (draft)
-  // VK_KHR_incremental_present rev. 1
-  // VK_KHR_descriptor_update_template rev. 1 (in work)
-  // VK_KHR_shared_presentable_image rev. 1
-  // VK_EXT_debug_marker rev. 4
-  // VK_KHX_multiview rev. 1 (draft)
-  // VK_KHX_device_group rev. 1 (draft)
-  // VK_EXT_shader_subgroup_ballot rev. 1 (draft)
-  // VK_EXT_shader_subgroup_vote rev. 1 (draft)
-  // VK_EXT_display_control rev. 1
-  // VK_EXT_discard_rectangles rev. 1 (complete)
-  // VK_EXT_hdr_metadata rev. 1
+  // Registered and published KHR and EXT extensions supported
+  // VK_KHR_swapchain rev. 70 [James Jones, Ian Elliott]
+  // VK_KHR_display_swapchain rev. 9 [James Jones]
+  // VK_KHR_sampler_mirror_clamp_to_edge rev. 1 [Tobias Hector]
+  // VK_KHR_multiview rev. 1 [Jeff Bolz]
+  // VK_KHR_device_group rev. 3 [Jeff Bolz]
+  // VK_KHR_shader_draw_parameters rev. 1 [Daniel Koch]
+  // VK_KHR_maintenance1 rev. 2 [Piers Daniell]
+  // VK_KHR_external_memory rev. 1 [James Jones]
+  // VK_KHR_external_memory_fd rev. 1 [James Jones]
+  // VK_KHR_external_semaphore rev. 1 [James Jones]
+  // VK_KHR_external_semaphore_fd rev. 1 [James Jones]
+  // VK_KHR_push_descriptor rev. 2 [Jeff Bolz]
+  // VK_KHR_16bit_storage rev. 1 [Jan-Harald Fredriksen]
+  // VK_KHR_incremental_present rev. 1 [Ian Elliott]
+  // VK_KHR_descriptor_update_template rev. 1 [Markus Tavenrath]
+  // VK_KHR_shared_presentable_image rev. 1 [Alon Or-back]
+  // VK_KHR_external_fence rev. 1 [Jesse Hall]
+  // VK_KHR_external_fence_fd rev. 1 [Jesse Hall]
+  // VK_KHR_maintenance2 rev. 1 [Michael Worcester]
+  // VK_KHR_variable_pointers rev. 1 [Jesse Hall]
+  // VK_KHR_dedicated_allocation rev. 3 [James Jones]
+  // VK_KHR_storage_buffer_storage_class rev. 1 [Alexander Galazin]
+  // VK_KHR_relaxed_block_layout rev. 1 [John Kessenich]
+  // VK_KHR_get_memory_requirements2 rev. 1 [Jason Ekstrand]
+  // VK_KHR_image_format_list rev. 1 [Jason Ekstrand]
+  // VK_KHR_sampler_ycbcr_conversion rev. 1 [Andrew Garrard]
+  // VK_KHR_bind_memory2 rev. 1 [Tobias Hector]
+  // VK_KHR_maintenance3 rev. 1 [Jeff Bolz]
+  // VK_EXT_depth_range_unrestricted rev. 1 [Piers Daniell]
+  // VK_EXT_debug_marker rev. 4 [Baldur Karlsson]
+  // VK_EXT_shader_subgroup_ballot rev. 1 [Daniel Koch]
+  // VK_EXT_shader_subgroup_vote rev. 1 [Daniel Koch]
+  // VK_EXT_display_control rev. 1 [James Jones]
+  // VK_EXT_discard_rectangles rev. 1 [Piers Daniell]
+  // VK_EXT_conservative_rasterization rev. 1 [Piers Daniell]
+  // VK_EXT_hdr_metadata rev. 1 [Courtney Goeltzenleuchter]
+  // VK_EXT_external_memory_dma_buf rev. 1 [Chad Versace]
+  // VK_EXT_queue_family_foreign rev. 1 [Chad Versace]
+  // VK_EXT_sampler_filter_minmax rev. 1 [Jeff Bolz]
+  // VK_EXT_sample_locations rev. 1 [Daniel Rakos]
+  // VK_EXT_blend_operation_advanced rev. 2 [Jeff Bolz]
+  // VK_EXT_post_depth_coverage rev. 1 [Jeff Bolz]
+  // VK_EXT_validation_cache rev. 1 [Cort Stratton]
+  // VK_EXT_shader_viewport_index_layer rev. 1 [Daniel Koch]
+  // VK_EXT_global_priority rev. 2 [Andres Rodriguez]
+  // VK_EXT_external_memory_host rev. 1 [Daniel Rakos]
+  // VK_EXT_vertex_attribute_divisor rev. 1 [Vikram Kushwaha]
   std::vector<VkExtensionProperties> extensions; };
 
 device::device(const physical& physical, const std::vector<capabilities>& rq)

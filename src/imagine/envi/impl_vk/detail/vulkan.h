@@ -97,6 +97,45 @@ public:
   PFN_vkCreateDisplayModeKHR vkCreateDisplayModeKHR = nullptr;
   PFN_vkGetDisplayPlaneCapabilitiesKHR vkGetDisplayPlaneCapabilitiesKHR = nullptr;
   PFN_vkCreateDisplayPlaneSurfaceKHR vkCreateDisplayPlaneSurfaceKHR = nullptr;
+  // VK_KHR_get_physical_device_properties2
+  PFN_vkGetPhysicalDeviceFeatures2KHR vkGetPhysicalDeviceFeatures2KHR = nullptr;
+  PFN_vkGetPhysicalDeviceProperties2KHR vkGetPhysicalDeviceProperties2KHR = nullptr;
+  PFN_vkGetPhysicalDeviceFormatProperties2KHR vkGetPhysicalDeviceFormatProperties2KHR = nullptr;
+  PFN_vkGetPhysicalDeviceImageFormatProperties2KHR vkGetPhysicalDeviceImageFormatProperties2KHR = nullptr;
+  PFN_vkGetPhysicalDeviceQueueFamilyProperties2KHR vkGetPhysicalDeviceQueueFamilyProperties2KHR = nullptr;
+  PFN_vkGetPhysicalDeviceMemoryProperties2KHR vkGetPhysicalDeviceMemoryProperties2KHR = nullptr;
+  PFN_vkGetPhysicalDeviceSparseImageFormatProperties2KHR vkGetPhysicalDeviceSparseImageFormatProperties2KHR = nullptr;
+  // VK_KHR_device_group_creation
+  PFN_vkEnumeratePhysicalDeviceGroupsKHR vkEnumeratePhysicalDeviceGroupsKHR = nullptr;
+  // VK_KHR_external_memory_capabilities
+  PFN_vkGetPhysicalDeviceExternalBufferPropertiesKHR vkGetPhysicalDeviceExternalBufferPropertiesKHR = nullptr;
+  // VK_KHR_external_semaphore_capabilities
+  PFN_vkGetPhysicalDeviceExternalSemaphorePropertiesKHR vkGetPhysicalDeviceExternalSemaphorePropertiesKHR = nullptr;
+  // VK_KHR_external_fence_capabilities
+  PFN_vkGetPhysicalDeviceExternalFencePropertiesKHR vkGetPhysicalDeviceExternalFencePropertiesKHR = nullptr;
+  // VK_KHR_get_surface_capabilities2
+  PFN_vkGetPhysicalDeviceSurfaceCapabilities2KHR vkGetPhysicalDeviceSurfaceCapabilities2KHR = nullptr;
+  PFN_vkGetPhysicalDeviceSurfaceFormats2KHR vkGetPhysicalDeviceSurfaceFormats2KHR = nullptr;
+  // VK_EXT_debug_report
+  PFN_vkCreateDebugReportCallbackEXT vkCreateDebugReportCallbackEXT = nullptr;
+  PFN_vkDestroyDebugReportCallbackEXT vkDestroyDebugReportCallbackEXT = nullptr;
+  PFN_vkDebugReportMessageEXT vkDebugReportMessageEXT = nullptr;
+  // VK_EXT_direct_mode_display
+  PFN_vkReleaseDisplayEXT vkReleaseDisplayEXT = nullptr;
+  // VK_EXT_display_surface_counter
+  PFN_vkGetPhysicalDeviceSurfaceCapabilities2EXT vkGetPhysicalDeviceSurfaceCapabilities2EXT = nullptr;
+  // VK_EXT_debug_utils
+  PFN_vkSetDebugUtilsObjectNameEXT vkSetDebugUtilsObjectNameEXT = nullptr;
+  PFN_vkSetDebugUtilsObjectTagEXT vkSetDebugUtilsObjectTagEXT = nullptr;
+  PFN_vkQueueBeginDebugUtilsLabelEXT vkQueueBeginDebugUtilsLabelEXT = nullptr;
+  PFN_vkQueueEndDebugUtilsLabelEXT vkQueueEndDebugUtilsLabelEXT = nullptr;
+  PFN_vkQueueInsertDebugUtilsLabelEXT vkQueueInsertDebugUtilsLabelEXT = nullptr;
+  PFN_vkCmdBeginDebugUtilsLabelEXT vkCmdBeginDebugUtilsLabelEXT = nullptr;
+  PFN_vkCmdEndDebugUtilsLabelEXT vkCmdEndDebugUtilsLabelEXT = nullptr;
+  PFN_vkCmdInsertDebugUtilsLabelEXT vkCmdInsertDebugUtilsLabelEXT = nullptr;
+  PFN_vkCreateDebugUtilsMessengerEXT vkCreateDebugUtilsMessengerEXT = nullptr;
+  PFN_vkDestroyDebugUtilsMessengerEXT vkDestroyDebugUtilsMessengerEXT = nullptr;
+  PFN_vkSubmitDebugUtilsMessageEXT vkSubmitDebugUtilsMessageEXT = nullptr;
 
   #if defined(VK_USE_PLATFORM_XLIB_KHR)
   // VK_KHR_xlib_surface
@@ -118,36 +157,27 @@ public:
   PFN_vkCreateMirSurfaceKHR vkCreateMirSurfaceKHR = nullptr;
   PFN_vkGetPhysicalDeviceMirPresentationSupportKHR vkGetPhysicalDeviceMirPresentationSupportKHR = nullptr;
   #endif
-  #if defined(VK_USE_PLATFORM_ANDROID_KHR)
-  // VK_KHR_android_surface
-  PFN_vkCreateAndroidSurfaceKHR vkCreateAndroidSurfaceKHR = nullptr;
-  #endif
   #if defined(VK_USE_PLATFORM_WIN32_KHR)
   // VK_KHR_win32_surface
   PFN_vkCreateWin32SurfaceKHR vkCreateWin32SurfaceKHR = nullptr;
   PFN_vkGetPhysicalDeviceWin32PresentationSupportKHR vkGetPhysicalDeviceWin32PresentationSupportKHR = nullptr;
   #endif
-  #if defined(VK_USE_PLATFORM_VI_NN)
-  // VK_NN_vi_surface
-  PFN_vkCreateViSurfaceNN vkCreateViSurfaceNN = nullptr;
-  #endif
-  #if defined(VK_USE_PLATFORM_IOS_MVK)
-  // VK_MVK_ios_surface
-  PFN_vkCreateIOSSurfaceMVK vkCreateIOSSurfaceMVK = nullptr;
+  #if defined(VK_USE_PLATFORM_ANDROID_KHR)
+  // VK_KHR_android_surface
+  PFN_vkCreateAndroidSurfaceKHR vkCreateAndroidSurfaceKHR = nullptr;
   #endif
   #if defined(VK_USE_PLATFORM_MACOS_MVK)
   // VK_MVK_macos_surface
   PFN_vkCreateMacOSSurfaceMVK vkCreateMacOSSurfaceMVK = nullptr;
   #endif
-
-  // VK_EXT_debug_report
-  PFN_vkCreateDebugReportCallbackEXT vkCreateDebugReportCallbackEXT = nullptr;
-  PFN_vkDestroyDebugReportCallbackEXT vkDestroyDebugReportCallbackEXT = nullptr;
-  PFN_vkDebugReportMessageEXT vkDebugReportMessageEXT = nullptr;
-  // VK_KHX_device_group_creation
-  PFN_vkEnumeratePhysicalDeviceGroupsKHX vkEnumeratePhysicalDeviceGroupsKHX = nullptr;
-  // VK_EXT_direct_mode_display
-  PFN_vkReleaseDisplayEXT vkReleaseDisplayEXT = nullptr;
+  #if defined(VK_USE_PLATFORM_IOS_MVK)
+  // VK_MVK_ios_surface
+  PFN_vkCreateIOSSurfaceMVK vkCreateIOSSurfaceMVK = nullptr;
+  #endif
+  #if defined(VK_USE_PLATFORM_VI_NN)
+  // VK_NN_vi_surface
+  PFN_vkCreateViSurfaceNN vkCreateViSurfaceNN = nullptr;
+  #endif
 };
 
 class IG_API dPfn {
@@ -292,35 +322,54 @@ public:
   PFN_vkGetSwapchainImagesKHR vkGetSwapchainImagesKHR = nullptr;
   PFN_vkAcquireNextImageKHR vkAcquireNextImageKHR = nullptr;
   PFN_vkQueuePresentKHR vkQueuePresentKHR = nullptr;
+  PFN_vkGetDeviceGroupPresentCapabilitiesKHR vkGetDeviceGroupPresentCapabilitiesKHR = nullptr;
+  PFN_vkGetDeviceGroupSurfacePresentModesKHR vkGetDeviceGroupSurfacePresentModesKHR = nullptr;
+  PFN_vkGetPhysicalDevicePresentRectanglesKHR vkGetPhysicalDevicePresentRectanglesKHR = nullptr;
+  PFN_vkAcquireNextImage2KHR vkAcquireNextImage2KHR = nullptr;
   // VK_KHR_display_swapchain
   PFN_vkCreateSharedSwapchainsKHR vkCreateSharedSwapchainsKHR = nullptr;
+  // VK_KHR_device_group
+  PFN_vkGetDeviceGroupPeerMemoryFeaturesKHR vkGetDeviceGroupPeerMemoryFeaturesKHR = nullptr;
+  PFN_vkCmdSetDeviceMaskKHR vkCmdSetDeviceMaskKHR = nullptr;
+  PFN_vkCmdDispatchBaseKHR vkCmdDispatchBaseKHR = nullptr;
   // VK_KHR_maintenance1
   PFN_vkTrimCommandPoolKHR vkTrimCommandPoolKHR = nullptr;
+  // VK_KHR_external_memory_fd
+  PFN_vkGetMemoryFdKHR vkGetMemoryFdKHR = nullptr;
+  PFN_vkGetMemoryFdPropertiesKHR vkGetMemoryFdPropertiesKHR = nullptr;
+  // VK_KHR_external_semaphore_fd
+  PFN_vkImportSemaphoreFdKHR vkImportSemaphoreFdKHR = nullptr;
+  PFN_vkGetSemaphoreFdKHR vkGetSemaphoreFdKHR = nullptr;
   // VK_KHR_push_descriptor
   PFN_vkCmdPushDescriptorSetKHR vkCmdPushDescriptorSetKHR = nullptr;
+  PFN_vkCmdPushDescriptorSetWithTemplateKHR vkCmdPushDescriptorSetWithTemplateKHR = nullptr;
   // VK_KHR_descriptor_update_template
   PFN_vkCreateDescriptorUpdateTemplateKHR vkCreateDescriptorUpdateTemplateKHR = nullptr;
   PFN_vkDestroyDescriptorUpdateTemplateKHR vkDestroyDescriptorUpdateTemplateKHR = nullptr;
   PFN_vkUpdateDescriptorSetWithTemplateKHR vkUpdateDescriptorSetWithTemplateKHR = nullptr;
-  PFN_vkCmdPushDescriptorSetWithTemplateKHR vkCmdPushDescriptorSetWithTemplateKHR = nullptr;
   // VK_KHR_shared_presentable_image
   PFN_vkGetSwapchainStatusKHR vkGetSwapchainStatusKHR = nullptr;
+  // VK_KHR_external_fence_fd
+  PFN_vkImportFenceFdKHR vkImportFenceFdKHR = nullptr;
+  PFN_vkGetFenceFdKHR vkGetFenceFdKHR = nullptr;
+  // VK_KHR_get_memory_requirements2
+  PFN_vkGetImageMemoryRequirements2KHR vkGetImageMemoryRequirements2KHR = nullptr;
+  PFN_vkGetBufferMemoryRequirements2KHR vkGetBufferMemoryRequirements2KHR = nullptr;
+  PFN_vkGetImageSparseMemoryRequirements2KHR vkGetImageSparseMemoryRequirements2KHR = nullptr;
+  // VK_KHR_sampler_ycbcr_conversion
+  PFN_vkCreateSamplerYcbcrConversionKHR vkCreateSamplerYcbcrConversionKHR = nullptr;
+  PFN_vkDestroySamplerYcbcrConversionKHR vkDestroySamplerYcbcrConversionKHR = nullptr;
+  // VK_KHR_bind_memory2
+  PFN_vkBindBufferMemory2KHR vkBindBufferMemory2KHR = nullptr;
+  PFN_vkBindImageMemory2KHR vkBindImageMemory2KHR = nullptr;
+  // VK_KHR_maintenance3
+  PFN_vkGetDescriptorSetLayoutSupportKHR vkGetDescriptorSetLayoutSupportKHR = nullptr;
   // VK_EXT_debug_marker
   PFN_vkDebugMarkerSetObjectTagEXT vkDebugMarkerSetObjectTagEXT = nullptr;
   PFN_vkDebugMarkerSetObjectNameEXT vkDebugMarkerSetObjectNameEXT = nullptr;
   PFN_vkCmdDebugMarkerBeginEXT vkCmdDebugMarkerBeginEXT = nullptr;
   PFN_vkCmdDebugMarkerEndEXT vkCmdDebugMarkerEndEXT = nullptr;
   PFN_vkCmdDebugMarkerInsertEXT vkCmdDebugMarkerInsertEXT = nullptr;
-  // VK_KHX_device_group
-  PFN_vkGetDeviceGroupPeerMemoryFeaturesKHX vkGetDeviceGroupPeerMemoryFeaturesKHX = nullptr;
-  PFN_vkBindBufferMemory2KHX vkBindBufferMemory2KHX = nullptr;
-  PFN_vkBindImageMemory2KHX vkBindImageMemory2KHX = nullptr;
-  PFN_vkCmdSetDeviceMaskKHX vkCmdSetDeviceMaskKHX = nullptr;
-  PFN_vkGetDeviceGroupPresentCapabilitiesKHX vkGetDeviceGroupPresentCapabilitiesKHX = nullptr;
-  PFN_vkGetDeviceGroupSurfacePresentModesKHX vkGetDeviceGroupSurfacePresentModesKHX = nullptr;
-  PFN_vkAcquireNextImage2KHX vkAcquireNextImage2KHX = nullptr;
-  PFN_vkCmdDispatchBaseKHX vkCmdDispatchBaseKHX = nullptr;
-  PFN_vkGetPhysicalDevicePresentRectanglesKHX vkGetPhysicalDevicePresentRectanglesKHX = nullptr;
   // VK_EXT_display_control
   PFN_vkDisplayPowerControlEXT vkDisplayPowerControlEXT = nullptr;
   PFN_vkRegisterDeviceEventEXT vkRegisterDeviceEventEXT = nullptr;
@@ -330,6 +379,16 @@ public:
   PFN_vkCmdSetDiscardRectangleEXT vkCmdSetDiscardRectangleEXT = nullptr;
   // VK_EXT_hdr_metadata
   PFN_vkSetHdrMetadataEXT vkSetHdrMetadata = nullptr;
+  // VK_EXT_sample_locations
+  PFN_vkCmdSetSampleLocationsEXT vkCmdSetSampleLocationsEXT = nullptr;
+  PFN_vkGetPhysicalDeviceMultisamplePropertiesEXT vkGetPhysicalDeviceMultisamplePropertiesEXT = nullptr;
+  // VK_EXT_validation_cache
+  PFN_vkCreateValidationCacheEXT vkCreateValidationCacheEXT = nullptr;
+  PFN_vkDestroyValidationCacheEXT vkDestroyValidationCacheEXT = nullptr;
+  PFN_vkMergeValidationCachesEXT vkMergeValidationCachesEXT = nullptr;
+  PFN_vkGetValidationCacheDataEXT vkGetValidationCacheDataEXT = nullptr;
+  // VK_EXT_external_memory_host
+  PFN_vkGetMemoryHostPointerPropertiesEXT vkGetMemoryHostPointerPropertiesEXT = nullptr;
 };
 
 } // namespace vk

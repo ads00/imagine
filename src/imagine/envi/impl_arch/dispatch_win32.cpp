@@ -91,7 +91,7 @@ void dispatch::process_events() {
   while (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE)) {
     TranslateMessage(&msg);
     DispatchMessage(&msg);
-  } tick_();
+  } if (native_->running_) tick_();
 }
 
 } // namespace ig
