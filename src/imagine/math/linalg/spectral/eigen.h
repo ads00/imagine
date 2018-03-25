@@ -28,9 +28,10 @@
 
 namespace ig {
 
-template 
-< typename Mat, 
-  bool Symmetric = false > class eigen;
+template
+< typename Mat,
+  bool Symmetric = false >
+class eigen;
 
 // Symmetric eigendecomposition
 template <typename Mat>
@@ -64,7 +65,7 @@ eigen<Mat, true>::eigen(const matrix_type& mat)
   value_type  s = 0;
   // Symmetric Householder reduction to tridiagonal form
   for (size_t i = n_; i-- > 1; ) {
-    
+
     if (i - 1 > 0) {
       // Generate Householder vector
       for (size_t j = 0; j < i; ++j) s += v_(i, j) * v_(i, j);
@@ -116,7 +117,7 @@ eigen<Mat, true>::eigen(const matrix_type& mat)
     v_(i, i) = 1;
     for (size_t j = 0; j < i; ++j) v_(j, i) = v_(i, j) = 0;
   }
-  
+
   for (size_t i = 1; i < n_; ++i) e[i - 1] = e[i];
 
   // Symmetric tridiagonal QL algorithm
@@ -131,7 +132,7 @@ eigen<Mat, true>::eigen(const matrix_type& mat)
       }
 
       // Check for convergence
-      if (m == l) 
+      if (m == l)
         break;
       if (iter == sweeps) {
         throw std::logic_error{"Eigendecomposition failed (No convergence)"};
@@ -141,8 +142,8 @@ eigen<Mat, true>::eigen(const matrix_type& mat)
       auto d = (d_[l + 1] - d_[l]) / (2 * e[l]);
       auto g = (d_[m] - d_[l]) + e[l] / (d + sign(d) * std::hypot(d, value_type(1)));
       value_type
-        c = 1, 
-        s = 1, 
+        c = 1,
+        s = 1,
         p = 0;
 
       // Implicit QL transformation

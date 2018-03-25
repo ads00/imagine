@@ -33,6 +33,7 @@ struct vertex;
 
 class shape {
 public:
+  virtual ~shape() = default;
   virtual float pdf() const { return 1.f / area(); }
 
   virtual bbox bounds() const = 0;

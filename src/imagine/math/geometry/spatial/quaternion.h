@@ -59,30 +59,29 @@ public:
 
 template <typename Arithmetic>
 auto operator+(const quaternion<Arithmetic>& lhs, const quaternion<Arithmetic>& rhs)
-{ return quaternion<Arithmetic>(lhs.scalar + rhs.scalar, lhs.vector + rhs.vector); }
+{ return quaternion<Arithmetic>{lhs.scalar + rhs.scalar, lhs.vector + rhs.vector}; }
 
 template <typename Arithmetic>
 auto operator-(const quaternion<Arithmetic>& lhs, const quaternion<Arithmetic>& rhs)
-{ return quaternion<Arithmetic>(lhs.scalar - rhs.scalar, lhs.vector - rhs.vector); }
+{ return quaternion<Arithmetic>{lhs.scalar - rhs.scalar, lhs.vector - rhs.vector}; }
 
 template <typename Arithmetic>
 auto operator*(const quaternion<Arithmetic>& lhs, const quaternion<Arithmetic>& rhs) {
-  return quaternion<Arithmetic>(
-    lhs.scalar * rhs.scalar - lin::dot(lhs.vector, rhs.vector),
-    lhs.scalar * rhs.vector + rhs.scalar * lhs.vector + lin::cross(lhs.vector, rhs.vector));
+  return quaternion<Arithmetic>{lhs.scalar * rhs.scalar - lin::dot(lhs.vector, rhs.vector),
+                                lhs.scalar * rhs.vector + rhs.scalar * lhs.vector + lin::cross(lhs.vector, rhs.vector)};
 }
 
 template <typename Arithmetic>
-auto operator*(const quaternion<Arithmetic>& lhs, const Arithmetic rhs)
-{ return quaternion<Arithmetic>(lhs.scalar * rhs, lhs.vector * rhs); }
+auto operator*(const quaternion<Arithmetic>& lhs, Arithmetic rhs)
+{ return quaternion<Arithmetic>{lhs.scalar * rhs, lhs.vector * rhs}; }
 
 template <typename Arithmetic>
-auto operator*(const Arithmetic rhs, const quaternion<Arithmetic>& lhs)
-{ return quaternion<Arithmetic>(rhs * lhs.scalar, rhs * lhs.vector); }
+auto operator*(Arithmetic rhs, const quaternion<Arithmetic>& lhs)
+{ return quaternion<Arithmetic>{rhs * lhs.scalar, rhs * lhs.vector}; }
 
 template <typename Arithmetic>
-auto operator/(const quaternion<Arithmetic>& lhs, const Arithmetic rhs)
-{ return quaternion<Arithmetic>(lhs.scalar / rhs, lhs.vector / rhs); }
+auto operator/(const quaternion<Arithmetic>& lhs, Arithmetic rhs)
+{ return quaternion<Arithmetic>{lhs.scalar / rhs, lhs.vector / rhs}; }
 
 template <typename Arithmetic>
 auto& operator+=(quaternion<Arithmetic>& lhs, const quaternion<Arithmetic>& rhs)
@@ -97,11 +96,11 @@ auto& operator*=(quaternion<Arithmetic>& lhs, const quaternion<Arithmetic>& rhs)
 { return lhs = lhs * rhs; }
 
 template <typename Arithmetic>
-auto& operator*=(quaternion<Arithmetic>& lhs, const Arithmetic rhs)
+auto& operator*=(quaternion<Arithmetic>& lhs, Arithmetic rhs)
 { return lhs = lhs * rhs; }
 
 template <typename Arithmetic>
-auto& operator/=(quaternion<Arithmetic>& lhs, const Arithmetic rhs)
+auto& operator/=(quaternion<Arithmetic>& lhs, const quaternion<Arithmetic>& rhs)
 { return lhs = lhs / rhs; }
 
 template <typename Arithmetic>

@@ -30,10 +30,10 @@
 
 namespace ig {
 
-template <typename Signature> 
+template <typename Signature>
 class call;
-template 
-< typename ReturnType, 
+template
+< typename ReturnType,
   typename... Args >
 class call<ReturnType(Args...)> {
 public:
@@ -79,8 +79,8 @@ template
 < typename ReturnType,
   typename... Args >
 template <typename Collect>
-void call<ReturnType(Args...)>::emit(Args&&... args, Collect&& fn) const {
- for (auto& sub : subs_) fn(sub->fn_(std::forward<Args>(args)...)); }
+void call<ReturnType(Args...)>::emit(Args&&... args, Collect&& fn) const
+{ for (auto& sub : subs_) fn(sub->fn_(std::forward<Args>(args)...)); }
 
 template
 < typename ReturnType,
@@ -103,9 +103,9 @@ template
 void call<ReturnType(Args...)>::subscriber::disconnect() {
   call_.subs_.erase(
     std::remove_if(
-      call_.subs_.begin(), 
-      call_.subs_.end(), 
-      [this](auto& sub) { return sub.get() == this; }), 
+      call_.subs_.begin(),
+      call_.subs_.end(),
+      [this](auto& sub) { return sub.get() == this; }),
     call_.subs_.end());
 }
 
