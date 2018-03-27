@@ -21,8 +21,8 @@
  SOFTWARE.
 */
 
-#ifndef IG_MATH_BINNING_H
-#define IG_MATH_BINNING_H
+#ifndef IG_MATH_BIN_H
+#define IG_MATH_BIN_H
 
 #include "imagine/math/geometry/proj.h"
 
@@ -105,12 +105,11 @@ auto& bin::pack(PrimIterator begin, PrimIterator end, const bin_mapping& mapping
     begin,
     end,
     [this, &mapping](auto& primitive) {
-      auto bounds = primitive.bounds;
-      auto binmap = mapping.bin(bounds.min + bounds.max);
-      for (uint32_t d = 0; d < dimensions; ++d) bounds_[static_cast<size_t>(binmap[d])][d].expand(bounds);
+      auto binmap = mapping.bin(primitive.bounds.min + primitive.bounds.max);
+      for (uint32_t d = 0; d < dimensions; ++d) bounds_[static_cast<size_t>(binmap[d])][d].expand(primitive.bounds);
     }); return *this;
 }
 
 } // namespace ig
 
-#endif // IG_MATH_BINNING_H
+#endif // IG_MATH_BIN_H

@@ -25,7 +25,7 @@
 #define IG_MATH_TREE_H
 
 #include "imagine/math/geometry/proj.h"
-#include "imagine/math/geometry/structure/visit.h"
+#include "imagine/math/geometry/structure/traversal.h"
 
 namespace ig {
 namespace builder { template <typename Hierarchy, typename Heuristic> class sah; }
@@ -34,7 +34,7 @@ template <typename Object>
 class tree {
 public:
   template <typename Hierarchy, typename Heuristic> friend class builder::sah;
-  friend visit;
+  friend traversal;
   static constexpr size_t M = IG_PACKET_WIDE;
 
   struct ref {
@@ -56,7 +56,7 @@ public:
       x.back ()[i] = bounds.max[0]; y.back ()[i] = bounds.max[1]; z.back ()[i] = bounds.max[2]; children[i] = node; }
 
     bool intersect(
-      visit& ray,
+      traversal& ray,
       const packet& tnear,
       const packet& tfar) const;
 
@@ -84,7 +84,7 @@ bool tree<Object>::optimize() {
 }
 
 template <typename Object>
-bool tree<Object>::node::intersect(visit& ray, const packet& tnear, const packet& tfar) const {
+bool tree<Object>::node::intersect(traversal& ray, const packet& tnear, const packet& tfar) const {
   auto nx = (x[1 - ray.x_sgn] - ray.origin[0]) * ray.rcp_direction[0];
   auto ny = (y[1 - ray.y_sgn] - ray.origin[1]) * ray.rcp_direction[1];
   auto nz = (z[1 - ray.z_sgn] - ray.origin[2]) * ray.rcp_direction[2];

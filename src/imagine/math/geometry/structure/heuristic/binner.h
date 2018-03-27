@@ -21,56 +21,53 @@
  SOFTWARE.
 */
 
-#ifndef IG_MATH_HEURISTIC_BINNED_H
-#define IG_MATH_HEURISTIC_BINNED_H
+#ifndef IG_MATH_HEURISTIC_BINNER_H
+#define IG_MATH_HEURISTIC_BINNER_H
 
-#include "imagine/math/geometry/structure/binning.h"
-#include "imagine/math/geometry/structure/priminfo.h"
+#include "imagine/math/geometry/structure/bin.h"
+#include "imagine/math/geometry/structure/heuristic/tprim.h"
 
 namespace ig        {
 namespace heuristic {
 
-class binned {
+class binner {
 public:
-  using binner = bin;
-  using cut    = typename binner::cut;
+  using cut = typename bin::cut;
 
-  struct record {
-    auto size() const { return end - begin; }
-    auto expand(const bbox& bounds) { geometry_bounds.expand(bounds); centroid_bounds.expand(bounds.min + bounds.max); ++end; }
-    size_t begin, end;
-    bbox geometry_bounds, centroid_bounds; };
-
-  explicit binned(std::vector<prim_info>& primitives, uint32_t splits)
+  explicit binner(std::vector<build_prim>& primitives, uint32_t splits)
     : primitives_(primitives)
     , splits_{splits} {}
 
-  auto find(const record& record);
+  auto find(const build_record& record);
   auto partition(const cut& cut, size_t begin, size_t end);
 
 private:
-  std::vector<prim_info>& primitives_;
+  std::vector<build_prim>& primitives_;
   uint32_t splits_;
 };
 
-auto binned::find(const record& record) {
+auto binner::find(const build_record& record) {
   bin_mapping map{splits_, record.centroid_bounds};
   return bin{splits_}
     .pack(std::next(primitives_.begin(), record.begin), std::next(primitives_.begin(), record.end), map)
     .split(map, [](auto& bounds) { return bounds.half_area(); });
 }
 
-auto binned::partition(const cut& cut, size_t begin, size_t end) {
-  size_t center = cut.dimension != bin::invalid
-    ? std::distance(
+auto binner::partition(const cut& cut, size_t begin, size_t end) {
+  auto center = (begin + end) / 2;
+  if (cut.dimension != bin::invalid) {
+    auto part =
+      std::partition(
+        std::next(primitives_.begin(), begin),
+        std::next(primitives_.begin(), end),
+        [&cut](auto& primitive) { return cut.mapping.bin(primitive.bounds, cut.index, cut.dimension); });
+    center =
+      std::distance(
         primitives_.begin(),
-        std::partition(
-          std::next(primitives_.begin(), begin),
-          std::next(primitives_.begin(), end),
-          [&cut](auto& primitive) { return cut.mapping.bin(primitive.bounds, cut.index, cut.dimension); }))
-    : (begin + end) / 2;
+        part);
+  }
 
-  record
+  build_record
   local_left{begin, begin}, local_right{center, center};
 
   for (auto i = begin;  i < center; ++i) local_left .expand(primitives_[i].bounds);
@@ -83,4 +80,4 @@ auto binned::partition(const cut& cut, size_t begin, size_t end) {
 } // namespace heuristic
 } // namespace ig
 
-#endif // IG_MATH_HEURISTIC_BINNED_H
+#endif // IG_MATH_HEURISTIC_BINNER_H

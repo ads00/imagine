@@ -21,19 +21,19 @@
  SOFTWARE.
 */
 
-#ifndef IG_MATH_VISIT_H
-#define IG_MATH_VISIT_H
+#ifndef IG_MATH_TRAVERSAL_H
+#define IG_MATH_TRAVERSAL_H
 
 #include "imagine/math/geometry/proj.h"
 #include "imagine/math/geometry/spatial/ray.h"
 
 namespace ig {
 
-struct visit {
+struct traversal {
   static constexpr size_t depth = 32;
   static constexpr size_t stack_size = IG_PACKET_WIDE * depth;
 
-  explicit visit(const vec3& origin, const vec3& direction)
+  explicit traversal(const vec3& origin, const vec3& direction)
     : origin{origin}
     , rcp_direction{1 / direction}
     , x_sgn{direction[0] >= 0}
@@ -59,7 +59,7 @@ struct visit {
 };
 
 template <typename Traverse, typename Node>
-auto visit::closest(Traverse& stack, const Node& node) {
+auto traversal::closest(Traverse& stack, const Node& node) {
   auto r = ctz_f(mask);
   auto s = stack;
   if (mask == 0) return node.children[r];
@@ -104,7 +104,7 @@ auto visit::closest(Traverse& stack, const Node& node) {
 }
 
 template <typename Traverse, typename Node>
-auto visit::any(Traverse& stack, const Node& node) {
+auto traversal::any(Traverse& stack, const Node& node) {
   auto r = ctz_f(mask);
   if (mask == 0) return node.children[r];
   for (;;) {
@@ -116,7 +116,7 @@ auto visit::any(Traverse& stack, const Node& node) {
 }
 
 template <typename Hierarchy, typename Walk, typename Visitor>
-auto visit::traverse(const Hierarchy& root, Walk&& walk, Visitor&& visitor, ray& ray) {
+auto traversal::traverse(const Hierarchy& root, Walk&& walk, Visitor&& visitor, ray& ray) {
   struct stack_item { typename Hierarchy::ref item; size_t dist; };
 
   std::array
@@ -149,4 +149,4 @@ auto visit::traverse(const Hierarchy& root, Walk&& walk, Visitor&& visitor, ray&
 
 } // namespace ig
 
-#endif // IG_MATH_VISIT_H
+#endif // IG_MATH_TRAVERSAL_H

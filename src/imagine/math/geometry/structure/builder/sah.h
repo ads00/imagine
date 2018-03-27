@@ -25,7 +25,7 @@
 #define IG_MATH_BUILDER_SAH_H
 
 #include "imagine/math/geometry/structure/tree.h"
-#include "imagine/math/geometry/structure/heuristic/binned.h"
+#include "imagine/math/geometry/structure/heuristic/binner.h"
 
 namespace ig      {
 namespace builder {
@@ -34,7 +34,6 @@ template <typename Hierarchy, typename Heuristic>
 class sah {
 public:
   using build_node = typename Hierarchy::ref;
-  using record     = typename Heuristic::record;
   static constexpr size_t branching = Hierarchy::M;
 
   explicit sah(Hierarchy& tree, size_t leaf_size, size_t block_size, float intersect, float traversal)
@@ -50,10 +49,10 @@ public:
     , info_{0, 0} {}
 
   void build();
-  auto recurse(record& current) -> build_node;
+  auto recurse(build_record& current) -> build_node;
 
 private:
-  auto leaf(const record& record) -> build_node;
+  auto leaf(const build_record& record) -> build_node;
   template <typename PrimIterator> auto node(PrimIterator begin, PrimIterator end);
 
   Hierarchy& tree_;
@@ -67,9 +66,9 @@ private:
   float intersect_cost_;
   float traversal_cost_;
 
-  std::vector<prim_info> primitives_;
   std::vector<size_t> leaves_;
-  record info_;
+  std::vector<build_prim> primitives_;
+  build_record info_;
 };
 
 template <typename Hierarchy, typename Heuristic>
@@ -94,7 +93,7 @@ void sah<Hierarchy, Heuristic>::build() {
 }
 
 template <typename Hierarchy, typename Heuristic>
-auto sah<Hierarchy, Heuristic>::recurse(record& current) -> build_node {
+auto sah<Hierarchy, Heuristic>::recurse(build_record& current) -> build_node {
   auto split = heuristic_.find(current);
   auto leaf_cost =
     intersect_cost_ * current.geometry_bounds.half_area() *
@@ -106,7 +105,7 @@ auto sah<Hierarchy, Heuristic>::recurse(record& current) -> build_node {
   if (current.size() <= leaf_size_ || (current.size() <= block_size_ && leaf_cost < split_cost))
     return leaf(current);
 
-  std::array<record, branching> children;
+  std::array<build_record, branching> children;
   std::tie(children[0], children[1]) = heuristic_.partition(split, current.begin, current.end);
 
   size_t n = 2;
@@ -129,11 +128,14 @@ auto sah<Hierarchy, Heuristic>::recurse(record& current) -> build_node {
     auto& current = children[child];
     auto split = heuristic_.find(current);
     std::tie(children[child], children[n++]) = heuristic_.partition(split, current.begin, current.end);
-  } return node(children.begin(), std::next(children.begin(), n));
+  }
+  return node(
+    children.begin(),
+    std::next(children.begin(), n));
 }
 
 template <typename Hierarchy, typename Heuristic>
-auto sah<Hierarchy, Heuristic>::leaf(const record& record) -> build_node {
+auto sah<Hierarchy, Heuristic>::leaf(const build_record& record) -> build_node {
   auto blocks = record.size();
 
   build_node leaf;
@@ -143,7 +145,7 @@ auto sah<Hierarchy, Heuristic>::leaf(const record& record) -> build_node {
   for (size_t i = 0; i < blocks; ++i, ++build_track_) {
     leaves_
     [
-      primitives_[record.begin + i].geom
+      primitives_[record.begin + i].id
     ] = build_track_;
   } return leaf;
 }
@@ -171,8 +173,7 @@ auto sah<Hierarchy, Heuristic>::node(PrimIterator begin, PrimIterator end) {
       tree_.nodes_[node.index].invalidate(i);
       tree_.nodes_[node.index].encode_packet(i, children[i], child.geometry_bounds);
       i++;
-    }
-  ); return node;
+    }); return node;
 }
 
 } // namespace builder

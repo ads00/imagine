@@ -21,10 +21,8 @@
  SOFTWARE.
 */
 
-#ifndef IG_MATH_HEURISTIC_SPLITS_H
-#define IG_MATH_HEURISTIC_SPLITS_H
-
-#include "imagine/math/geometry/structure/spatial.h"
+#ifndef IG_MATH_HEURISTIC_OPEM_MERGE_H
+#define IG_MATH_HEURISTIC_OPEM_MERGE_H
 
 namespace ig        {
 namespace heuristic {
@@ -32,4 +30,4 @@ namespace heuristic {
 } // namespace heuristic
 } // namespace ig
 
-#endif // IG_MATH_HEURISTIC_SPLITS_H
+#endif // IG_MATH_HEURISTIC_OPEM_MERGE_H
