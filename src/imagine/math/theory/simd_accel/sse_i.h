@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2017
+ Copyright (c) 2018
         Hugo "hrkz" Frezat <hugo.frezat@gmail.com>
 
  Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -54,41 +54,43 @@ struct int4 {
   > d;
 };
 
+namespace
+{
 // Operators
-inline auto operator+(const int4& lhs, const int4& rhs) { return int4{_mm_add_epi32(lhs, rhs)}; }
-inline auto operator-(const int4& lhs, const int4& rhs) { return int4{_mm_sub_epi32(lhs, rhs)}; }
-inline auto operator*(const int4& lhs, const int4& rhs) {
+auto operator+(const int4& lhs, const int4& rhs) { return int4{_mm_add_epi32(lhs, rhs)}; }
+auto operator-(const int4& lhs, const int4& rhs) { return int4{_mm_sub_epi32(lhs, rhs)}; }
+auto operator*(const int4& lhs, const int4& rhs) {
   auto l = _mm_mul_epu32(lhs, rhs);
   auto h = _mm_mul_epu32(_mm_srli_si128(lhs, 4), _mm_srli_si128(rhs, 4));
   return int4{_mm_unpacklo_epi32(_mm_shuffle_epi32(l, _MM_SHUFFLE(0, 0, 2, 0)), _mm_shuffle_epi32(h, _MM_SHUFFLE(0, 0, 2, 0)))}; }
 
-inline auto operator&(const int4& lhs, const int4& rhs) { return int4{_mm_and_si128(lhs, rhs)}; }
-inline auto operator|(const int4& lhs, const int4& rhs) { return int4{_mm_or_si128(lhs, rhs)}; }
-inline auto operator^(const int4& lhs, const int4& rhs) { return int4{_mm_xor_si128(lhs, rhs)}; }
-inline auto operator-(const int4& v)                    { return int4{_mm_sub_epi32(_mm_setzero_si128(), v)}; }
+auto operator&(const int4& lhs, const int4& rhs) { return int4{_mm_and_si128(lhs, rhs)}; }
+auto operator|(const int4& lhs, const int4& rhs) { return int4{_mm_or_si128(lhs, rhs)}; }
+auto operator^(const int4& lhs, const int4& rhs) { return int4{_mm_xor_si128(lhs, rhs)}; }
+auto operator-(const int4& v)                    { return int4{_mm_sub_epi32(_mm_setzero_si128(), v)}; }
 
 // Comparison
-inline auto operator==(const int4& lhs, const int4& rhs) { return bool4{_mm_castsi128_ps(_mm_cmpeq_epi32(lhs, rhs))}; }
-inline auto operator!=(const int4& lhs, const int4& rhs) { return !(lhs == rhs); }
-inline auto operator< (const int4& lhs, const int4& rhs) { return bool4{_mm_castsi128_ps(_mm_cmplt_epi32(lhs, rhs))}; }
-inline auto operator>=(const int4& lhs, const int4& rhs) { return !(lhs < rhs); }
-inline auto operator> (const int4& lhs, const int4& rhs) { return bool4{_mm_castsi128_ps(_mm_cmpgt_epi32(lhs, rhs))}; }
-inline auto operator<=(const int4& lhs, const int4& rhs) { return !(lhs > rhs); }
+auto operator==(const int4& lhs, const int4& rhs) { return bool4{_mm_castsi128_ps(_mm_cmpeq_epi32(lhs, rhs))}; }
+auto operator!=(const int4& lhs, const int4& rhs) { return !(lhs == rhs); }
+auto operator< (const int4& lhs, const int4& rhs) { return bool4{_mm_castsi128_ps(_mm_cmplt_epi32(lhs, rhs))}; }
+auto operator>=(const int4& lhs, const int4& rhs) { return !(lhs < rhs); }
+auto operator> (const int4& lhs, const int4& rhs) { return bool4{_mm_castsi128_ps(_mm_cmpgt_epi32(lhs, rhs))}; }
+auto operator<=(const int4& lhs, const int4& rhs) { return !(lhs > rhs); }
 
 // Relational
-inline auto min(const int4& lhs, const int4& rhs) { return select(lhs < rhs, lhs, rhs); }
-inline auto max(const int4& lhs, const int4& rhs) { return select(lhs > rhs, lhs, rhs); }
+auto min(const int4& lhs, const int4& rhs) { return select(lhs < rhs, lhs, rhs); }
+auto max(const int4& lhs, const int4& rhs) { return select(lhs > rhs, lhs, rhs); }
 
 // Movement & Shuffling
-inline auto unpacklo(const int4& lhs, const int4& rhs) { return int4{_mm_unpacklo_epi32(lhs, rhs)}; }
-inline auto unpackhi(const int4& lhs, const int4& rhs) { return int4{_mm_unpackhi_epi32(lhs, rhs)}; }
+auto unpacklo(const int4& lhs, const int4& rhs) { return int4{_mm_unpacklo_epi32(lhs, rhs)}; }
+auto unpackhi(const int4& lhs, const int4& rhs) { return int4{_mm_unpackhi_epi32(lhs, rhs)}; }
 
 template
 < size_t i0,
   size_t i1,
   size_t i2,
   size_t i3 >
-inline auto shuffle(const int4& v)
+auto shuffle(const int4& v)
 { return int4{_mm_shuffle_epi32(v, _MM_SHUFFLE(i3, i2, i1, i0))}; }
 
 template
@@ -96,8 +98,10 @@ template
   size_t i1,
   size_t i2,
   size_t i3 >
-inline auto shuffle(const int4& v, const int4& t)
+auto shuffle(const int4& v, const int4& t)
 { return int4{_mm_castps_si128(_mm_shuffle_ps(_mm_castsi128_ps(v), _mm_castsi128_ps(t), _MM_SHUFFLE(i3, i2, i1, i0)))}; }
+//
+}
 
 } // namespace ig
 

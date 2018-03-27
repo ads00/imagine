@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2017
+ Copyright (c) 2018
         Hugo "hrkz" Frezat <hugo.frezat@gmail.com>
 
  Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -47,8 +47,10 @@ struct bool4 {
   > d;
 };
 
+namespace
+{
 // Selection
-inline auto select(const __m128& lhs, const __m128& rhs, const __m128& mask)
+auto select(const __m128& lhs, const __m128& rhs, const __m128& mask)
 {
 #if defined \
     (__SSE4_1__)
@@ -64,34 +66,34 @@ inline auto select(const __m128& lhs, const __m128& rhs, const __m128& mask)
 }
 
 // Operators
-inline auto operator!(const bool4& v) { return bool4{_mm_xor_ps(v, bool4{std::true_type{}})}; }
+auto operator!(const bool4& v) { return bool4{_mm_xor_ps(v, bool4{std::true_type{}})}; }
 
-inline auto operator&(const bool4& lhs, const bool4& rhs) { return bool4{_mm_and_ps(lhs, rhs)}; }
-inline auto operator|(const bool4& lhs, const bool4& rhs) { return bool4{_mm_or_ps(lhs, rhs)}; }
-inline auto operator^(const bool4& lhs, const bool4& rhs) { return bool4{_mm_xor_ps(lhs, rhs)}; }
+auto operator&(const bool4& lhs, const bool4& rhs) { return bool4{_mm_and_ps(lhs, rhs)}; }
+auto operator|(const bool4& lhs, const bool4& rhs) { return bool4{_mm_or_ps(lhs, rhs)}; }
+auto operator^(const bool4& lhs, const bool4& rhs) { return bool4{_mm_xor_ps(lhs, rhs)}; }
 
 // Comparison
-inline auto operator!=(const bool4& lhs, const bool4& rhs) { return bool4{_mm_xor_ps(lhs, rhs)}; }
-inline auto operator==(const bool4& lhs, const bool4& rhs) { return bool4{_mm_castsi128_ps(_mm_cmpeq_epi32(lhs, rhs))}; }
+auto operator!=(const bool4& lhs, const bool4& rhs) { return bool4{_mm_xor_ps(lhs, rhs)}; }
+auto operator==(const bool4& lhs, const bool4& rhs) { return bool4{_mm_castsi128_ps(_mm_cmpeq_epi32(lhs, rhs))}; }
 
 // Reduction
-inline auto movemask(const bool4& v)
+auto movemask(const bool4& v)
 { return _mm_movemask_ps(v); }
 
-inline bool all(const bool4& v)  { return movemask(v) == 0xf; }
-inline bool any(const bool4& v)  { return movemask(v) != 0x0; }
-inline bool none(const bool4& v) { return movemask(v) == 0x0; }
+bool all(const bool4& v)  { return movemask(v) == 0xf; }
+bool any(const bool4& v)  { return movemask(v) != 0x0; }
+bool none(const bool4& v) { return movemask(v) == 0x0; }
 
 // Movement & Shuffling
-inline auto unpacklo(const bool4& lhs, const bool4& rhs) { return bool4{_mm_unpacklo_ps(lhs, rhs)}; }
-inline auto unpackhi(const bool4& lhs, const bool4& rhs) { return bool4{_mm_unpackhi_ps(lhs, rhs)}; }
+auto unpacklo(const bool4& lhs, const bool4& rhs) { return bool4{_mm_unpacklo_ps(lhs, rhs)}; }
+auto unpackhi(const bool4& lhs, const bool4& rhs) { return bool4{_mm_unpackhi_ps(lhs, rhs)}; }
 
 template
 < size_t i0,
   size_t i1,
   size_t i2,
   size_t i3 >
-inline auto shuffle(const bool4& v)
+auto shuffle(const bool4& v)
 { return bool4{_mm_shuffle_epi32(v, _MM_SHUFFLE(i3, i2, i1, i0))}; }
 
 template
@@ -99,8 +101,10 @@ template
   size_t i1,
   size_t i2,
   size_t i3 >
-inline auto shuffle(const bool4& v, const bool4& t)
+auto shuffle(const bool4& v, const bool4& t)
 { return bool4{_mm_shuffle_ps(v, t, _MM_SHUFFLE(i3, i2, i1, i0))}; }
+//
+}
 
 } // namespace ig
 
