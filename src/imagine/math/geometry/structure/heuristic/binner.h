@@ -1,24 +1,7 @@
 /*
- Copyright (c) 2017
-        Hugo "hrkz" Frezat <hugo.frezat@gmail.com>
-
- Permission is hereby granted, free of charge, to any person obtaining a copy
- of this software and associated documentation files (the "Software"), to deal
- in the Software without restriction, including without limitation the rights
- to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- copies of the Software, and to permit persons to whom the Software is
- furnished to do so, subject to the following conditions:
-
- The above copyright notice and this permission notice shall be included in all
- copies or substantial portions of the Software.
-
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- SOFTWARE.
+ Imagine v0.1
+ [math]
+ Copyright (c) 2015-present, Hugo (hrkz) Frezat
 */
 
 #ifndef IG_MATH_HEURISTIC_BINNER_H
@@ -36,7 +19,8 @@ public:
 
   explicit binner(std::vector<build_prim>& primitives, uint32_t splits)
     : primitives_(primitives)
-    , splits_{splits} {}
+    , splits_{splits}
+    , weight_{1.f} {}
 
   auto find(const build_record& record);
   auto partition(const cut& cut, size_t begin, size_t end);
@@ -44,13 +28,24 @@ public:
 private:
   std::vector<build_prim>& primitives_;
   uint32_t splits_;
+  float weight_;
 };
 
 auto binner::find(const build_record& record) {
+  bin arr{splits_};
   bin_mapping map{splits_, record.centroid_bounds};
-  return bin{splits_}
-    .pack(std::next(primitives_.begin(), record.begin), std::next(primitives_.begin(), record.end), map)
-    .split(map, [](auto& bounds) { return bounds.half_area(); });
+
+  arr.pack(
+    map,
+    std::next(
+      primitives_.begin(),
+      record.begin),
+    std::next(
+      primitives_.begin(),
+      record.end));
+  return arr.split(
+    map,
+    [this](auto& bounds) { return bounds.half_area() * weight_; });
 }
 
 auto binner::partition(const cut& cut, size_t begin, size_t end) {

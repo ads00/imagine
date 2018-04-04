@@ -3,7 +3,7 @@ workspace "imagine"
   architecture "x86_64"
   configurations {"exp", "dbg"}
 
-  location "ws"
+  location "build"
   targetdir "%{prj.location}"
   includedirs {
       "src",
@@ -31,9 +31,9 @@ workspace "imagine"
     filter "system:macosx"  excludes {"src/**_win32.cpp", "src/**_linux.cpp"} links {"framework Cocoa", "framework CoreFoundation"}
 
   -- Imagine editor & scripting engine
-  project "igc"
+  project "igm"
     kind "consoleapp"
     files {
-      "igc/**.h",
-      "igc/**.cpp"}
+      "model/**.h",
+      "model/**.cpp"}
     links {"imagine"}

@@ -1,31 +1,14 @@
 /*
- Copyright (c) 2017
-        Hugo "hrkz" Frezat <hugo.frezat@gmail.com>
-
- Permission is hereby granted, free of charge, to any person obtaining a copy
- of this software and associated documentation files (the "Software"), to deal
- in the Software without restriction, including without limitation the rights
- to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- copies of the Software, and to permit persons to whom the Software is
- furnished to do so, subject to the following conditions:
-
- The above copyright notice and this permission notice shall be included in all
- copies or substantial portions of the Software.
-
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- SOFTWARE.
+ Imagine v0.1
+ [math]
+ Copyright (c) 2015-present, Hugo (hrkz) Frezat
 */
 
 #ifndef IG_MATH_MATRIXBASE_H
 #define IG_MATH_MATRIXBASE_H
 
 #include "imagine/math/basis.h"
-#include "imagine/math/theory/expression.h"
+#include "imagine/math/theory/xpr.h"
 
 #include <vector>
 #include <array>
@@ -36,20 +19,24 @@ constexpr size_t dynamic_size = 0;
 template
 < typename T,
   size_t M,
-  size_t N > class matrix;
+  size_t N >
+class matrix;
 template <typename T, size_t N = dynamic_size> using colvec = matrix<T, N, 1>;
 template <typename T, size_t N = dynamic_size> using rowvec = matrix<T, 1, N>;
 
 template
 < typename Mat,
-  typename FunctionObject > class matrix_unary;
+  typename FunctionObject >
+class matrix_unary;
 template
 < typename Lhs,
   typename Rhs,
-  typename FunctionObject > class matrix_binary;
+  typename FunctionObject >
+class matrix_binary;
 template
 < typename Lhs,
-  typename Rhs >        class matrix_prod;
+  typename Rhs >
+class matrix_prod;
 template <typename Mat> class matrix_trans;
 
 template <typename Xpr> class matrix_block;
@@ -74,11 +61,11 @@ template <typename Mat> using concrete_matrix =
   >;
 
 template <typename D>
-class matrix_base : public expression<D> {
+class matrix_base : public xpr<D> {
 public:
   using value_type = matrix_t<D>;
 
-  using base = expression<D>;
+  using base = xpr<D>;
   using base::derived;
   using base::eval;
   template <typename Xpr> using iterator = typename base::template iterator<Xpr>;

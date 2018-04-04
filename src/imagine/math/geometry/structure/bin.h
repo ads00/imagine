@@ -1,24 +1,7 @@
 /*
- Copyright (c) 2017
-        Hugo "hrkz" Frezat <hugo.frezat@gmail.com>
-
- Permission is hereby granted, free of charge, to any person obtaining a copy
- of this software and associated documentation files (the "Software"), to deal
- in the Software without restriction, including without limitation the rights
- to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- copies of the Software, and to permit persons to whom the Software is
- furnished to do so, subject to the following conditions:
-
- The above copyright notice and this permission notice shall be included in all
- copies or substantial portions of the Software.
-
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- SOFTWARE.
+ Imagine v0.1
+ [math]
+ Copyright (c) 2015-present, Hugo (hrkz) Frezat
 */
 
 #ifndef IG_MATH_BIN_H
@@ -62,7 +45,7 @@ public:
     : bounds_(bins) {}
 
   template <typename Cost>         auto split(const bin_mapping& mapping, Cost&& bounds_cost) const;
-  template <typename PrimIterator> auto& pack(PrimIterator begin, PrimIterator end, const bin_mapping& mapping);
+  template <typename PrimIterator> void pack (const bin_mapping& mapping, PrimIterator begin, PrimIterator end);
 
 private:
   std::vector<axis_bounds> bounds_;
@@ -100,14 +83,14 @@ auto bin::split(const bin_mapping& mapping, Cost&& bounds_cost) const {
 }
 
 template <typename PrimIterator>
-auto& bin::pack(PrimIterator begin, PrimIterator end, const bin_mapping& mapping) {
+void bin::pack(const bin_mapping& mapping, PrimIterator begin, PrimIterator end) {
   std::for_each(
     begin,
     end,
     [this, &mapping](auto& primitive) {
       auto binmap = mapping.bin(primitive.bounds.min + primitive.bounds.max);
       for (uint32_t d = 0; d < dimensions; ++d) bounds_[static_cast<size_t>(binmap[d])][d].expand(primitive.bounds);
-    }); return *this;
+    });
 }
 
 } // namespace ig

@@ -1,24 +1,7 @@
 /*
- Copyright (c) 2017
-        Hugo "hrkz" Frezat <hugo.frezat@gmail.com>
-
- Permission is hereby granted, free of charge, to any person obtaining a copy
- of this software and associated documentation files (the "Software"), to deal
- in the Software without restriction, including without limitation the rights
- to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- copies of the Software, and to permit persons to whom the Software is
- furnished to do so, subject to the following conditions:
-
- The above copyright notice and this permission notice shall be included in all
- copies or substantial portions of the Software.
-
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- SOFTWARE.
+ Imagine v0.1
+ [envi]
+ Copyright (c) 2015-present, Hugo (hrkz) Frezat
 */
 
 #ifndef IG_ENVI_VK_CONTEXT_H
@@ -38,12 +21,13 @@ public:
     : instance{validation}
     , unit_{unit} {}
 
-  auto build(
-    std::initializer_list<capabilities> caps,
-    uint32_t id = 0,
-    bool thread = false);
+  template <typename Iden>
+  auto build std::initializer_list<capabilities> caps,
+    Iden id = 0,
+    bool threadded = false);
 
   auto queue_line(uint32_t i = 0) const { return std::make_unique<queue>(*device_, i); }
+  void print_infos() const;
 
 private:
   hardware unit_;
@@ -51,7 +35,8 @@ private:
   std::unique_ptr<device>   device_;
 };
 
-auto context::build(std::initializer_list<capabilities> caps, uint32_t id, bool thread) {
+template <typename Iden>
+auto context::build(std::initializer_list<capabilities> caps, Iden id, bool threadded) {
   auto it = std::find_if(
     physicals_.begin(),
     physicals_.end(),
@@ -65,6 +50,8 @@ auto context::build(std::initializer_list<capabilities> caps, uint32_t id, bool 
     physical_,
     std::ref(device_));
 }
+
+void context::print_infos() const {}
 
 } // namespace vk
 } // namespace ig
