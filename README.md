@@ -4,27 +4,32 @@
 [![Join the chat at https://gitter.im/hrkz/imagine](https://img.shields.io/gitter/room/nwjs/nw.js.svg?style=flat-square)](https://gitter.im/hrkz/imagine)
 [![GitHub license](https://img.shields.io/github/license/hrkz/imagine.svg?style=flat-square)](https://github.com/hrkz/imagine/blob/master/LICENSE)
 
-Imagine is a research-oriented simulation library based on computational graphs that provides many algorithms for light transport, fluids and rigid body dynamics.
+Imagine is a simulation library based on computational graphs that provides many algorithms
+for light transport, continuum mechanics, artificial intelligence and many more.
 
-It's written in modern c++(17) with performance and modularity in mind.
+##### Research driven
+
+Imagine's main objective is to help researchers from different areas to model and run numerical
+simulations in a pleasant way, with performance and modularity.
 
 ## Features
 
-The key concept, based on data flow graphs, opens possibilities to design numerical simulations of arbitrary structure and behavior;
+The key concept, based on data flow graphs, opens possibilities to design numerical simulations of
+arbitrary structure and behavior;
 
 * :globe_with_meridians: **Computational mathematics**
 
 	Linear algebra  
-	Projective geometry, space partitioning and surface representations  
+	Ordinary and partial differential equations  
 	Nonlinear optimization  
-	Ordinary and partial differential equations
+	Projective geometry, space partitioning and surface/volume representations  
 
 * :video_game: **Interactive cross-platform environment**
 * :high_brightness: **Rendering**
-* :running: **Animation**
-* :wavy_dash: **Fluids and rigid body dynamics**
+* :cyclone: **Dynamics**
+* :mortar_board: **Machine learning**
 
-## Roadmap
+## Build
 
 ## Links
 
