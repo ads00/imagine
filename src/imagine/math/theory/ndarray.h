@@ -9,6 +9,8 @@
 
 #include "imagine/math/theory/detail/ndarray/base.h"
 
+#include "imagine/math/theory/detail/ndarray/expr/cast.h"
+
 #include "imagine/math/theory/detail/ndarray/allocator/static.h"
 #include "imagine/math/theory/detail/ndarray/allocator/dynamic.h"
 
