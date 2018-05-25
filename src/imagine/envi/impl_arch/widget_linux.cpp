@@ -48,16 +48,16 @@ void widget::resize(uint32_t width, uint32_t height) {
 void widget::move(int32_t x, int32_t y) {
 }
 
-bool widget::opened() const
+bool widget::is_minimized() const
 { return false; }
 
-bool widget::minimized() const
+bool widget::is_maximized() const
 { return false; }
 
-bool widget::maximized() const
+bool widget::is_visible() const
 { return false; }
 
-bool widget::visible() const
+bool widget::is_open() const
 { return false; }
 
 auto widget::get_handle() const -> handle*

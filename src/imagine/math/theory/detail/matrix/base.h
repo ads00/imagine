@@ -8,7 +8,7 @@
 #define IG_MATH_MATRIXBASE_H
 
 #include "imagine/math/basis.h"
-#include "imagine/math/theory/xpr.h"
+#include "imagine/math/theory/detail/xpr.h"
 
 #include <vector>
 #include <array>
@@ -67,7 +67,6 @@ public:
 
   using base = xpr<D>;
   using base::derived;
-  using base::eval;
   template <typename Xpr> using iterator = typename base::template iterator<Xpr>;
 
   auto begin() const { return iterator<const D>{derived(), 0}; }

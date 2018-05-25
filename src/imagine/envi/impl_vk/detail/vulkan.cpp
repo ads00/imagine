@@ -12,7 +12,7 @@ namespace ig {
 namespace vk {
 
 void vulkan::discover() {
-  if (vulkan_.loaded())
+  if (vulkan_.is_open())
     return;
   if (!vulkan_.open(VK_DYN_LOADER)) {
     throw std::runtime_error{

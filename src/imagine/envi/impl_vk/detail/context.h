@@ -21,32 +21,47 @@ public:
     : instance{validation}
     , unit_{unit} {}
 
-  template <typename Iden>
-  auto build std::initializer_list<capabilities> caps,
-    Iden id = 0,
-    bool threadded = false);
+  template <typename Id>
+  auto build(std::initializer_list<capabilities> caps, Id id = 0, bool threadded = false);
 
   auto queue_line(uint32_t i = 0) const { return std::make_unique<queue>(*device_, i); }
   void print_infos() const;
 
 private:
   hardware unit_;
-  std::shared_ptr<physical> physical_;
-  std::unique_ptr<device>   device_;
+
+  std::shared_ptr<physical>
+  physical_;
+  std::unique_ptr<device>
+  device_;
 };
 
-template <typename Iden>
-auto context::build(std::initializer_list<capabilities> caps, Iden id, bool threadded) {
-  auto it = std::find_if(
-    physicals_.begin(),
-    physicals_.end(),
-    [this, &id](auto& phys) { return phys->get_type() == unit_ && !id--; });
+template <typename Id>
+auto context::build(std::initializer_list<capabilities> caps, Id id, bool threadded) {
+  assert(physicals_.size() && "Vulkan not supported on this machine (no physical device available)");
+
+  auto it =
+    std::find_if(
+      physicals_.begin(),
+      physicals_.end(),
+      [this, &id](auto& physical) { return physical->get_type() == unit_ && !id--; });
 
   physical_ = it != physicals_.end()
     ? *it
     : *physicals_.begin();
   device_ = std::make_unique<device>(*physical_, std::vector<capabilities>{caps});
-  return std::make_pair(
+
+  print_infos();
+  /*
+  if (threaded) {
+
+  } else {
+
+  }
+  */
+
+  return
+  std::make_tuple(
     physical_,
     std::ref(device_));
 }

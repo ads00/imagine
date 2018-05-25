@@ -23,7 +23,7 @@ public:
   virtual ~device();
 
   bool wait() const;
-  bool supported(const std::string& name) const;
+  bool is_supported(const std::string& name) const;
 
   auto& operator->() const    { return dpfn_; }
 

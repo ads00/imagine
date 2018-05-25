@@ -9,79 +9,74 @@
 
 #include "imagine/math/theory/detail/ndarray/base.h"
 
+#include "imagine/math/theory/detail/ndarray/allocator/static.h"
+#include "imagine/math/theory/detail/ndarray/allocator/dynamic.h"
+
 namespace ig {
 
-template <typename T>
+template <typename T,  size_t... D>
 struct ndarray_traits
 <
-  ndarray<T>
+  ndarray<T, D...>
 >
 {
   using value_type = T;
 };
 
-template <typename t_>
-class ndarray : public ndarray_base< ndarray<t_> > {
+template <typename t_, size_t... d_>
+class ndarray : public ndarray_base< ndarray<t_, d_...> > {
 public:
   using value_type = t_;
-  using index_type     = std::initializer_list<uint32_t>;
-  using shape_type     = std::vector<uint32_t>;
-  using container_type = std::vector<value_type>;
+  static constexpr auto dynamic = !sizeof...(d_);
+  static constexpr auto immutable = !dynamic;
 
-  ndarray() = default;
-  explicit ndarray(index_type shape, const value_type& value = t_());
+  template
+  < bool X = immutable,
+    typename = std::enable_if_t<X>,
+    typename... Args >
+  constexpr explicit ndarray(value_type i, Args&&... args)
+    : storage_{i, std::forward<Args>(args)...} {}
 
-  auto& shape() const   { return shape_; }
-  auto& strides() const { return strides_; }
-  auto& dims() const    { return strides_.size(); }
+  template
+  < bool X = dynamic,
+    typename = std::enable_if_t<X> >
+  constexpr explicit ndarray(std::initializer_list<size_t> dims)
+    : storage_{{dims}} {}
 
-  auto size() const   { return buffer_.size(); }
-  auto buffer() const { return buffer_.data(); }
-  auto buffer()       { return buffer_.data(); }
+  template <typename Arr>
+  ndarray(const ndarray_base<Arr>& o) : ndarray{o, o.shape(), std::integral_constant<bool, immutable>{}}
+  { eval_helper(*this, o); }
 
-  void reshape(index_type shape);
+  template <typename Arr, typename Shape> ndarray(const ndarray_base<Arr>& o, const Shape& shape, std::true_type) {}
+  template <typename Arr, typename Shape> ndarray(const ndarray_base<Arr>& o, const Shape& shape, std::false_type)
+  : storage_{{
+    shape.begin(),
+    shape.end  ()}} {}
 
-  auto& operator[](index_type index) { return buffer_[offset_helper(index)]; }
+  auto size() const { return storage_.size(); }
+  auto dims() const { return storage_.dims(); }
+  auto shape() const -> decltype(auto) { return storage_.shape(); }
+
+  auto buffer() const { return storage_.buffer(); }
+  auto buffer()       { return storage_.buffer(); }
+
+  auto operator->() const { return &storage_; }
+  auto operator->()       { return &storage_; }
+
+  template <typename... Id> decltype(auto) operator()(Id... ids) const { return storage_(layout(ids...)); }
+  template <typename... Id> decltype(auto) operator()(Id... ids)       { return storage_(layout(ids...)); }
 
 protected:
-  size_t striding();
-  size_t offset_helper(index_type index) const;
+  template <typename... Id>
+  auto layout(Id... ids) const
+  { return std::apply([this](auto&&... x) { return storage_.offset(x...); }, /*reverse*/(std::make_tuple(ids...))); }
 
 protected:
-  shape_type shape_, strides_;
-  container_type buffer_;
+  std::conditional_t
+  < dynamic,
+    nd::dynamic_storage<value_type>, nd::static_storage<value_type, d_...>
+  > storage_;
 };
-
-template <typename t_>
-ndarray<t_>::ndarray(index_type shape, const value_type& value)
-  : shape_{shape}
-  , strides_(shape_.size())
-  , buffer_ (striding(), value) {}
-
-template <typename t_>
-void ndarray<t_>::reshape(index_type shape) {
-  shape_ = shape;
-  buffer_.resize(striding());
-}
-
-template <typename t_>
-size_t ndarray<t_>::striding() {
-  strides_.clear();
-  return std::accumulate(
-    shape_.begin(),
-    shape_.end(),
-    1,
-    [this](size_t size, uint32_t dimension) { return strides_.emplace_back(size) * dimension; });
-}
-
-template <typename t_>
-size_t ndarray<t_>::offset_helper(index_type index) const {
-  return std::inner_product(
-    strides_.begin(),
-    strides_.end(),
-    index.begin(),
-    0);
-}
 
 } // namespace ig
 

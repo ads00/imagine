@@ -38,7 +38,7 @@ template
 < typename Simd,
   typename Plain,
   uint32_t Align >
-struct simd_data { union alignas(Align) { Simd v; Plain p; }; };
+struct simd_data { union { Simd v; alignas(Align) Plain p; }; };
 
 } // namespace ig
 

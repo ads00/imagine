@@ -32,10 +32,10 @@ public:
   void resize(uint32_t width, uint32_t height);
   void move(int32_t x, int32_t y);
 
-  bool opened() const;
-  bool minimized() const;
-  bool maximized() const;
-  bool visible() const;
+  bool is_minimized() const;
+  bool is_maximized() const;
+  bool is_visible() const;
+  bool is_open() const;
 
   struct handle {};
   auto get_handle() const -> handle*;

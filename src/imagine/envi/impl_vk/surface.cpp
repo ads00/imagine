@@ -26,7 +26,7 @@ surface::surface(const physical& physical, const widget& widget)
   , widg{widget}
   , impl_{std::make_unique<impl>()} {
 
-  if (!inst.supported(VK_KHR_SURFACE_EXTENSION_NAME)) {
+  if (!inst.is_supported(VK_KHR_SURFACE_EXTENSION_NAME)) {
     throw std::runtime_error{"Failed to create surface : VK_KHR_surface extension unsupported"};
   }
 

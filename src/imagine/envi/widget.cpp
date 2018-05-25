@@ -64,10 +64,10 @@ const std::string& widget::get_caption() const
 // void widget::focus();
 // void widget::resize(uint32_t width, uint32_t height);
 // void widget::move(int32_t x, int32_t y);
-// bool widget::opened() const;
-// bool widget::minimized() const;
-// bool widget::maximized() const;
-// bool widget::visible() const;
+// bool widget::is_minimized() const;
+// bool widget::is_maximized() const;
+// bool widget::is_visible() const;
+// bool widget::is_open() const;
 // auto widget::get_handle() const -> handle*;
 // void widget::set_fullscreen(bool fullscreen);
 // void widget::set_caption(const std::string& title);

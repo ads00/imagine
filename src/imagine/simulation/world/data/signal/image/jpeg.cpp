@@ -95,7 +95,7 @@ jpeg jpeg_readp_impl(std::istream& stream, const image_bridge::parameters&) {
        height   = jpeg_ptr.output_height;
 
   auto image =
-  std::make_unique<jpeg_t>(std::initializer_list<uint32_t>{channels, width, height});
+  std::make_unique<jpeg_t>(std::initializer_list<size_t>{channels, width, height});
 
   while (jpeg_ptr.output_scanline < height) {
     auto r = image->buffer() + (width * channels * jpeg_ptr.output_scanline);
@@ -148,9 +148,9 @@ bool jpeg_write_impl(std::ostream& stream, const image_bridge::parameters&, cons
     }
   };
 
-  auto channels = image.shape()[0],
-       width    = image.shape()[1],
-       height   = image.shape()[2];
+  auto channels = image[0],
+       width    = image[1],
+       height   = image[2];
 
   jpeg_ptr.image_width = width, jpeg_ptr.image_height = height;
 

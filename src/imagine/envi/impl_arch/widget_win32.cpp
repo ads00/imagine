@@ -267,17 +267,17 @@ void widget::move(int32_t x, int32_t y) {
     SWP_NOSIZE | SWP_NOZORDER);
 }
 
-bool widget::opened() const
-{ return native_->handle_ != nullptr; }
-
-bool widget::minimized() const
+bool widget::is_minimized() const
 { return IsIconic(native_->handle_) == TRUE; }
 
-bool widget::maximized() const
+bool widget::is_maximized() const
 { return IsZoomed(native_->handle_) == TRUE; }
 
-bool widget::visible() const
+bool widget::is_visible() const
 { return IsWindowVisible(native_->handle_) == TRUE; }
+
+bool widget::is_open() const
+{ return native_->handle_ != nullptr; }
 
 auto widget::get_handle() const -> handle*
 { return reinterpret_cast<handle*>(native_->handle_); }

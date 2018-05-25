@@ -29,10 +29,10 @@ template <>
 IG_API audio_bridge::table& audio_bridge::get() {
   static audio_bridge::table tbl =
   {{
-  {std::make_tuple(nullptr, nullptr, nullptr)},                                               // flac
-  {std::make_tuple(nullptr, nullptr, nullptr)},                                               // mp3
-  {std::make_tuple(nullptr, nullptr, nullptr)},                                               // ogg
-  {std::make_tuple(nullptr, nullptr, nullptr)}                                                // wav
+  {std::make_tuple(nullptr, nullptr, nullptr)}, // flac
+  {std::make_tuple(nullptr, nullptr, nullptr)}, // mp3
+  {std::make_tuple(nullptr, nullptr, nullptr)}, // ogg
+  {std::make_tuple(nullptr, nullptr, nullptr)}  // wav
   }}; return tbl;
 }
 

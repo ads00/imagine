@@ -132,7 +132,7 @@ bool device::wait() const {
   return dpfn_->vkDeviceWaitIdle(handle) == VK_SUCCESS;
 }
 
-bool device::supported(const std::string& name) const {
+bool device::is_supported(const std::string& name) const {
   return std::find_if(
     impl_->extensions.begin(),
     impl_->extensions.end(),

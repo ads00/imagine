@@ -136,7 +136,7 @@ instance::~instance() {
 }
 
 bool instance::dbg() {
-  if (!validation_ || !supported(VK_EXT_DEBUG_REPORT_EXTENSION_NAME))
+  if (!validation_ || !is_supported(VK_EXT_DEBUG_REPORT_EXTENSION_NAME))
     return false;
 
   VkDebugReportCallbackCreateInfoEXT debugreport_info {};
@@ -154,7 +154,7 @@ bool instance::dbg() {
     &impl_->dbg_callback) == VK_SUCCESS;
 }
 
-bool instance::supported(const std::string& name) const {
+bool instance::is_supported(const std::string& name) const {
   return std::find_if(
     impl_->extensions.begin(),
     impl_->extensions.end(),

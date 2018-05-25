@@ -65,7 +65,7 @@ png png_readp_impl(std::istream& stream, const image_bridge::parameters&) {
        height   = png_get_image_height(png_ptr, info_ptr);
 
   auto image =
-  std::make_unique<png_t>(std::initializer_list<uint32_t>{channels, width, height});
+  std::make_unique<png_t>(std::initializer_list<size_t>{channels, width, height});
 
   for (png_uint_32 j = 0; j < height; ++j)
     png_read_row(
@@ -91,9 +91,9 @@ bool png_write_impl(std::ostream& stream, const image_bridge::parameters&, const
       png_message);
   png_infop info_ptr = png_create_info_struct(png_ptr);
 
-  auto channels = image.shape()[0],
-       width    = image.shape()[1],
-       height   = image.shape()[2];
+  auto channels = image[0],
+       width    = image[1],
+       height   = image[2];
 
   int colortype;
   switch (channels) {

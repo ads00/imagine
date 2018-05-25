@@ -24,7 +24,8 @@ public:
 
   virtual void flush()
   { stream_.flush(); }
-  virtual void consume(const log_rec& rec) { stream_ << format_(rec); }
+  virtual void consume(const log_rec& rec)
+  { stream_ << format_(rec); }
 
 protected:
   std::ostream& stream_;

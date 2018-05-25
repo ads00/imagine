@@ -24,7 +24,7 @@ public:
   void close();
   auto resolve(const char* symbol) -> function_ptr;
 
-  bool loaded() const;
+  bool is_open() const;
 
   library(const library&) = delete;
   library& operator=(const library&) = delete;

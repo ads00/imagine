@@ -19,7 +19,7 @@ library::~library() {
   close();
 }
 
-bool library::loaded() const
+bool library::is_open() const
 { return native_->handle_ != nullptr; }
 
 // Native implementations
