@@ -29,6 +29,10 @@ arbitrary structure and behavior;
 * :cyclone: **Dynamics**
 * :mortar_board: **Machine learning**
 
+| Plans |       |
+| :----:| :----:|
+| [:books: wiki](https://github.com/hrkz/imagine/wiki) | To get started with the library, learn the basics through reference documentation, concepts and examples |
+
 ## Build
 
 ## Links
@@ -37,3 +41,13 @@ arbitrary structure and behavior;
 
 Imagine is released under the [MIT](LICENSE) licence.
 Please cite Imagine if it helps your research.
+
+```
+@misc{Imagine,
+  author       = {Hugo Frezat},
+  title        = {Imagine, Physically based simulations using computational graphs},
+  year         = {2018},
+  journal      = {GitHub repository},
+  howpublished = {\url{https://github.com/hrkz/imagine}}
+}
+```
