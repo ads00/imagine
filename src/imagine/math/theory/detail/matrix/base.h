@@ -8,7 +8,7 @@
 #define IG_MATH_MATRIXBASE_H
 
 #include "imagine/math/basis.h"
-#include "imagine/math/theory/detail/xpr.h"
+#include "imagine/math/theory/detail/relational.h"
 
 #include <vector>
 #include <array>

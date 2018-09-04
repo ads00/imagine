@@ -25,7 +25,7 @@ template
   typename s_ >
 class cast : public ndarray_base< cast<x_, s_> > {
 public:
-  explicit cast(const x_& xpr, const s_& shape)
+  explicit cast(x_&& xpr, const s_& shape)
     : xpr_{xpr}
     , shape_{shape}
     , size_{
@@ -47,7 +47,8 @@ private:
   s_ shape_; size_t size_;
 };
 
-template <typename x_, typename s_> cast(x_&, const s_&) -> cast<x_&, s_>;
+// deduction
+template <typename x_, typename s_> cast(x_&&, const s_&) -> cast<std::conditional_t<std::is_lvalue_reference_v<x_>, x_&, x_>, s_>;
 
 namespace nd {
 

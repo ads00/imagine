@@ -10,6 +10,7 @@
 #include "imagine/math/theory/detail/ndarray/base.h"
 
 #include "imagine/math/theory/detail/ndarray/expr/cast.h"
+#include "imagine/math/theory/detail/ndarray/expr/wise.h"
 
 #include "imagine/math/theory/detail/ndarray/allocator/static.h"
 #include "imagine/math/theory/detail/ndarray/allocator/dynamic.h"
@@ -31,6 +32,8 @@ public:
   using value_type = t_;
   static constexpr auto dynamic = !sizeof...(d_);
   static constexpr auto immutable = !dynamic;
+
+  constexpr ndarray() = default;
 
   template
   < bool X = immutable,

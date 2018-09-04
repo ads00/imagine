@@ -18,11 +18,8 @@ class ndarray;
 template <typename F, typename... Xprs>
 class wise;
 
-template <typename Xpr, typename Shape>
-class cast;
-
-template <typename Xpr>
-class view;
+template <typename Xpr>                 class view;
+template <typename Xpr, typename Shape> class cast;
 
 // Meta
 template <typename Xpr> struct ndarray_traits;
@@ -43,6 +40,8 @@ public:
 
   using base = xpr<D>;
   using base::derived;
+  using base::begin;
+  using base::end;
 
   auto size() const { return derived().size(); }
   auto dims() const { return derived().dims(); }
@@ -77,6 +76,9 @@ public:
   auto& operator*=(const ndarray_base<Arr>& arr) { return derived() = std::move(*this) * arr; }
   template <typename Arr>
   auto& operator/=(const ndarray_base<Arr>& arr) { return derived() = std::move(*this) / arr; }
+
+  auto sum() const  -> value_type;
+  auto prod() const -> value_type;
 };
 
 template <typename D>
@@ -87,6 +89,14 @@ bool ndarray_base<D>::is_balanced() const {
     s.end(),
     s.begin());
 }
+
+template <typename D>
+auto ndarray_base<D>::sum() const -> value_type
+{ return std::accumulate(begin(), end(), value_type(0)); }
+
+template <typename D>
+auto ndarray_base<D>::prod() const -> value_type
+{ return std::accumulate(begin(), end(), value_type(1), std::multiplies<>{}); }
 
 template <typename Gen, typename Arr>
 void eval_helper(ndarray_base<Gen>& ev, const ndarray_base<Arr>& arr) {
