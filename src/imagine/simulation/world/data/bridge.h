@@ -14,7 +14,7 @@
 #include "imagine/math/theory/matrix.h"
 #include "imagine/math/theory/ndarray.h"
 
-#include "imagine/math/geometry/modeling/mesh.h"
+#include "imagine/math/geom/representation/mesh.h"
 
 #include <fstream>
 #include <vector>
