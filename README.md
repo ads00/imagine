@@ -1,10 +1,17 @@
-[![Imagine](https://github.com/hrkz/imagine/blob/gh-pages/images/imagine_render_100.png)](http://imagine-research.org)
-=======================
+<div align="center">
 
-[![Join the chat at https://gitter.im/hrkz/imagine](https://img.shields.io/gitter/room/nwjs/nw.js.svg?style=flat-square)](https://gitter.im/hrkz/imagine)
-[![GitHub license](https://img.shields.io/github/license/hrkz/imagine.svg?style=flat-square)](https://github.com/hrkz/imagine/blob/master/LICENSE)
+[![Imagine](https://github.com/hrkz/imagine/blob/gh-pages/images/imagine_logo.png)](http://imagine-research.org)
 
-Imagine is a modeling and simulation library based on computational graphs that provides many algorithms
+[![GitHub license](https://img.shields.io/github/license/hrkz/imagine.svg?color=informational&style=flat-square)](https://github.com/hrkz/imagine/blob/master/LICENSE)
+![Language](https://img.shields.io/github/languages/top/hrkz/imagine.svg?color=important&style=flat-square)
+![Builds](https://img.shields.io/travis/hrkz/imagine.svg?style=flat-square)
+![Docs](https://img.shields.io/readthedocs/imagine.svg?style=flat-square)
+![Issues](https://img.shields.io/github/issues/hrkz/imagine.svg?style=flat-square)
+
+</div>
+<hr>
+
+Imagine is a *modeling* and *simulation* library based on computational graphs that provides many algorithms
 with applications in physics, biology, chemistry, artificial intelligence and many more.
 
 ##### Research driven
@@ -19,10 +26,10 @@ arbitrary structure and behavior;
 
 * :globe_with_meridians: **Computational mathematics**
 
-	Linear algebra  
-	Ordinary and partial differential equations  
-	Nonlinear optimization  
-	Projective geometry, space partitioning and surface/volume representations  
+  Linear algebra  
+  Ordinary and partial differential equations  
+  Nonlinear optimization  
+  Projective geometry, space partitioning and surface/volume representations  
 
 * :computer: **High performance algorithms**
 * :bar_chart: **Data analysis**
