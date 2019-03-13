@@ -1,30 +1,39 @@
-[![Imagine](https://github.com/hrkz/imagine/blob/gh-pages/images/imagine_render_100.png)](http://imagine-research.org)
-=======================
+<div align="center">
 
-[![Join the chat at https://gitter.im/hrkz/imagine](https://img.shields.io/gitter/room/nwjs/nw.js.svg?style=flat-square)](https://gitter.im/hrkz/imagine)
-[![License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](LICENSE)
+[![Imagine](https://github.com/hrkz/imagine/blob/gh-pages/images/imagine_logo.png)](http://imagine-research.org)
 
-Imagine is a research-oriented simulation library based on computational graphs that provides many algorithms for light transport, fluids and rigid body dynamics.
+[![GitHub license](https://img.shields.io/github/license/hrkz/imagine.svg?color=informational&style=flat-square)](https://github.com/hrkz/imagine/blob/master/LICENSE)
+![Language](https://img.shields.io/github/languages/top/hrkz/imagine.svg?color=important&style=flat-square)
+![Builds](https://img.shields.io/travis/hrkz/imagine.svg?style=flat-square)
+![Docs](https://img.shields.io/readthedocs/imagine.svg?style=flat-square)
+![Issues](https://img.shields.io/github/issues/hrkz/imagine.svg?style=flat-square)
 
-It's written in modern c++17 with performance and modularity in mind. 
+</div>
+<hr>
+
+Imagine is a *modeling* and *simulation* library based on computational graphs that provides many algorithms
+with applications in physics, biology, chemistry, artificial intelligence and many more.
+
+##### Research driven
+
+Imagine's main objective is to help researchers from different areas to model and run numerical
+simulations in a pleasant way, with performance and modularity.
 
 ## Features
 
+The key concept, based on data flow graphs, opens possibilities to design numerical simulations of
+arbitrary structure and behavior;
+
 * :globe_with_meridians: **Computational mathematics**
-  * Expression template linear algebra (dense linear solvers and decompositions)
-  * Projective transformations, meshes manipulations, surface triangulations and space partitioning
-  * Ordinary differential equations solvers for implicit, explicit and symplectic systems
-  * Linear and non-linear optimization (stochastic gradient descent, quasi-newton, levenberg-marquardt)
-* :video_game: **Interactive cross-platform environment**
-  * Real-time physically based viewport using vulkan with built-in voxel cone tracing, temporal antialiasing and many post-process techniques (bloom, color correction, motion blur, etc)
-  * Virtual and augmented reality using openxr, including an advanced pose compositor, stereo rendering and monoscopic far field optimization
-* :high_brightness: **Light transport**
-* :wavy_dash: **Fluids and rigid body dynamics**
 
-At the moment, the development is focused on a physically correct (spectral) renderer .
-Next step will be to implement modern rendering techniques for the viewport in order to produces interesting results.
-  
-## License
+  Linear algebra  
+  Ordinary and partial differential equations  
+  Nonlinear optimization  
+  Projective geometry, space partitioning and surface/volume representations  
 
-Imagine is released under the [MIT](LICENSE) licence.
-Please cite Imagine if it helps your research.
+* :computer: **High performance algorithms**
+* :bar_chart: **Data analysis**
+
+| Plans |       |
+| :----:| :----:|
+| [:books: wiki](https://github.com/hrkz/imagine/wiki) | To get started with the library, learn the basics through reference documentation, concepts and examples |
