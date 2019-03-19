@@ -18,7 +18,10 @@ public:
   static_assert(std::is_base_of_v<vertex, Vertex>, "Analytic triangle requires base vertex of [position, normal, tangent space]");
 
   triangle() = default;
-  explicit triangle(Vertex v0, Vertex v1, Vertex v2)
+  explicit triangle(
+    Vertex v0, 
+    Vertex v1, 
+    Vertex v2)
     : v0{v0}
     , v1{v1}
     , v2{v2} {}

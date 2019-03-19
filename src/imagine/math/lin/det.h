@@ -13,7 +13,7 @@ namespace ig  {
 namespace lin {
 namespace detail {
 
-template <typename Mat, size_t n = matrix_traits<Mat>::n_cols>
+template <typename Mat, size_t Size = matrix_traits<Mat>::n_cols>
 struct determinant {
   static constexpr auto run(const matrix_base<Mat>& mat) {
     return

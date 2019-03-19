@@ -40,9 +40,12 @@ private:
 
 template <typename Mat>
 eigen<Mat, true>::eigen(const matrix_type& mat)
-  : n_{mat.diagsize()}
+  : n_{mat.diag_size()}
   , v_{mat}
   , d_{n_} {
+
+  auto scale = *std::max_element(v_.begin(), v_.end());
+  v_ /= scale;
 
   vector_type e{n_};
   value_type  s = 0;
@@ -156,7 +159,7 @@ eigen<Mat, true>::eigen(const matrix_type& mat)
       e[l] = g;
       d_[l] -= p;
     }
-  }
+  } d_ *= scale;
 }
 
 namespace lin {

@@ -18,7 +18,9 @@ public:
   using vector_type = colvec<value_type, 3>;
 
   aabb() { invalidate(); }
-  explicit aabb(const vector_type& min, const vector_type& max)
+  explicit aabb(
+    const vector_type& min, 
+    const vector_type& max)
     : min{min}
     , max{max} {}
   explicit aabb(const std::vector<vector_type>& points) { invalidate(); for (auto& point : points) expand(point); }

@@ -23,7 +23,7 @@ public:
   explicit svd(const matrix_type& mat);
 
   size_t rank() const;
-  auto nrm2() const -> value_type;
+  auto nrm() const -> value_type;
   auto pinv() const -> matrix_type;
   auto solve(const vector_type& b) -> vector_type;
 
@@ -48,6 +48,9 @@ svd<Mat>::svd(const matrix_type& mat)
   , u_{mat}
   , v_{n_, n_}
   , s_{n_} {
+
+  auto scale = *std::max_element(u_.begin(), u_.end());
+  u_ /= scale;
 
   vector_type e{n_};
   value_type
@@ -224,7 +227,7 @@ svd<Mat>::svd(const matrix_type& mat)
       e[i] = f;
       s_[i] = x;
     }
-  }
+  } s_ *= scale;
 }
 
 template <typename Mat>
@@ -234,7 +237,7 @@ size_t svd<Mat>::rank() const {
 }
 
 template <typename Mat>
-auto svd<Mat>::nrm2() const -> value_type {
+auto svd<Mat>::nrm() const -> value_type {
   // Max singular value
   return *std::max_element(s_.begin(), s_.end());
 }

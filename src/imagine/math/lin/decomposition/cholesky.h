@@ -36,7 +36,7 @@ private:
 
 template <typename Mat>
 cholesky<Mat>::cholesky(const matrix_type& mat)
-  : n_{mat.diagsize()}
+  : n_{mat.diag_size()}
   , llt_{mat} {
 
   for (size_t i = 0; i < n_; ++i) {
@@ -67,7 +67,7 @@ template <typename Mat>
 auto cholesky<Mat>::inv() const -> matrix_type {
   // Forward L-1
   auto inv = matrix_type::eye(n_);
-  for (size_t i = 0; i < b_; ++i)
+  for (size_t i = 0; i < n_; ++i)
     lin::forward_solve(
       llt_,
       inv.col(i));

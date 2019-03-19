@@ -7,7 +7,7 @@
 #ifndef IG_MATH_ROTATION_H
 #define IG_MATH_ROTATION_H
 
-#include "imagine/math/lin/op.h"
+#include "imagine/math/lin/algebra.h"
 
 namespace ig {
 
@@ -17,7 +17,9 @@ public:
   using value_type = Arithmetic;
   static_assert(std::is_arithmetic<value_type>::value, "Plane rotation computation requires arithmetic values");
 
-  explicit rotation(value_type c, value_type s)
+  explicit rotation(
+    value_type c, 
+    value_type s)
     : c_{c}
     , s_{s} {}
 
@@ -39,9 +41,7 @@ auto jacobi(Arithmetic x, Arithmetic y, Arithmetic z) {
     : 1 / (tau - w);
 
   auto n = 1 / std::sqrt(t * t + 1);
-  return rotation<Arithmetic>{
-    n,
-    -sign(t) * (y / std::abs(y)) * std::abs(t) * n};
+  return rotation<Arithmetic>{n, -sign(t) * (y / std::abs(y)) * std::abs(t) * n};
 }
 
 template <typename Arithmetic>
@@ -53,18 +53,14 @@ auto givens(Arithmetic p, Arithmetic q) {
     auto u = sign(p) * std::sqrt(t * t + 1);
     auto c = 1 / u;
     return std::make_pair(
-      rotation<Arithmetic>{
-         c,
-        -t * c},
+      rotation<Arithmetic>{c, -t * c},
       p * u);
   } else {
     auto t = p / q;
     auto u = sign(q) * std::sqrt(t * t + 1);
     auto s = -1 / u;
     return std::make_pair(
-      rotation<Arithmetic>{
-        -t * s,
-         s},
+      rotation<Arithmetic>{-t * s, s},
       q * u);
   }
 }

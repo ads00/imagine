@@ -39,7 +39,7 @@ private:
 
 template <typename Mat>
 lu<Mat>::lu(const matrix_type& mat)
-  : n_{mat.diagsize()}
+  : n_{mat.diag_size()}
   , permutations_{0}
   , lu_{mat}
   , p_{matrix_type::eye(n_)} {

@@ -18,7 +18,9 @@ public:
   using vector_type = colvec<value_type, 3>;
 
   quaternion() = default;
-  explicit quaternion(value_type sca, const vector_type& vec)
+  explicit quaternion(
+    value_type sca, 
+    const vector_type& vec)
     : scalar{sca}
     , vector{vec} {}
 
