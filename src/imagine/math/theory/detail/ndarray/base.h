@@ -12,26 +12,29 @@
 
 namespace ig {
 
-template <typename T, size_t... D>
+template <typename D> 
+class ndarray_base;
+template <typename T, size_t... D> 
 class ndarray;
 
-template <typename F, typename... Xprs>
-class wise;
+template <typename Spn> 
+class view_ranges;
 
-template <typename Xpr>                 class view;
-template <typename Xpr, typename Shape> class cast;
+template <typename Xpr, typename Shp, typename Rng> class view;
+template <typename Xpr, typename Shp, typename Str> class domain;
+template <typename Xpr, typename Shp, typename Str> class transpose;
+
+template <typename Fn, typename Sen, typename... Xprs> class wise;
 
 // Meta
 template <typename Xpr> struct ndarray_traits;
 template <typename Xpr> struct ndarray_traits<const Xpr> : ndarray_traits<Xpr> {};
 
+template <typename Xpr>
+struct is_ndarray : std::is_base_of< ndarray_base< std::decay_t<Xpr> >, std::decay_t<Xpr> >{};
+
 // Aliases
 template <typename Array> using ndarray_t = typename ndarray_traits< std::decay_t<Array> >::value_type;
-template <typename Array> using concrete_ndarray =
-  ndarray
-  <
-  ndarray_t<Array>
-  >;
 
 template <typename D>
 class ndarray_base : public xpr<D> {
@@ -40,12 +43,18 @@ public:
 
   using base = xpr<D>;
   using base::derived;
-  using base::begin;
-  using base::end;
+  //using base::begin;
+  //using base::end;
+
+  auto begin() const { return base::ndbegin(); }
+  auto begin()       { return base::ndbegin(); }
+  auto end() const   { return base::ndend(); }
+  auto end()         { return base::ndend(); }
 
   auto size() const { return derived().size(); }
   auto dims() const { return derived().dims(); }
-  auto shape() const -> decltype(auto) { return derived().shape(); }
+  auto& shape() const   { return derived().shape(); }
+  auto& strides() const { return derived().strides(); }
 
   bool is_vector() const { return dims() == 1; }
   bool is_matrix() const { return dims() == 2; }
@@ -53,10 +62,24 @@ public:
 
   bool is_balanced() const;
 
-  template <typename... Id> decltype(auto) operator()(Id... ids) const { return derived()(ids...); }
-  template <typename... Id> decltype(auto) operator()(Id... ids)       { return derived()(ids...); }
+  auto t() const { return transpose{derived(), shape(), strides()}; }
+  auto t()       { return transpose{derived(), shape(), strides()}; }
+  //auto r() const {}
+  //auto r()       {}
+  //auto diag(size_t axis = 2) const {}
+  //auto diag(size_t axis = 2)       {}
 
-  auto operator[](uint32_t dimension) const
+  template <typename... Id>
+  decltype(auto) operator()(Id... ids) const { return derived()(ids...); }
+  template <typename... Id>
+  decltype(auto) operator()(Id... ids)       { return derived()(ids...); }
+
+  template <typename Spans>
+  auto operator[](view_ranges<Spans>&& range) const { return view{derived(), shape(), range}; }
+  template <typename Spans>
+  auto operator[](view_ranges<Spans>&& range)       { return view{derived(), shape(), range}; }
+
+  auto operator[](size_t dimension) const
   { return shape()[dimension]; }
 
   auto& operator+=(value_type value)
@@ -83,7 +106,7 @@ public:
 
 template <typename D>
 bool ndarray_base<D>::is_balanced() const {
-  auto s = shape();
+  auto& s = shape();
   return std::equal(
     s.begin() + 1,
     s.end(),
@@ -98,15 +121,22 @@ template <typename D>
 auto ndarray_base<D>::prod() const -> value_type
 { return std::accumulate(begin(), end(), value_type(1), std::multiplies<>{}); }
 
-template <typename Gen, typename Arr>
-void eval_helper(ndarray_base<Gen>& ev, const ndarray_base<Arr>& arr) {
+template 
+< typename Gen, 
+  typename Arr >
+decltype(auto) eval_helper(ndarray_base<Gen>& ev, const ndarray_base<Arr>& arr) {
   assert(
-    ev.dims() == arr.dims() &&
-    ev.size() == arr.size() && "Incoherent ndarray expression evaluation");
+    ev.dims() == 
+    arr.dims() &&
+    ev.size() == 
+    arr.size() && "Incoherent ndarray expression evaluation");
 
-  for (size_t i = 0; i < ev.size(); ++i)
-    ev (i) =
-    arr(i);
+  std::transform(
+    arr.begin(), 
+    arr.end(), 
+    ev.begin(), 
+    [](auto&& element) { return element; });
+  return ev;
 }
 
 template <typename Arr>

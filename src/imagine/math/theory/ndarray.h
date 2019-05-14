@@ -8,12 +8,13 @@
 #define IG_MATH_NDARRAY_H
 
 #include "imagine/math/theory/detail/ndarray/base.h"
+#include "imagine/math/theory/detail/ndarray/view.h"
 
-#include "imagine/math/theory/detail/ndarray/expr/cast.h"
+#include "imagine/math/theory/detail/ndarray/expr/trans.h"
 #include "imagine/math/theory/detail/ndarray/expr/wise.h"
 
-#include "imagine/math/theory/detail/ndarray/allocator/static.h"
-#include "imagine/math/theory/detail/ndarray/allocator/dynamic.h"
+#include "imagine/math/theory/detail/ndarray/allocator/dense.h"
+#include "imagine/math/theory/detail/ndarray/allocator/sparse.h"
 
 namespace ig {
 
@@ -36,34 +37,26 @@ public:
   constexpr ndarray() = default;
 
   template
-  < bool X = immutable,
-    typename = std::enable_if_t<X>,
-    typename... Args >
-  constexpr explicit ndarray(value_type i, Args&&... args)
-    : storage_{i, std::forward<Args>(args)...} {}
-
-  template
-  < bool X = dynamic,
-    typename = std::enable_if_t<X> >
-  constexpr explicit ndarray(std::initializer_list<size_t> dims)
-    : storage_{{dims}} {}
+  < typename Arg,
+    typename... Args,
+    typename = std::enable_if_t<!is_ndarray<Arg>::value> >
+  constexpr explicit ndarray(Arg&& arg, Args&&... args) : storage_{arg, args...} {}
 
   template <typename Arr>
   ndarray(const ndarray_base<Arr>& o) : ndarray{o, o.shape(), std::integral_constant<bool, immutable>{}}
   { eval_helper(*this, o); }
 
-  template <typename Arr, typename Shape> ndarray(const ndarray_base<Arr>& o, const Shape& shape, std::true_type) {}
+  template <typename Arr, typename Shape> ndarray(const ndarray_base<Arr>& o, const Shape& shape, std::true_type) : storage_{} {}
   template <typename Arr, typename Shape> ndarray(const ndarray_base<Arr>& o, const Shape& shape, std::false_type)
-  : storage_{{
-    shape.begin(),
-    shape.end  ()}} {}
+  : storage_{shape} {}
 
   auto size() const { return storage_.size(); }
   auto dims() const { return storage_.dims(); }
-  auto shape() const -> decltype(auto) { return storage_.shape(); }
+  auto shape() const   -> decltype(auto) { return storage_.shape(); }
+  auto strides() const -> decltype(auto) { return storage_.strides(); }
 
-  auto buffer() const { return storage_.buffer(); }
-  auto buffer()       { return storage_.buffer(); }
+  auto data() const { return storage_.buffer(); }
+  auto data()       { return storage_.buffer(); }
 
   auto operator->() const { return &storage_; }
   auto operator->()       { return &storage_; }
@@ -71,17 +64,44 @@ public:
   template <typename... Id> decltype(auto) operator()(Id... ids) const { return storage_(layout(ids...)); }
   template <typename... Id> decltype(auto) operator()(Id... ids)       { return storage_(layout(ids...)); }
 
+  decltype(auto) eval(size_t id) const 
+  { return storage_(id); }
+  decltype(auto) eval(size_t id)       
+  { return storage_(id); }
+
+  template <typename Arr>
+  auto& operator=(const ndarray_base<Arr>&  o) { return eval_helper(*this, o); }
+  template <typename Arr>
+  auto& operator=(      ndarray_base<Arr>&& o) { return eval_helper(*this, o); }
+
+  template <typename Shape> 
+  static auto identity(Shape&& shape);
+
 protected:
   template <typename... Id>
   auto layout(Id... ids) const
-  { return std::apply([this](auto&&... x) { return storage_.offset(x...); }, /*reverse*/(std::make_tuple(ids...))); }
+  { return storage_.access(ids...); }
 
 protected:
-  std::conditional_t
-  < dynamic,
-    nd::dynamic_storage<value_type>, nd::static_storage<value_type, d_...>
+  nd::dense
+  < 
+    std::conditional_t
+    < dynamic,
+      nd::dynamic_alloc<value_type>,
+      nd:: static_alloc<value_type, d_...>
+    >
   > storage_;
 };
+
+template 
+<typename t_, size_t... d_>
+template 
+<typename Shape>
+auto ndarray<t_, d_...>::identity(Shape&& shape) { 
+  ndarray I{shape};
+  for (auto it = I.begin(); it < I.end(); it += I.strides().back() + 1) (*it) = 1;
+  return I; 
+}
 
 } // namespace ig
 
