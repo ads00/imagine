@@ -25,15 +25,29 @@ public:
   template
   < typename System, 
     typename State >
+  auto init(
+    System&& s, 
+    State&   y,
+    float t) const {
+
+    struct ivp_{};
+    return ivp_{};
+  }
+
+  template
+  < typename System, 
+    typename State,
+    typename Ivp >
   auto step(
-    System&& f, 
+    System&& s, 
     State&   y, 
+    Ivp&     p,
     float dt,
     float t) const {
 
     auto& [pn, qn] = y;
     for (size_t i = 0; i < Stages; ++i) 
-      qn += f.eval_q(pn) * dt * coordinates[i], pn += f.eval_p(qn) * dt * momentums[i];
+      qn += s.eval_q(pn) * dt * coordinates[i], pn += s.eval_p(qn) * dt * momentums[i];
 
     return Stages * 2;
   }

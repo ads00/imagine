@@ -18,7 +18,7 @@ template
   typename Method >
 class rk : public Method {
 public:
-  explicit rk(float rtol = 1e-3, float atol = 1e-5)
+  explicit rk(float rtol = 1e-4f, float atol = 1e-6f)
     : rtol_{rtol}
     , atol_{atol} {}
 
@@ -28,18 +28,36 @@ public:
   template
   < typename System, 
     typename State >
+  auto init(
+    System&& s, 
+    State&   y,
+    float t) const {
+
+    // ERK IVP
+    // use interpolant
+    struct ivp_ 
+    {
+      State fs;
+    };
+    return ivp_{s.eval(t, y)};
+  }
+
+  template
+  < typename System, 
+    typename State,
+    typename Ivp >
   auto step(
-    System&& f, 
-    State&   y, 
+    System&& s, 
+    State&   y,
+    Ivp&     p,
     float& dt,
     float t) const {
 
-    auto yn = y;
     auto ev = 0;
     bool accept = false;
 
     while (!accept) {
-      auto ec = rk_step(f, yn, dt, t);
+      auto [ec, yn, fn] = rk_step(s, y, p.fs, dt, t);
       auto en = *std::max_element(ec.begin(), ec.end(), [](auto lhs, auto rhs) { return std::abs(lhs) < std::abs(rhs); });
 
       auto norm = std::inner_product(
@@ -60,6 +78,9 @@ public:
             1.f, 
             0.9f * cor));
         accept = true;
+
+        y    = std::move(yn);
+        p.fs = std::move(fn);
       } else {
         dt *= std::max(
           0.2f, 
@@ -67,7 +88,6 @@ public:
       }
     }
 
-    y = std::move(yn);
     return ev;
   }
 
@@ -75,42 +95,47 @@ public:
   < typename System, 
     typename State >
   auto rk_step(
-    System&& f, 
+    System&& s, 
     State&   y,
+    State&   f,
     float dt,
     float t) const {
 
     auto& c = nodes;
     auto& a = runge_kutta_matrix;
     auto& e = weights;
-    std::array<State, Stages + 1> K{f.eval(t, y)};
+    std::array<State, Stages> K{f};
 
-    for (size_t i = 1, s = 0; i < Stages; ++i) {
-      K[i] = f.eval(
+    for (size_t i = 1, j = 0; i < Stages; ++i) {
+      K[i] = s.eval(
         t + dt * c[i - 1],
         y + dt * std::inner_product(
-          a.begin() + s, 
-          a.begin() + s + i, 
+          a.begin() + j, 
+          a.begin() + j + i, 
           K.begin(), 
           State{}));
-      s += i;
+      j += i;
     }
 
-    K[Stages] = 
+    auto yn = y + 
       std::inner_product(
         e.begin(), 
         e.begin() + Stages, 
         K.begin(), 
         State{}) * dt;
+    auto fn = s.eval(t + dt, yn);
+
     auto err = 
       std::inner_product(
         K.begin(), 
         K.end(), 
         e.begin() + Stages, 
-        State{}) * dt;
+        State{e.back() * fn}) * dt;
 
-    y += K[Stages];
-    return err;
+    return std::make_tuple(
+      err, 
+      yn, 
+      fn);
   }
 
 protected:
@@ -147,9 +172,9 @@ struct rk23_c {
      0.22222222222222f,
      0.33333333333333f,
      0.44444444444444f,
-     0.069444444444444f,
-    -0.083333333333333f,
-    -0.111111111111111f,
+     0.06944444444444f,
+    -0.08333333333333f,
+    -0.11111111111111f,
      0.125f
   };
 };
@@ -179,8 +204,8 @@ struct rk45_c {
   std::array runge_kutta_matrix
   {
      0.161f,
-    -0.00848065549236f,  0.335480655492357f,
-     2.89715305710549f, -6.359448489975075f, 4.36229543286958f,
+    -0.00848065549236f,   0.33548065549236f,
+     2.89715305710549f,  -6.35944848997507f, 4.36229543286958f,
      5.32586482843926f, -11.74888356406283f, 7.49553934288984f, -0.09249506636175f,
      5.86145544294642f, -12.92096931784711f, 8.15936789857616f, -0.07158497328140f, -0.02826905039407f
   };
@@ -213,8 +238,6 @@ rk
   5, 
   4, 
   rk45_c >;
-
-// Verner 9
 
 } // namespace ig
 

@@ -34,14 +34,19 @@ public:
   template 
   < typename State, 
     typename Observer >
-  void solve(float dt, State&& state, Observer&& observer) {
+  void solve(float dt, State& y, Observer&& observer) {
     assert((tn_ - ti_) * dt > 0 && "Invalid integration direction within given interval");
 
-    auto y = state;
+    auto ivp = 
+      int_.init(
+        sys_, 
+        y, 
+        ti_);
     while (std::abs(tn_ - ti_) > std::abs(dt)) {
       evals_ += int_.step(
         sys_,
         y,
+        ivp,
         dt,
         ti_);
       observer(
