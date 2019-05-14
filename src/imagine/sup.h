@@ -12,7 +12,6 @@ GNU      - GNU C++
 CLANG    - C++ front-end for the LLVM compiler
 */
 
-#if defined(__GNUC__)
 # define IG_GNU (__GNUC__ * 100 + __GNUC_MINOR__)
 # if defined(__clang__)
 #  define IG_CLANG ((__clang_major__ * 100) + __clang_minor__)
@@ -32,9 +31,7 @@ CLANG    - C++ front-end for the LLVM compiler
 # define IG_NORETURN __attribute__((__noreturn__))
 # define IG_TLS __thread
 
-#else
-# error "Imagine doesn't support this compiler"
-#endif
+
 
 #if defined(IG_SHARED) || !defined(IG_STATIC)
 # if defined(IG_STATIC)
