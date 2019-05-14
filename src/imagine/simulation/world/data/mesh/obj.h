@@ -21,9 +21,9 @@ using obj_t = mesh_bridge::resource;
 // validate -> none
 // standard -> see Wavefront Technologies
 
-bool obj_validate(std::istream& stream);
-obj  obj_readp_impl(std::istream& stream, const mesh_bridge::parameters&);
-bool obj_write_impl(std::ostream& stream, const mesh_bridge::parameters&, const mesh_bridge::resource& mesh);
+bool obj_v_impl(std::istream& stream);
+obj  obj_i_impl(std::istream& stream, const mesh_bridge::parameters&);
+bool obj_o_impl(std::ostream& stream, const mesh_bridge::parameters&, const mesh_bridge::resource& mesh);
 
 } // namespace detail
 } // namespace ig

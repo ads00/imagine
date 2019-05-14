@@ -20,14 +20,14 @@ namespace detail {
 
 constexpr uint32_t buffer_size = 4096;
 struct jpeg_src {
-  jpeg_source_mgr
-  jpeg;
-  uint8_t* buffer; std::istream* stream; };
+  jpeg_source_mgr jpeg;
+  uint8_t* buffer; std::istream* stream; 
+};
 
 struct jpeg_dst {
-  jpeg_destination_mgr
-  jpeg;
-  uint8_t* buffer; std::ostream* stream; };
+  jpeg_destination_mgr jpeg;
+  uint8_t* buffer; std::ostream* stream; 
+};
 
 boolean jpeg_readproc(j_decompress_ptr jpeg_ptr);
 boolean jpeg_writeproc(j_compress_ptr jpeg_ptr);
@@ -35,7 +35,7 @@ void jpeg_message(j_common_ptr jpeg_ptr);
 void jpeg_exit(j_common_ptr jpeg_ptr);
 
 // Jpeg interface implementation - validate - read - write
-bool jpeg_validate(std::istream& stream) {
+bool jpeg_v_impl(std::istream& stream) {
   uint8_t jpeg_sig[] = {0xff, 0xd8};
   uint8_t sig[2]     = {0, 0};
 
@@ -44,7 +44,7 @@ bool jpeg_validate(std::istream& stream) {
   return memcmp(jpeg_sig, sig, sizeof(jpeg_sig)) == 0;
 }
 
-jpeg jpeg_readp_impl(std::istream& stream, const image_bridge::parameters&) {
+jpeg jpeg_i_impl(std::istream& stream, const image_bridge::parameters&) {
   jpeg_decompress_struct
     jpeg_ptr{};
   jpeg_error_mgr
@@ -98,7 +98,7 @@ jpeg jpeg_readp_impl(std::istream& stream, const image_bridge::parameters&) {
   std::make_unique<jpeg_t>(std::initializer_list<size_t>{channels, width, height});
 
   while (jpeg_ptr.output_scanline < height) {
-    auto r = image->buffer() + (width * channels * jpeg_ptr.output_scanline);
+    auto r = image->data() + (width * channels * jpeg_ptr.output_scanline);
     jpeg_read_scanlines(
       &jpeg_ptr,
       (JSAMPARRAY)&r,
@@ -110,7 +110,7 @@ jpeg jpeg_readp_impl(std::istream& stream, const image_bridge::parameters&) {
   return std::make_pair(true, std::move(image));
 }
 
-bool jpeg_write_impl(std::ostream& stream, const image_bridge::parameters&, const image_bridge::resource& image) {
+bool jpeg_o_impl(std::ostream& stream, const image_bridge::parameters&, const image_bridge::resource& image) {
   jpeg_compress_struct
     jpeg_ptr{};
   jpeg_error_mgr
@@ -173,7 +173,7 @@ bool jpeg_write_impl(std::ostream& stream, const image_bridge::parameters&, cons
   jpeg_start_compress(&jpeg_ptr, TRUE);
 
   while (jpeg_ptr.next_scanline < height) {
-    auto r = image.buffer() + (width * channels * jpeg_ptr.next_scanline);
+    auto r = image.data() + (width * channels * jpeg_ptr.next_scanline);
     jpeg_write_scanlines(
       &jpeg_ptr,
       (JSAMPARRAY)&r,

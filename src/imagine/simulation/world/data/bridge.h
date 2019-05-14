@@ -16,84 +16,76 @@
 
 #include "imagine/math/geom/representation/mesh.h"
 
-#include <fstream>
-#include <vector>
-
 namespace ig {
 
 template
 < typename T,
   typename Format,
-  typename Container = std::unique_ptr<T>,
-  typename... Params >
+  typename Params = std::nullptr_t,
+  typename Container = std::unique_ptr<T> >
 class bridge {
 public:
-  using resource = T;
-  using exchange = Container;
-  using parameters = std::tuple<Params...>;
-  using data       = std::pair <bool, exchange>;
+  using resource   = T;
+  using parameters = Params;
+  using exchange   = Container;
+  using data       = std::tuple<bool, exchange>;
 
   using validate = bool(*)(std::istream&);
-  using read     = data(*)(std::istream&, const parameters&);
-  using write    = bool(*)(std::ostream&, const parameters&, const resource&);
-
-  template <Format fmt>
-  static bool save(std::ostream& out, const resource& data,    Params&&... args);
-  static auto load(std::istream& in,  const std::string& name, Params&&... args);
-
-  static auto file_load(const std::string& filename, Params&&... args) {
-    std::ifstream in{filename, std::ios::binary};
-    return load(
-      in,
-      filename, args...);
-  }
-
-private:
+  using in       = data(*)(std::istream&, const parameters&);
+  using out      = bool(*)(std::ostream&, const parameters&, const resource&);
   using loader =
     std::tuple
       < validate,
-        read,
-        write >;
+        in,
+        out >;
+
+  template <Format fmt>
+  static bool transform(std::ostream& os, const std::string& name, const parameters& params, const resource& data);
+  static auto transform(std::istream& is, const std::string& name, const parameters& params);
+
+private:
   using table = std::vector<loader>;
-  static IG_API table& get();
+  static IG_API table& _();
 };
 
 template
 < typename T,
   typename Format,
-  typename Container, typename... Params >
+  typename Params,
+  typename Container >
 template <Format fmt>
-bool bridge<T, Format, Container, Params...>::save(std::ostream& out, const resource& data, Params&&... args) {
-  if (!out.good()) {
+bool bridge<T, Format, Params, Container>::transform(std::ostream& os, const std::string& name, const parameters& params, const resource& data) {
+  if (!os.good()) {
     throw std::runtime_error{
       "[Bridge]: Invalid output stream "
       "(inexistant, unavailable or inaccessible virtual resource)"};
   }
 
-  auto& write = std::get<2>(get()[static_cast<size_t>(fmt)]);
-  return out.good()
-    ? write(out, std::tuple<Params...>{args...}, data)
+  auto& write = std::get<2>(_()[static_cast<size_t>(fmt)]);
+  return os.good()
+    ? write(os, params, data)
     : false;
 }
 
 template
 < typename T,
   typename Format,
-  typename Container, typename... Params >
-auto bridge<T, Format, Container, Params...>::load(std::istream& in, const std::string& name, Params&&... args) {
+  typename Params,
+  typename Container >
+auto bridge<T, Format, Params, Container>::transform(std::istream& is, const std::string& name, const parameters& params) {
   assert(!name.empty() && "Invalid resource name, failing search management and loader validation");
-  if (!in.good()) {
+  if (!is.good()) {
     throw std::runtime_error{
       "[Bridge] Invalid input stream "
       "(inexistant, unavailable or inaccessible virtual resource)"};
   }
 
-  for (auto& entry : get()) {
+  for (auto& entry : _()) {
     auto& validate = std::get<0>(entry);
     if (!validate) continue;
 
-    if (validate(in)) {
-      auto&& [s, ptr] = std::get<1>(entry)(in, std::tuple<Params...>{args...});
+    if (validate(is)) {
+      auto&& [s, ptr] = std::get<1>(entry)(is, params);
       if (s)
       return std::move(ptr);
       else
@@ -111,11 +103,15 @@ enum class audio_format { flac, mp3, ogg, wav };      using audio_bridge = bridg
 enum class video_format { x264 };
 
 // custom loaders
+struct 
+mesh_params
+{};
 enum class mesh_format { fbx, dae, stl, obj };
 using mesh_bridge =
   bridge
   < mesh_s,
     mesh_format,
+    mesh_params,
     std::vector
     < std::unique_ptr<mesh_s>
     >

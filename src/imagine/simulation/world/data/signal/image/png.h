@@ -21,9 +21,9 @@ using png_t = image_bridge::resource;
 // validate -> 89 50 4e 47 0d 0a 1a 0a
 // standard -> ISO/IEC 15948
 
-bool png_validate(std::istream& stream);
-png  png_readp_impl(std::istream& stream, const image_bridge::parameters&);
-bool png_write_impl(std::ostream& stream, const image_bridge::parameters&, const image_bridge::resource& image);
+bool png_v_impl(std::istream& stream);
+png  png_i_impl(std::istream& stream, const image_bridge::parameters&);
+bool png_o_impl(std::ostream& stream, const image_bridge::parameters&, const image_bridge::resource& image);
 
 } // namespace detail
 } // namespace ig

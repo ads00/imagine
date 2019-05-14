@@ -13,22 +13,24 @@ namespace ig     {
 namespace detail {
 
 struct obj_src : public base_mesh {
-  template <typename T>
-  auto vertex(int32_t id, const std::vector<T>& components) {
-    return id > 0
-      ? components[id - 1]
-      : id != 0
-        ? components[id + static_cast<int32_t>(components.size())]
-        : T{};
-  }
-
+  
   std::vector<vec3> p;
   std::vector<vec2> t;
   std::vector<vec3> n;
+
+  template <typename T>
+  auto vertex(int32_t id, const std::vector<T>& components) {
+    if (!id) return T{};
+    else {
+      return id > 0
+        ? components[id - 1]
+        : components[id + static_cast<int32_t>(components.size())];
+    }
+  }
 };
 
 // Obj interface implementation - validate - read - write
-bool obj_validate(std::istream& stream) {
+bool obj_v_impl(std::istream& stream) {
   return true;
 }
 
@@ -67,16 +69,13 @@ void parse_face(obj_src::pattern* pattern, std::string_view line, size_t face_co
         std::sscanf(&line[offset], "%d"      , &v.p            ) == 1) {
       pattern->verts.push_back(v);
     } else {
-      log_(
-        info,
-        "[obj_loader] Failed to load face, unrecognized line {}",
-        line);
+      log_(info, "[obj_loader] Failed to load face, unrecognized line {}", line);
       return;
     }
   }
 }
 
-obj obj_readp_impl(std::istream& stream, const mesh_bridge::parameters&) {
+obj obj_i_impl(std::istream& stream, const mesh_bridge::parameters&) {
   obj_src src;
   obj_src::pattern* curr = &src.add_pattern();
 
@@ -128,7 +127,7 @@ obj obj_readp_impl(std::istream& stream, const mesh_bridge::parameters&) {
   return std::make_pair(true, std::move(meshes));
 }
 
-bool obj_write_impl(std::ostream& stream, const mesh_bridge::parameters&, const mesh_bridge::resource& mesh) {
+bool obj_o_impl(std::ostream& stream, const mesh_bridge::parameters&, const mesh_bridge::resource& mesh) {
   return true;
 }
 

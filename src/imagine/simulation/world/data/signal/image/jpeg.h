@@ -21,9 +21,9 @@ using jpeg_t = image_bridge::resource;
 // validate -> ff d8 ff
 // standard -> ISO/IEC 10918
 
-bool jpeg_validate(std::istream& stream);
-jpeg jpeg_readp_impl(std::istream& stream, const image_bridge::parameters&);
-bool jpeg_write_impl(std::ostream& stream, const image_bridge::parameters&, const image_bridge::resource& image);
+bool jpeg_v_impl(std::istream& stream);
+jpeg jpeg_i_impl(std::istream& stream, const image_bridge::parameters&);
+bool jpeg_o_impl(std::ostream& stream, const image_bridge::parameters&, const image_bridge::resource& image);
 
 } // namespace detail
 } // namespace ig

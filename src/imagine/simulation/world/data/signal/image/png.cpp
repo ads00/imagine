@@ -19,18 +19,13 @@ namespace detail {
 struct png_src { std::istream* stream; };
 struct png_dst { std::ostream* stream; };
 
-void png_readproc(png_structp png_ptr,
-                  png_bytep data,
-                  png_size_t size);
-void png_writeproc(png_structp png_ptr,
-                   png_bytep data,
-                   png_size_t size);
-
+void png_readproc (png_structp png_ptr, png_bytep data, png_size_t size);
+void png_writeproc(png_structp png_ptr, png_bytep data, png_size_t size);
 void png_flushproc(png_structp png_ptr);
 void png_message(png_structp png_ptr, const char* msg);
 
 // Png interface implementation - validate - read - write
-bool png_validate(std::istream& stream) {
+bool png_v_impl(std::istream& stream) {
   png_byte png_sig[8];
 
   stream.read(reinterpret_cast<char*>(png_sig), 8);
@@ -38,7 +33,7 @@ bool png_validate(std::istream& stream) {
   return !png_sig_cmp(png_sig, 0, 8);
 }
 
-png png_readp_impl(std::istream& stream, const image_bridge::parameters&) {
+png png_i_impl(std::istream& stream, const image_bridge::parameters&) {
   png_src src{&stream};
   png_structp png_ptr =
     png_create_read_struct(
@@ -70,7 +65,7 @@ png png_readp_impl(std::istream& stream, const image_bridge::parameters&) {
   for (png_uint_32 j = 0; j < height; ++j)
     png_read_row(
       png_ptr,
-      reinterpret_cast<uint8_t*>(image->buffer() + (width * channels * j)),
+      reinterpret_cast<uint8_t*>(image->data() + (width * channels * j)),
       nullptr);
 
   png_read_end(png_ptr, info_ptr);
@@ -81,7 +76,7 @@ png png_readp_impl(std::istream& stream, const image_bridge::parameters&) {
   return std::make_pair(true, std::move(image));
 }
 
-bool png_write_impl(std::ostream& stream, const image_bridge::parameters&, const image_bridge::resource& image) {
+bool png_o_impl(std::ostream& stream, const image_bridge::parameters&, const image_bridge::resource& image) {
   png_dst dst{&stream};
   png_structp png_ptr =
     png_create_write_struct(
@@ -128,7 +123,7 @@ bool png_write_impl(std::ostream& stream, const image_bridge::parameters&, const
   for (png_uint_32 j = 0; j < height; ++j)
     png_write_row(
       png_ptr,
-      reinterpret_cast<const uint8_t*>(image.buffer() + (width * channels * j)));
+      reinterpret_cast<const uint8_t*>(image.data() + (width * channels * j)));
 
   png_write_end(png_ptr, info_ptr);
   png_destroy_write_struct(
